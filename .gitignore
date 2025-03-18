@@ -1,0 +1,9 @@
+repos/*
+logs/*
+out/*
+.vscode
+*.log
+*.o
+*.xml
+*.pa
+*.abc

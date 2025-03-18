@@ -1,0 +1,49 @@
+diff --git a/BUILD.gn b/BUILD.gn
+index dfffd707e..8099f59ea 100755
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -120,6 +120,7 @@ if (!ark_standalone_build) {
+ # Common config for ark source
+ config("ark_config") {
+   visibility = [
++    "*",
+     "./*",
+     "//arkcompiler/ets_frontend/*",
+   ]
+@@ -364,6 +365,14 @@ group("ark_host_mac_defectscanaux_unittest") {
+   }
+ }
+ 
++group("xabc") {
++  testonly = true
++  deps = [
++    "//arkdecompiler:xabc",
++  ]
++}
++
++
+ group("runtime_core_host_unittest") {
+   testonly = true
+   deps = [
+diff --git a/disassembler/disassembler.h b/disassembler/disassembler.h
+index e96089bdb..baee93007 100644
+--- a/disassembler/disassembler.h
++++ b/disassembler/disassembler.h
+@@ -87,7 +87,7 @@ public:
+     std::vector<size_t> GetColumnNumber();
+     std::vector<size_t> GetLineNumber();
+ 
+-private:
++public:
+     void GetLiteralArrays();
+     void FillLiteralArrayTable(panda_file::File::EntityId &id, size_t index);
+     void FillLiteralData(pandasm::LiteralArray *lit_array, const panda_file::LiteralDataAccessor::LiteralValue &value,
+@@ -234,7 +234,7 @@ private:
+     bool skip_strings_;
+     std::unordered_set<uint32_t> module_literals_;
+     std::unordered_set<uint32_t> module_request_phase_literals_;
+-#include "disasm_plugins.inc"
++//#include "disasm_plugins.inc"
+ };
+ }  // namespace panda::disasm
+ 

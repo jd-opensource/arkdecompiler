@@ -1,0 +1,79 @@
+import("//arkcompiler/ets_frontend/es2panda/es2abc_config.gni")
+import("//arkcompiler/runtime_core/ark_config.gni")
+import("$ark_root/tests/test_helper.gni")
+
+ohos_shared_library("libarkdecompiler") {
+  stack_protector_ret = false
+  sources = ["decompiler.cpp"]
+
+  #cflags_cc = [ "-std=c++17", "-frtti" ]
+  
+  configs = [
+    "$ark_root:ark_config",
+    "$ark_root/libpandabase:arkbase_public_config",
+    "$ark_root/libpandafile:arkfile_public_config",
+    "$ark_root/assembler:arkassembler_public_config",
+    "$ark_root/bytecode_optimizer:bytecodeopt_public_config",
+    "$ark_root/compiler:arkcompiler_public_config",
+  ]
+
+  deps = [
+    "$ark_root/disassembler:arkdisassembler",
+    "$ark_root/assembler:libarkassembler",
+    "$ark_root/bytecode_optimizer:libarkbytecodeopt",
+    "$ark_root/compiler:libarkcompiler",
+    "$ark_root/libpandabase:libarkbase",
+    "$ark_root/libpandafile:libarkfile",
+  ]
+
+  external_deps = [ sdk_libc_secshared_dep ]
+
+  include_dirs = [ "$ark_root/compiler/optimizer" ]
+
+  output_extension = "so"
+  relative_install_dir = "ark"
+  part_name = "runtime_core"
+  subsystem_name = "arkcompiler"
+}
+
+ohos_executable("xabc") {
+  #cflags_cc -= [ "-fno-rtti" ]
+  #cflags_cc += [ "-frtti" ]
+  #cflags_cc += ["-std=c++17"]
+  
+  sources = [
+    "xabc.cpp",
+    "astgen.cpp",
+    "arktsgen.cpp"
+    #"decompiler.cpp",
+  ]
+  
+  configs =  [
+    "$ark_root:ark_config",
+    "$ark_root/assembler:arkassembler_public_config",
+    "$ark_root/bytecode_optimizer:bytecodeopt_public_config",
+    "$ark_root/compiler:arkcompiler_public_config",
+    "$ark_root/libpandabase:arkbase_public_config",
+    "$ark_root/libpandafile:arkfile_public_config",
+    "$ark_root/../ets_frontend/es2panda:es2abc_config_src",
+    "$ark_root/../ets_frontend/es2panda:es2abc_config_common",
+    "$ark_root/../ets_frontend/merge_abc:panda_assembly_proto_public_config",
+    "$ark_root/../ets_frontend/merge_abc:proto_file_cpp_config",
+    "$ark_root/../../third_party/protobuf:protobuf_config",
+  ]
+
+  deps = [
+    "$ark_root/disassembler:arkdisassembler",
+    "$ark_root/assembler:libarkassembler",
+    "$ark_root/bytecode_optimizer:libarkbytecodeopt",
+    "$ark_root/compiler:libarkcompiler",
+    "$ark_root/libpandabase:libarkbase",
+    "$ark_root/libpandafile:libarkfile",
+    "$ark_root/libpandafile:libarkfile",
+    "$ark_root/../ets_frontend/es2panda:es2panda_lib",
+  ]
+  
+  external_deps = [ sdk_libc_secshared_dep ]
+
+}
+
