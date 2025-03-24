@@ -97,7 +97,218 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
        
-       
+       case compiler::RuntimeInterface::IntrinsicId::ADD2_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::SUB2_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::MUL2_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::DIV2_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::MOD2_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::EQ_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::NOTEQ_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::LESS_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::LESSEQ_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::GREATER_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::GREATEREQ_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::SHL2_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::SHR2_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::ASHR2_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::AND2_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::OR2_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::XOR2_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::STRICTNOTEQ_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::STRICTEQ_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::EXP_IMM8_V8:{
+            std::cout << "IntrinsicId::BIN_IMM8_V8 start <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+
+            auto source_reg = inst->GetSrcReg(inst->GetInputsCount() - 2);            
+            panda::es2panda::ir::Identifier* source_reg_identifier = get_identifier(enc, source_reg);
+
+            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
+            auto dst_reg = inst->GetDstReg();
+
+            panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, dst_reg);
+            auto binexpression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
+                                                            AllocNode<es2panda::ir::NumberLiteral>(enc, imm0),
+                                                            source_reg_identifier,
+                                                            BinIntrinsicIdToToken(inst->GetIntrinsicId())
+            );
+            
+            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                            dst_reg_identifier,
+                                                                            binexpression,
+                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                        );
+            
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
+                                                                                assignexpression);
+        
+            block->AddStatementAtPos(statements.size(), assignstatement);
+            
+            std::cout << "IntrinsicId::BIN_IMM8_V8 end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+            break;
+        }
+
+       case compiler::RuntimeInterface::IntrinsicId::INC_IMM8:
+       case compiler::RuntimeInterface::IntrinsicId::DEC_IMM8:
+       {
+
+            std::cout << "IntrinsicId::INC_IMM8_V8/DEC_IMM8 start <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+
+            auto source_reg = inst->GetSrcReg(inst->GetInputsCount() - 2);            
+            panda::es2panda::ir::Identifier* source_reg_identifier = get_identifier(enc, source_reg);
+
+            auto dst_reg = inst->GetDstReg();
+            panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, dst_reg);
+
+            auto binaryexpression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
+                                                            source_reg_identifier,
+                                                            enc->constant_one,
+                                                            IncDecIntrinsicIdToToken(inst->GetIntrinsicId())
+            );
+
+            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                            dst_reg_identifier,
+                                                                            binaryexpression,
+                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                        );
+            
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
+                                                                                assignexpression);
+        
+            block->AddStatementAtPos(statements.size(), assignstatement);           
+            
+            std::cout << "IntrinsicId::INC_IMM8_V8/DEC_IMM8 end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+            break;
+        }
+
+       case compiler::RuntimeInterface::IntrinsicId::ISTRUE:{
+            std::cout << "IntrinsicId::ISTRUE start <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+
+            auto source_reg = inst->GetSrcReg(inst->GetInputsCount() - 2);            
+            panda::es2panda::ir::Identifier* source_reg_identifier = get_identifier(enc, source_reg);
+
+            auto dst_reg = inst->GetDstReg();
+
+            panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, dst_reg);
+            auto binexpression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
+                                                            source_reg_identifier,
+                                                            enc->constant_true,
+                                                            BinIntrinsicIdToToken(inst->GetIntrinsicId())
+            );
+            
+            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                            dst_reg_identifier,
+                                                                            binexpression,
+                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                        );
+            
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
+                                                                                assignexpression);
+        
+            block->AddStatementAtPos(statements.size(), assignstatement);
+            
+            std::cout << "IntrinsicId::ISTRUE end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+            break;
+        }
+       case compiler::RuntimeInterface::IntrinsicId::ISFALSE:{
+            std::cout << "IntrinsicId::ISTRUE start <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+
+            auto source_reg = inst->GetSrcReg(inst->GetInputsCount() - 2);            
+            panda::es2panda::ir::Identifier* source_reg_identifier = get_identifier(enc, source_reg);
+
+            auto dst_reg = inst->GetDstReg();
+
+            panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, dst_reg);
+            auto binexpression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
+                                                            source_reg_identifier,
+                                                            enc->constant_false,
+                                                            BinIntrinsicIdToToken(inst->GetIntrinsicId())
+            );
+            
+            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                            dst_reg_identifier,
+                                                                            binexpression,
+                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                        );
+            
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
+                                                                                assignexpression);
+        
+            block->AddStatementAtPos(statements.size(), assignstatement);
+            
+            std::cout << "IntrinsicId::ISTRUE end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+
+            break;
+
+        }
+
+        case compiler::RuntimeInterface::IntrinsicId::NOT_IMM8:
+        case compiler::RuntimeInterface::IntrinsicId::NEG_IMM8:
+        case compiler::RuntimeInterface::IntrinsicId::TYPEOF_IMM8:
+        case compiler::RuntimeInterface::IntrinsicId::TYPEOF_IMM16:
+        {
+            std::cout << "IntrinsicId::UNARY_IMM8_V8 start <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+
+            auto source_reg = inst->GetSrcReg(inst->GetInputsCount() - 2);            
+            panda::es2panda::ir::Identifier* source_reg_identifier = get_identifier(enc, source_reg);
+
+            auto dst_reg = inst->GetDstReg();
+            panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, dst_reg);
+
+            auto unaryexpression = AllocNode<es2panda::ir::UnaryExpression>(enc, 
+                                                            source_reg_identifier,
+                                                            UnaryPrefixIntrinsicIdToToken(inst->GetIntrinsicId())
+            );
+
+            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                            dst_reg_identifier,
+                                                                            unaryexpression,
+                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                        );
+            
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
+                                                                                assignexpression);
+        
+            block->AddStatementAtPos(statements.size(), assignstatement);           
+            
+            std::cout << "IntrinsicId::UNARY_IMM8_V8 end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+            break;
+        }
+
+
+       case compiler::RuntimeInterface::IntrinsicId::TRYSTGLOBALBYNAME_IMM8_ID16:
+       case compiler::RuntimeInterface::IntrinsicId::TRYSTGLOBALBYNAME_IMM16_ID16:
+       {
+            std::cout << "TRYSTGLOBALBYNAME start    <<<<<<<<<<<<<<<<<<<<<" <<  std::endl;
+            
+            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
+            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
+            std::string* global_name = new std::string(bc_id0);
+            auto globalvar = get_identifier_byname(enc, global_name);
+
+
+            auto src_reg = inst->GetSrcReg(inst->GetInputsCount() - 2);
+            auto src_reg_identifier = get_identifier(enc, src_reg);
+
+            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                globalvar,
+                                                                                src_reg_identifier,
+                                                                                es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                            );
+                
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
+                                                                                    assignexpression);
+            block->AddStatementAtPos(statements.size(), assignstatement);
+
+            std::cout << "TRYSTGLOBALBYNAME end    <<<<<<<<<<<<<<<<<<<<<" <<  std::endl;
+            
+            break;
+           
+        }
+
+       /////////////////////////////////////////////////////////////////////////////////////
+       /////////////////////////////////////////////////////////////////////////////////////
+       /////////////////////////////////////////////////////////////////////////////////////
+
        case compiler::RuntimeInterface::IntrinsicId::CREATEEMPTYOBJECT:
        {
             enc->result_.emplace_back(pandasm::Create_CREATEEMPTYOBJECT());
@@ -171,213 +382,34 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         }
 
 
-       case compiler::RuntimeInterface::IntrinsicId::ADD2_IMM8_V8:
-       case compiler::RuntimeInterface::IntrinsicId::SUB2_IMM8_V8:
-       case compiler::RuntimeInterface::IntrinsicId::MUL2_IMM8_V8:
-       case compiler::RuntimeInterface::IntrinsicId::DIV2_IMM8_V8:
-       case compiler::RuntimeInterface::IntrinsicId::MOD2_IMM8_V8:
-       case compiler::RuntimeInterface::IntrinsicId::EQ_IMM8_V8:
-       case compiler::RuntimeInterface::IntrinsicId::NOTEQ_IMM8_V8:
-       case compiler::RuntimeInterface::IntrinsicId::LESS_IMM8_V8:
-       case compiler::RuntimeInterface::IntrinsicId::LESSEQ_IMM8_V8:
-       case compiler::RuntimeInterface::IntrinsicId::GREATER_IMM8_V8:
-       case compiler::RuntimeInterface::IntrinsicId::GREATEREQ_IMM8_V8:
-       case compiler::RuntimeInterface::IntrinsicId::SHL2_IMM8_V8:
-       case compiler::RuntimeInterface::IntrinsicId::SHR2_IMM8_V8:
-       case compiler::RuntimeInterface::IntrinsicId::ASHR2_IMM8_V8:
-       case compiler::RuntimeInterface::IntrinsicId::AND2_IMM8_V8:
-       case compiler::RuntimeInterface::IntrinsicId::OR2_IMM8_V8:
-       case compiler::RuntimeInterface::IntrinsicId::XOR2_IMM8_V8:
-       case compiler::RuntimeInterface::IntrinsicId::STRICTNOTEQ_IMM8_V8:
-       case compiler::RuntimeInterface::IntrinsicId::STRICTEQ_IMM8_V8:
-       case compiler::RuntimeInterface::IntrinsicId::EXP_IMM8_V8:{
-            std::cout << "IntrinsicId::BIN_IMM8_V8 start <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-
-            auto source_reg = inst->GetSrcReg(inst->GetInputsCount() - 2);            
-            panda::es2panda::ir::Identifier* source_reg_identifier = get_identifier(enc, source_reg);
-
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto dst_reg = inst->GetDstReg();
-
-            panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, dst_reg);
-            auto binexpression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
-                                                            AllocNode<es2panda::ir::NumberLiteral>(enc, imm0),
-                                                            source_reg_identifier,
-                                                            BinIntrinsicIdToToken(inst->GetIntrinsicId())
-            );
-            
-            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                            dst_reg_identifier,
-                                                                            binexpression,
-                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-                                                                        );
-            
-            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
-                                                                                assignexpression);
-        
-            block->AddStatementAtPos(statements.size(), assignstatement);
-            
-            std::cout << "IntrinsicId::BIN_IMM8_V8 end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-            break;
-        }
-       
        case compiler::RuntimeInterface::IntrinsicId::TONUMBER_IMM8:
             break;
 
-       case compiler::RuntimeInterface::IntrinsicId::NOT_IMM8:
-       case compiler::RuntimeInterface::IntrinsicId::NEG_IMM8:
-       case compiler::RuntimeInterface::IntrinsicId::TYPEOF_IMM8:
+       case compiler::RuntimeInterface::IntrinsicId::TONUMERIC_IMM8:
        {
-            std::cout << "IntrinsicId::UNARY_IMM8_V8 start <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+            std::cout << "IntrinsicId::TONUMERIC_IMM8  start <<<<<<<<<<<<<<<<<<<<<<< " << std::endl;
 
-            auto source_reg = inst->GetSrcReg(inst->GetInputsCount() - 2);            
-            panda::es2panda::ir::Identifier* source_reg_identifier = get_identifier(enc, source_reg);
-
-            auto dst_reg = inst->GetDstReg();
-            panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, dst_reg);
-
-            auto unaryexpression = AllocNode<es2panda::ir::UnaryExpression>(enc, 
-                                                            source_reg_identifier,
-                                                            UnaryPrefixIntrinsicIdToToken(inst->GetIntrinsicId())
-            );
-
-            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                            dst_reg_identifier,
-                                                                            unaryexpression,
-                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-                                                                        );
-            
-            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
-                                                                                assignexpression);
-        
-            block->AddStatementAtPos(statements.size(), assignstatement);           
-            
-            std::cout << "IntrinsicId::UNARY_IMM8_V8 end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-            break;
-        }
-        
-       case compiler::RuntimeInterface::IntrinsicId::INC_IMM8://constant_one
-       {
-        // TODO： tryldglobalbyname
- /*            std::cout << "IntrinsicId::INC_IMM8_V8 start <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-
-            auto source_reg = inst->GetSrcReg(inst->GetInputsCount() - 2);            
-            panda::es2panda::ir::Identifier* source_reg_identifier = get_identifier(enc, source_reg);
-
-            auto dst_reg = inst->GetDstReg();
-            panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, dst_reg);
-
-            auto unaryexpression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
-                                                            source_reg_identifier,
-                                                            enc->constant_one,
-                                                            UnaryPrefixIntrinsicIdToToken(inst->GetIntrinsicId())
-            );
-
-            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                            dst_reg_identifier,
-                                                                            unaryexpression,
-                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-                                                                        );
-            
-            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
-                                                                                assignexpression);
-        
-            block->AddStatementAtPos(statements.size(), assignstatement);           
-            
-            std::cout << "IntrinsicId::UNARY_IMM8_V8 end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-            break;
- */
-
-        //     auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-        //     if (acc_src != compiler::ACC_REG_ID) {
-        //         DoLda(acc_src, enc->result_);
-        //     }
-        //    ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-        //     auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-        //     enc->result_.emplace_back(pandasm::Create_INC(imm0));
-        //     auto acc_dst = inst->GetDstReg();
-        //     if (acc_dst != compiler::ACC_REG_ID) {
-        //         DoSta(inst->GetDstReg(), enc->result_);
-        //     }
-        //     break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::DEC_IMM8:
-       {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
             if (acc_src != compiler::ACC_REG_ID) {
                 DoLda(acc_src, enc->result_);
             }
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_DEC(imm0));
+            enc->result_.emplace_back(pandasm::Create_TONUMERIC(imm0));
             auto acc_dst = inst->GetDstReg();
             if (acc_dst != compiler::ACC_REG_ID) {
                 DoSta(inst->GetDstReg(), enc->result_);
             }
+
+            std::cout << "IntrinsicId::TONUMERIC_IMM8  end <<<<<<<<<<<<<<<<<<<<<<< " << std::endl;
+
             break;
         }
-       
-       
-       case compiler::RuntimeInterface::IntrinsicId::ISTRUE:{
-            std::cout << "IntrinsicId::ISTRUE start <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
 
-            auto source_reg = inst->GetSrcReg(inst->GetInputsCount() - 2);            
-            panda::es2panda::ir::Identifier* source_reg_identifier = get_identifier(enc, source_reg);
 
-            auto dst_reg = inst->GetDstReg();
 
-            panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, dst_reg);
-            auto binexpression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
-                                                            source_reg_identifier,
-                                                            enc->constant_true,
-                                                            BinIntrinsicIdToToken(inst->GetIntrinsicId())
-            );
-            
-            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                            dst_reg_identifier,
-                                                                            binexpression,
-                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-                                                                        );
-            
-            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
-                                                                                assignexpression);
         
-            block->AddStatementAtPos(statements.size(), assignstatement);
-            
-            std::cout << "IntrinsicId::ISTRUE end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::ISFALSE:{
-            std::cout << "IntrinsicId::ISTRUE start <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
 
-            auto source_reg = inst->GetSrcReg(inst->GetInputsCount() - 2);            
-            panda::es2panda::ir::Identifier* source_reg_identifier = get_identifier(enc, source_reg);
-
-            auto dst_reg = inst->GetDstReg();
-
-            panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, dst_reg);
-            auto binexpression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
-                                                            source_reg_identifier,
-                                                            enc->constant_false,
-                                                            BinIntrinsicIdToToken(inst->GetIntrinsicId())
-            );
-            
-            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                            dst_reg_identifier,
-                                                                            binexpression,
-                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-                                                                        );
-            
-            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
-                                                                                assignexpression);
-        
-            block->AddStatementAtPos(statements.size(), assignstatement);
-            
-            std::cout << "IntrinsicId::ISTRUE end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-
-            break;
-
-        }
        case compiler::RuntimeInterface::IntrinsicId::ISIN_IMM8_V8:{
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
             if (acc_src != compiler::ACC_REG_ID) {
@@ -767,36 +799,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         }
        
        
-       
-       case compiler::RuntimeInterface::IntrinsicId::TRYSTGLOBALBYNAME_IMM8_ID16:
-       case compiler::RuntimeInterface::IntrinsicId::TRYSTGLOBALBYNAME_IMM16_ID16:
-       {
-            std::cout << "TRYSTGLOBALBYNAME start    <<<<<<<<<<<<<<<<<<<<<" <<  std::endl;
-            
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
-            std::string* global_name = new std::string(bc_id0);
-            auto globalvar = get_identifier_byname(enc, global_name);
-
-
-            auto src_reg = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            auto src_reg_identifier = get_identifier(enc, src_reg);
-
-            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                                globalvar,
-                                                                                src_reg_identifier,
-                                                                                es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-                                                                            );
-                
-            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
-                                                                                    assignexpression);
-            block->AddStatementAtPos(statements.size(), assignstatement);
-
-            std::cout << "TRYSTGLOBALBYNAME end    <<<<<<<<<<<<<<<<<<<<<" <<  std::endl;
-            
-            break;
-           
-        }
        case compiler::RuntimeInterface::IntrinsicId::LDGLOBALVAR_IMM16_ID16:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -1350,21 +1352,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::TYPEOF_IMM16:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_TYPEOF(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::LDOBJBYVALUE_IMM16_V8:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -3474,6 +3462,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
         default:
+            std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
             enc->success_ = false;
             LOG(ERROR,COMPILER) << "Unsupported ecma opcode";
     }

@@ -82,12 +82,9 @@ panda::es2panda::lexer::TokenType BinIntrinsicIdToToken(panda::compiler::Runtime
         case panda::compiler::RuntimeInterface::IntrinsicId::DIV2_IMM8_V8:
             return panda::es2panda::lexer::TokenType::PUNCTUATOR_DIVIDE;
         case panda::compiler::RuntimeInterface::IntrinsicId::SUB2_IMM8_V8:
-        case panda::compiler::RuntimeInterface::IntrinsicId::NEG_IMM8:
             return panda::es2panda::lexer::TokenType::PUNCTUATOR_MINUS;
         case panda::compiler::RuntimeInterface::IntrinsicId::NOT_IMM8:
             return panda::es2panda::lexer::TokenType::PUNCTUATOR_TILDE;
-        case panda::compiler::RuntimeInterface::IntrinsicId::DEC_IMM8:
-            return panda::es2panda::lexer::TokenType::PUNCTUATOR_MINUS_MINUS;
         case panda::compiler::RuntimeInterface::IntrinsicId::SHL2_IMM8_V8:
             return panda::es2panda::lexer::TokenType::PUNCTUATOR_LEFT_SHIFT;
         case panda::compiler::RuntimeInterface::IntrinsicId::ASHR2_IMM8_V8:
@@ -153,13 +150,13 @@ panda::es2panda::lexer::TokenType UnaryPrefixIntrinsicIdToToken(panda::compiler:
 }
 
 
-panda::es2panda::lexer::TokenType UnaryPostfixIntrinsicIdToToken(panda::compiler::RuntimeInterface::IntrinsicId id){
+panda::es2panda::lexer::TokenType IncDecIntrinsicIdToToken(panda::compiler::RuntimeInterface::IntrinsicId id){
     switch (id) {
         case panda::compiler::RuntimeInterface::IntrinsicId::DEC_IMM8:
-            return panda::es2panda::lexer::TokenType::PUNCTUATOR_MINUS_MINUS;
+            return panda::es2panda::lexer::TokenType::PUNCTUATOR_MINUS;
 
         case panda::compiler::RuntimeInterface::IntrinsicId::INC_IMM8:
-            return panda::es2panda::lexer::TokenType::PUNCTUATOR_PLUS_PLUS;
+            return panda::es2panda::lexer::TokenType::PUNCTUATOR_PLUS;
         default:
             UNREACHABLE();
 
