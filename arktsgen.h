@@ -29,8 +29,11 @@
 #include "../ets_frontend/es2panda/ir/expressions/templateLiteral.h"
 #include "../ets_frontend/es2panda/ir/expressions/thisExpression.h"
 #include "../ets_frontend/es2panda/ir/expressions/unaryExpression.h"
+#include "../ets_frontend/es2panda/ir/expressions/arrayExpression.h"
+
 
 #include "../ets_frontend/es2panda/ir/base/property.h"
+
 
 
 #include "../ets_frontend/es2panda/ir/expressions/literals/bigIntLiteral.h"

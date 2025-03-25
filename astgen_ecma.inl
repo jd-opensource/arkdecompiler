@@ -307,7 +307,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-
+       case compiler::RuntimeInterface::IntrinsicId::STGLOBALVAR_IMM16_ID16:
        case compiler::RuntimeInterface::IntrinsicId::TRYSTGLOBALBYNAME_IMM8_ID16:
        case compiler::RuntimeInterface::IntrinsicId::TRYSTGLOBALBYNAME_IMM16_ID16:
        {
@@ -344,22 +344,22 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        {
 
             ArenaVector<es2panda::ir::Expression *> properties(enc->programast_->Allocator()->Adapter());
-            auto assignexpression = AllocNode<es2panda::ir::ObjectExpression>(enc, 
+            auto objectexpression = AllocNode<es2panda::ir::ObjectExpression>(enc, 
                                                                                 es2panda::ir::AstNodeType::OBJECT_EXPRESSION,
                                                                                 std::move(properties),
                                                                                 false
                                                                             );
 
             ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->programast_->Allocator()->Adapter());
-            /////////////////
+
 
             auto dst_reg = inst->GetDstReg();
             panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, dst_reg);
-            /////////////////
+
 
             auto *declarator = AllocNode<es2panda::ir::VariableDeclarator>(enc,
                                                                             dst_reg_identifier, 
-                                                                            assignexpression);
+                                                                            objectexpression);
                                                                             
             declarators.push_back(declarator);
             auto variadeclaration = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
@@ -377,30 +377,41 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
 
-       case compiler::RuntimeInterface::IntrinsicId::STGLOBALVAR_IMM16_ID16:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
-            enc->result_.emplace_back(pandasm::Create_STGLOBALVAR(imm0, bc_id0));
-            break;
-        }
 
         case compiler::RuntimeInterface::IntrinsicId::CREATEEMPTYARRAY_IMM8:
         {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_CREATEEMPTYARRAY(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
+            //    ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
+            //     auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
+            //     enc->result_.emplace_back(pandasm::Create_CREATEEMPTYARRAY(imm0));
+            //     auto acc_dst = inst->GetDstReg();
+            //     if (acc_dst != compiler::ACC_REG_ID) {
+            //         DoSta(inst->GetDstReg(), enc->result_);
+            //     }
+            ArenaVector<es2panda::ir::Expression *> elements(enc->programast_->Allocator()->Adapter());
+            auto arrayexpression = AllocNode<es2panda::ir::ArrayExpression>(enc, 
+                                                                            es2panda::ir::AstNodeType::ARRAY_EXPRESSION,
+                                                                            std::move(elements),
+                                                                            false
+                                                                            );
+            ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->programast_->Allocator()->Adapter());
+
+
+            auto dst_reg = inst->GetDstReg();
+            panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, dst_reg);
+
+
+            auto *declarator = AllocNode<es2panda::ir::VariableDeclarator>(enc,
+                                                                            dst_reg_identifier, 
+                                                                            arrayexpression);
+                                                                            
+            declarators.push_back(declarator);
+            auto variadeclaration = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
+                                                                                es2panda::ir::VariableDeclaration::VariableDeclarationKind::LET,
+                                                                                std::move(declarators),
+                                                                                true
+                                                                            );
+
+            block->AddStatementAtPos(statements.size(), variadeclaration);
             break;
         }
 

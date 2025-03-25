@@ -158,6 +158,21 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
             break;
 
         }
+
+        case AstNodeType::ARRAY_EXPRESSION:{
+            std::cout << "enter OBJECT_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
+            auto arrayexpression = static_cast<const panda::es2panda::ir::ArrayExpression*>(node);
+            
+            writeLeftBracket();
+            for (auto *it : arrayexpression->Elements()) {
+                this->EmitExpression(it);
+            }
+            writeRightBracket();
+
+            break;
+
+        }
+
         case AstNodeType::PROPERTY:{
             auto propertyexpression = static_cast<const panda::es2panda::ir::Property*>(node);
 
