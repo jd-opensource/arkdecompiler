@@ -143,7 +143,9 @@ panda::es2panda::lexer::TokenType UnaryPrefixIntrinsicIdToToken(panda::compiler:
         case panda::compiler::RuntimeInterface::IntrinsicId::TYPEOF_IMM8:
             return panda::es2panda::lexer::TokenType::KEYW_TYPEOF;
         case panda::compiler::RuntimeInterface::IntrinsicId::TONUMBER_IMM8:
-            return panda::es2panda::lexer::TokenType::KEYW_NUMBER;
+            return panda::es2panda::lexer::TokenType::KEYW_INSTANCEOF;
+        case panda::compiler::RuntimeInterface::IntrinsicId::ISIN_IMM8_V8:
+            return panda::es2panda::lexer::TokenType::KEYW_IN;
         default:
             UNREACHABLE();
     }

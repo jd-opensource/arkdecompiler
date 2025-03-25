@@ -34,6 +34,31 @@ void ArkTSGen::writeSpace(){
     ss_ << " ";
 }
 
+void ArkTSGen::writeLeftBrace(){
+    ss_ << "{";
+}
+
+void ArkTSGen::writeRightBrace(){
+    ss_ << "}";
+}
+
+void ArkTSGen::writeLeftBracket(){
+    ss_ << "[";
+}
+
+void ArkTSGen::writeRightBracket(){
+    ss_ << "]";
+}
+
+void ArkTSGen::writeColon(){
+    ss_ << " : ";
+}
+
+void ArkTSGen::writeEqual(){
+    ss_ << " = ";
+}
+
+
 void ArkTSGen::EmitExpression(const ir::AstNode *node){
     switch(node->Type()){ 
         case AstNodeType::BINARY_EXPRESSION:{
@@ -104,6 +129,45 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
             break;
         }
 
+        case AstNodeType::OBJECT_EXPRESSION:{
+            // std::cout << "enter BINARY_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
+            // auto binexpression = static_cast<const panda::es2panda::ir::BinaryExpression*>(node);
+            // this->EmitExpression(binexpression->Left());
+            // writeSpace();
+            // ss_ << TokenToString(binexpression->OperatorType());
+            // writeSpace();
+            // this->EmitExpression(binexpression->Right());
+            std::cout << "enter OBJECT_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
+            auto objexpression = static_cast<const panda::es2panda::ir::ObjectExpression*>(node);
+            
+            writeLeftBrace();
+            for (auto *it : objexpression->Properties()) {
+                switch (it->Type()) {
+                    case AstNodeType::PROPERTY: {
+                        this->EmitExpression(it);
+                        break;
+                    }
+                    default: {
+                        std::cout << "unsupport AstNodeType >>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+                        break;
+                    }
+                }
+            }
+            writeRightBrace();
+
+            break;
+
+        }
+        case AstNodeType::PROPERTY:{
+            auto propertyexpression = static_cast<const panda::es2panda::ir::Property*>(node);
+
+            this->EmitExpression(propertyexpression->Key());
+            this->writeColon();
+            this->EmitExpression(propertyexpression->Value());
+
+            break;
+        }
+
         default:
             std::cout << "enter EmitExpression Default  >>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
 
@@ -117,6 +181,26 @@ void ArkTSGen::EmitExpressionStatement(const ir::AstNode *node){
     this->writeTrailingSemicolon();
 }
 
+void ArkTSGen::EmitVariableDeclarationStatement(const ir::AstNode *node){
+    auto vardeclstatement = static_cast<const panda::es2panda::ir::VariableDeclaration*>(node);
+    
+    int size = vardeclstatement->Declarators().size();
+    int count = 1;
+    for (const auto *it : vardeclstatement->Declarators()) {
+        this->SerializeNode(it);
+        if(++count < size ){
+            this->writeColon();
+        }
+    }
+    this->writeTrailingSemicolon();
+}
+
+void ArkTSGen::EmitVariableDeclaratorStatement(const ir::AstNode *node){
+    auto vardeclstatement = static_cast<const panda::es2panda::ir::VariableDeclarator*>(node);
+    this->EmitExpression(vardeclstatement->Id());
+    this->writeEqual();
+    this->EmitExpression(vardeclstatement->Init());
+}
 
 void ArkTSGen::SerializeNode(const ir::AstNode *node)
 {
@@ -129,6 +213,16 @@ void ArkTSGen::SerializeNode(const ir::AstNode *node)
         case AstNodeType::BLOCK_STATEMENT:
             std::cout << "enter BLOCK_STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
             this->EmitBlockStatement(node);
+            break;
+
+        case AstNodeType::VARIABLE_DECLARATION:
+            std::cout << "enter VARIABLE_DECLARATION >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
+            this->EmitVariableDeclarationStatement(node);
+            break;
+
+        case AstNodeType::VARIABLE_DECLARATOR:
+            std::cout << "enter VARIABLE_DECLARATO >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
+            this->EmitVariableDeclaratorStatement(node);
             break;
         default:
             std::cout << "enter SerializeNode Default  >>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;

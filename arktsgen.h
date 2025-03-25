@@ -30,7 +30,7 @@
 #include "../ets_frontend/es2panda/ir/expressions/thisExpression.h"
 #include "../ets_frontend/es2panda/ir/expressions/unaryExpression.h"
 
-
+#include "../ets_frontend/es2panda/ir/base/property.h"
 
 
 #include "../ets_frontend/es2panda/ir/expressions/literals/bigIntLiteral.h"
@@ -47,6 +47,7 @@
 #include "../ets_frontend/es2panda/ir/expressions/sequenceExpression.h"
 #include "../ets_frontend/es2panda/ir/expressions/templateLiteral.h"
 #include "../ets_frontend/es2panda/ir/expressions/thisExpression.h"
+
 #include "../ets_frontend/es2panda/ir/module/exportDefaultDeclaration.h"
 #include "../ets_frontend/es2panda/ir/module/exportNamedDeclaration.h"
 #include "../ets_frontend/es2panda/ir/statements/blockStatement.h"
@@ -250,10 +251,17 @@ private:
 
     void writeTrailingSemicolon();
     void writeSpace();
-
+    void writeLeftBrace();
+    void writeRightBrace();
+    void writeLeftBracket();
+    void writeRightBracket();
+    void writeColon();
+    void writeEqual();
 
     void EmitExpression(const ir::AstNode *node);
     void EmitExpressionStatement(const ir::AstNode *node);
+    void EmitVariableDeclarationStatement(const ir::AstNode *node);
+    void EmitVariableDeclaratorStatement(const ir::AstNode *node);
 
     void Serialize(const ArkTSGen::Property &prop);
     void SerializePropKey(const char *str);

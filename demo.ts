@@ -10,5 +10,17 @@
 //i--;
 //i++;
 
-let j = 3;
-let h = typeof j;
+//let j = 3;
+//let h = typeof j;
+
+/** to test : typeof in
+ * 
+ * let k:any = 42;
+ * let a = k instanceof Number;
+ * 
+ * "length" in new String(str)
+*/
+
+//var obj1 = 1, obj2 = {};
+
+var obj3 = [];

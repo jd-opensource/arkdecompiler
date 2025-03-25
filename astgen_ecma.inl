@@ -241,10 +241,12 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
         }
 
-        case compiler::RuntimeInterface::IntrinsicId::NOT_IMM8:
-        case compiler::RuntimeInterface::IntrinsicId::NEG_IMM8:
-        case compiler::RuntimeInterface::IntrinsicId::TYPEOF_IMM8:
-        case compiler::RuntimeInterface::IntrinsicId::TYPEOF_IMM16:
+       case compiler::RuntimeInterface::IntrinsicId::INSTANCEOF_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::ISIN_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::NOT_IMM8:
+       case compiler::RuntimeInterface::IntrinsicId::NEG_IMM8:
+       case compiler::RuntimeInterface::IntrinsicId::TYPEOF_IMM8:
+       case compiler::RuntimeInterface::IntrinsicId::TYPEOF_IMM16:
         {
             std::cout << "IntrinsicId::UNARY_IMM8_V8 start <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
 
@@ -271,6 +273,37 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             block->AddStatementAtPos(statements.size(), assignstatement);           
             
             std::cout << "IntrinsicId::UNARY_IMM8_V8 end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+            break;
+        }
+
+       case compiler::RuntimeInterface::IntrinsicId::TONUMBER_IMM8:
+       case compiler::RuntimeInterface::IntrinsicId::TONUMERIC_IMM8:
+       {
+            std::cout << "IntrinsicId::TONUMBER_IMM8 start <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+
+            auto source_reg = inst->GetSrcReg(inst->GetInputsCount() - 2);            
+            panda::es2panda::ir::Identifier* source_reg_identifier = get_identifier(enc, source_reg);
+
+            auto dst_reg = inst->GetDstReg();
+            panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, dst_reg);
+
+            auto unaryexpression = AllocNode<es2panda::ir::UnaryExpression>(enc, 
+                                                            source_reg_identifier,
+                                                            panda::es2panda::lexer::TokenType::PUNCTUATOR_PLUS
+            );
+
+            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                            dst_reg_identifier,
+                                                                            unaryexpression,
+                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                        );
+            
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
+                                                                                assignexpression);
+        
+            block->AddStatementAtPos(statements.size(), assignstatement);           
+            
+            std::cout << "IntrinsicId::TONUMBER_IMM8 end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
             break;
         }
 
@@ -305,21 +338,62 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
            
         }
 
-       /////////////////////////////////////////////////////////////////////////////////////
-       /////////////////////////////////////////////////////////////////////////////////////
-       /////////////////////////////////////////////////////////////////////////////////////
+
 
        case compiler::RuntimeInterface::IntrinsicId::CREATEEMPTYOBJECT:
        {
-            enc->result_.emplace_back(pandasm::Create_CREATEEMPTYOBJECT());
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
+
+            ArenaVector<es2panda::ir::Expression *> properties(enc->programast_->Allocator()->Adapter());
+            auto assignexpression = AllocNode<es2panda::ir::ObjectExpression>(enc, 
+                                                                                es2panda::ir::AstNodeType::OBJECT_EXPRESSION,
+                                                                                std::move(properties),
+                                                                                false
+                                                                            );
+
+            ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->programast_->Allocator()->Adapter());
+            /////////////////
+
+            auto dst_reg = inst->GetDstReg();
+            panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, dst_reg);
+            /////////////////
+
+            auto *declarator = AllocNode<es2panda::ir::VariableDeclarator>(enc,
+                                                                            dst_reg_identifier, 
+                                                                            assignexpression);
+                                                                            
+            declarators.push_back(declarator);
+            auto variadeclaration = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
+                                                                                es2panda::ir::VariableDeclaration::VariableDeclarationKind::LET,
+                                                                                std::move(declarators),
+                                                                                true
+                                                                            );
+
+            block->AddStatementAtPos(statements.size(), variadeclaration);
+
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::CREATEEMPTYARRAY_IMM8:
+
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+
+       case compiler::RuntimeInterface::IntrinsicId::STGLOBALVAR_IMM16_ID16:
        {
+            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
+            if (acc_src != compiler::ACC_REG_ID) {
+                DoLda(acc_src, enc->result_);
+            }
+            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
+            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
+            ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
+            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
+            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
+            enc->result_.emplace_back(pandasm::Create_STGLOBALVAR(imm0, bc_id0));
+            break;
+        }
+
+        case compiler::RuntimeInterface::IntrinsicId::CREATEEMPTYARRAY_IMM8:
+        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
             enc->result_.emplace_back(pandasm::Create_CREATEEMPTYARRAY(imm0));
@@ -329,8 +403,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::CREATEARRAYWITHBUFFER_IMM8_ID16:
-       {
+
+        case compiler::RuntimeInterface::IntrinsicId::CREATEARRAYWITHBUFFER_IMM8_ID16:
+        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
             ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -343,7 +418,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::CREATEOBJECTWITHBUFFER_IMM8_ID16:
+
+
+        case compiler::RuntimeInterface::IntrinsicId::CREATEOBJECTWITHBUFFER_IMM8_ID16:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
@@ -357,7 +434,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::NEWOBJRANGE_IMM8_IMM8_V8:{
+        case compiler::RuntimeInterface::IntrinsicId::NEWOBJRANGE_IMM8_IMM8_V8:{
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
            ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -370,7 +447,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::NEWLEXENV_IMM8:{
+        case compiler::RuntimeInterface::IntrinsicId::NEWLEXENV_IMM8:{
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
             enc->result_.emplace_back(pandasm::Create_NEWLEXENV(imm0));
@@ -382,68 +459,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         }
 
 
-       case compiler::RuntimeInterface::IntrinsicId::TONUMBER_IMM8:
-            break;
-
-       case compiler::RuntimeInterface::IntrinsicId::TONUMERIC_IMM8:
-       {
-            std::cout << "IntrinsicId::TONUMERIC_IMM8  start <<<<<<<<<<<<<<<<<<<<<<< " << std::endl;
-
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_TONUMERIC(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-
-            std::cout << "IntrinsicId::TONUMERIC_IMM8  end <<<<<<<<<<<<<<<<<<<<<<< " << std::endl;
-
-            break;
-        }
 
 
 
-        
-
-       case compiler::RuntimeInterface::IntrinsicId::ISIN_IMM8_V8:{
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_ISIN(imm0, v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-
-
-
-       case compiler::RuntimeInterface::IntrinsicId::INSTANCEOF_IMM8_V8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_INSTANCEOF(imm0, v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
        case compiler::RuntimeInterface::IntrinsicId::CALLARG0_IMM8:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -1285,20 +1303,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::STGLOBALVAR_IMM16_ID16:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
-            enc->result_.emplace_back(pandasm::Create_STGLOBALVAR(imm0, bc_id0));
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::CREATEEMPTYARRAY_IMM16:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -2501,20 +2506,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_DEFINEPRIVATEPROPERTY(imm0, imm1, imm2, v0));
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_TONUMBER_PREF_V8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_TONUMBER(v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::WIDE_CALLTHISRANGE_PREF_IMM16_V8:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
