@@ -27,7 +27,7 @@ void ArkTSGen::EmitBlockStatement(const ir::AstNode *node){
 }
 
 void ArkTSGen::writeTrailingSemicolon(){
-    ss_ << std::endl;
+    ss_ << ";" << std::endl;
 }
 
 void ArkTSGen::writeSpace(){
@@ -48,6 +48,14 @@ void ArkTSGen::writeLeftBracket(){
 
 void ArkTSGen::writeRightBracket(){
     ss_ << "]";
+}
+
+void ArkTSGen::writeLeftParentheses(){
+    ss_ << "(";
+}
+
+void ArkTSGen::writeRightParentheses(){
+    ss_ << ")";
 }
 
 void ArkTSGen::writeColon(){
@@ -198,6 +206,26 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
             break;
         }
 
+        case AstNodeType::CALL_EXPRESSION:{
+            auto callexpression = static_cast<const panda::es2panda::ir::CallExpression*>(node);
+
+            this->EmitExpression(callexpression->Callee());
+            this->writeLeftParentheses();
+
+            int count = 1;
+            int argumentsize = callexpression->Arguments().size();
+            for (const auto *it : callexpression->Arguments()) {
+                this->EmitExpression(it);
+                if(count ++ < argumentsize){
+                    this->writeComma();
+                }
+            }
+
+            this->writeRightParentheses();
+
+            break;
+        }
+
         default:
             std::cout << "enter EmitExpression Default  >>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
 
@@ -206,7 +234,6 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
 
 void ArkTSGen::EmitExpressionStatement(const ir::AstNode *node){
     auto expressionstatement = static_cast<const panda::es2panda::ir::ExpressionStatement*>(node);
-    
     this->EmitExpression(expressionstatement->GetExpression());
     this->writeTrailingSemicolon();
 }

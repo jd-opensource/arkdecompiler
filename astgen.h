@@ -284,9 +284,12 @@ public:
     bool success_ {true};
     std::vector<pandasm::Ins> result_;
    
-    es2panda::parser::Program* programast_;
-    std::map<compiler::Register, panda::es2panda::ir::Identifier*> identifers;
+    std::string* acc_global_str;
 
+    es2panda::parser::Program* programast_;
+   
+   
+    std::map<compiler::Register, panda::es2panda::ir::Identifier*> identifers;
     std::map<std::string, panda::es2panda::ir::Identifier*> str2identifers;
 
     panda::es2panda::ir::Identifier* constant_undefined = AllocNode<panda::es2panda::ir::Identifier>(this, "undefined");

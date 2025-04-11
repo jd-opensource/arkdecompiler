@@ -258,6 +258,11 @@ private:
     void writeRightBrace();
     void writeLeftBracket();
     void writeRightBracket();
+
+    void writeLeftParentheses();
+    void writeRightParentheses();
+    
+
     void writeColon();
     void writeEqual();
     void writeComma();

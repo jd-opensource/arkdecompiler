@@ -478,10 +478,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-
 
         case compiler::RuntimeInterface::IntrinsicId::CREATEOBJECTWITHBUFFER_IMM8_ID16:
         case compiler::RuntimeInterface::IntrinsicId::CREATEOBJECTWITHBUFFER_IMM16_ID16:
@@ -560,49 +556,41 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-        case compiler::RuntimeInterface::IntrinsicId::NEWOBJRANGE_IMM8_IMM8_V8:{
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_NEWOBJRANGE(imm0, imm1, v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
+       case compiler::RuntimeInterface::IntrinsicId::TRYLDGLOBALBYNAME_IMM8_ID16:
+       case compiler::RuntimeInterface::IntrinsicId::TRYLDGLOBALBYNAME_IMM16_ID16:
+       {
+            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); 
+            ASSERT(inst->HasImms() && inst->GetImms().size() > 1); 
+
+            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
+            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
+            enc->acc_global_str = new std::string(bc_id0);
             break;
         }
-        case compiler::RuntimeInterface::IntrinsicId::NEWLEXENV_IMM8:{
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_NEWLEXENV(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-
-
-
 
 
        case compiler::RuntimeInterface::IntrinsicId::CALLARG0_IMM8:
        {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_CALLARG0(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
+            panda::es2panda::ir::Identifier* funname = enc->get_identifier_byname(enc, enc->acc_global_str);
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->programast_->Allocator()->Adapter());
+
+
+            es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
+                                                                                funname,
+                                                                                std::move(arguments),
+                                                                                nullptr,
+                                                                                false
+                                                                            );
+
+            auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc,  callarg0expression);
+            block->AddStatementAtPos(statements.size(), callarg0statement);
+
             break;
         }
+
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
        case compiler::RuntimeInterface::IntrinsicId::CALLARG1_IMM8_V8:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -670,6 +658,41 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
+
+
+        case compiler::RuntimeInterface::IntrinsicId::NEWOBJRANGE_IMM8_IMM8_V8:{
+           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
+            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
+           ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
+            auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
+            auto v0 = inst->GetSrcReg(0);
+            enc->result_.emplace_back(pandasm::Create_NEWOBJRANGE(imm0, imm1, v0));
+            auto acc_dst = inst->GetDstReg();
+            if (acc_dst != compiler::ACC_REG_ID) {
+                DoSta(inst->GetDstReg(), enc->result_);
+            }
+            break;
+        }
+
+
+
+        case compiler::RuntimeInterface::IntrinsicId::NEWLEXENV_IMM8:{
+           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
+            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
+            enc->result_.emplace_back(pandasm::Create_NEWLEXENV(imm0));
+            auto acc_dst = inst->GetDstReg();
+            if (acc_dst != compiler::ACC_REG_ID) {
+                DoSta(inst->GetDstReg(), enc->result_);
+            }
+            break;
+        }
+
+
+
+
+
+
+        
        case compiler::RuntimeInterface::IntrinsicId::CALLTHIS1_IMM8_V8_V8:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -924,23 +947,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->result_.emplace_back(pandasm::Create_STLEXVAR(imm0, imm1));
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::TRYLDGLOBALBYNAME_IMM8_ID16:
-       case compiler::RuntimeInterface::IntrinsicId::TRYLDGLOBALBYNAME_IMM16_ID16:
-       {
-            std::cout << "TRYLDGLOBALBYNAME  start  <<<<<<<<<<<<<<<<<<<<<" <<  std::endl;
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
-            enc->result_.emplace_back(pandasm::Create_TRYLDGLOBALBYNAME(imm0, bc_id0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }                                                                            
-            std::cout << "TRYLDGLOBALBYNAME  end  <<<<<<<<<<<<<<<<<<<<<" <<  std::endl;
-            break;
-        }
+       
+
        
        
        case compiler::RuntimeInterface::IntrinsicId::LDGLOBALVAR_IMM16_ID16:

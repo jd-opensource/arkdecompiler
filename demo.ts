@@ -27,4 +27,6 @@
 
 //var obj4 = [1, 2, 3];
 
-var obj5 = {"a":1, "b":2, "c":3};
+//var obj5 = {"a":1, "b":2, "c":3};
+
+clearTimeout();

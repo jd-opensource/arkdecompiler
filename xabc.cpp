@@ -432,16 +432,19 @@ void startDecompile(std::string &abc_file_name, panda::pandasm::Program &program
 
 void construct_PandaFileToPandaAsmMaps(panda::disasm::Disassembler& disas, pandasm::AsmEmitter::PandaFileToPandaAsmMaps* maps){
     for (const auto &[offset, name_value] : disas.string_offset_to_name_) {
+        std::cout << "1 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: " <<  offset.GetOffset()  << " % " << std::string(name_value)  << std::endl;
         maps->strings[offset.GetOffset()] = std::string(name_value);
     }
 
     //////////////////////////////////////////////////////////////////////////
     for (const auto &[name_value, offset] : disas.method_name_to_id_) {
+        std::cout << "2 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: " << std::string(name_value)  << std::endl;
         maps->methods[offset.GetOffset()] = std::string(name_value);
     }
     
     //////////////////////////////////////////////////////////////////////////
     for (const auto &[name_value, offset] : disas.record_name_to_id_) {
+        std::cout << "3 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: " << std::string(name_value)  << std::endl;
         maps->classes[offset.GetOffset()] = std::string(name_value);
     }
 }
