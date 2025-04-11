@@ -403,9 +403,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
 
         case compiler::RuntimeInterface::IntrinsicId::CREATEARRAYWITHBUFFER_IMM8_ID16:
         case compiler::RuntimeInterface::IntrinsicId::CREATEARRAYWITHBUFFER_IMM16_ID16:
@@ -454,8 +451,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 // }, literal.value_);
             }
 
-
-
             auto arrayexpression = AllocNode<es2panda::ir::ArrayExpression>(enc, 
                                                                             es2panda::ir::AstNodeType::ARRAY_EXPRESSION,
                                                                             std::move(elements),
@@ -481,33 +476,90 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             block->AddStatementAtPos(statements.size(), variadeclaration);
             break;
-            //////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-            std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
-
-            break;
         }
 
-
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
 
 
         case compiler::RuntimeInterface::IntrinsicId::CREATEOBJECTWITHBUFFER_IMM8_ID16:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto bc_id0 = enc->ir_interface_->GetLiteralArrayByOffset(ir_id0);
-            enc->result_.emplace_back(pandasm::Create_CREATEOBJECTWITHBUFFER(imm0, bc_id0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
+        case compiler::RuntimeInterface::IntrinsicId::CREATEOBJECTWITHBUFFER_IMM16_ID16:
+        {
+            ArenaVector<es2panda::ir::Expression *> properties(enc->programast_->Allocator()->Adapter());
+            
+            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]); 
+            auto literalarray = enc->findLiteralArrayByOffset(ir_id0);
+
+            int count = 0;
+            es2panda::ir::Expression* key;
+            es2panda::ir::Expression* value;
+            for (const auto& literal : literalarray->literals_) {
+                es2panda::ir::Expression *tmp;
+                if(literal.IsBoolValue()){
+                    tmp = AllocNode<es2panda::ir::BooleanLiteral>(enc, std::get<bool>(literal.value_));
+                }else if(literal.IsByteValue()){
+                    tmp = AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<uint8_t>(literal.value_));
+                }else if(literal.IsShortValue()){
+                    tmp = AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<uint16_t>(literal.value_));
+                }else if(literal.IsIntegerValue()){
+                    tmp = AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<uint32_t>(literal.value_));
+                }else if(literal.IsLongValue()){
+                    tmp = AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<uint64_t>(literal.value_));
+                }else if(literal.IsFloatValue()){
+                    tmp = AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<float>(literal.value_));
+                }else if(literal.IsDoubleValue()){
+                    tmp = AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<double>(literal.value_));
+                }else if(literal.IsStringValue()){
+                    es2panda::util::StringView literal_strview(std::get<std::string>(literal.value_));
+                    tmp = AllocNode<es2panda::ir::StringLiteral>(enc, literal_strview);
+                }else{
+                    enc->handleError("unsupport literal type error");
+                }
+
+                if(count++ % 2==0){
+                    key = tmp;    
+                }else{
+                    value = tmp;
+                    properties.push_back(  AllocNode<es2panda::ir::Property>(enc, key, value) );
+
+                }
+
+                // std::visit([](const auto& value) {
+                //     std::cout << "The value is: " << value << std::endl;
+                // }, literal.value_);
             }
+
+
+            auto objectexpression = AllocNode<es2panda::ir::ObjectExpression>(enc, 
+                                                                                es2panda::ir::AstNodeType::OBJECT_EXPRESSION,
+                                                                                std::move(properties),
+                                                                                false
+                                                                            );
+
+            ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->programast_->Allocator()->Adapter());
+
+
+            auto dst_reg = inst->GetDstReg();
+            panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, dst_reg);
+
+
+            auto *declarator = AllocNode<es2panda::ir::VariableDeclarator>(enc,
+                                                                            dst_reg_identifier, 
+                                                                            objectexpression);
+                                                                            
+            declarators.push_back(declarator);
+            auto variadeclaration = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
+                                                                                es2panda::ir::VariableDeclaration::VariableDeclarationKind::LET,
+                                                                                std::move(declarators),
+                                                                                true
+                                                                            );
+
+            block->AddStatementAtPos(statements.size(), variadeclaration);
+
             break;
         }
+
         case compiler::RuntimeInterface::IntrinsicId::NEWOBJRANGE_IMM8_IMM8_V8:{
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
@@ -1381,20 +1433,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         }
 
        
-       case compiler::RuntimeInterface::IntrinsicId::CREATEOBJECTWITHBUFFER_IMM16_ID16:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto bc_id0 = enc->ir_interface_->GetLiteralArrayByOffset(ir_id0);
-            enc->result_.emplace_back(pandasm::Create_CREATEOBJECTWITHBUFFER(imm0, bc_id0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
        case compiler::RuntimeInterface::IntrinsicId::NEWOBJRANGE_IMM16_IMM8_V8:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)

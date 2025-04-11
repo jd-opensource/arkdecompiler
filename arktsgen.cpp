@@ -144,10 +144,16 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
             auto objexpression = static_cast<const panda::es2panda::ir::ObjectExpression*>(node);
             
             writeLeftBrace();
+            size_t properties_size = objexpression->Properties().size();
+            int count = 1;
             for (auto *it : objexpression->Properties()) {
                 switch (it->Type()) {
                     case AstNodeType::PROPERTY: {
                         this->EmitExpression(it);
+                        
+                        if(count++ < properties_size)
+                            this->writeComma();
+                        
                         break;
                     }
                     default: {
@@ -185,8 +191,9 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
             auto propertyexpression = static_cast<const panda::es2panda::ir::Property*>(node);
 
             this->EmitExpression(propertyexpression->Key());
-            this->writeComma();
+            this->writeColon();
             this->EmitExpression(propertyexpression->Value());
+            
 
             break;
         }

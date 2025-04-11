@@ -25,5 +25,6 @@
 
 //var obj3 = [];  //CREATEARRAYWITHBUFFER_IMM8_ID16
 
-var obj4 = [1, 2, 3];
+//var obj4 = [1, 2, 3];
 
+var obj5 = {"a":1, "b":2, "c":3};

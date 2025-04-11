@@ -43,7 +43,7 @@
 #include "../ets_frontend/es2panda/ir/expressions/literals/taggedLiteral.h"
 
 
-
+#include "../ets_frontend/es2panda/ir/base/property.h"
 
 
 
