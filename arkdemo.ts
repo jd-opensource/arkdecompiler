@@ -1,5 +1,9 @@
 v254 = undefined
 obj3 = v254
+v254 = undefined
+obj4 = v254
 v254 = []
 obj3 = v254
+v254 = [1 , 2 , 3]
+obj4 = v254
 v254 = undefined

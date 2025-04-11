@@ -21,6 +21,9 @@
  * "length" in new String(str)
 */
 
-//var obj1 = 1, obj2 = {};
+//var obj1 = 1, obj2 = {};  // CREATEEMPTYARRAY_IMM8
 
-var obj3 = [];
+//var obj3 = [];  //CREATEARRAYWITHBUFFER_IMM8_ID16
+
+var obj4 = [1, 2, 3];
+

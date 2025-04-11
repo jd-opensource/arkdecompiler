@@ -260,6 +260,7 @@ private:
     void writeRightBracket();
     void writeColon();
     void writeEqual();
+    void writeComma();
 
     void EmitExpression(const ir::AstNode *node);
     void EmitExpressionStatement(const ir::AstNode *node);

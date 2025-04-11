@@ -198,6 +198,36 @@ public:
         success_ = false;
     }
 
+    uint32_t parseHexFromKey(const std::string& key) {
+        std::istringstream iss(key);
+        std::string temp;
+        std::string hexString;
+
+        while (iss >> temp) {
+            if (temp.find("0x") == 0 || temp.find("0X") == 0) {
+                hexString = temp;
+                break;
+            }
+        }
+
+        uint32_t hexNumber = 0;
+        if (!hexString.empty()) {
+            std::istringstream(hexString) >> std::hex >> hexNumber;
+        }
+
+        return hexNumber;
+    }
+
+    std::optional<panda::pandasm::LiteralArray> findLiteralArrayByOffset(uint32_t offset) {
+        for (const auto& [key, value] : this->program_->literalarray_table) {
+            if (parseHexFromKey(key) == offset) {
+                return value;
+            }
+        }
+        return std::nullopt;
+    }
+
+
     static panda::es2panda::ir::Identifier* get_identifier(AstGen * enc, compiler::Register reg){
         panda::es2panda::ir::Identifier* identifier;
         if (enc->identifers.find(reg)  != enc->identifers.end()) {
@@ -229,6 +259,13 @@ public:
         }
         return identifier;
     }
+
+    void handleError(const std::string& errorMessage) {
+        std::cerr << "Error: " << errorMessage << std::endl;
+        std::exit(EXIT_FAILURE); 
+    }
+
+
 #include "compiler/optimizer/ir/visitor.inc"
 
 private:

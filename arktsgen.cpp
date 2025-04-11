@@ -58,6 +58,9 @@ void ArkTSGen::writeEqual(){
     ss_ << " = ";
 }
 
+void ArkTSGen::writeComma(){
+    ss_ << " , ";
+}
 
 void ArkTSGen::EmitExpression(const ir::AstNode *node){
     switch(node->Type()){ 
@@ -164,8 +167,13 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
             auto arrayexpression = static_cast<const panda::es2panda::ir::ArrayExpression*>(node);
             
             writeLeftBracket();
+            int count = 0;
+            int array_size = arrayexpression->Elements().size();
             for (auto *it : arrayexpression->Elements()) {
                 this->EmitExpression(it);
+                if(++count < array_size ){
+                    this->writeComma();
+                }
             }
             writeRightBracket();
 
@@ -177,7 +185,7 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
             auto propertyexpression = static_cast<const panda::es2panda::ir::Property*>(node);
 
             this->EmitExpression(propertyexpression->Key());
-            this->writeColon();
+            this->writeComma();
             this->EmitExpression(propertyexpression->Value());
 
             break;

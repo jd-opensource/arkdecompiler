@@ -434,10 +434,12 @@ void construct_PandaFileToPandaAsmMaps(panda::disasm::Disassembler& disas, panda
     for (const auto &[offset, name_value] : disas.string_offset_to_name_) {
         maps->strings[offset.GetOffset()] = std::string(name_value);
     }
+
     //////////////////////////////////////////////////////////////////////////
     for (const auto &[name_value, offset] : disas.method_name_to_id_) {
         maps->methods[offset.GetOffset()] = std::string(name_value);
     }
+    
     //////////////////////////////////////////////////////////////////////////
     for (const auto &[name_value, offset] : disas.record_name_to_id_) {
         maps->classes[offset.GetOffset()] = std::string(name_value);
