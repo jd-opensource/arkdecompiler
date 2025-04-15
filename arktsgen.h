@@ -135,6 +135,7 @@ public:
         enum class Constant {
             PROP_NULL,
             EMPTY_ARRAY,
+            PROP_UNDEFINED
         };
 
         using Val =
@@ -266,11 +267,14 @@ private:
     void writeColon();
     void writeEqual();
     void writeComma();
+    void writeDot();
+    void writeKeyWords(std::string keyword);
 
     void EmitExpression(const ir::AstNode *node);
     void EmitExpressionStatement(const ir::AstNode *node);
     void EmitVariableDeclarationStatement(const ir::AstNode *node);
     void EmitVariableDeclaratorStatement(const ir::AstNode *node);
+    void EmitReturnStatement(const ir::AstNode *node);
 
     void Serialize(const ArkTSGen::Property &prop);
     void SerializePropKey(const char *str);

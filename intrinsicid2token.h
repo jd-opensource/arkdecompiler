@@ -128,6 +128,7 @@ panda::es2panda::lexer::TokenType BinIntrinsicIdToToken(panda::compiler::Runtime
             return panda::es2panda::lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL;
 
         default:
+            std::cout << "S6" << std::endl;
             UNREACHABLE();
     }
 }
@@ -147,6 +148,7 @@ panda::es2panda::lexer::TokenType UnaryPrefixIntrinsicIdToToken(panda::compiler:
         case panda::compiler::RuntimeInterface::IntrinsicId::ISIN_IMM8_V8:
             return panda::es2panda::lexer::TokenType::KEYW_IN;
         default:
+            std::cout << "S7" << std::endl;
             UNREACHABLE();
     }
 }
@@ -160,6 +162,7 @@ panda::es2panda::lexer::TokenType IncDecIntrinsicIdToToken(panda::compiler::Runt
         case panda::compiler::RuntimeInterface::IntrinsicId::INC_IMM8:
             return panda::es2panda::lexer::TokenType::PUNCTUATOR_PLUS;
         default:
+            std::cout << "S8" << std::endl;
             UNREACHABLE();
 
     }

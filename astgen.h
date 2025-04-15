@@ -286,6 +286,8 @@ public:
    
     std::string* acc_global_str;
 
+    panda::es2panda::ir::Identifier* thisptr;
+
     es2panda::parser::Program* programast_;
    
    

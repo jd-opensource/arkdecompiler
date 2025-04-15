@@ -140,6 +140,7 @@ void AstGen::EncodeSpillFillData(const compiler::SpillFillData &sf)
                                        << static_cast<int>(sf.SrcType())
                                        << " dst_type: " << static_cast<int>(sf.DstType());
         success_ = false;
+        std::cout << "S2" << std::endl;
         UNREACHABLE();
         return;
     }
@@ -204,6 +205,7 @@ void AstGen::VisitConstant(GraphVisitor *visitor, Inst *inst)
                                                         );
             break;
         default:
+            std::cout << "S3" << std::endl;
             UNREACHABLE();
             LOG(ERROR, BYTECODE_OPTIMIZER) << "VisitConstant with unknown type" << type;
             enc->success_ = false;
@@ -239,6 +241,7 @@ void AstGen::EncodeSta(compiler::Register reg, compiler::DataType::Type type)
             opc = pandasm::Opcode::STA;
             break;
         default:
+            std::cout << "S4" << std::endl;
             UNREACHABLE();
             LOG(ERROR, BYTECODE_OPTIMIZER) << "EncodeSta with unknown type" << type;
             success_ = false;
@@ -385,6 +388,7 @@ void AstGen::IfImmZero(GraphVisitor *v, Inst *inst_base)
             enc->result_.emplace_back(pandasm::Create_JNEZ(label));
             return;
         default:
+            std::cout << "S5" << std::endl;
             UNREACHABLE();
     }
 }
@@ -396,15 +400,33 @@ void AstGen::VisitLoadString(GraphVisitor *v, Inst *inst_base)
     auto enc = static_cast<AstGen *>(v);
     auto inst = inst_base->CastToLoadString();
     /* Do not emit unused code for Str -> CastValueToAnyType chains */
-    if (!HasUserPredicate(inst,
-                          [](Inst const *i) { return i->GetOpcode() != compiler::Opcode::CastValueToAnyType; })) {
-        return;
-    }
+    // if (!HasUserPredicate(inst,
+    //                       [](Inst const *i) { return i->GetOpcode() != compiler::Opcode::CastValueToAnyType; })) {
+    //     return;
+    // }
 
-    enc->result_.emplace_back(pandasm::Create_LDA_STR(enc->ir_interface_->GetStringIdByOffset(inst->GetTypeId())));
-    if (inst->GetDstReg() != compiler::ACC_REG_ID) {
-        enc->result_.emplace_back(pandasm::Create_STA(inst->GetDstReg()));
-    }
+    std::string source_str = enc->ir_interface_->GetStringIdByOffset(inst->GetTypeId()); 
+    std::string* source_str_ptr = new std::string(source_str);
+    panda::es2panda::util::StringView name_view = panda::es2panda::util::StringView(*source_str_ptr);
+    
+    
+    es2panda::util::StringView literal_strview(source_str);
+
+    auto src_expression  = AllocNode<es2panda::ir::StringLiteral>(enc, name_view);
+
+    auto dst_identifier = enc->get_identifier(enc, inst->GetDstReg());
+    auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                dst_identifier,
+                                                                src_expression,
+                                                                es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                            );
+    auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
+                                                                        assignexpression);
+
+    es2panda::ir::BlockStatement* block = enc->programast_->Ast();
+    const auto &statements = block->Statements();
+
+    block->AddStatementAtPos(statements.size(), assignstatement);
     std::cout << "[-] VisitLoadString  >>>>>>>>>>>>>>>>>" << std::endl;
 }
 
@@ -435,64 +457,83 @@ void AstGen::VisitReturn(GraphVisitor *v, Inst *inst_base)
     std::cout << "[-] VisitReturn  >>>>>>>>>>>>>>>>>" << std::endl;
 }
 
-void AstGen::VisitCastValueToAnyType([[maybe_unused]] GraphVisitor *v, [[maybe_unused]] Inst *inst_base)
+void AstGen::VisitCastValueToAnyType([[maybe_unused]] GraphVisitor *visitor, [[maybe_unused]] Inst *inst)
 {
     std::cout << "[+] VisitCastValueToAnyType  >>>>>>>>>>>>>>>>>" << std::endl;
-    auto enc = static_cast<AstGen *>(v);
+    auto enc = static_cast<AstGen *>(visitor);
+    es2panda::ir::BlockStatement* block = enc->programast_->Ast();
+    const auto &statements = block->Statements();
 
-#if defined(ENABLE_BYTECODE_OPT) && defined(PANDA_WITH_ECMASCRIPT)
-    auto cvat = inst_base->CastToCastValueToAnyType();
+    auto cvat = inst->CastToCastValueToAnyType();
+    auto input = cvat->GetInput(0).GetInst()->CastToConstant();
+
+    es2panda::ir::Expression* source;
     switch (cvat->GetAnyType()) {
         case compiler::AnyBaseType::ECMASCRIPT_NULL_TYPE:
-            enc->result_.emplace_back(pandasm::Create_LDNULL());
+            source = enc->constant_null;
             break;
-        case compiler::AnyBaseType::ECMASCRIPT_UNDEFINED_TYPE:
-            if (!HasUserPredicate(cvat,
-                                  [](Inst const *inst) { return inst->GetOpcode() != compiler::Opcode::Return; })) {
-                return;
-            }
-            enc->result_.emplace_back(pandasm::Create_LDUNDEFINED());
+
+        case compiler::AnyBaseType::ECMASCRIPT_UNDEFINED_TYPE: {
+            source = enc->constant_undefined;
             break;
+        }
+
         case compiler::AnyBaseType::ECMASCRIPT_INT_TYPE: {
-            ASSERT(cvat->GetInput(0).GetInst()->IsConst());
-            auto input = cvat->GetInput(0).GetInst()->CastToConstant();
-            enc->result_.emplace_back(pandasm::Create_LDAI(input->GetIntValue()));
+            source = AllocNode<es2panda::ir::NumberLiteral>(enc, 
+                                                                input->CastToConstant()->GetIntValue()
+                                            );
             break;
         }
+
         case compiler::AnyBaseType::ECMASCRIPT_DOUBLE_TYPE: {
-            ASSERT(cvat->GetInput(0).GetInst()->IsConst());
-            auto input = cvat->GetInput(0).GetInst()->CastToConstant();
-            enc->result_.emplace_back(pandasm::Create_FLDAI(input->GetDoubleValue()));
+            source = AllocNode<es2panda::ir::NumberLiteral>(enc, 
+                                                                input->CastToConstant()->GetDoubleValue()
+                                                        );
             break;
         }
+
         case compiler::AnyBaseType::ECMASCRIPT_BOOLEAN_TYPE: {
-            ASSERT(cvat->GetInput(0).GetInst()->IsBoolConst());
-            auto input = cvat->GetInput(0).GetInst()->CastToConstant();
-            if (!HasUserPredicate(cvat, [](Inst const *inst) { return inst->GetOpcode() != compiler::Opcode::If; })) {
-                return;
-            }
             uint64_t val = input->GetInt64Value();
             if (val != 0) {
-                enc->result_.emplace_back(pandasm::Create_LDTRUE());
+                source = enc->constant_true;
             } else {
-                enc->result_.emplace_back(pandasm::Create_LDFALSE());
+                source = enc->constant_false;
             }
             break;
         }
+
         case compiler::AnyBaseType::ECMASCRIPT_STRING_TYPE: {
-            auto input = cvat->GetInput(0).GetInst()->CastToLoadString();
-            enc->result_.emplace_back(
-                pandasm::Create_LDA_STR(enc->ir_interface_->GetStringIdByOffset(input->GetTypeId())));
+            auto ls = cvat->GetInput(0).GetInst()->CastToLoadString();
+            auto dst_reg = ls->GetDstReg();
+            source = enc->get_identifier(enc, dst_reg);
             break;
         }
+
         default:
-            return;
+           // UNREACHABLE();
+            LOG(ERROR, BYTECODE_OPTIMIZER) << "VisitConstant with unknown type" ;
+            enc->success_ = false;
     }
-    DoSta(cvat->GetDstReg(), enc->result_);
-#else
-    LOG(ERROR, BYTECODE_OPTIMIZER) << "Codegen for " << compiler::GetOpcodeString(inst_base->GetOpcode()) << " failed";
-    enc->success_ = false;
-#endif
+
+    auto dst_reg = inst->GetDstReg();
+    panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, dst_reg);
+
+
+    ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->programast_->Allocator()->Adapter());
+    auto *declarator = AllocNode<es2panda::ir::VariableDeclarator>(enc,
+                                                                    dst_reg_identifier, 
+                                                                    source);
+                                                                    
+    declarators.push_back(declarator);
+    
+    auto variadeclaration = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
+                                                                        es2panda::ir::VariableDeclaration::VariableDeclarationKind::VAR,
+                                                                        std::move(declarators),
+                                                                        true
+                                                                    );
+
+    block->AddStatementAtPos(statements.size(), variadeclaration);
+
     std::cout << "[-] VisitCastValueToAnyType  >>>>>>>>>>>>>>>>>" << std::endl;
 }
 

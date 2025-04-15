@@ -29,4 +29,11 @@
 
 //var obj5 = {"a":1, "b":2, "c":3};
 
-clearTimeout();
+//clearTimeout();
+
+//parseInt("42");
+
+//parseInt("1010", 2);
+//parseInt("10", 10, 0);
+
+Math.random();

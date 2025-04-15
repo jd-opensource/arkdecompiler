@@ -70,6 +70,13 @@ void ArkTSGen::writeComma(){
     ss_ << " , ";
 }
 
+void ArkTSGen::writeDot(){
+    ss_ << ".";
+}
+
+void ArkTSGen::writeKeyWords(std::string keyword){
+    ss_ << keyword << " ";
+}
 void ArkTSGen::EmitExpression(const ir::AstNode *node){
     switch(node->Type()){ 
         case AstNodeType::BINARY_EXPRESSION:{
@@ -139,6 +146,13 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
             this->SerializeBoolean(bool_literal->Value());
             break;
         }
+        case AstNodeType::MEMBER_EXPRESSION:{
+            auto member_expression = static_cast<const panda::es2panda::ir::MemberExpression*>(node);
+            this->EmitExpression(member_expression->Object());
+            this->writeDot();
+            this->EmitExpression(member_expression->Property());
+            break;
+        }
 
         case AstNodeType::OBJECT_EXPRESSION:{
             // std::cout << "enter BINARY_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
@@ -153,7 +167,7 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
             
             writeLeftBrace();
             size_t properties_size = objexpression->Properties().size();
-            int count = 1;
+            size_t count = 1;
             for (auto *it : objexpression->Properties()) {
                 switch (it->Type()) {
                     case AstNodeType::PROPERTY: {
@@ -259,6 +273,15 @@ void ArkTSGen::EmitVariableDeclaratorStatement(const ir::AstNode *node){
     this->EmitExpression(vardeclstatement->Init());
 }
 
+// /home/harmonyos/arkcompiler/ets_frontend/ets2panda/lexer/token/token.cpp
+void ArkTSGen::EmitReturnStatement(const ir::AstNode *node){
+    auto returnstatement = static_cast<const panda::es2panda::ir::ReturnStatement*>(node);
+    this->writeKeyWords("return");
+    this->EmitExpression(returnstatement->Argument());
+    this->writeTrailingSemicolon();
+}
+
+
 void ArkTSGen::SerializeNode(const ir::AstNode *node)
 {
     // es2panda/ir/astNodeMapping.h
@@ -280,6 +303,11 @@ void ArkTSGen::SerializeNode(const ir::AstNode *node)
         case AstNodeType::VARIABLE_DECLARATOR:
             std::cout << "enter VARIABLE_DECLARATO >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
             this->EmitVariableDeclaratorStatement(node);
+            break;
+
+        case AstNodeType::RETURN_STATEMENT:
+            std::cout << "enter RETURN STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
+            this->EmitReturnStatement(node);
             break;
         default:
             std::cout << "enter SerializeNode Default  >>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
@@ -424,7 +452,12 @@ void ArkTSGen::SerializeConstant(Property::Constant constant)
             ss_ << "[]";
             break;
         }
+        case Property::Constant::PROP_UNDEFINED: {
+            ss_ << "undefined";
+            break;
+        }
         default: {
+            std::cout << "S1" << std::endl;
             UNREACHABLE();
         }
     }
