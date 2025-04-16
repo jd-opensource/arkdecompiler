@@ -323,6 +323,7 @@ bool DecompileFunction(pandasm::Program *prog, const pandasm::AsmEmitter::PandaF
 
     astprogram->SetAst(tmp);
 
+    std::cout << "************************************11111111111111111111111111111111" << std::endl;
     if (!graph->RunPass<AstGen>(&function, &ir_interface, prog, astprogram)) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Code generation failed!";
 
@@ -330,7 +331,7 @@ bool DecompileFunction(pandasm::Program *prog, const pandasm::AsmEmitter::PandaF
 
         return false;
     }
-    
+    std::cout << "************************************22222222222222222222222222222222" << std::endl;
     std::string res = astprogram->Dump();
     std::cout << res << std::endl;
 

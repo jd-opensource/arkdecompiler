@@ -1,4 +1,4 @@
-c = undefined;
-v0 = 3;
-c = v0 * 9;
+v0 = parseInt;
+v1 = "42";
+v0(v1);
 return undefined;

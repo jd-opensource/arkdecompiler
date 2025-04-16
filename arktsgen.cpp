@@ -157,7 +157,6 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
                 this->writeDot();
                 this->EmitExpression(member_expression->Property());
             }
-
             break;
         }
 

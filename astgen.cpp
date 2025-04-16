@@ -189,7 +189,6 @@ void AstGen::VisitConstant(GraphVisitor *visitor, Inst *inst)
     switch (type) {
         case compiler::DataType::INT64:
         case compiler::DataType::UINT64:
-            std::cout << "64### <<" << inst->CastToConstant()->GetInt64Value() << std::endl;
             number = AllocNode<es2panda::ir::NumberLiteral>(enc, 
                                                             inst->CastToConstant()->GetInt64Value()
                                                         );
@@ -201,7 +200,6 @@ void AstGen::VisitConstant(GraphVisitor *visitor, Inst *inst)
             break;
         case compiler::DataType::INT32:
         case compiler::DataType::UINT32:
-            std::cout << "32### <<" << inst->CastToConstant()->GetInt32Value() << std::endl;
             number = AllocNode<es2panda::ir::NumberLiteral>(enc, 
                                                             inst->CastToConstant()->GetInt32Value()
                                                         );
@@ -419,11 +417,11 @@ void AstGen::VisitLoadString(GraphVisitor *v, Inst *inst_base)
     auto src_expression  = AllocNode<es2panda::ir::StringLiteral>(enc, name_view);
 
     auto dst_reg = inst->GetDstReg();
-    auto dst_identifier = enc->get_identifier(enc, dst_reg);
-
+    
     if(dst_reg == compiler::ACC_REG_ID){
         enc->acc = src_expression;
     }else{
+        auto dst_identifier = enc->get_identifier(enc, dst_reg);
         auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
                                                                     dst_identifier,
                                                                     src_expression,
@@ -532,23 +530,26 @@ void AstGen::VisitCastValueToAnyType([[maybe_unused]] GraphVisitor *visitor, [[m
     }
 
     auto inst_dst_reg = inst->GetDstReg();
-    panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, inst_dst_reg);
+    if(inst_dst_reg == compiler::ACC_REG_ID){
+        enc->acc = source;
+    }else{
+        panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, inst_dst_reg);
 
+        ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->programast_->Allocator()->Adapter());
+        auto *declarator = AllocNode<es2panda::ir::VariableDeclarator>(enc,
+                                                                        dst_reg_identifier, 
+                                                                        source);
+                                                                        
+        declarators.push_back(declarator);
+        
+        auto variadeclaration = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
+                                                                            es2panda::ir::VariableDeclaration::VariableDeclarationKind::VAR,
+                                                                            std::move(declarators),
+                                                                            true
+                                                                        );
 
-    ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->programast_->Allocator()->Adapter());
-    auto *declarator = AllocNode<es2panda::ir::VariableDeclarator>(enc,
-                                                                    dst_reg_identifier, 
-                                                                    source);
-                                                                    
-    declarators.push_back(declarator);
-    
-    auto variadeclaration = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
-                                                                        es2panda::ir::VariableDeclaration::VariableDeclarationKind::VAR,
-                                                                        std::move(declarators),
-                                                                        true
-                                                                    );
-
-    block->AddStatementAtPos(statements.size(), variadeclaration);
+        block->AddStatementAtPos(statements.size(), variadeclaration);
+    }
 
     std::cout << "[-] VisitCastValueToAnyType  >>>>>>>>>>>>>>>>>" << std::endl;
 }
