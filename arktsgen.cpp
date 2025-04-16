@@ -149,8 +149,15 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
         case AstNodeType::MEMBER_EXPRESSION:{
             auto member_expression = static_cast<const panda::es2panda::ir::MemberExpression*>(node);
             this->EmitExpression(member_expression->Object());
-            this->writeDot();
-            this->EmitExpression(member_expression->Property());
+            if(member_expression->IsComputed()){
+                this->writeLeftBracket();
+                this->EmitExpression(member_expression->Property());
+                this->writeRightBracket();
+            }else{
+                this->writeDot();
+                this->EmitExpression(member_expression->Property());
+            }
+
             break;
         }
 

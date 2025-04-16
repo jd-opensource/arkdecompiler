@@ -1,14 +1,14 @@
-// let c;
+let c;
 // c = 1 + 1;
 // let d = true;
 // let e = false;
 // let f = null;
 // let g = undefined;
-// c = 5 * 3;
+c = 3 * 9;
 // let h = ~ 1;
-//let i = 2;
-//i--;
-//i++;
+// let i = 2;
+// i--;
+// i++;
 
 //let j = 3;
 //let h = typeof j;
@@ -36,4 +36,9 @@
 //parseInt("1010", 2);
 //parseInt("10", 10, 0);
 
-Math.random();
+//Math.random();
+//console.log("hello");
+
+
+// var obj6 = {"a":1, "b":2, "c":3};
+// obj6["d"] = 4;

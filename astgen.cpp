@@ -185,23 +185,25 @@ void AstGen::VisitConstant(GraphVisitor *visitor, Inst *inst)
     auto *enc = static_cast<AstGen *>(visitor);
     auto type = inst->GetType();
    
-    es2panda::ir::NumberLiteral* number;
+    es2panda::ir::Expression* number;
     switch (type) {
         case compiler::DataType::INT64:
         case compiler::DataType::UINT64:
+            std::cout << "64### <<" << inst->CastToConstant()->GetInt64Value() << std::endl;
             number = AllocNode<es2panda::ir::NumberLiteral>(enc, 
-                                                                inst->CastToConstant()->GetInt64Value()
+                                                            inst->CastToConstant()->GetInt64Value()
                                                         );
             break;
         case compiler::DataType::FLOAT64:
             number = AllocNode<es2panda::ir::NumberLiteral>(enc, 
-                                                                inst->CastToConstant()->GetDoubleValue()
+                                                            inst->CastToConstant()->GetDoubleValue()
                                                         );
             break;
         case compiler::DataType::INT32:
         case compiler::DataType::UINT32:
+            std::cout << "32### <<" << inst->CastToConstant()->GetInt32Value() << std::endl;
             number = AllocNode<es2panda::ir::NumberLiteral>(enc, 
-                                                                inst->CastToConstant()->GetInt32Value()
+                                                            inst->CastToConstant()->GetInt32Value()
                                                         );
             break;
         default:
@@ -212,24 +214,26 @@ void AstGen::VisitConstant(GraphVisitor *visitor, Inst *inst)
     }
 
 
-
-
     es2panda::ir::BlockStatement* block = enc->programast_->Ast();
     const auto &statements = block->Statements();
 
     auto dst_reg = inst->GetDstReg();
-    panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, dst_reg);
 
-    auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                    dst_reg_identifier,
-                                                                    number,
-                                                                    es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-                                                                );
-    
-    auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
-                                                                        assignexpression);
-    block->AddStatementAtPos(statements.size(), assignstatement);
+    if(dst_reg == compiler::ACC_REG_ID){
+        enc->acc = number;
+    }else{
+        panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, dst_reg);
 
+        auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                        dst_reg_identifier,
+                                                                        number,
+                                                                        es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                    );
+        
+        auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
+                                                                            assignexpression);
+        block->AddStatementAtPos(statements.size(), assignstatement);
+    }
     std::cout << "[-] VisitConstant  >>>>>>>>>>>>>>>>>" << std::endl;
 }
 
@@ -414,19 +418,25 @@ void AstGen::VisitLoadString(GraphVisitor *v, Inst *inst_base)
 
     auto src_expression  = AllocNode<es2panda::ir::StringLiteral>(enc, name_view);
 
-    auto dst_identifier = enc->get_identifier(enc, inst->GetDstReg());
-    auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                dst_identifier,
-                                                                src_expression,
-                                                                es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-                                                            );
-    auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
-                                                                        assignexpression);
+    auto dst_reg = inst->GetDstReg();
+    auto dst_identifier = enc->get_identifier(enc, dst_reg);
 
-    es2panda::ir::BlockStatement* block = enc->programast_->Ast();
-    const auto &statements = block->Statements();
+    if(dst_reg == compiler::ACC_REG_ID){
+        enc->acc = src_expression;
+    }else{
+        auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                    dst_identifier,
+                                                                    src_expression,
+                                                                    es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                );
+        auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
+                                                                            assignexpression);
 
-    block->AddStatementAtPos(statements.size(), assignstatement);
+        es2panda::ir::BlockStatement* block = enc->programast_->Ast();
+        const auto &statements = block->Statements();
+
+        block->AddStatementAtPos(statements.size(), assignstatement);
+    }
     std::cout << "[-] VisitLoadString  >>>>>>>>>>>>>>>>>" << std::endl;
 }
 
@@ -504,8 +514,14 @@ void AstGen::VisitCastValueToAnyType([[maybe_unused]] GraphVisitor *visitor, [[m
 
         case compiler::AnyBaseType::ECMASCRIPT_STRING_TYPE: {
             auto ls = cvat->GetInput(0).GetInst()->CastToLoadString();
-            auto dst_reg = ls->GetDstReg();
-            source = enc->get_identifier(enc, dst_reg);
+            auto ls_dst_reg = ls->GetDstReg();
+
+            if(ls_dst_reg == compiler::ACC_REG_ID){
+                source = enc->acc;
+            }else{
+                source = enc->get_identifier(enc, ls_dst_reg);
+            }
+            
             break;
         }
 
@@ -515,8 +531,8 @@ void AstGen::VisitCastValueToAnyType([[maybe_unused]] GraphVisitor *visitor, [[m
             enc->success_ = false;
     }
 
-    auto dst_reg = inst->GetDstReg();
-    panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, dst_reg);
+    auto inst_dst_reg = inst->GetDstReg();
+    panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, inst_dst_reg);
 
 
     ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->programast_->Allocator()->Adapter());

@@ -284,7 +284,9 @@ public:
     bool success_ {true};
     std::vector<pandasm::Ins> result_;
    
-    std::string* acc_global_str;
+    std::string* acc_global_str = NULL;
+
+    panda::es2panda::ir::Expression* acc = NULL;
 
     panda::es2panda::ir::Identifier* thisptr;
 
