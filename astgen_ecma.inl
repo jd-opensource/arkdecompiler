@@ -1025,6 +1025,46 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
         }
 
+
+       case compiler::RuntimeInterface::IntrinsicId::STOBJBYNAME_IMM16_ID16_V8:
+       case compiler::RuntimeInterface::IntrinsicId::STOBJBYNAME_IMM8_ID16_V8:
+       {
+            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); 
+            ASSERT(inst->HasImms() && inst->GetImms().size() > 1); 
+            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
+            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
+
+            std::string* global_name = new std::string(bc_id0);
+            
+            auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
+                                                        enc->get_identifier(enc, inst->GetSrcReg(0)),
+                                                        enc->get_identifier_byname(enc, global_name),
+                                                        es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                        false, 
+                                                        false);
+
+            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
+            panda::es2panda::ir::Expression* assignexpression;
+
+            if (acc_src == compiler::ACC_REG_ID) {
+                assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                            objattrexpression,
+                                                                            enc->acc,
+                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                        ); 
+            }else{
+                assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                objattrexpression,
+                                                                                enc->get_identifier(enc, acc_src),
+                                                                                es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                            );
+            }
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
+                                                                                assignexpression);
+            block->AddStatementAtPos(statements.size(), assignstatement);
+            break;
+        }
+
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
@@ -1231,25 +1271,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         }
        
 
-       
-       
-
-
-       case compiler::RuntimeInterface::IntrinsicId::STOBJBYNAME_IMM8_ID16_V8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_STOBJBYNAME(imm0, bc_id0, v0));
-            break;
-        }
        case compiler::RuntimeInterface::IntrinsicId::LDSUPERBYNAME_IMM8_ID16:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -1768,21 +1789,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-       case compiler::RuntimeInterface::IntrinsicId::STOBJBYNAME_IMM16_ID16_V8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_STOBJBYNAME(imm0, bc_id0, v0));
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::LDSUPERBYNAME_IMM16_ID16:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);

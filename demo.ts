@@ -12,10 +12,6 @@
 
 // let j = 3;
 // let h = typeof j;
-
-
-
-
 // var obj1 = 1, obj2 = {};  // CREATEEMPTYARRAY_IMM8
 
 // var obj3 = [];  //CREATEARRAYWITHBUFFER_IMM8_ID16
@@ -26,13 +22,13 @@
 
 //clearTimeout();
 
-parseInt("42");
+//parseInt("42");
 
-// parseInt("1010", 2);
-// parseInt("10", 10, 0);
+//parseInt("1010", 2); 
+//parseInt("10", 10, 0);
 
-// Math.random();
-// console.log("hello");
+//Math.random();
+//console.log("hello");
 
 
 // var obj6 = {"a":1, "b":2, "c":3};
@@ -44,3 +40,13 @@ parseInt("42");
 // let a = k instanceof Number;
 
 //"length" in new String(str);
+
+
+var obj6 = {"a":1, "b":2, "c":3};
+obj6.a = 5;
+
+
+
+
+
+
