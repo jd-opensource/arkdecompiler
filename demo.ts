@@ -42,9 +42,12 @@
 //"length" in new String(str);
 
 
-var obj6 = {"a":1, "b":2, "c":3};
-obj6.a = 5;
+//var obj6 = {"a":1, "b":2, "c":3};
+//obj6.a = 5;
 
+//var obj7 = NaN;
+//var obj8 = Infinity;
+var obj9 = BigInt("1234567890123456789012345678901234567890");
 
 
 

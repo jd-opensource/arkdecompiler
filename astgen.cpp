@@ -408,33 +408,34 @@ void AstGen::VisitLoadString(GraphVisitor *v, Inst *inst_base)
     // }
 
     std::string source_str = enc->ir_interface_->GetStringIdByOffset(inst->GetTypeId()); 
-    std::string* source_str_ptr = new std::string(source_str);
-    panda::es2panda::util::StringView name_view = panda::es2panda::util::StringView(*source_str_ptr);
+    panda::es2panda::util::StringView name_view = panda::es2panda::util::StringView(*new std::string(source_str));
     
     
-    es2panda::util::StringView literal_strview(source_str);
+   // es2panda::util::StringView literal_strview(source_str);
 
     auto src_expression  = AllocNode<es2panda::ir::StringLiteral>(enc, name_view);
 
     auto dst_reg = inst->GetDstReg();
     
-    if(dst_reg == compiler::ACC_REG_ID){
-        enc->acc = src_expression;
-    }else{
-        auto dst_identifier = enc->get_identifier(enc, dst_reg);
-        auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                    dst_identifier,
-                                                                    src_expression,
-                                                                    es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-                                                                );
-        auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
-                                                                            assignexpression);
+    enc->reg2expression[dst_reg] = src_expression;
 
-        es2panda::ir::BlockStatement* block = enc->programast_->Ast();
-        const auto &statements = block->Statements();
+    // if(dst_reg == compiler::ACC_REG_ID){
+    //     enc->acc = src_expression;
+    // }else{
+    //     auto dst_identifier = enc->get_identifier(enc, dst_reg);
+    //     auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+    //                                                                 dst_identifier,
+    //                                                                 src_expression,
+    //                                                                 es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+    //                                                             );
+    //     auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
+    //                                                                         assignexpression);
 
-        block->AddStatementAtPos(statements.size(), assignstatement);
-    }
+    //     es2panda::ir::BlockStatement* block = enc->programast_->Ast();
+    //     const auto &statements = block->Statements();
+
+    //     block->AddStatementAtPos(statements.size(), assignstatement);
+    // }
     std::cout << "[-] VisitLoadString  >>>>>>>>>>>>>>>>>" << std::endl;
 }
 
@@ -469,13 +470,13 @@ void AstGen::VisitCastValueToAnyType([[maybe_unused]] GraphVisitor *visitor, [[m
 {
     std::cout << "[+] VisitCastValueToAnyType  >>>>>>>>>>>>>>>>>" << std::endl;
     auto enc = static_cast<AstGen *>(visitor);
-    es2panda::ir::BlockStatement* block = enc->programast_->Ast();
-    const auto &statements = block->Statements();
+    // es2panda::ir::BlockStatement* block = enc->programast_->Ast();
+    // const auto &statements = block->Statements();
 
     auto cvat = inst->CastToCastValueToAnyType();
     auto input = cvat->GetInput(0).GetInst()->CastToConstant();
 
-    es2panda::ir::Expression* source;
+    es2panda::ir::Expression* source = nullptr;
     switch (cvat->GetAnyType()) {
         case compiler::AnyBaseType::ECMASCRIPT_NULL_TYPE:
             source = enc->constant_null;
@@ -514,12 +515,7 @@ void AstGen::VisitCastValueToAnyType([[maybe_unused]] GraphVisitor *visitor, [[m
             auto ls = cvat->GetInput(0).GetInst()->CastToLoadString();
             auto ls_dst_reg = ls->GetDstReg();
 
-            if(ls_dst_reg == compiler::ACC_REG_ID){
-                source = enc->acc;
-            }else{
-                source = enc->get_identifier(enc, ls_dst_reg);
-            }
-            
+            source = *enc->get_expression_by_register(enc, ls_dst_reg);            
             break;
         }
 
@@ -530,26 +526,28 @@ void AstGen::VisitCastValueToAnyType([[maybe_unused]] GraphVisitor *visitor, [[m
     }
 
     auto inst_dst_reg = inst->GetDstReg();
-    if(inst_dst_reg == compiler::ACC_REG_ID){
-        enc->acc = source;
-    }else{
-        panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, inst_dst_reg);
+    enc->reg2expression[inst_dst_reg] = source;
 
-        ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->programast_->Allocator()->Adapter());
-        auto *declarator = AllocNode<es2panda::ir::VariableDeclarator>(enc,
-                                                                        dst_reg_identifier, 
-                                                                        source);
+    // if(inst_dst_reg == compiler::ACC_REG_ID){
+    //     enc->acc = source;
+    // }else{
+    //     panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, inst_dst_reg);
+
+    //     ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->programast_->Allocator()->Adapter());
+    //     auto *declarator = AllocNode<es2panda::ir::VariableDeclarator>(enc,
+    //                                                                     dst_reg_identifier, 
+    //                                                                     source);
                                                                         
-        declarators.push_back(declarator);
+    //     declarators.push_back(declarator);
         
-        auto variadeclaration = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
-                                                                            es2panda::ir::VariableDeclaration::VariableDeclarationKind::VAR,
-                                                                            std::move(declarators),
-                                                                            true
-                                                                        );
+    //     auto variadeclaration = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
+    //                                                                         es2panda::ir::VariableDeclaration::VariableDeclarationKind::VAR,
+    //                                                                         std::move(declarators),
+    //                                                                         true
+    //                                                                     );
 
-        block->AddStatementAtPos(statements.size(), variadeclaration);
-    }
+    //     block->AddStatementAtPos(statements.size(), variadeclaration);
+    // }
 
     std::cout << "[-] VisitCastValueToAnyType  >>>>>>>>>>>>>>>>>" << std::endl;
 }

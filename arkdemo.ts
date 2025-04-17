@@ -1,5 +1,4 @@
-obj6 = undefined;
-obj6 = {"a" : 1 , "b" : 2 , "c" : 3};
-v0 = obj6;
-v0.a = 5;
+obj9 = undefined;
+BigInt("1234567890123456789012345678901234567890");
+obj9 = BigInt("1234567890123456789012345678901234567890");
 return undefined;

@@ -260,6 +260,23 @@ public:
         return identifier;
     }
 
+    std::optional<panda::es2panda::ir::Expression*> get_expression_by_register(AstGen * enc, compiler::Register key){
+        auto it = enc->reg2expression.find(key);
+        if (it != enc->reg2expression.end()) {
+            return it->second;  
+        }
+        handleError("can't find expression in reg2expression");
+        return std::nullopt;
+    }
+
+    void set_expression_by_register(AstGen * enc, compiler::Register key, panda::es2panda::ir::Expression* value){
+        if(value == nullptr){
+            handleError("can't set null expression in reg2expression");
+        }
+        enc->reg2expression[key] = value;
+    }
+
+
     void handleError(const std::string& errorMessage) {
         std::cerr << "Error: " << errorMessage << std::endl;
         std::exit(EXIT_FAILURE); 
@@ -298,9 +315,11 @@ public:
 
     std::map<compiler::Register, panda::es2panda::ir::Expression*> reg2expression;
 
-    
+
 
     panda::es2panda::ir::Identifier* constant_undefined = AllocNode<panda::es2panda::ir::Identifier>(this, "undefined");
+    panda::es2panda::ir::Identifier* constant_nan = AllocNode<panda::es2panda::ir::Identifier>(this, "NaN");
+    panda::es2panda::ir::Identifier* constant_infinity = AllocNode<panda::es2panda::ir::Identifier>(this, "infinity");
     panda::es2panda::ir::BooleanLiteral* constant_true = AllocNode<panda::es2panda::ir::BooleanLiteral>(this, true);
     panda::es2panda::ir::BooleanLiteral* constant_false = AllocNode<panda::es2panda::ir::BooleanLiteral>(this, false);
     panda::es2panda::ir::NullLiteral* constant_null = AllocNode<panda::es2panda::ir::NullLiteral>(this);
