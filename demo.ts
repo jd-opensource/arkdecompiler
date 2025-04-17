@@ -1,3 +1,8 @@
+/* todo 
+//let a = k instanceof Number;
+//"length" in new String(str);
+*/
+
 // let c;
 // c = 1 + 1;
 // let d = true;
@@ -20,15 +25,15 @@
 
 // var obj5 = {"a":1, "b":2, "c":3};
 
-//clearTimeout();
+// var x1 = clearTimeout();
 
-//parseInt("42");
+// var x2 = parseInt("42");
 
-//parseInt("1010", 2); 
-//parseInt("10", 10, 0);
+// var x3 = parseInt("1010", 2); 
+// var x4 = parseInt("10", 10, 0);
 
-//Math.random();
-//console.log("hello");
+// var x5 = Math.random();
+// var x6 = console.log("hello");
 
 
 // var obj6 = {"a":1, "b":2, "c":3};
@@ -36,18 +41,15 @@
 // obj6["d"] = 4;
 
 
-// let k:any = 42;
-// let a = k instanceof Number;
-
-//"length" in new String(str);
 
 
-//var obj6 = {"a":1, "b":2, "c":3};
-//obj6.a = 5;
 
-//var obj7 = NaN;
-//var obj8 = Infinity;
-var obj9 = BigInt("1234567890123456789012345678901234567890");
+// var obj6 = {"a":1, "b":2, "c":3};
+// obj6.a = 5;
+
+// var obj7 = NaN;
+// var obj8 = Infinity;
+// var obj9 = BigInt("1234567890123456789012345678901234567890");
 
 
 

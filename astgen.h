@@ -305,7 +305,7 @@ public:
 
     panda::es2panda::ir::Expression* acc = NULL;
 
-    panda::es2panda::ir::Identifier* thisptr= NULL;
+    panda::es2panda::ir::Expression* thisptr= NULL;
 
     es2panda::parser::Program* programast_;
    

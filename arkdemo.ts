@@ -1,4 +1,4 @@
-obj9 = undefined;
-BigInt("1234567890123456789012345678901234567890");
-obj9 = BigInt("1234567890123456789012345678901234567890");
+i = 2;
+i = Number(i) - 1;
+i = Number(i) + 1;
 return undefined;
