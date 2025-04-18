@@ -429,7 +429,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             std::string* name_ptr= new std::string(bc_id0);
 
-            panda::es2panda::ir::Expression* attr_expression = enc->get_identifier_byname(enc, name_ptr);;
+            panda::es2panda::ir::Expression* attr_expression = enc->get_identifier_byname(enc, name_ptr);
 
             auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
                                                         obj_expression,
@@ -741,6 +741,11 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+
+
 
        case compiler::RuntimeInterface::IntrinsicId::CALLTHISRANGE_IMM8_IMM8_V8:
        {
@@ -885,37 +890,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::LDOBJBYINDEX_IMM8_IMM16:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-            enc->result_.emplace_back(pandasm::Create_LDOBJBYINDEX(imm0, imm1));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::STOBJBYINDEX_IMM8_V8_IMM16:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-            enc->result_.emplace_back(pandasm::Create_STOBJBYINDEX(imm0, v0, imm1));
-            break;
-        }
+
+
        case compiler::RuntimeInterface::IntrinsicId::LDLEXVAR_IMM4_IMM4:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -1335,7 +1311,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-
+ 
        
        case compiler::RuntimeInterface::IntrinsicId::NEWOBJRANGE_IMM16_IMM8_V8:
        {
@@ -1370,37 +1346,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::LDOBJBYINDEX_IMM16_IMM16:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-            enc->result_.emplace_back(pandasm::Create_LDOBJBYINDEX(imm0, imm1));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::STOBJBYINDEX_IMM16_V8_IMM16:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-            enc->result_.emplace_back(pandasm::Create_STOBJBYINDEX(imm0, v0, imm1));
-            break;
-        }
+
+
        case compiler::RuntimeInterface::IntrinsicId::LDLEXVAR_IMM8_IMM8:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -2218,15 +2165,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_NOTIFYCONCURRENTRESULT());
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_LDLEXENV_PREF_NONE:
-       {
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_LDLEXENV());
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::WIDE_CREATEOBJECTWITHEXCLUDEDKEYS_PREF_IMM16_V8_V8:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -2354,17 +2293,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_CREATEPRIVATEPROPERTY(imm0, bc_id0));
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_CREATEOBJECTWITHBUFFER_PREF_IMM16:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_CREATEOBJECTWITHBUFFER(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::WIDE_CALLRANGE_PREF_IMM16_V8:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -2438,20 +2367,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_CALLINIT(imm0, v0));
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_TONUMERIC_PREF_V8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_TONUMERIC(v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::WIDE_SUPERCALLTHISRANGE_PREF_IMM16_V8:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -2491,16 +2407,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_NEG_PREF_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_NEG(v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::WIDE_SUPERCALLARROWRANGE_PREF_IMM16_V8:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -2539,31 +2446,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_NOT_PREF_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_NOT(v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::WIDE_LDOBJBYINDEX_PREF_IMM32:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_WIDE_LDOBJBYINDEX(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
+
        case compiler::RuntimeInterface::IntrinsicId::THROW_IFSUPERNOTCORRECTCALL_PREF_IMM16:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -2586,28 +2470,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_INC_PREF_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_INC(v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::WIDE_STOBJBYINDEX_PREF_V8_IMM32:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-            auto v0 = inst->GetSrcReg(0);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_WIDE_STOBJBYINDEX(v0, imm0));
-            break;
-        }
+
+
        case compiler::RuntimeInterface::IntrinsicId::THROW_UNDEFINEDIFHOLEWITHNAME_PREF_ID16:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -2631,16 +2495,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_DEC_PREF_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_DEC(v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::WIDE_STOWNBYINDEX_PREF_V8_IMM32:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -2660,16 +2515,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_NEWSENDABLEENV(imm0));
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_CALLARG0_PREF_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_CALLARG0(v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::WIDE_COPYRESTARGS_PREF_IMM16:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -2688,17 +2534,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_WIDENEWSENDABLEENV(imm0));
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_CALLARG1_PREF_V8_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            auto v1 = inst->GetSrcReg(1);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_CALLARG1(v0, v1));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::WIDE_LDLEXVAR_PREF_IMM16_IMM16:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -2725,18 +2561,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_STSENDABLEVAR(imm0, imm1));
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_CALLARGS2_PREF_V8_V8_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            auto v1 = inst->GetSrcReg(1);
-            auto v2 = inst->GetSrcReg(2);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_CALLARGS2(v0, v1, v2));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::WIDE_STLEXVAR_PREF_IMM16_IMM16:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -2763,19 +2588,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_STSENDABLEVAR(imm0, imm1));
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_CALLARGS3_PREF_V8_V8_V8_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            auto v1 = inst->GetSrcReg(1);
-            auto v2 = inst->GetSrcReg(2);
-            auto v3 = inst->GetSrcReg(3);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_CALLARGS3(v0, v1, v2, v3));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::WIDE_GETMODULENAMESPACE_PREF_IMM16:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -2800,18 +2613,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_WIDESTSENDABLEVAR(imm0, imm1));
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_CALLRANGE_PREF_IMM16_V8:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_CALLRANGE(imm0, v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::WIDE_STMODULEVAR_PREF_IMM16:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -2836,18 +2638,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_CALLSPREAD_PREF_V8_V8_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            auto v1 = inst->GetSrcReg(1);
-            auto v2 = inst->GetSrcReg(2);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_CALLSPREAD(v0, v1, v2));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::WIDE_LDLOCALMODULEVAR_PREF_IMM16:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -2872,18 +2663,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_CALLTHISRANGE_PREF_IMM16_V8:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_CALLTHISRANGE(imm0, v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::WIDE_LDEXTERNALMODULEVAR_PREF_IMM16:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -2908,24 +2688,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_DEFINECLASSWITHBUFFER_PREF_ID16_IMM16_IMM16_V8_V8:
-       {
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto bc_id0 = enc->ir_interface_->GetMethodIdByOffset(ir_id0);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 2); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm2 = static_cast<uint32_t>(inst->GetImms()[2]);
-            auto v0 = inst->GetSrcReg(0);
-            auto v1 = inst->GetSrcReg(1);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_DEFINECLASSWITHBUFFER(bc_id0, imm1, imm2, v0, v1));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::WIDE_LDPATCHVAR_PREF_IMM16:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -2952,16 +2715,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_RESUMEGENERATOR_PREF_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_RESUMEGENERATOR(v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::WIDE_STPATCHVAR_PREF_IMM16:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -2988,16 +2742,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_GETRESUMEMODE_PREF_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_GETRESUMEMODE(v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_LDLAZYMODULEVAR_PREF_IMM8:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -3009,20 +2754,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_GETTEMPLATEOBJECT_PREF_V8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_GETTEMPLATEOBJECT(v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_WIDELDLAZYMODULEVAR_PREF_IMM16:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -3034,17 +2766,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_DELOBJPROP_PREF_V8_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            auto v1 = inst->GetSrcReg(1);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_DELOBJPROP(v0, v1));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_LDLAZYSENDABLEMODULEVAR_PREF_IMM8:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -3056,17 +2778,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_SUSPENDGENERATOR_PREF_V8_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            auto v1 = inst->GetSrcReg(1);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_SUSPENDGENERATOR(v0, v1));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_WIDELDLAZYSENDABLEMODULEVAR_PREF_IMM16:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -3078,17 +2790,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_ASYNCFUNCTIONAWAITUNCAUGHT_PREF_V8_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            auto v1 = inst->GetSrcReg(1);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_ASYNCFUNCTIONAWAITUNCAUGHT(v0, v1));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_SUPERCALLFORWARDALLARGS_PREF_V8:
        {
             auto v0 = inst->GetSrcReg(0);
@@ -3099,235 +2801,74 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_COPYDATAPROPERTIES_PREF_V8_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            auto v1 = inst->GetSrcReg(1);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_COPYDATAPROPERTIES(v0, v1));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
+
+
+        //////////////////////////////////////////////////////////////////////////////////////
+        // hard trigger to be tested
+        case compiler::RuntimeInterface::IntrinsicId::LDOBJBYINDEX_IMM8_IMM16:
+        case compiler::RuntimeInterface::IntrinsicId::LDOBJBYINDEX_IMM16_IMM16:
+        {
+            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
+            panda::es2panda::ir::Expression* obj_expression = *enc->get_expression_by_register(enc, acc_src);;;
+            
+            uint32_t imm;
+
+            if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::WIDE_LDOBJBYINDEX_PREF_IMM32){
+                imm = static_cast<uint32_t>(inst->GetImms()[0]);
+            }else{
+                imm = static_cast<uint32_t>(inst->GetImms()[1]);
             }
+
+            panda::es2panda::ir::Expression* attr_expression = enc->get_literal_bynum(enc, imm);
+
+            auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
+                                                        obj_expression,
+                                                        attr_expression, 
+                                                        es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                        true, 
+                                                        false);
+
+            auto dst_reg = inst->GetDstReg();
+            enc->set_expression_by_register(enc, dst_reg, objattrexpression);
             break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_SETOBJECTWITHPROTO_PREF_V8_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            auto v1 = inst->GetSrcReg(1);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_SETOBJECTWITHPROTO(v0, v1));
-            break;
+
         }
 
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_LDSUPERBYVALUE_PREF_V8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::STOBJBYINDEX_IMM8_V8_IMM16:
+       case compiler::RuntimeInterface::IntrinsicId::STOBJBYINDEX_IMM16_V8_IMM16:
+       case compiler::RuntimeInterface::IntrinsicId::WIDE_STOBJBYINDEX_PREF_V8_IMM32:
        {
-            auto v0 = inst->GetSrcReg(0);
-            auto v1 = inst->GetSrcReg(1);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_LDSUPERBYVALUE(v0, v1));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_LDOBJBYINDEX_PREF_V8_IMM32:
-       {
-            auto v0 = inst->GetSrcReg(0);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_LDOBJBYINDEX(v0, imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_ASYNCFUNCTIONRESOLVE_PREF_V8_V8_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            auto v1 = inst->GetSrcReg(1);
-            auto v2 = inst->GetSrcReg(2);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_ASYNCFUNCTIONRESOLVE(v0, v1, v2));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_ASYNCFUNCTIONREJECT_PREF_V8_V8_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            auto v1 = inst->GetSrcReg(1);
-            auto v2 = inst->GetSrcReg(2);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_ASYNCFUNCTIONREJECT(v0, v1, v2));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_STLEXVAR_PREF_IMM4_IMM4_V8:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_STLEXVAR(imm0, imm1, v0));
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_STLEXVAR_PREF_IMM8_IMM8_V8:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_STLEXVAR(imm0, imm1, v0));
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_STLEXVAR_PREF_IMM16_IMM16_V8:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_STLEXVAR(imm0, imm1, v0));
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_GETMODULENAMESPACE_PREF_ID32:
-       {
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_GETMODULENAMESPACE(bc_id0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_STMODULEVAR_PREF_ID32:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_STMODULEVAR(bc_id0));
-            break;
-        }
+            uint32_t imm;
 
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_LDSUPERBYNAME_PREF_ID32_V8:
-       {
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_LDSUPERBYNAME(bc_id0, v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
+            if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::WIDE_STOBJBYINDEX_PREF_V8_IMM32){
+                imm = static_cast<uint32_t>(inst->GetImms()[0]);
+            }else{
+                imm = static_cast<uint32_t>(inst->GetImms()[1]);
             }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_LDMODULEVAR_PREF_ID32_IMM8:
-       {
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_LDMODULEVAR(bc_id0, imm1));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_STCONSTTOGLOBALRECORD_PREF_ID32:
-       {
+
+
+            auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
+                                                        *enc->get_expression_by_register(enc, inst->GetSrcReg(0)),
+                                                        enc->get_literal_bynum(enc, imm), 
+                                                        es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                        true, 
+                                                        false);
+
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_STCONSTTOGLOBALRECORD(bc_id0));
-            break;
+            
+            panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                            objattrexpression,
+                                                                            *enc->get_expression_by_register(enc, acc_src),
+                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                        ); 
+            
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
+                                                                                assignexpression);
+            block->AddStatementAtPos(statements.size(), assignstatement);
+            break;        
+        
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_STLETTOGLOBALRECORD_PREF_ID32:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_STLETTOGLOBALRECORD(bc_id0));
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_STCLASSTOGLOBALRECORD_PREF_ID32:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_STCLASSTOGLOBALRECORD(bc_id0));
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_LDHOMEOBJECT_PREF_NONE:
-       {
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_LDHOMEOBJECT());
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_CREATEOBJECTHAVINGMETHOD_PREF_IMM16:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_CREATEOBJECTHAVINGMETHOD(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_DYNAMICIMPORT_PREF_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_DYNAMICIMPORT(v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::DEPRECATED_ASYNCGENERATORREJECT_PREF_V8_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            auto v1 = inst->GetSrcReg(1);
-            enc->result_.emplace_back(pandasm::Create_DEPRECATED_ASYNCGENERATORREJECT(v0, v1));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+       
         default:
             std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
             enc->success_ = false;

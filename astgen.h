@@ -246,6 +246,17 @@ public:
     }
 
 
+    static panda::es2panda::ir::NumberLiteral* get_literal_bynum(AstGen * enc, uint32_t index){
+        panda::es2panda::ir::NumberLiteral* literal;
+        if (enc->num2literals.find(index)  != enc->num2literals.end()) {
+            literal = enc->num2literals[index];
+        } else {
+            literal = AllocNode<panda::es2panda::ir::NumberLiteral>(enc, index);
+            enc->num2literals[index] = literal;
+        }
+        return literal;
+    }
+
     static panda::es2panda::ir::Identifier* get_identifier_byname(AstGen * enc, std::string* raw_name){
         panda::es2panda::ir::Identifier* identifier;
         if (enc->str2identifers.find(*raw_name)  != enc->str2identifers.end()) {
@@ -311,7 +322,12 @@ public:
    
    
     std::map<compiler::Register, panda::es2panda::ir::Identifier*> identifers;
+
+
     std::map<std::string, panda::es2panda::ir::Identifier*> str2identifers;
+    std::map<uint32_t, panda::es2panda::ir::NumberLiteral*> num2literals;
+
+
 
     std::map<compiler::Register, panda::es2panda::ir::Expression*> reg2expression;
 

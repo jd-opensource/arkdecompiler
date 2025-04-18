@@ -41,18 +41,17 @@
 // obj6["d"] = 4;
 
 
-var obj7 = {"a":1, "b":2, "c":3};
-var obj8 = "a" in obj7;
+// var obj7 = {"a":1, "b":2, "c":3};
+// var obj8 = "a" in obj7;
 
 // obj7.a = 5;
-
-
 
 // var obj9 = NaN;
 // var obj10 = Infinity;
 // var obj11 = BigInt("1234567890123456789012345678901234567890");
 
-
+var obj12 = "abcdef";
+var obj13 = obj12[0];
 
 
 
