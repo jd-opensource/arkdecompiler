@@ -86,6 +86,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
+       case compiler::RuntimeInterface::IntrinsicId::INSTANCEOF_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::ISIN_IMM8_V8:
        case compiler::RuntimeInterface::IntrinsicId::ADD2_IMM8_V8:
        case compiler::RuntimeInterface::IntrinsicId::SUB2_IMM8_V8:
        case compiler::RuntimeInterface::IntrinsicId::MUL2_IMM8_V8:
@@ -169,8 +171,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
         }
 
-       case compiler::RuntimeInterface::IntrinsicId::INSTANCEOF_IMM8_V8:
-       case compiler::RuntimeInterface::IntrinsicId::ISIN_IMM8_V8:
        case compiler::RuntimeInterface::IntrinsicId::NOT_IMM8:
        case compiler::RuntimeInterface::IntrinsicId::NEG_IMM8:
        case compiler::RuntimeInterface::IntrinsicId::TYPEOF_IMM8:

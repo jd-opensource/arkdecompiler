@@ -1,8 +1,3 @@
-/* todo 
-//let a = k instanceof Number;
-//"length" in new String(str);
-*/
-
 // let c;
 // c = 1 + 1;
 // let d = true;
@@ -17,6 +12,11 @@
 
 // let j = 3;
 // let h = typeof j;
+
+// var str = "Hello, World!";
+// var b = str instanceof Number;
+
+
 // var obj1 = 1, obj2 = {};  // CREATEEMPTYARRAY_IMM8
 
 // var obj3 = [];  //CREATEARRAYWITHBUFFER_IMM8_ID16
@@ -41,15 +41,16 @@
 // obj6["d"] = 4;
 
 
+var obj7 = {"a":1, "b":2, "c":3};
+var obj8 = "a" in obj7;
+
+// obj7.a = 5;
 
 
 
-// var obj6 = {"a":1, "b":2, "c":3};
-// obj6.a = 5;
-
-// var obj7 = NaN;
-// var obj8 = Infinity;
-// var obj9 = BigInt("1234567890123456789012345678901234567890");
+// var obj9 = NaN;
+// var obj10 = Infinity;
+// var obj11 = BigInt("1234567890123456789012345678901234567890");
 
 
 

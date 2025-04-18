@@ -70,6 +70,9 @@
 
 #include "../ets_frontend/es2panda/parser/parserImpl.h"
 
+#include "intrinsicid2name.h"
+
+
 panda::es2panda::lexer::TokenType BinIntrinsicIdToToken(panda::compiler::RuntimeInterface::IntrinsicId id){
 
     switch (id) {
@@ -127,6 +130,12 @@ panda::es2panda::lexer::TokenType BinIntrinsicIdToToken(panda::compiler::Runtime
         case panda::compiler::RuntimeInterface::IntrinsicId::STRICTNOTEQ_IMM8_V8:
             return panda::es2panda::lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL;
 
+
+        case panda::compiler::RuntimeInterface::IntrinsicId::INSTANCEOF_IMM8_V8: 
+            return panda::es2panda::lexer::TokenType::KEYW_INSTANCEOF;
+        case panda::compiler::RuntimeInterface::IntrinsicId::ISIN_IMM8_V8:
+            return panda::es2panda::lexer::TokenType::KEYW_IN;
+            
         default:
             std::cout << "S6" << std::endl;
             UNREACHABLE();
@@ -143,12 +152,8 @@ panda::es2panda::lexer::TokenType UnaryPrefixIntrinsicIdToToken(panda::compiler:
             return panda::es2panda::lexer::TokenType::PUNCTUATOR_TILDE;
         case panda::compiler::RuntimeInterface::IntrinsicId::TYPEOF_IMM8:
             return panda::es2panda::lexer::TokenType::KEYW_TYPEOF;
-        case panda::compiler::RuntimeInterface::IntrinsicId::TONUMBER_IMM8:
-            return panda::es2panda::lexer::TokenType::KEYW_INSTANCEOF;
-        case panda::compiler::RuntimeInterface::IntrinsicId::ISIN_IMM8_V8:
-            return panda::es2panda::lexer::TokenType::KEYW_IN;
         default:
-            std::cout << "S7" << std::endl;
+            std::cout << "S7: " << GetIntrinsicOpcodeName(id) << std::endl;
             UNREACHABLE();
     }
 }
