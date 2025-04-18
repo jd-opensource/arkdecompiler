@@ -1,4 +1,6 @@
-// let c;
+const pi: number = 3.14159;
+
+//let c;
 // c = 1 + 1;
 // let d = true;
 // let e = false;
@@ -50,8 +52,7 @@
 // var obj10 = Infinity;
 // var obj11 = BigInt("1234567890123456789012345678901234567890");
 
-var obj12 = "abcdef";
-var obj13 = obj12[0];
+
 
 
 
