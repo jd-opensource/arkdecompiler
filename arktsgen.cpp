@@ -263,6 +263,15 @@ void ArkTSGen::EmitVariableDeclarationStatement(const ir::AstNode *node){
     
     int size = vardeclstatement->Declarators().size();
     int count = 1;
+    
+    if(vardeclstatement->Kind() == es2panda::ir::VariableDeclaration::VariableDeclarationKind::CONST){
+        this->writeKeyWords("const");
+    }else if(vardeclstatement->Kind() == es2panda::ir::VariableDeclaration::VariableDeclarationKind::LET){
+        this->writeKeyWords("let");
+    }else {
+        this->writeKeyWords("var");
+    }
+
     for (const auto *it : vardeclstatement->Declarators()) {
         this->SerializeNode(it);
         if(++count < size ){

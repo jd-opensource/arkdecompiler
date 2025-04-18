@@ -1,2 +1,2 @@
-pi = 3.14159;
+let pi = 3.14159;
 return undefined;

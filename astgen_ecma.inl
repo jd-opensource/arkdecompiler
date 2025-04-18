@@ -476,21 +476,29 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             
             auto dst_identifier = enc->get_identifier_byname(enc, global_name);
 
-            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                            dst_identifier,
-                                                                            src_expression,
-                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-                                                                        );
-                                            
-            // if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::STTOGLOBALRECORD_IMM16_ID16){
-            //     imm = static_cast<uint32_t>(inst->GetImms()[0]);
-            // }else{
-            //     imm = static_cast<uint32_t>(inst->GetImms()[1]);
-            // }
+            ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->programast_->Allocator()->Adapter());
+            auto *declarator = AllocNode<es2panda::ir::VariableDeclarator>(enc,
+                                                                                dst_identifier, 
+                                                                                src_expression);
+            declarators.push_back(declarator);
 
-            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
-                                                                                assignexpression);
-            block->AddStatementAtPos(statements.size(), assignstatement);
+            if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::STTOGLOBALRECORD_IMM16_ID16){
+                auto variadeclaration = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
+                                                                                    es2panda::ir::VariableDeclaration::VariableDeclarationKind::CONST,
+                                                                                    std::move(declarators),
+                                                                                    true
+                                                                                );
+                block->AddStatementAtPos(statements.size(), variadeclaration);
+            }else{
+                auto variadeclaration = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
+                                                                                    es2panda::ir::VariableDeclaration::VariableDeclarationKind::LET,
+                                                                                    std::move(declarators),
+                                                                                    true
+                                                                                );
+                block->AddStatementAtPos(statements.size(), variadeclaration);
+            }
+
+            
 
             break;
         }
