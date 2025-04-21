@@ -1,6 +1,8 @@
-//const pi: number = 3.14159;
+// CONST
+// const pi: number = 3.14159;
 
 //let c;
+// let c;
 // c = 1 + 1;
 // let d = true;
 // let e = false;
@@ -55,7 +57,14 @@
 
 //const regex = new RegExp('pattern', 'flags');
 
-const obj1 = { a: 1, b: 2, c: 3 };
-const obj2 = { b: 4, d: 5 };
 
-var merged = { e: 6, ...obj1, ...obj2 };
+// COPYDATAPROPERTIES
+// const obj1 = { a: 1, b: 2, c: 3 };
+// const obj2 = { b: 4, d: 5 };
+// var merged = { e: 6, ...obj1, ...obj2 };
+
+
+
+// NEWOBJAPPLY
+const numbers = [5, 6, 2, 3, 7];
+const max = Math.max.apply(null, numbers);

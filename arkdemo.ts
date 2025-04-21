@@ -1,5 +1,3 @@
-merged = undefined;
-let obj1 = {"a" : 1 , "b" : 2 , "c" : 3};
-let obj2 = {"b" : 4 , "d" : 5};
-merged = {"e" : 6 , ...obj1 , ...obj2};
+let numbers = [5 , 6 , 2 , 3 , 7];
+let max = Math.max.apply(null , numbers);
 return undefined;
