@@ -33,7 +33,7 @@
 
 
 #include "../ets_frontend/es2panda/ir/base/property.h"
-
+#include "../ets_frontend/es2panda/ir/base/spreadElement.h"
 
 
 #include "../ets_frontend/es2panda/ir/expressions/literals/bigIntLiteral.h"
@@ -270,6 +270,7 @@ private:
     void writeEqual();
     void writeComma();
     void writeDot();
+    void writeSpreadDot();
     void writeKeyWords(std::string keyword);
 
     void EmitExpression(const ir::AstNode *node);

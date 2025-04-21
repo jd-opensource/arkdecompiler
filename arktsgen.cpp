@@ -77,6 +77,11 @@ void ArkTSGen::writeDot(){
 void ArkTSGen::writeKeyWords(std::string keyword){
     ss_ << keyword << " ";
 }
+
+void ArkTSGen::writeSpreadDot(){
+    ss_ << "...";
+}
+
 void ArkTSGen::EmitExpression(const ir::AstNode *node){
     switch(node->Type()){ 
         case AstNodeType::BINARY_EXPRESSION:{
@@ -184,6 +189,14 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
                         
                         break;
                     }
+                    case AstNodeType::SPREAD_ELEMENT:{
+                        this->EmitExpression(it);
+                        
+                        if(count++ < properties_size)
+                            this->writeComma();
+                        
+                        break;
+                    }
                     default: {
                         std::cout << "unsupport AstNodeType >>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
                         break;
@@ -267,7 +280,12 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
             break;
         }
 
-
+        case AstNodeType::SPREAD_ELEMENT:{
+            this->writeSpreadDot();
+            auto spreadarg = static_cast<const es2panda::ir::SpreadElement*>(node);
+            this->EmitExpression(spreadarg->Argument());
+            break;
+        }
 
         default:
             std::cout << "enter EmitExpression Default  >>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;

@@ -53,4 +53,9 @@
 // var obj11 = BigInt("1234567890123456789012345678901234567890");
 
 
-const regex = new RegExp('pattern', 'flags');
+//const regex = new RegExp('pattern', 'flags');
+
+const obj1 = { a: 1, b: 2, c: 3 };
+const obj2 = { b: 4, d: 5 };
+
+var merged = { e: 6, ...obj1, ...obj2 };

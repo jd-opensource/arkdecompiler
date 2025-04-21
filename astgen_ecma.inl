@@ -398,9 +398,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-
-       case compiler::RuntimeInterface::IntrinsicId::TRYLDGLOBALBYNAME_IMM8_ID16:
-       case compiler::RuntimeInterface::IntrinsicId::TRYLDGLOBALBYNAME_IMM16_ID16:
+        case compiler::RuntimeInterface::IntrinsicId::LDGLOBALVAR_IMM16_ID16:
+        case compiler::RuntimeInterface::IntrinsicId::TRYLDGLOBALBYNAME_IMM8_ID16:
+        case compiler::RuntimeInterface::IntrinsicId::TRYLDGLOBALBYNAME_IMM16_ID16:
        {
             ASSERT(inst->HasImms() && inst->GetImms().size() > 0); 
             ASSERT(inst->HasImms() && inst->GetImms().size() > 1); 
@@ -687,17 +687,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         }
        
        
-       case compiler::RuntimeInterface::IntrinsicId::LDGLOBALVAR_IMM16_ID16:
-       {
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
-            std::string* global_name = new std::string(bc_id0);
-            
-            auto dst_reg = inst->GetDstReg();
-            enc->set_expression_by_register(enc, dst_reg, enc->get_identifier_byname(enc, global_name));
-            break;
-
-        }
+  
        
        case compiler::RuntimeInterface::IntrinsicId::STOBJBYVALUE_IMM8_V8_V8:
        case compiler::RuntimeInterface::IntrinsicId::STOBJBYVALUE_IMM16_V8_V8:
@@ -788,6 +778,38 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
 
+       case compiler::RuntimeInterface::IntrinsicId::COPYDATAPROPERTIES_V8:
+       {
+            
+            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
+            auto src_obj = *enc->get_expression_by_register(enc, acc_src);
+
+            auto v0 = inst->GetSrcReg(0);
+            //auto target_obj = enc->get_identifier(enc, v0);
+
+
+            ArenaVector<es2panda::ir::Expression *> elements(enc->programast_->Allocator()->Adapter());
+            
+            auto target_obj = *enc->get_expression_by_register(enc, v0);
+            auto target_objexpression = static_cast<panda::es2panda::ir::ObjectExpression*>(target_obj);
+            auto target_properties = target_objexpression->Properties();
+            for (auto *it : target_properties) {
+                elements.push_back(it);
+            }
+
+            elements.push_back( AllocNode<es2panda::ir::SpreadElement>(enc, es2panda::ir::AstNodeType::SPREAD_ELEMENT, src_obj));
+            auto objectexpression = AllocNode<es2panda::ir::ObjectExpression>(enc, 
+                                                                                es2panda::ir::AstNodeType::OBJECT_EXPRESSION,
+                                                                                std::move(elements),
+                                                                                false
+                                                                            );
+
+            auto acc_dst = inst->GetDstReg();
+            enc->set_expression_by_register(enc, acc_dst, objectexpression);
+            enc->set_expression_by_register(enc, v0, objectexpression);
+ 
+            break;
+        }
 
        case compiler::RuntimeInterface::IntrinsicId::CALLTHISRANGE_IMM8_IMM8_V8:
        {
@@ -1842,20 +1864,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::COPYDATAPROPERTIES_V8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_COPYDATAPROPERTIES(v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::STARRAYSPREAD_V8_V8:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);

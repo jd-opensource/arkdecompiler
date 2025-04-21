@@ -49,6 +49,7 @@
 #include "../ets_frontend/es2panda/ir/base/property.h"
 
 
+#include "../ets_frontend/es2panda/ir/base/spreadElement.h"
 
 
 #include "../ets_frontend/es2panda/ir/module/exportDefaultDeclaration.h"
