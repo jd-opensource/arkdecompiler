@@ -155,7 +155,6 @@ public:
     void EmitJump(const BasicBlock *bb);
 
     void EncodeSpillFillData(const compiler::SpillFillData &sf);
-    void EncodeSta(compiler::Register reg, compiler::DataType::Type type);
 
     const ArenaVector<BasicBlock *> &GetBlocksToVisit() const override
     {

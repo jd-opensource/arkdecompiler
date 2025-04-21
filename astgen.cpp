@@ -217,27 +217,7 @@ void AstGen::VisitConstant(GraphVisitor *visitor, Inst *inst)
     std::cout << "[-] VisitConstant  >>>>>>>>>>>>>>>>>" << std::endl;
 }
 
-void AstGen::EncodeSta(compiler::Register reg, compiler::DataType::Type type)
-{
-    pandasm::Opcode opc;
-    switch (type) {
-        case compiler::DataType::ANY:
-            opc = pandasm::Opcode::STA;
-            break;
-        default:
-            std::cout << "S4" << std::endl;
-            UNREACHABLE();
-            LOG(ERROR, BYTECODE_OPTIMIZER) << "EncodeSta with unknown type" << type;
-            success_ = false;
-    }
-    pandasm::Ins sta;
-    sta.opcode = opc;
-    sta.regs.emplace_back(reg);
 
-    result_.emplace_back(sta);
-}
-
-// NOLINTNEXTLINE(readability-function-size)
 void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
 {
     std::cout << "[+] VisitIf  >>>>>>>>>>>>>>>>>" << std::endl;
