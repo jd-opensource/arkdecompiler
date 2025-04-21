@@ -246,6 +246,29 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
             break;
         }
 
+        case AstNodeType::NEW_EXPRESSION:{
+            auto newexpression = static_cast<const panda::es2panda::ir::NewExpression*>(node);
+
+            this->writeKeyWords("new");
+            this->EmitExpression(newexpression->Callee());
+            this->writeLeftParentheses();
+
+            int count = 1;
+            int argumentsize = newexpression->Arguments().size();
+            for (const auto *it : newexpression->Arguments()) {
+                this->EmitExpression(it);
+                if(count ++ < argumentsize){
+                    this->writeComma();
+                }
+            }
+
+            this->writeRightParentheses();
+
+            break;
+        }
+
+
+
         default:
             std::cout << "enter EmitExpression Default  >>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
 

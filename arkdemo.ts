@@ -1,2 +1,2 @@
-let pi = 3.14159;
+let regex = new RegExp("pattern" , "flags");
 return undefined;

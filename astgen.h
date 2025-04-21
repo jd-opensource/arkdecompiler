@@ -34,6 +34,9 @@
 #include "../ets_frontend/es2panda/ir/expressions/unaryExpression.h"
 #include "../ets_frontend/es2panda/ir/expressions/arrayExpression.h"
 
+
+#include "../ets_frontend/es2panda/ir/expressions/newExpression.h"
+
 #include "../ets_frontend/es2panda/ir/expressions/literals/bigIntLiteral.h"
 #include "../ets_frontend/es2panda/ir/expressions/literals/numberLiteral.h"
 #include "../ets_frontend/es2panda/ir/expressions/literals/stringLiteral.h"

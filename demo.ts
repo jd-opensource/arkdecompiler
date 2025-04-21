@@ -1,4 +1,4 @@
-const pi: number = 3.14159;
+//const pi: number = 3.14159;
 
 //let c;
 // c = 1 + 1;
@@ -53,6 +53,4 @@ const pi: number = 3.14159;
 // var obj11 = BigInt("1234567890123456789012345678901234567890");
 
 
-
-
-
+const regex = new RegExp('pattern', 'flags');

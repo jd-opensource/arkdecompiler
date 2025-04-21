@@ -51,6 +51,8 @@
 #include "../ets_frontend/es2panda/ir/expressions/templateLiteral.h"
 #include "../ets_frontend/es2panda/ir/expressions/thisExpression.h"
 
+#include "../ets_frontend/es2panda/ir/expressions/newExpression.h"
+
 #include "../ets_frontend/es2panda/ir/module/exportDefaultDeclaration.h"
 #include "../ets_frontend/es2panda/ir/module/exportNamedDeclaration.h"
 #include "../ets_frontend/es2panda/ir/statements/blockStatement.h"

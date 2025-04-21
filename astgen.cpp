@@ -161,7 +161,7 @@ void AstGen::VisitSpillFill(GraphVisitor *visitor, Inst *inst)
     std::cout << "[+] VisitSpillFill  >>>>>>>>>>>>>>>>>" << std::endl;
     auto *enc = static_cast<AstGen *>(visitor);
     for (auto sf : inst->CastToSpillFill()->GetSpillFills()) {
-        enc->EncodeSpillFillData(sf);
+        enc->set_expression_by_register(enc, sf.DstValue(), *enc->get_expression_by_register(enc, sf.SrcValue()));
     }
     std::cout << "[-] VisitSpillFill  >>>>>>>>>>>>>>>>>" << std::endl;
 }
