@@ -871,7 +871,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->set_expression_by_register(enc, inst->GetSrcReg(0), arrayexpression);
 
             auto acc_dst = inst->GetDstReg();
-            uint32_t size = raw_elements.size() +1;
+            uint32_t size = elements.size();
             enc->set_expression_by_register(enc, acc_dst, enc->get_literal_bynum(enc, size));
             enc->set_expression_by_register(enc, compiler::ACC_REG_ID, enc->get_literal_bynum(enc, size));
             break;
