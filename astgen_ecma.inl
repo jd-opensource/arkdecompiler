@@ -825,8 +825,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto this_expression = *enc->get_expression_by_register(enc, inst->GetSrcReg(0));
             enc->thisptr = this_expression;
-
-
+            
             auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                             fun,
                                                                             std::move(elements),
@@ -883,6 +882,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
+
+       case compiler::RuntimeInterface::IntrinsicId::DEBUGGER:
+       {
+            auto debuggerstatement = AllocNode<es2panda::ir::DebuggerStatement>(enc );
+            block->AddStatementAtPos(statements.size(), debuggerstatement);
+            break;
+       }
 
        case compiler::RuntimeInterface::IntrinsicId::CALLTHISRANGE_IMM8_IMM8_V8:
        {
@@ -1646,11 +1652,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DEBUGGER:
-       {
-            enc->result_.emplace_back(pandasm::Create_DEBUGGER());
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::CREATEGENERATOROBJ_V8:
        {
             auto v0 = inst->GetSrcReg(0);

@@ -70,11 +70,7 @@
 // const max = Math.max.apply(null, numbers);
 
 
-// starrayspread apply
-// const numbers = [10, 20, 30, 5, 15];
-// const maxNumber = Math.max(1,2,3,...numbers); 
+//starrayspread apply
+const numbers = [10, 20, 30, 5, 15];
+const maxNumber = Math.max(1,2,3,...numbers); 
 
-
-console.log("hi");
-debugger;
-console.log("hello");

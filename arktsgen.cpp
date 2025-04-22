@@ -67,7 +67,7 @@ void ArkTSGen::writeEqual(){
 }
 
 void ArkTSGen::writeComma(){
-    ss_ << " , ";
+    ss_ << ", ";
 }
 
 void ArkTSGen::writeDot(){
@@ -75,7 +75,7 @@ void ArkTSGen::writeDot(){
 }
 
 void ArkTSGen::writeKeyWords(std::string keyword){
-    ss_ << keyword << " ";
+    ss_ << keyword ;
 }
 
 void ArkTSGen::writeSpreadDot(){
@@ -256,6 +256,7 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
             auto newexpression = static_cast<const panda::es2panda::ir::NewExpression*>(node);
 
             this->writeKeyWords("new");
+            this->writeSpace();
             this->EmitExpression(newexpression->Callee());
             this->writeLeftParentheses();
 
@@ -300,10 +301,13 @@ void ArkTSGen::EmitVariableDeclarationStatement(const ir::AstNode *node){
     
     if(vardeclstatement->Kind() == es2panda::ir::VariableDeclaration::VariableDeclarationKind::CONST){
         this->writeKeyWords("const");
+        this->writeSpace();
     }else if(vardeclstatement->Kind() == es2panda::ir::VariableDeclaration::VariableDeclarationKind::LET){
         this->writeKeyWords("let");
+        this->writeSpace();
     }else {
         this->writeKeyWords("var");
+        this->writeSpace();
     }
 
     for (const auto *it : vardeclstatement->Declarators()) {
@@ -330,6 +334,10 @@ void ArkTSGen::EmitReturnStatement(const ir::AstNode *node){
     this->writeTrailingSemicolon();
 }
 
+void  ArkTSGen::EmitDebuggerStatement(const ir::AstNode *node){
+    this->writeKeyWords("debugger");
+    this->writeTrailingSemicolon();
+}
 
 void ArkTSGen::SerializeNode(const ir::AstNode *node)
 {
@@ -357,6 +365,11 @@ void ArkTSGen::SerializeNode(const ir::AstNode *node)
         case AstNodeType::RETURN_STATEMENT:
             std::cout << "enter RETURN STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
             this->EmitReturnStatement(node);
+            break;
+
+        case AstNodeType::DEBUGGER_STATEMENT:
+            std::cout << "enter DEBUGGER STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
+            this->EmitDebuggerStatement(node);
             break;
         default:
             std::cout << "enter SerializeNode Default  >>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
