@@ -66,5 +66,14 @@
 
 
 // NEWOBJAPPLY
-const numbers = [5, 6, 2, 3, 7];
-const max = Math.max.apply(null, numbers);
+// const numbers = [5, 6, 2, 3, 7];
+// const max = Math.max.apply(null, numbers);
+
+// console.log("hi");
+// debugger;
+// console.log("hello");
+
+
+// starrayspread apply
+const numbers = [10, 20, 30, 5, 15];
+const maxNumber = Math.max(1,2,3,...numbers); 

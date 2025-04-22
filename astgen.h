@@ -287,6 +287,7 @@ public:
         if(value == nullptr){
             handleError("can't set null expression in reg2expression");
         }
+        std::cout << "set_expression_by_register: " << std::to_string(key) << std::endl;
         enc->reg2expression[key] = value;
     }
 

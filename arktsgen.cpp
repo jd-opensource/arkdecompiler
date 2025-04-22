@@ -166,13 +166,6 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
         }
 
         case AstNodeType::OBJECT_EXPRESSION:{
-            // std::cout << "enter BINARY_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
-            // auto binexpression = static_cast<const panda::es2panda::ir::BinaryExpression*>(node);
-            // this->EmitExpression(binexpression->Left());
-            // writeSpace();
-            // ss_ << TokenToString(binexpression->OperatorType());
-            // writeSpace();
-            // this->EmitExpression(binexpression->Right());
             std::cout << "enter OBJECT_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
             auto objexpression = static_cast<const panda::es2panda::ir::ObjectExpression*>(node);
             
