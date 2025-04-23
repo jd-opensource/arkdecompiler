@@ -152,6 +152,8 @@ panda::es2panda::lexer::TokenType UnaryPrefixIntrinsicIdToToken(panda::compiler:
             return panda::es2panda::lexer::TokenType::PUNCTUATOR_TILDE;
         case panda::compiler::RuntimeInterface::IntrinsicId::TYPEOF_IMM8:
             return panda::es2panda::lexer::TokenType::KEYW_TYPEOF;
+        case panda::compiler::RuntimeInterface::IntrinsicId::DELOBJPROP_V8:
+            return panda::es2panda::lexer::TokenType::KEYW_DELETE;
         default:
             std::cout << "S7: " << GetIntrinsicOpcodeName(id) << std::endl;
             UNREACHABLE();

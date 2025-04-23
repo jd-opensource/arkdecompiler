@@ -76,6 +76,15 @@
 // const maxNumber = Math.max(1,2,3,...numbers); 
 
 // 14. callthisrange callrange
-//var x= setInterval(Math.max, 2000, "Bob", "Hi");
-const maxNumber = Math.max(1,2,3,4,5,6,7); 
+// var x= setInterval(Math.max, 2000, "Bob", "Hi");
+// const maxNumber = Math.max(1,2,3,4,5,6,7);
 
+// DELOBJPROP
+// let obj = { a: 1, b: 2 };
+// let result = delete obj.c; 
+
+
+const array = [10, 20, 30];
+for (const value of array.values()) {
+    console.log(value); 
+}

@@ -98,7 +98,6 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
         case AstNodeType::UNARY_EXPRESSION:{
             std::cout << "enter UNARY_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
             auto unaryexpression = static_cast<const panda::es2panda::ir::UnaryExpression*>(node);
-            writeSpace();
             ss_ << TokenToString(unaryexpression->OperatorType());
             writeSpace();
             this->EmitExpression(unaryexpression->Argument());

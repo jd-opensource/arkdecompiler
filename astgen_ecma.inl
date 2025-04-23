@@ -960,34 +960,35 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         /////////////////////////////////////////////////////////////////////////////////////
 
 
-       case compiler::RuntimeInterface::IntrinsicId::SUPERCALLTHISRANGE_IMM8_IMM8_V8:
+
+       case compiler::RuntimeInterface::IntrinsicId::DELOBJPROP_V8:
        {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_SUPERCALLTHISRANGE(imm0, imm1, v0));
+            auto src_arg = inst->GetSrcReg(inst->GetInputsCount() - 2);
+
+            panda::es2panda::ir::Expression* obj_expression = *enc->get_expression_by_register(enc, inst->GetSrcReg(0));;
+            panda::es2panda::ir::Expression* attr_expression = *enc->get_expression_by_register(enc, src_arg);
+
+            auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
+                                                        obj_expression,
+                                                        attr_expression, 
+                                                        es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                        true, 
+                                                        false);
+
+
+
+            auto unaryexpression = AllocNode<es2panda::ir::UnaryExpression>(enc, 
+                                                            objattrexpression,
+                                                            UnaryPrefixIntrinsicIdToToken(inst->GetIntrinsicId())
+            );
+
             auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::WIDE_SUPERCALLTHISRANGE_PREF_IMM16_V8:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_WIDE_SUPERCALLTHISRANGE(imm0, v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
+            enc->set_expression_by_register(enc, acc_dst, unaryexpression);
+
             break;
         }
 
-       
+    
         case compiler::RuntimeInterface::IntrinsicId::NEWLEXENV_IMM8:{
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
@@ -1930,20 +1931,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DELOBJPROP_V8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_DELOBJPROP(v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::SUSPENDGENERATOR_V8:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -2922,6 +2910,37 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         
         }
        
+       case compiler::RuntimeInterface::IntrinsicId::SUPERCALLTHISRANGE_IMM8_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::WIDE_SUPERCALLTHISRANGE_PREF_IMM16_V8:
+       {
+            panda::es2panda::ir::Expression* funname = enc->get_identifier_byname(enc, new std::string("super"));
+            enc->thisptr =  *enc->get_expression_by_register(enc, inst->GetSrcReg(0));
+            uint32_t argsum;
+
+            if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::WIDE_SUPERCALLTHISRANGE_PREF_IMM16_V8){
+                argsum = static_cast<uint32_t>(inst->GetImms()[0]);
+            }else{
+                argsum = static_cast<uint32_t>(inst->GetImms()[1]);
+            }
+
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->programast_->Allocator()->Adapter());
+            for (uint32_t i = 0; i <= argsum; ++i) {
+                arguments.push_back(*enc->get_expression_by_register(enc, inst->GetSrcReg(i)));
+            }
+
+            
+            es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
+                                                                                funname,
+                                                                                std::move(arguments),
+                                                                                nullptr,
+                                                                                false
+                                                                            );
+            auto acc_dst = inst->GetDstReg();
+            enc->set_expression_by_register(enc, acc_dst, callarg0expression);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callarg0expression);
+            break;
+        }
+
         default:
             std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
             enc->success_ = false;

@@ -1,2 +1,5 @@
-let maxNumber = Math.max(1, 2, 3, 4, 5, 6, 7);
+x = undefined;
+let array = [10, 20, 30];
+let keysIterator = array.keys();
+x = console.log(keysIterator.next().value);
 returnundefined;
