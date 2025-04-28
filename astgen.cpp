@@ -326,13 +326,56 @@ void AstGen::IfEcma(GraphVisitor *v, compiler::IfInst *inst)
 
 void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
 {
-    std::cout << "[+] VisitIfImm  >>>>>>>>>>>>>>>>>" << std::endl;
+
+    // std::cout << "[+] VisitIfImm  >>>>>>>>>>>>>>>>>" << std::endl;
+    // auto inst = inst_base->CastToIfImm();
+    // auto imm = inst->GetImm();
+    // std::cout << "[-] VisitIfImm  >>>>>>>>>>>>>>>>>" << std::endl;
+    // if (imm == 0) {
+    //     IfImmZero(v, inst_base);
+    //     return;
+    // }
+
+    auto enc = static_cast<AstGen *>(v);
     auto inst = inst_base->CastToIfImm();
     auto imm = inst->GetImm();
-    std::cout << "[-] VisitIfImm  >>>>>>>>>>>>>>>>>" << std::endl;
     if (imm == 0) {
-        IfImmZero(v, inst_base);
-        return;
+        auto source_reg = inst->GetSrcReg(0);
+        auto src_expression = *enc->get_expression_by_register(enc, source_reg);
+        panda::es2panda::ir::Expression* test_expression;
+
+        switch (inst->GetCc()) {
+            case compiler::CC_EQ:
+                test_expression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
+                                                            src_expression,
+                                                            enc->constant_zero,
+                                                            BinIntrinsicIdToToken(compiler::RuntimeInterface::IntrinsicId::EQ_IMM8_V8));
+                break;
+            case compiler::CC_NE:
+                test_expression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
+                                                            src_expression,
+                                                            enc->constant_zero,
+                                                            BinIntrinsicIdToToken(compiler::RuntimeInterface::IntrinsicId::NOTEQ_IMM8_V8));
+                break;
+            default:
+                std::cout << "S5" << std::endl;
+                UNREACHABLE();
+        }
+
+        es2panda::ir::BlockStatement* true_statements =   enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetTrueSuccessor()->GetId());
+        es2panda::ir::BlockStatement* false_statements =  enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetFalseSuccessor()->GetId());
+
+        auto ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, test_expression, true_statements, false_statements);
+
+        uint32_t block_id = inst_base->GetBasicBlock()->GetId();
+        es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, block_id);
+
+        true_statements->SetParent(block);
+        false_statements->SetParent(block);
+
+        const auto &statements = block->Statements();
+        block->AddStatementAtPos(statements.size(), ifStatement);
+
     }
 }
 
@@ -355,6 +398,9 @@ void AstGen::IfImmZero(GraphVisitor *v, Inst *inst_base)
             std::cout << "S5" << std::endl;
             UNREACHABLE();
     }
+
+    
+
 }
 
 void AstGen::VisitLoadString(GraphVisitor *v, Inst *inst_base)

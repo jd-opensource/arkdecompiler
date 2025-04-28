@@ -322,9 +322,11 @@ bool DecompileFunction(pandasm::Program *prog, const pandasm::AsmEmitter::PandaF
     auto tmp = astprogram->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
 
     astprogram->SetAst(tmp);
+    uint32_t first_block_id = 0;
+
 
     std::cout << "************************************11111111111111111111111111111111" << std::endl;
-    if (!graph->RunPass<AstGen>(&function, &ir_interface, prog, astprogram)) {
+    if (!graph->RunPass<AstGen>(&function, &ir_interface, prog, astprogram, first_block_id)) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Code generation failed!";
 
         std::cout << "Optimizing " << func_name << ": Code generation failed!" << std::endl;
@@ -338,6 +340,7 @@ bool DecompileFunction(pandasm::Program *prog, const pandasm::AsmEmitter::PandaF
     std::cout << "*******************************************************************" << std::endl;
 
     auto astsgen = panda::es2panda::ir::ArkTSGen(tmp);
+    
 
     std::cout << astsgen.Str() << std::endl;
     std::cout << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;

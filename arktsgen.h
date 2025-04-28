@@ -199,6 +199,8 @@ private:
     void writeDot();
     void writeSpreadDot();
     void writeKeyWords(std::string keyword);
+    void writeNewLine();
+    void writeIndent();
 
     void EmitExpression(const ir::AstNode *node);
     void EmitExpressionStatement(const ir::AstNode *node);
@@ -206,6 +208,7 @@ private:
     void EmitVariableDeclaratorStatement(const ir::AstNode *node);
     void EmitReturnStatement(const ir::AstNode *node);
     void EmitDebuggerStatement(const ir::AstNode *node);
+    void EmitIfStatement(const ir::AstNode *node);
 
     void Serialize(const ArkTSGen::Property &prop);
     void SerializePropKey(const char *str);
@@ -225,7 +228,10 @@ private:
     lexer::LineIndex index_;
     std::stringstream ss_;
     int32_t indent_;
+    int32_t singleindent_ = 2;
     bool dumpNodeOnly_ = true;
+
+
 
 
 

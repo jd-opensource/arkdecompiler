@@ -61,6 +61,9 @@
 #include "../ets_frontend/es2panda/ir/statements/variableDeclarator.h"
 #include "../ets_frontend/es2panda/ir/statements/whileStatement.h"
 #include "../ets_frontend/es2panda/ir/statements/debuggerStatement.h"
+#include "../ets_frontend/es2panda/ir/statements/ifStatement.h"
+
+
 
 #include "../ets_frontend/es2panda/ir/ts/tsConstructorType.h"
 #include "../ets_frontend/es2panda/ir/ts/tsEnumDeclaration.h"

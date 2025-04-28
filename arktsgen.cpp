@@ -82,6 +82,16 @@ void ArkTSGen::writeSpreadDot(){
     ss_ << "...";
 }
 
+void ArkTSGen::writeNewLine(){
+    ss_ << "\n";
+}
+
+void ArkTSGen::writeIndent(){
+    for (int i = 0; i < this->indent_; ++i) {
+        ss_ << " ";
+    } 
+}
+
 void ArkTSGen::EmitExpression(const ir::AstNode *node){
     switch(node->Type()){ 
         case AstNodeType::BINARY_EXPRESSION:{
@@ -338,9 +348,37 @@ void  ArkTSGen::EmitDebuggerStatement(const ir::AstNode *node){
     this->writeTrailingSemicolon();
 }
 
+void ArkTSGen::EmitIfStatement(const ir::AstNode *node){
+    auto ifstatement = static_cast<const panda::es2panda::ir::IfStatement*>(node);
+    
+    this->writeKeyWords("if");
+    this->writeLeftParentheses();
+    this->EmitExpression(ifstatement->Test());
+    this->writeRightParentheses();
+    
+    this->writeLeftBrace();
+    this->writeNewLine();
+
+    this->indent_ = this->indent_ + this->singleindent_;
+    this->SerializeNode(ifstatement->Consequent());
+    this->indent_ = this->indent_ - this->singleindent_;
+    this->writeRightBrace();
+
+    this->writeKeyWords("else");
+    this->writeLeftBrace();
+    this->writeNewLine();
+    this->indent_ = this->indent_ + this->singleindent_;
+    this->SerializeNode(ifstatement->Alternate());
+    this->indent_ = this->indent_ - this->singleindent_;
+    this->writeRightBrace();
+}
+
 void ArkTSGen::SerializeNode(const ir::AstNode *node)
 {
-    // es2panda/ir/astNodeMapping.h
+    if(node->Type() != AstNodeType::BLOCK_STATEMENT){
+        this->writeIndent();
+    }
+    
     switch(node->Type()){
         case AstNodeType::EXPRESSION_STATEMENT:
             std::cout << "enter EXPRESSION_STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
@@ -370,6 +408,12 @@ void ArkTSGen::SerializeNode(const ir::AstNode *node)
             std::cout << "enter DEBUGGER STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
             this->EmitDebuggerStatement(node);
             break;
+
+        case AstNodeType::IF_STATEMENT:
+            std::cout << "enter DEBUGGER STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
+            this->EmitIfStatement(node);
+            break;
+
         default:
             std::cout << "enter SerializeNode Default  >>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
     }

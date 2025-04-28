@@ -84,7 +84,16 @@
 // let result = delete obj.c; 
 
 
-const array = [10, 20, 30];
-for (const value of array.values()) {
-    console.log(value); 
+var x = 1;
+var y;
+if(x){
+    y = console.log("true");
+    y = console.log("1");
+}else{
+    y = console.log("false");
 }
+
+// const array = [10, 20, 30];
+// for (const value of array.values()) {
+//     console.log(value); 
+// }

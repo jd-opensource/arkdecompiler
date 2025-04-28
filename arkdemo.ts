@@ -1,5 +1,9 @@
 x = undefined;
-let array = [10, 20, 30];
-let keysIterator = array.keys();
-x = console.log(keysIterator.next().value);
-returnundefined;
+y = undefined;
+x = 1;
+if(callruntime.isfalse(x) != 0){
+  y = console.log("false");
+}else{
+  y = console.log("true");
+  y = console.log("1");
+}

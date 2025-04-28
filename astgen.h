@@ -30,10 +30,11 @@ void DoSta(compiler::Register reg, std::vector<pandasm::Ins> &result);
 class AstGen : public compiler::Optimization, public compiler::GraphVisitor {
 public:
     explicit AstGen(compiler::Graph *graph, pandasm::Function *function,
-        const BytecodeOptIrInterface *iface, pandasm::Program *prog,  es2panda::parser::Program* programast)
-        : compiler::Optimization(graph), function_(function), ir_interface_(iface), program_(prog), programast_(programast)
+        const BytecodeOptIrInterface *iface, pandasm::Program *prog,  es2panda::parser::Program* programast, uint32_t first_block_id)
+        : compiler::Optimization(graph), function_(function), ir_interface_(iface), program_(prog),  first_block_id_(first_block_id), programast_(programast)
     {
-        
+        std::cout << "enter:: " << first_block_id << std::endl;
+        this->id2block[first_block_id] = programast->Ast();
     }
     ~AstGen() override = default;
     bool RunImpl() override;
@@ -220,6 +221,16 @@ public:
         enc->reg2expression[key] = value;
     }
 
+    es2panda::ir::BlockStatement* get_blockstatement_byid(AstGen * enc, uint32_t block_id){
+        std::cout << "@@@@@@@@@@@@@@@@@@@@: " << block_id << std::endl;
+        if (enc->id2block.find(block_id) == enc->id2block.end()) {
+            ArenaVector<panda::es2panda::ir::Statement *> statements(enc->programast_->Allocator()->Adapter());
+            auto block = enc->programast_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
+            enc->id2block[block_id] = block;
+        }
+        return enc->id2block[block_id];
+    }
+
 
     void handleError(const std::string& errorMessage) {
         std::cerr << "Error: " << errorMessage << std::endl;
@@ -242,6 +253,10 @@ public:
     std::vector<pandasm::Ins> res_;
     std::vector<pandasm::Function::CatchBlock> catch_blocks_;
 
+    uint32_t first_block_id_;
+
+    
+
     bool success_ {true};
     std::vector<pandasm::Ins> result_;
    
@@ -252,19 +267,17 @@ public:
     panda::es2panda::ir::Expression* thisptr= NULL;
 
     es2panda::parser::Program* programast_;
-   
+
+
+    std::map<uint32_t, es2panda::ir::BlockStatement*> id2block;
+
    
     std::map<compiler::Register, panda::es2panda::ir::Identifier*> identifers;
-
 
     std::map<std::string, panda::es2panda::ir::Identifier*> str2identifers;
     std::map<uint32_t, panda::es2panda::ir::NumberLiteral*> num2literals;
 
-
-
     std::map<compiler::Register, panda::es2panda::ir::Expression*> reg2expression;
-
-
 
     panda::es2panda::ir::Identifier* constant_undefined = AllocNode<panda::es2panda::ir::Identifier>(this, "undefined");
     panda::es2panda::ir::Identifier* constant_nan = AllocNode<panda::es2panda::ir::Identifier>(this, "NaN");
@@ -274,6 +287,7 @@ public:
     panda::es2panda::ir::NullLiteral* constant_null = AllocNode<panda::es2panda::ir::NullLiteral>(this);
 
     panda::es2panda::ir::NumberLiteral* constant_one = AllocNode<panda::es2panda::ir::NumberLiteral>(this, 1);
+    panda::es2panda::ir::NumberLiteral* constant_zero = AllocNode<panda::es2panda::ir::NumberLiteral>(this, 0);
 
 
 };
