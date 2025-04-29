@@ -4,11 +4,14 @@
 
 #include "bytecode_optimizer/ir_interface.h"
 #include "bytecode_optimizer/runtime_adapter.h"
+
 #include "libpandabase/mem/arena_allocator.h"
 #include "libpandabase/mem/pool_manager.h"
+
 #include "libpandafile/class_data_accessor.h"
 #include "libpandafile/class_data_accessor-inl.h"
 #include "libpandafile/method_data_accessor.h"
+
 #include "libpandafile/file.h"
 
 #include "compiler/optimizer/ir/graph.h"
@@ -17,31 +20,21 @@
 #include "optimizer/ir/inst.h"
 #include "optimizer/ir/runtime_interface.h"
 #include "optimizer/ir_builder/ir_builder.h"
-
 #include "optimize_bytecode.h"
 
-#include "assembly-parser.h"
-
-//#include "decompiler.h"
 #include "astgen.h"
 
+#include "assembly-parser.h"
 #include "assembler/assembly-parser.h"
 #include "compiler/optimizer/ir/basicblock.h"
 
-
 #include "mem/pool_manager.h"
-#include "optimize_bytecode.h"
 
-#include <string>
 #include "disassembler/disassembler.h"
-
-
-#include "optimize_bytecode.h"
 
 #include "bytecodeopt_options.h"
 #include "bytecode_analysis_results.h"
-#include "codegen.h"
-#include "common.h"
+
 #include "compiler/optimizer/ir_builder/ir_builder.h"
 #include "compiler/optimizer/optimizations/branch_elimination.h"
 #include "compiler/optimizer/optimizations/cleanup.h"
@@ -50,6 +43,7 @@
 #include "compiler/optimizer/optimizations/regalloc/reg_alloc.h"
 #include "compiler/optimizer/optimizations/vn.h"
 #include "constant_propagation/constant_propagation.h"
+
 #include "libpandabase/mem/pool_manager.h"
 #include "libpandafile/class_data_accessor-inl.h"
 #include "libpandafile/module_data_accessor-inl.h"
@@ -57,12 +51,14 @@
 #include "reg_encoder.h"
 #include "runtime_adapter.h"
 
+#include <string>
 #include <typeinfo>
+#include "codegen.h"
+#include "common.h"
 
-#include "../ets_frontend/es2panda/es2panda.h"
-#include "../ets_frontend/es2panda/parser/program/program.h"
 
 #include "arktsgen.h"
+#include "ast.h"
 
 using namespace std;
 using namespace panda;
@@ -298,31 +294,45 @@ bool DecompileFunction(pandasm::Program *prog, const pandasm::AsmEmitter::PandaF
 
     if (graph->HasIrreducibleLoop()) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Graph has irreducible loop!";
-
         std::cout << "Optimizing " << func_name << ": Graph has irreducible loop!" << std::endl;
-
         return false;
     }
 
     if (!RunOptimizations(graph, &ir_interface)) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Running optimizations failed!";
-
         std::cout << "Optimizing " << func_name << ": Running optimizations failed!" << std::endl;
-
         return false;
     }
     
-    ///////////////////////
-    //void SetAst(panda::es2panda::ir::BlockStatement *ast)
  
     panda::es2panda::parser::Program *astprogram = new panda::es2panda::parser::Program(panda::es2panda::ScriptExtension::TS);
     
-    ArenaVector<panda::es2panda::ir::Statement *> statements(astprogram->Allocator()->Adapter());
-
-    auto tmp = astprogram->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
-
-    astprogram->SetAst(tmp);
+    ArenaVector<panda::es2panda::ir::Statement *> program_statements(astprogram->Allocator()->Adapter());
+    auto program_ast = astprogram->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(program_statements));
+    astprogram->SetAst(program_ast);
     uint32_t first_block_id = 0;
+
+    ArenaVector<es2panda::ir::Expression*> arguments(astprogram->Allocator()->Adapter());
+
+    for (size_t i = 0; i < function.GetParamsNum(); ++i) {
+        panda::es2panda::util::StringView tmp_name_view = panda::es2panda::util::StringView(*new std::string("arg"+std::to_string(i)));
+        arguments.push_back(astprogram->Allocator()->New<panda::es2panda::ir::Identifier>(tmp_name_view));
+    }
+
+    ArenaVector<panda::es2panda::ir::Statement *> func_statements(astprogram->Allocator()->Adapter());
+    auto body = astprogram->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(func_statements));
+    panda::es2panda::ir::ScriptFunctionFlags flags_ {panda::es2panda::ir::ScriptFunctionFlags::NONE};
+    auto funcNode = astprogram->Allocator()->New<panda::es2panda::ir::ScriptFunction>(nullptr, std::move(arguments), nullptr, body, nullptr, flags_, true, false);
+
+    panda::es2panda::util::StringView name_view = panda::es2panda::util::StringView(*new std::string(func_name));
+    auto funname_id = astprogram->Allocator()->New<panda::es2panda::ir::Identifier>(name_view);
+            
+
+    funcNode->SetIdent(funname_id);
+    auto funcDecl = astprogram->Allocator()->New<panda::es2panda::ir::FunctionDeclaration>(funcNode);
+
+    const auto &statements = program_ast->Statements();
+    program_ast->AddStatementAtPos(statements.size(), funcDecl);
 
 
     std::cout << "************************************11111111111111111111111111111111" << std::endl;
@@ -339,7 +349,7 @@ bool DecompileFunction(pandasm::Program *prog, const pandasm::AsmEmitter::PandaF
 
     std::cout << "*******************************************************************" << std::endl;
 
-    auto astsgen = panda::es2panda::ir::ArkTSGen(tmp);
+    auto astsgen = panda::es2panda::ir::ArkTSGen(program_ast);
     
 
     std::cout << astsgen.Str() << std::endl;

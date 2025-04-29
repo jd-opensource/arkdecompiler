@@ -349,6 +349,35 @@ void  ArkTSGen::EmitDebuggerStatement(const ir::AstNode *node){
     this->writeTrailingSemicolon();
 }
 
+void  ArkTSGen::EmitFunctionDeclaration(const ir::AstNode *node){
+    auto fundeclare = static_cast<const panda::es2panda::ir::FunctionDeclaration*>(node);
+    auto scriptfunction =  fundeclare->Function();
+
+    this->writeKeyWords("function");
+    this->writeSpace();
+    this->EmitExpression(scriptfunction->Id());
+    this->writeLeftParentheses();
+
+    int count = 1;
+    int argumentsize = scriptfunction->Params().size();
+    for (const auto *param : scriptfunction->Params()) {
+        this->EmitExpression(param);
+        if(count ++ < argumentsize){
+            this->writeComma();
+        }
+    }
+    this->writeRightParentheses();
+    this->writeLeftBrace();
+    this->writeNewLine();
+    this->indent_ = this->indent_ + this->singleindent_;
+
+    this->SerializeNode(scriptfunction->Body());
+
+    this->indent_ = this->indent_ - this->singleindent_;
+    this->writeRightBrace();
+    this->writeNewLine();
+}
+
 void ArkTSGen::EmitIfStatement(const ir::AstNode *node){
     auto ifstatement = static_cast<const panda::es2panda::ir::IfStatement*>(node);
     
@@ -410,11 +439,14 @@ void ArkTSGen::SerializeNode(const ir::AstNode *node)
             this->EmitDebuggerStatement(node);
             break;
 
-        case AstNodeType::IF_STATEMENT:
-            std::cout << "enter DEBUGGER STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
-            this->EmitIfStatement(node);
+        case AstNodeType::FUNCTION_DECLARATION:
+            std::cout << "enter FUNCTION_DECLARATION STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
+            this->EmitFunctionDeclaration(node);
             break;
 
+        case AstNodeType::IF_STATEMENT:
+
+            break;
         default:
             std::cout << "enter SerializeNode Default  >>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
     }

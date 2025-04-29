@@ -100,7 +100,7 @@
 
 
 function add(a: number, b: number): number {
-    return a + b; // 返回两个数的和
+    return a + b;
 }
 
 var x = add(2, 3);

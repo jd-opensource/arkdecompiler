@@ -209,6 +209,7 @@ private:
     void EmitReturnStatement(const ir::AstNode *node);
     void EmitDebuggerStatement(const ir::AstNode *node);
     void EmitIfStatement(const ir::AstNode *node);
+    void EmitFunctionDeclaration(const ir::AstNode *node);
 
     void Serialize(const ArkTSGen::Property &prop);
     void SerializePropKey(const char *str);

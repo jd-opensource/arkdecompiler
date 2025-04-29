@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DECOMPILER_H
+#define DECOMPILER_H
 
 #include "../ets_frontend/es2panda/es2panda.h"
 #include "../ets_frontend/es2panda/parser/program/program.h"
@@ -82,3 +83,18 @@
 
 
 #include "../ets_frontend/es2panda/parser/parserImpl.h"
+
+//////////////////////////////////////////////////////////////////////////////
+#include "assembler/annotation.h"
+#include "assembler/assembly-function.h"
+#include "assembler/assembly-ins.h"
+
+#include "ir_interface.h"
+#include "compiler/optimizer/pass.h"
+#include "compiler/optimizer/ir/basicblock.h"
+#include "compiler/optimizer/ir/graph.h"
+#include "compiler/optimizer/ir/graph_visitor.h"
+#include "utils/logger.h"
+
+    
+#endif

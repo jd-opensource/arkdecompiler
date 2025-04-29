@@ -24,7 +24,7 @@ void AstGen::VisitParameter(GraphVisitor* v, Inst* inst_base) {
     auto enc = static_cast<AstGen *>(v);
     auto paramInst = inst_base->CastToParameter();
 
-    panda::es2panda::ir::Expression* arg = enc->get_identifier_byname(enc, new std::string("arg" + std::to_string(paramInst->GetArgNumber() - 2)));
+    panda::es2panda::ir::Expression* arg = enc->get_identifier_byname(enc, new std::string("arg" + std::to_string(paramInst->GetArgNumber())));
     enc->set_expression_by_register(enc, paramInst->GetArgNumber(), arg);
     std::cout << "[-] VisitParameter  >>>>>>>>>>>>>>>>>" << std::endl;
 }
