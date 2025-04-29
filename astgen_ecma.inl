@@ -985,7 +985,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_ISFALSE_PREF_IMM8:
        {
-            panda::es2panda::ir::Expression* funname = enc->get_identifier_byname(enc, new std::string("callruntime.isfalse"));
+            panda::es2panda::ir::Expression* funname = enc->get_identifier_byname(enc, new std::string("runtime.isfalse"));
             ArenaVector<es2panda::ir::Expression *> arguments(enc->programast_->Allocator()->Adapter());
 
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -1010,7 +1010,24 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
 
-        
+       case compiler::RuntimeInterface::IntrinsicId::RETURN:
+       {
+            // auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
+            // if (acc_src != compiler::ACC_REG_ID) {
+            //     DoLda(acc_src, enc->result_);
+            // }
+            // enc->result_.emplace_back(pandasm::Create_RETURN());
+            // break;
+            ///////////////////////////////////////////////////////////////////////////////
+            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
+            auto returnexpression = *enc->get_expression_by_register(enc, acc_src); 
+            auto returnstatement = AllocNode<es2panda::ir::ReturnStatement>(enc,  returnexpression);
+            block->AddStatementAtPos(statements.size(), returnstatement);
+            break;
+
+
+        }
+
         case compiler::RuntimeInterface::IntrinsicId::NEWLEXENV_IMM8:{
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
@@ -1215,15 +1232,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->result_.emplace_back(pandasm::Create_STTHISBYVALUE(imm0, v0));
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::RETURN:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-            enc->result_.emplace_back(pandasm::Create_RETURN());
-            break;
-        }
+
 
        case compiler::RuntimeInterface::IntrinsicId::GETPROPITERATOR:
        {

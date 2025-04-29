@@ -339,6 +339,7 @@ void ArkTSGen::EmitVariableDeclaratorStatement(const ir::AstNode *node){
 void ArkTSGen::EmitReturnStatement(const ir::AstNode *node){
     auto returnstatement = static_cast<const panda::es2panda::ir::ReturnStatement*>(node);
     this->writeKeyWords("return");
+    this->writeSpace();
     this->EmitExpression(returnstatement->Argument());
     this->writeTrailingSemicolon();
 }

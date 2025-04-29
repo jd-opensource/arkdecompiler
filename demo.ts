@@ -83,17 +83,24 @@
 // let obj = { a: 1, b: 2 };
 // let result = delete obj.c; 
 
-
-var x = 1;
-var y;
-if(x){
-    y = console.log("true");
-    y = console.log("1");
-}else{
-    y = console.log("false");
-}
+// IfImm
+// var x;
+// var y;
+// if(x){
+//     y = console.log("true");
+//     y = console.log("1");
+// }else{
+//     y = console.log("false");
+// }
 
 // const array = [10, 20, 30];
 // for (const value of array.values()) {
 //     console.log(value); 
 // }
+
+
+function add(a: number, b: number): number {
+    return a + b; // 返回两个数的和
+}
+
+var x = add(2, 3);

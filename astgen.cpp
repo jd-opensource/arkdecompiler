@@ -223,21 +223,44 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
     std::cout << "[+] VisitIf  >>>>>>>>>>>>>>>>>" << std::endl;
     auto enc = static_cast<AstGen *>(v);
     auto inst = inst_base->CastToIf();
-    switch (inst->GetInputType(0)) {
-        case compiler::DataType::ANY: {
-#if defined(ENABLE_BYTECODE_OPT) && defined(PANDA_WITH_ECMASCRIPT) && defined(ARK_INTRINSIC_SET)
-            IfEcma(v, inst);
+
+    auto left_expression = *enc->get_expression_by_register(enc, inst->GetSrcReg(0));
+    auto right_expression = *enc->get_expression_by_register(enc, inst->GetSrcReg(1));
+
+    panda::es2panda::ir::Expression* test_expression;
+
+    switch (inst->GetCc()) {
+        case compiler::CC_EQ:
+            test_expression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
+                                                        left_expression,
+                                                        right_expression,
+                                                        BinIntrinsicIdToToken(compiler::RuntimeInterface::IntrinsicId::EQ_IMM8_V8));
             break;
-#else
-            [[fallthrough]];
-#endif
-        }
+        case compiler::CC_NE:
+            test_expression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
+                                                        left_expression,
+                                                        right_expression,
+                                                        BinIntrinsicIdToToken(compiler::RuntimeInterface::IntrinsicId::NOTEQ_IMM8_V8));
+            break;
         default:
-            LOG(ERROR, BYTECODE_OPTIMIZER)
-                << "Codegen for " << compiler::GetOpcodeString(inst->GetOpcode()) << " failed";
-            enc->success_ = false;
-            break;
+            std::cout << "S5" << std::endl;
+            UNREACHABLE();
     }
+
+    es2panda::ir::BlockStatement* true_statements =   enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetTrueSuccessor()->GetId());
+    es2panda::ir::BlockStatement* false_statements =  enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetFalseSuccessor()->GetId());
+
+    auto ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, test_expression, true_statements, false_statements);
+
+    uint32_t block_id = inst_base->GetBasicBlock()->GetId();
+    es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, block_id);
+
+    true_statements->SetParent(block);
+    false_statements->SetParent(block);
+
+    const auto &statements = block->Statements();
+    block->AddStatementAtPos(statements.size(), ifStatement);
+
     std::cout << "[-] VisitIf  >>>>>>>>>>>>>>>>>" << std::endl;
 }
 
@@ -268,74 +291,11 @@ static std::optional<coretypes::TaggedValue> IsEcmaConstTemplate(Inst const *ins
             return {};
     }
 }
-
-#if defined(ARK_INTRINSIC_SET)
-void AstGen::IfEcma(GraphVisitor *v, compiler::IfInst *inst)
-{
-    auto enc = static_cast<AstGen *>(v);
-
-    compiler::Register reg = compiler::INVALID_REG_ID;
-    coretypes::TaggedValue cmp_val;
-
-    auto test_lhs = IsEcmaConstTemplate(inst->GetInput(0).GetInst());
-    auto test_rhs = IsEcmaConstTemplate(inst->GetInput(1).GetInst());
-
-    if (test_lhs.has_value() && test_lhs->IsBoolean()) {
-        cmp_val = test_lhs.value();
-        reg = inst->GetSrcReg(1);
-    } else if (test_rhs.has_value() && test_rhs->IsBoolean()) {
-        cmp_val = test_rhs.value();
-        reg = inst->GetSrcReg(0);
-    } else {
-        LOG(ERROR, BYTECODE_OPTIMIZER) << "Codegen for " << compiler::GetOpcodeString(inst->GetOpcode()) << " failed";
-        enc->success_ = false;
-        return;
-    }
-
-    DoLda(reg, enc->result_);
-    switch (inst->GetCc()) {
-        case compiler::CC_EQ: {
-            if (cmp_val.IsTrue()) {
-                enc->result_.emplace_back(
-                    pandasm::Create_ECMA_JTRUE(LabelName(inst->GetBasicBlock()->GetTrueSuccessor()->GetId())));
-            } else {
-                enc->result_.emplace_back(
-                    pandasm::Create_ECMA_JFALSE(LabelName(inst->GetBasicBlock()->GetTrueSuccessor()->GetId())));
-            }
-            break;
-        }
-        case compiler::CC_NE: {
-            if (cmp_val.IsTrue()) {
-                enc->result_.emplace_back(pandasm::Create_ECMA_ISTRUE());
-            } else {
-                enc->result_.emplace_back(pandasm::Create_ECMA_ISFALSE());
-            }
-            enc->result_.emplace_back(
-                pandasm::Create_ECMA_JFALSE(LabelName(inst->GetBasicBlock()->GetTrueSuccessor()->GetId())));
-            break;
-        }
-        default:
-            LOG(ERROR, BYTECODE_OPTIMIZER)
-                << "Codegen for " << compiler::GetOpcodeString(inst->GetOpcode()) << " failed";
-            enc->success_ = false;
-            return;
-    }
-}
-#endif
 #endif
 
 void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
 {
-
-    // std::cout << "[+] VisitIfImm  >>>>>>>>>>>>>>>>>" << std::endl;
-    // auto inst = inst_base->CastToIfImm();
-    // auto imm = inst->GetImm();
-    // std::cout << "[-] VisitIfImm  >>>>>>>>>>>>>>>>>" << std::endl;
-    // if (imm == 0) {
-    //     IfImmZero(v, inst_base);
-    //     return;
-    // }
-
+    std::cout << "[+] VisitIfImm  >>>>>>>>>>>>>>>>>" << std::endl;
     auto enc = static_cast<AstGen *>(v);
     auto inst = inst_base->CastToIfImm();
     auto imm = inst->GetImm();
@@ -377,31 +337,9 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
         block->AddStatementAtPos(statements.size(), ifStatement);
 
     }
+    std::cout << "[-] VisitIfImm  >>>>>>>>>>>>>>>>>" << std::endl;
 }
 
-void AstGen::IfImmZero(GraphVisitor *v, Inst *inst_base)
-{
-    std::cout << "[+] IfImmZero  >>>>>>>>>>>>>>>>>" << std::endl;
-    auto enc = static_cast<AstGen *>(v);
-    auto inst = inst_base->CastToIfImm();
-    DoLda(inst->GetSrcReg(0), enc->result_);
-    auto label = LabelName(inst->GetBasicBlock()->GetTrueSuccessor()->GetId());
-    std::cout << "[-] IfImmZero  >>>>>>>>>>>>>>>>>" << std::endl;
-    switch (inst->GetCc()) {
-        case compiler::CC_EQ:
-            enc->result_.emplace_back(pandasm::Create_JEQZ(label));
-            return;
-        case compiler::CC_NE:
-            enc->result_.emplace_back(pandasm::Create_JNEZ(label));
-            return;
-        default:
-            std::cout << "S5" << std::endl;
-            UNREACHABLE();
-    }
-
-    
-
-}
 
 void AstGen::VisitLoadString(GraphVisitor *v, Inst *inst_base)
 {

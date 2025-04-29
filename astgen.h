@@ -209,7 +209,8 @@ public:
         if (it != enc->reg2expression.end()) {
             return it->second;  
         }
-        handleError("can't find expression in reg2expression");
+        handleError("can't find expression in reg2expression: " + std::to_string(key));
+        
         return std::nullopt;
     }
 
