@@ -84,14 +84,14 @@
 // let result = delete obj.c; 
 
 // 16. IfImm
-var x;
-var y;
-if(x){
-    y = console.log("true");
-    y = console.log("1");
-}else{
-    y = console.log("false");
-}
+// var x;
+// var y;
+// if(x){
+//     y = console.log("true");
+//     y = console.log("1");
+// }else{
+//     y = console.log("false");
+// }
 
 // const array = [10, 20, 30];
 // for (const value of array.values()) {
@@ -105,3 +105,11 @@ if(x){
 
 // var x = add(2, 3);
 
+const person = {
+    name: "Alice",
+    age: 30,
+    isStudent: false
+};
+
+var x1 = console.log(person.name); // 输出: Alice
+var x2 = console.log(person['age']); // 输出: 30

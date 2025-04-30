@@ -414,7 +414,7 @@ void ArkTSGen::EmitIfStatement(const ir::AstNode *node){
 
 void ArkTSGen::SerializeNode(const ir::AstNode *node)
 {
-    if(node->Type() != AstNodeType::BLOCK_STATEMENT){
+    if(node->Type() != AstNodeType::BLOCK_STATEMENT && node->Type() != AstNodeType::VARIABLE_DECLARATOR ){
         this->writeIndent();
     }
     
