@@ -79,28 +79,29 @@
 // var x= setInterval(Math.max, 2000, "Bob", "Hi");
 // const maxNumber = Math.max(1,2,3,4,5,6,7);
 
-// DELOBJPROP
+// 15. DELOBJPROP
 // let obj = { a: 1, b: 2 };
 // let result = delete obj.c; 
 
-// IfImm
-// var x;
-// var y;
-// if(x){
-//     y = console.log("true");
-//     y = console.log("1");
-// }else{
-//     y = console.log("false");
-// }
+// 16. IfImm
+var x;
+var y;
+if(x){
+    y = console.log("true");
+    y = console.log("1");
+}else{
+    y = console.log("false");
+}
 
 // const array = [10, 20, 30];
 // for (const value of array.values()) {
 //     console.log(value); 
 // }
 
+// function declaration and DEFINEFUNC
+// function add(a: number, b: number): number {
+//     return a + b;
+// }
 
-function add(a: number, b: number): number {
-    return a + b;
-}
+// var x = add(2, 3);
 
-var x = add(2, 3);

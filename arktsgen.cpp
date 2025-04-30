@@ -381,26 +381,35 @@ void  ArkTSGen::EmitFunctionDeclaration(const ir::AstNode *node){
 void ArkTSGen::EmitIfStatement(const ir::AstNode *node){
     auto ifstatement = static_cast<const panda::es2panda::ir::IfStatement*>(node);
     
-    this->writeKeyWords("if");
+    // if(test)
+    this->writeKeyWords("if{");
     this->writeLeftParentheses();
     this->EmitExpression(ifstatement->Test());
     this->writeRightParentheses();
-    
     this->writeLeftBrace();
     this->writeNewLine();
 
+    // if statements
     this->indent_ = this->indent_ + this->singleindent_;
     this->SerializeNode(ifstatement->Consequent());
     this->indent_ = this->indent_ - this->singleindent_;
+    this->writeIndent();
     this->writeRightBrace();
 
+    // }else{
     this->writeKeyWords("else");
     this->writeLeftBrace();
     this->writeNewLine();
+
+    // else statements
     this->indent_ = this->indent_ + this->singleindent_;
     this->SerializeNode(ifstatement->Alternate());
     this->indent_ = this->indent_ - this->singleindent_;
+
+    // }
+    this->writeIndent();
     this->writeRightBrace();
+    this->writeNewLine();
 }
 
 void ArkTSGen::SerializeNode(const ir::AstNode *node)
@@ -445,7 +454,8 @@ void ArkTSGen::SerializeNode(const ir::AstNode *node)
             break;
 
         case AstNodeType::IF_STATEMENT:
-
+            std::cout << "enter IF_STATEMENT STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
+            this->EmitIfStatement(node);
             break;
         default:
             std::cout << "enter SerializeNode Default  >>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
