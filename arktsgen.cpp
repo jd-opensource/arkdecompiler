@@ -335,7 +335,7 @@ void ArkTSGen::EmitVariableDeclaratorStatement(const ir::AstNode *node){
     this->EmitExpression(vardeclstatement->Init());
 }
 
-// /home/harmonyos/arkcompiler/ets_frontend/ets2panda/lexer/token/token.cpp
+
 void ArkTSGen::EmitReturnStatement(const ir::AstNode *node){
     auto returnstatement = static_cast<const panda::es2panda::ir::ReturnStatement*>(node);
     this->writeKeyWords("return");

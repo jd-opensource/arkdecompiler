@@ -144,27 +144,24 @@ static bool SkipFunction(const pandasm::Function &function, const std::string &f
 bool DecompileRunOptimizations(compiler::Graph *graph, BytecodeOptIrInterface *iface)
 {
     std::cout <<  "@@@ 111111111111111111111111111111111111111111"  << std::endl;
-
     constexpr int OPT_LEVEL_0 = 0;
-
     if (panda::bytecodeopt::options.GetOptLevel() == OPT_LEVEL_0) {
         return false;
     }
-    
 
     graph->RunPass<compiler::Cleanup>();
     ASSERT(graph->IsDynamicMethod());
     std::cout <<  "@@@ 22222222222222222222222222222222222222222"  << std::endl;
-    //if (compiler::options.IsCompilerBranchElimination()) {
-    //    graph->RunPass<ConstantPropagation>(iface);
-    //    RunOpts<compiler::BranchElimination>(graph);
-    //}
+    if (compiler::options.IsCompilerBranchElimination()) {
+       graph->RunPass<ConstantPropagation>(iface);
+       RunOpts<compiler::BranchElimination>(graph);
+    }
     
     RunOpts<compiler::ValNum, compiler::Lowering, compiler::MoveConstants>(graph);
     std::cout <<  "@@@ 33333333333333333333333333333333333333333"  << std::endl;
-    // this pass should run just before register allocator
-    //graph->RunPass<compiler::Cleanup>();
-    //graph->RunPass<RegAccAlloc>();
+
+    graph->RunPass<compiler::Cleanup>();
+    graph->RunPass<RegAccAlloc>();
 
     graph->RunPass<compiler::Cleanup>();
     if (!RegAlloc(graph)) {
@@ -243,7 +240,7 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
         return false;
     }
 
-    if (!RunOptimizations(graph, &ir_interface)) {
+    if (!DecompileRunOptimizations(graph, &ir_interface)) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Running optimizations failed!";
         std::cout << "Optimizing " << func_name << ": Running optimizations failed!" << std::endl;
         return false;
