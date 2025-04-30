@@ -293,6 +293,8 @@ public:
 
     std::map<compiler::Register, panda::es2panda::ir::Expression*> reg2expression;
 
+    panda::es2panda::ir::Identifier* DEFINEFUNC = AllocNode<panda::es2panda::ir::Identifier>(this, "DEFINEFUNC");
+
     panda::es2panda::ir::Identifier* constant_undefined = AllocNode<panda::es2panda::ir::Identifier>(this, "undefined");
     panda::es2panda::ir::Identifier* constant_nan = AllocNode<panda::es2panda::ir::Identifier>(this, "NaN");
     panda::es2panda::ir::Identifier* constant_infinity = AllocNode<panda::es2panda::ir::Identifier>(this, "infinity");
