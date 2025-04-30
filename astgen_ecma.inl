@@ -700,20 +700,21 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::STOBJBYVALUE_IMM8_V8_V8:
        case compiler::RuntimeInterface::IntrinsicId::STOBJBYVALUE_IMM16_V8_V8:
        {
+            std::cout << "11111111111111111111111111111111111111111111" << std::endl;
             auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
                                                         *enc->get_expression_by_register(enc, inst->GetSrcReg(0)),
                                                         *enc->get_expression_by_register(enc, inst->GetSrcReg(1)), 
                                                         es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
                                                         true, 
                                                         false);
-
+            std::cout << "22222222222222222222222222222222222222222222" << std::endl;
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
             panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
                                                                             objattrexpression,
                                                                             *enc->get_expression_by_register(enc, acc_src),
                                                                             es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
                                                                         ); 
-            
+            std::cout << "33333333333333333333333333333333333333333333" << std::endl;
             auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
                                                                                 assignexpression);
             block->AddStatementAtPos(statements.size(), assignstatement);

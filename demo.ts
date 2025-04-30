@@ -99,17 +99,14 @@
 // }
 
 // function declaration and DEFINEFUNC
-// function add(a: number, b: number): number {
-//     return a + b;
+function add(a: number, b: number): number {
+    return a + b;
+}
+
+var x = add(2, 3);
+
+// enum Role {
+//     Admin,
+//     User,
+//     Guest,
 // }
-
-// var x = add(2, 3);
-
-const person = {
-    name: "Alice",
-    age: 30,
-    isStudent: false
-};
-
-var x1 = console.log(person.name); // 输出: Alice
-var x2 = console.log(person['age']); // 输出: 30

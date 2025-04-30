@@ -176,15 +176,6 @@ static void LineNumberPropagate(pandasm::Function *function)
     }
 }
 
-static void DebugInfoPropagate(pandasm::Function &function, const compiler::Graph *graph,
-                               BytecodeOptIrInterface &ir_interface)
-{
-    LineNumberPropagate(&function);
-    if (graph->IsDynamicMethod()) {
-        ColumnNumberPropagate(&function);
-    }
-    ir_interface.ClearPcInsMap();
-}
 
 static bool SkipFunction(const pandasm::Function &function, const std::string &func_name)
 {
@@ -302,7 +293,6 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
     if ((graph == nullptr) || !graph->RunPass<panda::compiler::IrBuilder>()) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": IR builder failed!";
         std::cout << "Optimizing " << func_name << ": IR builder failed!" << std::endl;
-
         return false;
     }
 
@@ -318,45 +308,29 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
         return false;
     }
     
- 
-
-
 
     if (!graph->RunPass<AstGen>(&function, &ir_interface, prog, parser_program, extractTrueFunName(func_name))) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Code generation failed!";
 
-        std::cout << "Optimizing " << func_name << ": Code generation failed!" << std::endl;
+        std::cout << "Decompiling " << func_name << ": Code generation failed!" << std::endl;
 
         return false;
     }
 
-    DebugInfoPropagate(function, graph, ir_interface);
-
-    function.value_of_first_param =
-        static_cast<int64_t>(graph->GetStackSlotsCount()) - 1;  // Work-around promotion rules
-    function.regs_num = static_cast<size_t>(function.value_of_first_param + 1);
-
-    if (auto frame_size = function.regs_num + function.GetParamsNum(); frame_size >= NUM_COMPACTLY_ENCODED_REGS) {
-        LOG(INFO, BYTECODE_OPTIMIZER) << "Function " << func_name << " has frame size " << frame_size;
-
-        std::cout << "Function " << func_name << " has frame size " << std::endl;
-    }
-
-    LOG(DEBUG, BYTECODE_OPTIMIZER) << "Optimized " << func_name;
-    std::cout << "Optimized " << func_name << std::endl;
+    std::cout << "Decompiled: " << func_name << std::endl;
 
     return true;
 }
 
 void LogAst(panda::es2panda::parser::Program *parser_program){
-    std::cout << "[+] log raw ast start >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+    std::cout << "[] log raw ast start >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
     std::string res = parser_program->Dump();
     std::cout << res << std::endl;
-    std::cout << "[-] log raw ast end >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+    std::cout << "[+] log raw ast end >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
 }
 
 void LogArkTS2File(panda::es2panda::parser::Program *parser_program, std::string outputFileName){
-    std::cout << "[+] log arkTS  start >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+    std::cout << "[1] log arkTS  start >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
     auto astsgen = panda::es2panda::ir::ArkTSGen(parser_program->Ast());
     
 
@@ -369,7 +343,7 @@ void LogArkTS2File(panda::es2panda::parser::Program *parser_program, std::string
         outputFile << astsgen.Str();
         outputFile.close();
     }
-    std::cout << "[-] log arkTS  end >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+    std::cout << "[+] log arkTS  end >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
 }
 
 bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::PandaFileToPandaAsmMaps *maps,
@@ -405,7 +379,7 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
             if (!mda.IsExternal()) {
                 result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic) && result;
                 if(result){
-                    LogAst(parser_program);
+                    //LogAst(parser_program);
                     LogArkTS2File(parser_program, outputFileName);
                 }
             }
