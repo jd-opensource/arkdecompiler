@@ -12,7 +12,7 @@ ArkTSGen::ArkTSGen(const BlockStatement *program, util::StringView sourceCode) :
 
 ArkTSGen::ArkTSGen(const ir::AstNode *node) : indent_(0), dumpNodeOnly_(true)
 {
-    SerializeNode(node);
+    EmitStatement(node);
 }
 
 void ArkTSGen::EmitBlockStatement(const ir::AstNode *node){
@@ -22,7 +22,7 @@ void ArkTSGen::EmitBlockStatement(const ir::AstNode *node){
     const auto &statements = blockstatement->Statements();
     
     for (const auto *stmt : statements) {
-        this->SerializeNode(stmt);
+        this->EmitStatement(stmt);
     }
 }
 
@@ -320,7 +320,7 @@ void ArkTSGen::EmitVariableDeclarationStatement(const ir::AstNode *node){
     }
 
     for (const auto *it : vardeclstatement->Declarators()) {
-        this->SerializeNode(it);
+        this->EmitStatement(it);
         if(++count < size ){
             this->writeColon();
         }
@@ -371,7 +371,7 @@ void  ArkTSGen::EmitFunctionDeclaration(const ir::AstNode *node){
     this->writeNewLine();
     this->indent_ = this->indent_ + this->singleindent_;
 
-    this->SerializeNode(scriptfunction->Body());
+    this->EmitStatement(scriptfunction->Body());
 
     this->indent_ = this->indent_ - this->singleindent_;
     this->writeRightBrace();
@@ -391,7 +391,7 @@ void ArkTSGen::EmitIfStatement(const ir::AstNode *node){
 
     // if statements
     this->indent_ = this->indent_ + this->singleindent_;
-    this->SerializeNode(ifstatement->Consequent());
+    this->EmitStatement(ifstatement->Consequent());
     this->indent_ = this->indent_ - this->singleindent_;
     this->writeIndent();
     this->writeRightBrace();
@@ -403,7 +403,7 @@ void ArkTSGen::EmitIfStatement(const ir::AstNode *node){
 
     // else statements
     this->indent_ = this->indent_ + this->singleindent_;
-    this->SerializeNode(ifstatement->Alternate());
+    this->EmitStatement(ifstatement->Alternate());
     this->indent_ = this->indent_ - this->singleindent_;
 
     // }
@@ -412,7 +412,7 @@ void ArkTSGen::EmitIfStatement(const ir::AstNode *node){
     this->writeNewLine();
 }
 
-void ArkTSGen::SerializeNode(const ir::AstNode *node)
+void ArkTSGen::EmitStatement(const ir::AstNode *node)
 {
     if(node->Type() != AstNodeType::BLOCK_STATEMENT && node->Type() != AstNodeType::VARIABLE_DECLARATOR ){
         this->writeIndent();
@@ -458,7 +458,7 @@ void ArkTSGen::SerializeNode(const ir::AstNode *node)
             this->EmitIfStatement(node);
             break;
         default:
-            std::cout << "enter SerializeNode Default  >>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+            std::cout << "enter EmitStatement Default  >>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
     }
 
 
@@ -529,7 +529,7 @@ void ArkTSGen::Serialize(const ArkTSGen::Property &prop)
         SerializeNumber(std::get<double>(value));
     } else if (std::holds_alternative<const ir::AstNode *>(value)) {
         if (dumpNodeOnly_) {
-            SerializeNode(std::get<const ir::AstNode *>(value));
+            EmitStatement(std::get<const ir::AstNode *>(value));
         } else {
             SerializeObject(std::get<const ir::AstNode *>(value));
         }
@@ -631,7 +631,7 @@ void ArkTSGen::SerializeArray(std::vector<const ir::AstNode *> array)
         [this, &array]() -> void {
             for (auto it = array.begin(); it != array.end(); ++it) {
                 if (dumpNodeOnly_) {
-                    SerializeNode(*it);
+                    EmitStatement(*it);
                 } else {
                     ss_ << std::endl;
                     Indent();

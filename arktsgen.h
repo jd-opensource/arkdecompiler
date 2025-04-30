@@ -146,7 +146,7 @@ public:
     explicit ArkTSGen(const BlockStatement *program, util::StringView sourceCode);
     explicit ArkTSGen(const ir::AstNode *node);
 
-    void SerializeNode(const ir::AstNode *node);
+    void EmitStatement(const ir::AstNode *node);
 
     void Add(std::initializer_list<Property> props);
     void Add(const ArkTSGen::Property &prop);
