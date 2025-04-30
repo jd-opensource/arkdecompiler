@@ -99,14 +99,14 @@
 // }
 
 // function declaration and DEFINEFUNC
-function add(a: number, b: number): number {
-    return a + b;
-}
-
-var x = add(2, 3);
-
-// enum Role {
-//     Admin,
-//     User,
-//     Guest,
+// function add(a: number, b: number): number {
+//     return a + b;
 // }
+
+// var x = add(2, 3);
+
+enum Role {
+    Admin,
+    User,
+    Guest,
+}

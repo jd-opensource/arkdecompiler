@@ -246,6 +246,8 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
         return false;
     }
     
+    std::ofstream dump_out("logs/" + func_name+ ".ir");
+    graph->Dump(&dump_out);
 
     if (!graph->RunPass<AstGen>(&function, &ir_interface, prog, parser_program, extractTrueFunName(func_name))) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Code generation failed!";
