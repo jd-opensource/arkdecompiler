@@ -118,65 +118,6 @@ void BuildMapFromPcToIns(pandasm::Function &function, BytecodeOptIrInterface &ir
     }
 }
 
-static void ColumnNumberPropagate(pandasm::Function *function)
-{
-    auto &ins_vec = function->ins;
-    uint32_t cn = compiler::INVALID_COLUMN_NUM;
-    // handle the instructions that are at the beginning of code but do not have column number
-    size_t k = 0;
-    while (k < ins_vec.size() && cn == compiler::INVALID_COLUMN_NUM) {
-        cn = ins_vec[k++].ins_debug.column_number;
-    }
-    if (cn == compiler::INVALID_COLUMN_NUM) {
-        LOG(DEBUG, BYTECODE_OPTIMIZER) << "Failed ColumnNumberPropagate: All insts have invalid column number";
-        return;
-    }
-    for (size_t j = 0; j < k - 1; j++) {
-        ins_vec[j].ins_debug.SetColumnNumber(cn);
-    }
-
-    // handle other instructions that do not have column number
-    for (; k < ins_vec.size(); k++) {
-        if (ins_vec[k].ins_debug.column_number != compiler::INVALID_COLUMN_NUM) {
-            cn = ins_vec[k].ins_debug.column_number;
-        } else {
-            ins_vec[k].ins_debug.SetColumnNumber(cn);
-        }
-    }
-}
-
-static void LineNumberPropagate(pandasm::Function *function)
-{
-    if (function == nullptr || function->ins.empty()) {
-        return;
-    }
-    size_t ln = 0;
-    auto &ins_vec = function->ins;
-
-    // handle the instructions that are at the beginning of code but do not have line number
-    size_t i = 0;
-    while (i < ins_vec.size() && ln == 0) {
-        ln = ins_vec[i++].ins_debug.line_number;
-    }
-    if (ln == 0) {
-        LOG(DEBUG, BYTECODE_OPTIMIZER) << "Failed LineNumberPropagate: All insts have invalid line number";
-        return;
-    }
-    for (size_t j = 0; j < i - 1; j++) {
-        ins_vec[j].ins_debug.SetLineNumber(ln);
-    }
-
-    // handle other instructions that do not have line number
-    for (; i < ins_vec.size(); i++) {
-        if (ins_vec[i].ins_debug.line_number != 0) {
-            ln = ins_vec[i].ins_debug.line_number;
-        } else {
-            ins_vec[i].ins_debug.SetLineNumber(ln);
-        }
-    }
-}
-
-
 static bool SkipFunction(const pandasm::Function &function, const std::string &func_name)
 {
     if (panda::bytecodeopt::options.WasSetMethodRegex()) {
