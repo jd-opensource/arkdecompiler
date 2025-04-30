@@ -347,11 +347,6 @@ void AstGen::VisitLoadString(GraphVisitor *v, Inst *inst_base)
     pandasm::Ins ins;
     auto enc = static_cast<AstGen *>(v);
     auto inst = inst_base->CastToLoadString();
-    /* Do not emit unused code for Str -> CastValueToAnyType chains */
-    // if (!HasUserPredicate(inst,
-    //                       [](Inst const *i) { return i->GetOpcode() != compiler::Opcode::CastValueToAnyType; })) {
-    //     return;
-    // }
 
     std::string source_str = enc->ir_interface_->GetStringIdByOffset(inst->GetTypeId()); 
     panda::es2panda::util::StringView name_view = panda::es2panda::util::StringView(*new std::string(source_str));
@@ -364,25 +359,7 @@ void AstGen::VisitLoadString(GraphVisitor *v, Inst *inst_base)
      auto dst_reg = inst->GetDstReg();
     enc->set_expression_by_register(enc, dst_reg, src_expression);
    
-    
 
-    // if(dst_reg == compiler::ACC_REG_ID){
-    //     enc->acc = src_expression;
-    // }else{
-    //     auto dst_identifier = enc->get_identifier(enc, dst_reg);
-    //     auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-    //                                                                 dst_identifier,
-    //                                                                 src_expression,
-    //                                                                 es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-    //                                                             );
-    //     auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
-    //                                                                         assignexpression);
-
-    //     es2panda::ir::BlockStatement* block = enc->programast_->Ast();
-    //     const auto &statements = block->Statements();
-
-    //     block->AddStatementAtPos(statements.size(), assignstatement);
-    // }
     std::cout << "[-] VisitLoadString  >>>>>>>>>>>>>>>>>" << std::endl;
 }
 
@@ -417,8 +394,6 @@ void AstGen::VisitCastValueToAnyType([[maybe_unused]] GraphVisitor *visitor, [[m
 {
     std::cout << "[+] VisitCastValueToAnyType  >>>>>>>>>>>>>>>>>" << std::endl;
     auto enc = static_cast<AstGen *>(visitor);
-    // es2panda::ir::BlockStatement* block = enc->programast_->Ast();
-    // const auto &statements = block->Statements();
 
     auto cvat = inst->CastToCastValueToAnyType();
     auto input = cvat->GetInput(0).GetInst()->CastToConstant();
@@ -474,27 +449,6 @@ void AstGen::VisitCastValueToAnyType([[maybe_unused]] GraphVisitor *visitor, [[m
 
     auto inst_dst_reg = inst->GetDstReg();
     enc->reg2expression[inst_dst_reg] = source;
-
-    // if(inst_dst_reg == compiler::ACC_REG_ID){
-    //     enc->acc = source;
-    // }else{
-    //     panda::es2panda::ir::Identifier* dst_reg_identifier = get_identifier(enc, inst_dst_reg);
-
-    //     ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->programast_->Allocator()->Adapter());
-    //     auto *declarator = AllocNode<es2panda::ir::VariableDeclarator>(enc,
-    //                                                                     dst_reg_identifier, 
-    //                                                                     source);
-                                                                        
-    //     declarators.push_back(declarator);
-        
-    //     auto variadeclaration = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
-    //                                                                         es2panda::ir::VariableDeclaration::VariableDeclarationKind::VAR,
-    //                                                                         std::move(declarators),
-    //                                                                         true
-    //                                                                     );
-
-    //     block->AddStatementAtPos(statements.size(), variadeclaration);
-    // }
 
     std::cout << "[-] VisitCastValueToAnyType  >>>>>>>>>>>>>>>>>" << std::endl;
 }

@@ -19,11 +19,35 @@ void DoSta(compiler::Register reg, std::vector<pandasm::Ins> &result);
 class AstGen : public compiler::Optimization, public compiler::GraphVisitor {
 public:
     explicit AstGen(compiler::Graph *graph, pandasm::Function *function,
-        const BytecodeOptIrInterface *iface, pandasm::Program *prog,  es2panda::parser::Program* programast, uint32_t first_block_id)
-        : compiler::Optimization(graph), function_(function), ir_interface_(iface), program_(prog),  first_block_id_(first_block_id), programast_(programast)
+        const BytecodeOptIrInterface *iface, pandasm::Program *prog,  es2panda::parser::Program* parser_program, std::string fun_name)
+        : compiler::Optimization(graph), function_(function), ir_interface_(iface), program_(prog),  parser_program_(parser_program)
     {
-        std::cout << "enter:: " << first_block_id << std::endl;
-        this->id2block[first_block_id] = programast->Ast();
+        ArenaVector<es2panda::ir::Expression*> arguments(parser_program->Allocator()->Adapter());
+
+        for (size_t i = 0; i < function->GetParamsNum(); ++i) {
+            panda::es2panda::util::StringView tmp_name_view = panda::es2panda::util::StringView(*new std::string("arg"+std::to_string(i)));
+            arguments.push_back(parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(tmp_name_view));
+        }
+
+        ArenaVector<panda::es2panda::ir::Statement *> func_statements(parser_program->Allocator()->Adapter());
+        auto body = parser_program->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(func_statements));
+        panda::es2panda::ir::ScriptFunctionFlags flags_ {panda::es2panda::ir::ScriptFunctionFlags::NONE};
+        auto funcNode = parser_program->Allocator()->New<panda::es2panda::ir::ScriptFunction>(nullptr, std::move(arguments), nullptr, body, nullptr, flags_, true, false);
+        
+
+        panda::es2panda::util::StringView name_view = panda::es2panda::util::StringView(*new std::string(fun_name));
+        auto funname_id = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(name_view);
+                
+
+        funcNode->SetIdent(funname_id);
+        auto funcDecl = parser_program->Allocator()->New<panda::es2panda::ir::FunctionDeclaration>(funcNode);
+
+        auto program_block = parser_program->Ast();
+        auto program_statements = program_block->Statements();
+        program_block->AddStatementAtPos(program_statements.size(), funcDecl);
+
+
+        this->id2block[0] = body;
     }
     ~AstGen() override = default;
     bool RunImpl() override;
@@ -106,7 +130,7 @@ public:
     static T *AllocNode(AstGen * xx, Args &&... args)
     {
         //[[maybe_unused]] auto *xx = static_cast<AstGen *>(visitor);
-        auto ret = xx->programast_->Allocator()->New<T>(std::forward<Args>(args)...);
+        auto ret = xx->parser_program_->Allocator()->New<T>(std::forward<Args>(args)...);
         if (ret == nullptr) {
             std::cout << "Unsuccessful allocation during parsing" << std::endl;;
         }
@@ -214,8 +238,8 @@ public:
     es2panda::ir::BlockStatement* get_blockstatement_byid(AstGen * enc, uint32_t block_id){
         std::cout << "@@@@@@@@@@@@@@@@@@@@: " << block_id << std::endl;
         if (enc->id2block.find(block_id) == enc->id2block.end()) {
-            ArenaVector<panda::es2panda::ir::Statement *> statements(enc->programast_->Allocator()->Adapter());
-            auto block = enc->programast_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
+            ArenaVector<panda::es2panda::ir::Statement *> statements(enc->parser_program_->Allocator()->Adapter());
+            auto block = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
             enc->id2block[block_id] = block;
         }
         return enc->id2block[block_id];
@@ -256,7 +280,7 @@ public:
 
     panda::es2panda::ir::Expression* thisptr= NULL;
 
-    es2panda::parser::Program* programast_;
+    es2panda::parser::Program* parser_program_;
 
 
     std::map<uint32_t, es2panda::ir::BlockStatement*> id2block;

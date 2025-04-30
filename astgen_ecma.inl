@@ -33,7 +33,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::LDBIGINT_ID16:
        {
             panda::es2panda::ir::Identifier* funname = enc->get_identifier_byname(enc, new std::string("BigInt"));
-            ArenaVector<es2panda::ir::Expression *> arguments(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
 
             auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[0]);
             auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
@@ -201,7 +201,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             panda::es2panda::ir::Expression* source_expression = *enc->get_expression_by_register(enc, source_reg);
 
             panda::es2panda::ir::Identifier* funname = enc->get_identifier_byname(enc, new std::string("Number"));
-            ArenaVector<es2panda::ir::Expression *> arguments(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
             arguments.push_back(source_expression);
 
             auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
@@ -246,14 +246,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         case compiler::RuntimeInterface::IntrinsicId::CREATEEMPTYOBJECT:
         {
 
-            ArenaVector<es2panda::ir::Expression *> properties(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Expression *> properties(enc->parser_program_->Allocator()->Adapter());
             auto objectexpression = AllocNode<es2panda::ir::ObjectExpression>(enc, 
                                                                                 es2panda::ir::AstNodeType::OBJECT_EXPRESSION,
                                                                                 std::move(properties),
                                                                                 false
                                                                             );
 
-            ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->parser_program_->Allocator()->Adapter());
 
 
             auto dst_reg = inst->GetDstReg();
@@ -264,13 +264,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         case compiler::RuntimeInterface::IntrinsicId::CREATEEMPTYARRAY_IMM16:
         case compiler::RuntimeInterface::IntrinsicId::CREATEEMPTYARRAY_IMM8:
         {
-            ArenaVector<es2panda::ir::Expression *> elements(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Expression *> elements(enc->parser_program_->Allocator()->Adapter());
             auto arrayexpression = AllocNode<es2panda::ir::ArrayExpression>(enc, 
                                                                             es2panda::ir::AstNodeType::ARRAY_EXPRESSION,
                                                                             std::move(elements),
                                                                             false
                                                                             );
-            ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->parser_program_->Allocator()->Adapter());
 
 
             auto dst_reg = inst->GetDstReg();
@@ -282,7 +282,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         case compiler::RuntimeInterface::IntrinsicId::CREATEARRAYWITHBUFFER_IMM8_ID16:
         case compiler::RuntimeInterface::IntrinsicId::CREATEARRAYWITHBUFFER_IMM16_ID16:
         {
-            ArenaVector<es2panda::ir::Expression *> elements(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Expression *> elements(enc->parser_program_->Allocator()->Adapter());
 
             ASSERT(inst->HasImms() && inst->GetImms().size() > 0);
             
@@ -341,7 +341,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         case compiler::RuntimeInterface::IntrinsicId::CREATEOBJECTWITHBUFFER_IMM8_ID16:
         case compiler::RuntimeInterface::IntrinsicId::CREATEOBJECTWITHBUFFER_IMM16_ID16:
         {
-            ArenaVector<es2panda::ir::Expression *> properties(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Expression *> properties(enc->parser_program_->Allocator()->Adapter());
             
             auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]); 
             auto literalarray = enc->findLiteralArrayByOffset(ir_id0);
@@ -392,7 +392,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 false
                                                                             );
 
-            ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->parser_program_->Allocator()->Adapter());
 
 
             auto dst_reg = inst->GetDstReg();
@@ -481,7 +481,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             
             auto dst_identifier = enc->get_identifier_byname(enc, global_name);
 
-            ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->parser_program_->Allocator()->Adapter());
             auto *declarator = AllocNode<es2panda::ir::VariableDeclarator>(enc,
                                                                                 dst_identifier, 
                                                                                 src_expression);
@@ -513,7 +513,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto src_arg = inst->GetSrcReg(inst->GetInputsCount() - 2);
             panda::es2panda::ir::Expression* funname = *enc->get_expression_by_register(enc, src_arg);;;
 
-            ArenaVector<es2panda::ir::Expression *> arguments(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
             es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                                 funname,
                                                                                 std::move(arguments),
@@ -533,7 +533,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto src_arg = inst->GetSrcReg(inst->GetInputsCount() - 2);
             panda::es2panda::ir::Expression* funname = *enc->get_expression_by_register(enc, src_arg);
 
-            ArenaVector<es2panda::ir::Expression *> arguments(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
 
             auto v0 = *enc->get_expression_by_register(enc, inst->GetSrcReg(0));
             
@@ -554,7 +554,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto src_arg = inst->GetSrcReg(inst->GetInputsCount() - 2);
             panda::es2panda::ir::Expression* funname =  *enc->get_expression_by_register(enc, src_arg);
 
-            ArenaVector<es2panda::ir::Expression *> arguments(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
             arguments.push_back(*enc->get_expression_by_register(enc, inst->GetSrcReg(0)));
             arguments.push_back(*enc->get_expression_by_register(enc, inst->GetSrcReg(1)));
 
@@ -576,7 +576,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        {
             auto src_arg = inst->GetSrcReg(inst->GetInputsCount() - 2);
             panda::es2panda::ir::Expression* funname =  *enc->get_expression_by_register(enc, src_arg);
-            ArenaVector<es2panda::ir::Expression *> arguments(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
 
             arguments.push_back(*enc->get_expression_by_register(enc, inst->GetSrcReg(0)));
             arguments.push_back(*enc->get_expression_by_register(enc, inst->GetSrcReg(1)));
@@ -602,7 +602,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             panda::es2panda::ir::Expression* funname =  *enc->get_expression_by_register(enc, src_arg);
             enc->thisptr = *enc->get_expression_by_register(enc, inst->GetSrcReg(0));
 
-            ArenaVector<es2panda::ir::Expression *> arguments(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
             es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                                 funname,
                                                                                 std::move(arguments),
@@ -621,7 +621,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        {
             auto src_arg = inst->GetSrcReg(inst->GetInputsCount() - 2);
             panda::es2panda::ir::Expression* funname = *enc->get_expression_by_register(enc, src_arg);
-            ArenaVector<es2panda::ir::Expression *> arguments(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
 
 
             enc->thisptr = *enc->get_expression_by_register(enc, inst->GetSrcReg(0));
@@ -645,7 +645,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        {
             auto src_arg = inst->GetSrcReg(inst->GetInputsCount() - 2);
             panda::es2panda::ir::Expression* funname = *enc->get_expression_by_register(enc, src_arg);
-            ArenaVector<es2panda::ir::Expression *> arguments(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
 
             enc->thisptr = *enc->get_expression_by_register(enc, inst->GetSrcReg(0));
             arguments.push_back(*enc->get_expression_by_register(enc, inst->GetSrcReg(1)));
@@ -669,7 +669,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        {
             auto src_arg = inst->GetSrcReg(inst->GetInputsCount() - 2);
             panda::es2panda::ir::Expression* funname = *enc->get_expression_by_register(enc, src_arg);
-            ArenaVector<es2panda::ir::Expression *> arguments(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
 
             enc->thisptr = *enc->get_expression_by_register(enc, inst->GetSrcReg(0));
             arguments.push_back(*enc->get_expression_by_register(enc, inst->GetSrcReg(1)));
@@ -753,7 +753,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::NEWOBJRANGE_IMM16_IMM8_V8:
        case compiler::RuntimeInterface::IntrinsicId::WIDE_NEWOBJRANGE_PREF_IMM16_V8:
        {
-            ArenaVector<es2panda::ir::Expression *> arguments(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
 
             es2panda::ir::Expression *callee = *enc->get_expression_by_register(enc, inst->GetSrcReg(0));
 
@@ -786,7 +786,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             //auto target_obj = enc->get_identifier(enc, v0);
 
 
-            ArenaVector<es2panda::ir::Expression *> elements(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Expression *> elements(enc->parser_program_->Allocator()->Adapter());
             
             auto target_obj = *enc->get_expression_by_register(enc, v0);
             auto target_objexpression = static_cast<panda::es2panda::ir::ObjectExpression*>(target_obj);
@@ -819,7 +819,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto raw_expression = *enc->get_expression_by_register(enc, inst->GetSrcReg(1));
             auto raw_array_expression = static_cast<const panda::es2panda::ir::ArrayExpression*>(raw_expression);
 
-            ArenaVector<es2panda::ir::Expression *> elements(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Expression *> elements(enc->parser_program_->Allocator()->Adapter());
 
             for (auto *it :raw_array_expression->Elements()) {
                 elements.push_back(it);
@@ -851,7 +851,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto raw_obj = *enc->get_expression_by_register(enc, inst->GetSrcReg(0));
             auto raw_arrayexpression = static_cast<panda::es2panda::ir::ArrayExpression*>(raw_obj);
 
-            ArenaVector<es2panda::ir::Expression *> elements(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Expression *> elements(enc->parser_program_->Allocator()->Adapter());
 
 
             auto index_expression = *enc->get_expression_by_register(enc, inst->GetSrcReg(1));
@@ -900,7 +900,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 argsum = static_cast<uint32_t>(inst->GetImms()[1]);
             }
 
-            ArenaVector<es2panda::ir::Expression *> arguments(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
             for (uint32_t i = 0; i < argsum; ++i) {
                 arguments.push_back(*enc->get_expression_by_register(enc, inst->GetSrcReg(i)));
             }
@@ -935,7 +935,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 argsum = static_cast<uint32_t>(inst->GetImms()[1]);
             }
 
-            ArenaVector<es2panda::ir::Expression *> arguments(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
             for (uint32_t i = 1; i <= argsum; ++i) {
                 arguments.push_back(*enc->get_expression_by_register(enc, inst->GetSrcReg(i)));
             }
@@ -986,7 +986,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_ISFALSE_PREF_IMM8:
        {
             panda::es2panda::ir::Expression* funname = enc->get_identifier_byname(enc, new std::string("runtime.isfalse"));
-            ArenaVector<es2panda::ir::Expression *> arguments(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
 
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
             arguments.push_back(*enc->get_expression_by_register(enc, acc_src));
@@ -2939,7 +2939,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 argsum = static_cast<uint32_t>(inst->GetImms()[1]);
             }
 
-            ArenaVector<es2panda::ir::Expression *> arguments(enc->programast_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
             for (uint32_t i = 0; i <= argsum; ++i) {
                 arguments.push_back(*enc->get_expression_by_register(enc, inst->GetSrcReg(i)));
             }

@@ -103,4 +103,4 @@ function add(a: number, b: number): number {
     return a + b;
 }
 
-var x = add(2, 3);
+//var x = add(2, 3);

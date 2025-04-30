@@ -249,9 +249,23 @@ bool DecompileRunOptimizations(compiler::Graph *graph, BytecodeOptIrInterface *i
     return true;
 }
 
+std::string extractTrueFunName(const std::string& input) {
+    size_t start = input.find("#*#");
+    if (start == std::string::npos) {
+        return input; 
+    }
 
-bool DecompileFunction(pandasm::Program *prog, const pandasm::AsmEmitter::PandaFileToPandaAsmMaps *maps,
-                      const panda_file::MethodDataAccessor &mda, bool is_dynamic)
+    size_t colon = input.find(":", start);
+    if (colon == std::string::npos) {
+        return input; 
+    }
+
+    return input.substr(start + 3, colon - (start + 3));
+}
+
+bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program *parser_program, 
+                        const pandasm::AsmEmitter::PandaFileToPandaAsmMaps *maps,
+                        const panda_file::MethodDataAccessor &mda, bool is_dynamic)
 {
 
     ArenaAllocator allocator {SpaceType::SPACE_TYPE_COMPILER};
@@ -305,61 +319,15 @@ bool DecompileFunction(pandasm::Program *prog, const pandasm::AsmEmitter::PandaF
     }
     
  
-    panda::es2panda::parser::Program *astprogram = new panda::es2panda::parser::Program(panda::es2panda::ScriptExtension::TS);
-    
-    ArenaVector<panda::es2panda::ir::Statement *> program_statements(astprogram->Allocator()->Adapter());
-    auto program_ast = astprogram->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(program_statements));
-    astprogram->SetAst(program_ast);
-    uint32_t first_block_id = 0;
-
-    ArenaVector<es2panda::ir::Expression*> arguments(astprogram->Allocator()->Adapter());
-
-    for (size_t i = 0; i < function.GetParamsNum(); ++i) {
-        panda::es2panda::util::StringView tmp_name_view = panda::es2panda::util::StringView(*new std::string("arg"+std::to_string(i)));
-        arguments.push_back(astprogram->Allocator()->New<panda::es2panda::ir::Identifier>(tmp_name_view));
-    }
-
-    ArenaVector<panda::es2panda::ir::Statement *> func_statements(astprogram->Allocator()->Adapter());
-    auto body = astprogram->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(func_statements));
-    panda::es2panda::ir::ScriptFunctionFlags flags_ {panda::es2panda::ir::ScriptFunctionFlags::NONE};
-    auto funcNode = astprogram->Allocator()->New<panda::es2panda::ir::ScriptFunction>(nullptr, std::move(arguments), nullptr, body, nullptr, flags_, true, false);
-
-    panda::es2panda::util::StringView name_view = panda::es2panda::util::StringView(*new std::string(func_name));
-    auto funname_id = astprogram->Allocator()->New<panda::es2panda::ir::Identifier>(name_view);
-            
-
-    funcNode->SetIdent(funname_id);
-    auto funcDecl = astprogram->Allocator()->New<panda::es2panda::ir::FunctionDeclaration>(funcNode);
-
-    const auto &statements = program_ast->Statements();
-    program_ast->AddStatementAtPos(statements.size(), funcDecl);
 
 
-    std::cout << "************************************11111111111111111111111111111111" << std::endl;
-    if (!graph->RunPass<AstGen>(&function, &ir_interface, prog, astprogram, first_block_id)) {
+
+    if (!graph->RunPass<AstGen>(&function, &ir_interface, prog, parser_program, extractTrueFunName(func_name))) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Code generation failed!";
 
         std::cout << "Optimizing " << func_name << ": Code generation failed!" << std::endl;
 
         return false;
-    }
-    std::cout << "************************************22222222222222222222222222222222" << std::endl;
-    std::string res = astprogram->Dump();
-    std::cout << res << std::endl;
-
-    std::cout << "*******************************************************************" << std::endl;
-
-    auto astsgen = panda::es2panda::ir::ArkTSGen(program_ast);
-    
-
-    std::cout << astsgen.Str() << std::endl;
-    std::cout << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
-     std::ofstream outputFile(outputFileName);
-    if (!outputFile.is_open()) {
-        std::cerr << "can't open output file: " << outputFileName << std::endl;
-    }else{
-        outputFile << astsgen.Str();
-        outputFile.close();
     }
 
     DebugInfoPropagate(function, graph, ir_interface);
@@ -380,6 +348,29 @@ bool DecompileFunction(pandasm::Program *prog, const pandasm::AsmEmitter::PandaF
     return true;
 }
 
+void LogAst(panda::es2panda::parser::Program *parser_program){
+    std::cout << "[+] log raw ast start >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+    std::string res = parser_program->Dump();
+    std::cout << res << std::endl;
+    std::cout << "[-] log raw ast end >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+}
+
+void LogArkTS2File(panda::es2panda::parser::Program *parser_program, std::string outputFileName){
+    std::cout << "[+] log arkTS  start >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+    auto astsgen = panda::es2panda::ir::ArkTSGen(parser_program->Ast());
+    
+
+    std::cout << astsgen.Str() << std::endl;
+    std::cout << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
+     std::ofstream outputFile(outputFileName);
+    if (!outputFile.is_open()) {
+        std::cerr << "can't open output file: " << outputFileName << std::endl;
+    }else{
+        outputFile << astsgen.Str();
+        outputFile.close();
+    }
+    std::cout << "[-] log arkTS  end >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+}
 
 bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::PandaFileToPandaAsmMaps *maps,
                        const std::string &pfile_name, bool is_dynamic)
@@ -391,6 +382,12 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
 
     bool result = true;
     
+    panda::es2panda::parser::Program *parser_program = new panda::es2panda::parser::Program(panda::es2panda::ScriptExtension::TS);
+    
+    ArenaVector<panda::es2panda::ir::Statement *> program_statements(parser_program->Allocator()->Adapter());
+    auto program_ast = parser_program->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(program_statements));
+    parser_program->SetAst(program_ast);
+
     for (uint32_t id : pfile->GetClasses()) {
         panda_file::File::EntityId record_id {id};
 
@@ -402,17 +399,25 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
 
         int count = 0;
 
-        cda.EnumerateMethods([&count, prog, maps, is_dynamic, &result](panda_file::MethodDataAccessor &mda)  {
+        cda.EnumerateMethods([&count, prog, parser_program, maps, is_dynamic, &result](panda_file::MethodDataAccessor &mda)  {
             count = count + 1;
             std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "enumerate method index: " << count << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
             if (!mda.IsExternal()) {
-                result = DecompileFunction(prog, maps, mda, is_dynamic) && result;
+                result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic) && result;
+                if(result){
+                    LogAst(parser_program);
+                    LogArkTS2File(parser_program, outputFileName);
+                }
             }
             
         });
 
     }
-    
+
+    // LogAst(parser_program);
+    // LogArkTS2File(parser_program, pfile_name);
+
+
     return result;
 }
 
