@@ -104,10 +104,3 @@
 // }
 // var x = add(2, 3);
 
-enum Role {
-    Admin,
-    User,
-    Guest,
-}
-
-// var x = console.log(Role["User"]);

@@ -220,6 +220,7 @@ public:
     std::optional<panda::es2panda::ir::Expression*> get_expression_by_register(AstGen * enc, compiler::Register key){
         auto it = enc->reg2expression.find(key);
         if (it != enc->reg2expression.end()) {
+            std::cout << "get_expression_by_register: " << std::to_string(key) << std::endl;
             return it->second;  
         }
         handleError("can't find expression in reg2expression: " + std::to_string(key));
@@ -236,7 +237,7 @@ public:
     }
 
     es2panda::ir::BlockStatement* get_blockstatement_byid(AstGen * enc, uint32_t block_id){
-        std::cout << "@@@@@@@@@@@@@@@@@@@@: " << block_id << std::endl;
+        std::cout << "@@ block id: " << block_id << std::endl;
         if (enc->id2block.find(block_id) == enc->id2block.end()) {
             ArenaVector<panda::es2panda::ir::Statement *> statements(enc->parser_program_->Allocator()->Adapter());
             auto block = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));

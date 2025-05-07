@@ -382,7 +382,7 @@ void ArkTSGen::EmitIfStatement(const ir::AstNode *node){
     auto ifstatement = static_cast<const panda::es2panda::ir::IfStatement*>(node);
     
     // if(test)
-    this->writeKeyWords("if{");
+    this->writeKeyWords("if(");
     this->writeLeftParentheses();
     this->EmitExpression(ifstatement->Test());
     this->writeRightParentheses();

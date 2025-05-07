@@ -436,7 +436,6 @@ void AstGen::VisitCastValueToAnyType([[maybe_unused]] GraphVisitor *visitor, [[m
         case compiler::AnyBaseType::ECMASCRIPT_STRING_TYPE: {
             auto ls = cvat->GetInput(0).GetInst()->CastToLoadString();
             auto ls_dst_reg = ls->GetDstReg();
-
             source = *enc->get_expression_by_register(enc, ls_dst_reg);            
             break;
         }
@@ -447,8 +446,8 @@ void AstGen::VisitCastValueToAnyType([[maybe_unused]] GraphVisitor *visitor, [[m
             enc->success_ = false;
     }
 
-    auto inst_dst_reg = inst->GetDstReg();
-    enc->reg2expression[inst_dst_reg] = source;
+    auto inst_dst_reg = cvat->GetDstReg();
+    enc->set_expression_by_register(enc, inst_dst_reg, source);
 
     std::cout << "[-] VisitCastValueToAnyType  >>>>>>>>>>>>>>>>>" << std::endl;
 }
