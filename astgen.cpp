@@ -133,28 +133,6 @@ void AstGen::EmitJump(const BasicBlock *bb)
 }
 
 
-void AstGen::EncodeSpillFillData(const compiler::SpillFillData &sf)
-{
-    if (sf.SrcType() != compiler::LocationType::REGISTER || sf.DstType() != compiler::LocationType::REGISTER) {
-        LOG(ERROR, BYTECODE_OPTIMIZER) << "EncodeSpillFillData with unknown move type, src_type: "
-                                       << static_cast<int>(sf.SrcType())
-                                       << " dst_type: " << static_cast<int>(sf.DstType());
-        success_ = false;
-        std::cout << "S2" << std::endl;
-        UNREACHABLE();
-        return;
-    }
-    ASSERT(sf.GetType() != compiler::DataType::NO_TYPE);
-    ASSERT(sf.SrcValue() != compiler::INVALID_REG && sf.DstValue() != compiler::INVALID_REG);
-
-    if (sf.SrcValue() == sf.DstValue()) {
-        return;
-    }
-
-    pandasm::Ins move;
-    result_.emplace_back(pandasm::Create_MOV(sf.DstValue(), sf.SrcValue()));
-    return;
-}
 
 void AstGen::VisitSpillFill(GraphVisitor *visitor, Inst *inst)
 {

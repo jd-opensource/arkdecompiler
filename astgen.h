@@ -98,8 +98,6 @@ public:
 
     void EmitJump(const BasicBlock *bb);
 
-    void EncodeSpillFillData(const compiler::SpillFillData &sf);
-
     const ArenaVector<BasicBlock *> &GetBlocksToVisit() const override
     {
         return GetGraph()->GetBlocksRPO();

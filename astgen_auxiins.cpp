@@ -5,13 +5,7 @@ void AstGen::VisitPhi(GraphVisitor* v, Inst* inst_base) {
     [[maybe_unused]] auto inst = inst_base->CastToPhi();
     std::cout << "[-] VisitPhi  <<<<<<<<<<<<<<<" << std::endl;
 }
-void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
-    std::cout << "[+] VisitTry  >>>>>>>>>>>>>>>>>" << std::endl;
-    pandasm::Ins ins;
-    [[maybe_unused]] auto enc = static_cast<AstGen*>(v);
-    [[maybe_unused]] auto inst = inst_base->CastToTry();
-    std::cout << "[-] VisitTry  >>>>>>>>>>>>>>>>>" << std::endl;
-}
+
 void AstGen::VisitSaveState(GraphVisitor* v, Inst* inst_base) {
     std::cout << "[+] VisitSaveState  >>>>>>>>>>>>>>>>>" << std::endl;
     pandasm::Ins ins;
@@ -30,4 +24,12 @@ void AstGen::VisitParameter(GraphVisitor* v, Inst* inst_base) {
     enc->set_expression_by_register(enc, inst_dst_reg, arg);
 
     std::cout << "[-] VisitParameter  >>>>>>>>>>>>>>>>>" << std::endl;
+}
+
+void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
+    std::cout << "[+] VisitTry  >>>>>>>>>>>>>>>>>" << std::endl;
+    pandasm::Ins ins;
+    [[maybe_unused]] auto enc = static_cast<AstGen*>(v);
+    [[maybe_unused]] auto inst = inst_base->CastToTry();
+    std::cout << "[-] VisitTry  >>>>>>>>>>>>>>>>>" << std::endl;
 }
