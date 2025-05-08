@@ -98,9 +98,15 @@
 //     console.log(value); 
 // }
 
-// function declaration and DEFINEFUNC
+// 16. function declaration and DEFINEFUNC
 // function add(a: number, b: number): number {
 //     return a + b;
 // }
 // var x = add(2, 3);
 
+// 17. enum
+// enum Role {
+//     A,
+//     B,
+//     C
+// }
