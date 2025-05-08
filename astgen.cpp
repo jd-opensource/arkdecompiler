@@ -144,18 +144,6 @@ void AstGen::VisitSpillFill(GraphVisitor *visitor, Inst *inst)
     std::cout << "[-] VisitSpillFill  >>>>>>>>>>>>>>>>>" << std::endl;
 }
 
-template <typename UnaryPred>
-bool HasUserPredicate(Inst *inst, UnaryPred p)
-{
-    bool found = false;
-    for (auto const &u : inst->GetUsers()) {
-        if (p(u.GetInst())) {
-            found = true;
-            break;
-        }
-    }
-    return found;
-}
 
 void AstGen::VisitConstant(GraphVisitor *visitor, Inst *inst)
 {
