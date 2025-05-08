@@ -210,7 +210,7 @@ void AstGen::VisitConstant(GraphVisitor *visitor, Inst *inst)
             LOG(ERROR, BYTECODE_OPTIMIZER) << "VisitConstant with unknown type" << type;
             enc->success_ = false;
     }
-
+    std::cout << "##: " << inst->CastToConstant()->GetInt64Value() << std::endl; 
     auto dst_reg = inst->GetDstReg();
     enc->set_expression_by_register(enc, dst_reg, number);
     

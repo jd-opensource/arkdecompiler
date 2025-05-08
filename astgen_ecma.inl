@@ -27,6 +27,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        {
             auto dst_reg = inst->GetDstReg();
             enc->set_expression_by_register(enc, dst_reg, enc->constant_infinity);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, enc->constant_infinity);
             break;
         }
 
@@ -51,7 +52,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             );
 
             auto dst_reg = inst->GetDstReg();
-            enc->set_expression_by_register(enc, dst_reg, callexpression);            
+            enc->set_expression_by_register(enc, dst_reg, callexpression); 
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callexpression);
             break;
         }
 
@@ -60,6 +62,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        {
             auto dst_reg = inst->GetDstReg();
             enc->set_expression_by_register(enc, dst_reg, enc->constant_undefined);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, enc->constant_undefined);
             break;
         }
 
@@ -67,24 +70,28 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        {
             auto dst_reg = inst->GetDstReg();
             enc->set_expression_by_register(enc, dst_reg, enc->constant_null);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, enc->constant_null);
             break;
         }
        case compiler::RuntimeInterface::IntrinsicId::LDTRUE:
        {
             auto dst_reg = inst->GetDstReg();
             enc->set_expression_by_register(enc, dst_reg, enc->constant_true);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, enc->constant_true);
             break;
         }
        case compiler::RuntimeInterface::IntrinsicId::LDFALSE:
        {
             auto dst_reg = inst->GetDstReg();
             enc->set_expression_by_register(enc, dst_reg, enc->constant_false);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, enc->constant_false);
             break;
         }
        case compiler::RuntimeInterface::IntrinsicId::LDNAN:
        {
             auto dst_reg = inst->GetDstReg();
             enc->set_expression_by_register(enc, dst_reg, enc->constant_nan);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, enc->constant_nan);
             break;
         }
 
@@ -120,6 +127,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             );
             auto dst_reg = inst->GetDstReg();
             enc->set_expression_by_register(enc, dst_reg, binexpression);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, binexpression);
             break;
         }
 
@@ -137,6 +145,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto dst_reg = inst->GetDstReg();
             enc->set_expression_by_register(enc, dst_reg, binexpression);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, binexpression);
             break;
         }
 
@@ -168,6 +177,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto dst_reg = inst->GetDstReg();
             enc->set_expression_by_register(enc, dst_reg, binexpression);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, binexpression);
             break;
 
         }
@@ -190,6 +200,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto dst_reg = inst->GetDstReg();
             enc->set_expression_by_register(enc, dst_reg, unaryexpression);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, unaryexpression);
             break;
         }
 
@@ -212,6 +223,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto dst_reg = inst->GetDstReg();
             enc->set_expression_by_register(enc, dst_reg, callexpression);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callexpression);
             break;
         }
 
@@ -260,6 +272,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto dst_reg = inst->GetDstReg();
             enc->set_expression_by_register(enc, dst_reg, objectexpression);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, objectexpression);
             break;
         }
 
@@ -277,6 +290,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto dst_reg = inst->GetDstReg();
             enc->set_expression_by_register(enc, dst_reg, arrayexpression);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, arrayexpression);
             break;
         }
 
@@ -336,6 +350,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto dst_reg = inst->GetDstReg();
             enc->set_expression_by_register(enc, dst_reg, arrayexpression);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, arrayexpression);
             break;
         }
 
@@ -399,6 +414,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto dst_reg = inst->GetDstReg();
             enc->set_expression_by_register(enc, dst_reg, objectexpression);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, objectexpression);
             break;
         }
 
@@ -466,6 +482,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto dst_reg = inst->GetDstReg();
             enc->set_expression_by_register(enc, dst_reg, objattrexpression);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, objattrexpression);
 
             break;
         }
@@ -525,6 +542,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             //auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc,  callarg0expression);
             //block->AddStatementAtPos(statements.size(), callarg0statement);
+            auto acc_dst = inst->GetDstReg();
+            enc->set_expression_by_register(enc, acc_dst, callarg0expression);
             enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callarg0expression);
 
             break;
@@ -547,7 +566,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 false
                                                                             );
 
-            enc->reg2expression[compiler::ACC_REG_ID] = callarg0expression;
+            auto acc_dst = inst->GetDstReg();
+            enc->set_expression_by_register(enc, acc_dst, callarg0expression);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callarg0expression);
             break;
         }
 
@@ -570,6 +591,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             //auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc,  callarg0expression);
             //block->AddStatementAtPos(statements.size(), callarg0statement);
+            auto acc_dst = inst->GetDstReg();
+            enc->set_expression_by_register(enc, acc_dst, callarg0expression);
             enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callarg0expression);
             break;
 
@@ -592,6 +615,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             //auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc,  callarg0expression);
             //block->AddStatementAtPos(statements.size(), callarg0statement);
+            auto acc_dst = inst->GetDstReg();
+            enc->set_expression_by_register(enc, acc_dst, callarg0expression);
             enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callarg0expression);
 
             break;
@@ -615,6 +640,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             
             //auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc,  callarg0expression);
             //block->AddStatementAtPos(statements.size(), callarg0statement);
+            auto acc_dst = inst->GetDstReg();
+            enc->set_expression_by_register(enc, acc_dst, callarg0expression);
             enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callarg0expression);
             break;
         }
@@ -639,6 +666,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             //auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc,  callarg0expression);
             //block->AddStatementAtPos(statements.size(), callarg0statement);
+            auto acc_dst = inst->GetDstReg();
+            enc->set_expression_by_register(enc, acc_dst, callarg0expression);
             enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callarg0expression);
 
             break;
@@ -662,6 +691,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             //auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc,  callarg0expression);
             //block->AddStatementAtPos(statements.size(), callarg0statement);
+            auto acc_dst = inst->GetDstReg();
+            enc->set_expression_by_register(enc, acc_dst, callarg0expression);
             enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callarg0expression);
 
             break;
@@ -688,6 +719,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             //auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc,  callarg0expression);
             //block->AddStatementAtPos(statements.size(), callarg0statement);
 
+            auto acc_dst = inst->GetDstReg();
+            enc->set_expression_by_register(enc, acc_dst, callarg0expression);
             enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callarg0expression);
 
             break;
@@ -706,7 +739,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                         true, 
                                                         false);
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-
+            std::cout << "stobjbyvalue acc_src: " << std::to_string(acc_src) << std::endl;
             
             panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
                                                                             objattrexpression,
@@ -774,6 +807,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             es2panda::ir::Expression *newExprNode = AllocNode<es2panda::ir::NewExpression>(enc, callee, nullptr, std::move(arguments));
             auto acc_dst = inst->GetDstReg();
             enc->set_expression_by_register(enc, acc_dst, newExprNode);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, newExprNode);
             break;
 
         }
@@ -806,6 +840,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto acc_dst = inst->GetDstReg();
             enc->set_expression_by_register(enc, acc_dst, objectexpression);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, objectexpression);
             enc->set_expression_by_register(enc, v0, objectexpression);
  
             break;
@@ -839,6 +874,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto acc_dst = inst->GetDstReg();
             enc->set_expression_by_register(enc, acc_dst, callexpression);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callexpression);
 
             break;
         }
@@ -980,6 +1016,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto acc_dst = inst->GetDstReg();
             enc->set_expression_by_register(enc, acc_dst, unaryexpression);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, unaryexpression);
 
             break;
         }
@@ -1001,6 +1038,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                 );
             auto acc_dst = inst->GetDstReg();
             enc->set_expression_by_register(enc, acc_dst, callexpression);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callexpression);
             break;
         }
 
@@ -1020,6 +1058,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                 );
             auto acc_dst = inst->GetDstReg();
             enc->set_expression_by_register(enc, acc_dst, callexpression);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callexpression);
             break;
         }
 
@@ -1038,6 +1077,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         {
             auto acc_dst = inst->GetDstReg();
             enc->set_expression_by_register(enc, acc_dst, enc->DEFINEFUNC);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, enc->DEFINEFUNC);
             break;
         }
 
