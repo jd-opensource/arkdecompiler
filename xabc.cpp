@@ -263,14 +263,14 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
 }
 
 void LogAst(panda::es2panda::parser::Program *parser_program){
-    std::cout << "[] log raw ast start >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+    std::cout << "[+] log raw ast start >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
     std::string res = parser_program->Dump();
     std::cout << res << std::endl;
-    std::cout << "[+] log raw ast end >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+    std::cout << "[-] log raw ast end >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
 }
 
 void LogArkTS2File(panda::es2panda::parser::Program *parser_program, std::string outputFileName){
-    std::cout << "[1] log arkTS  start >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+    std::cout << "[+] log arkTS  start >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
     auto astsgen = panda::es2panda::ir::ArkTSGen(parser_program->Ast());
     
 
@@ -283,7 +283,7 @@ void LogArkTS2File(panda::es2panda::parser::Program *parser_program, std::string
         outputFile << astsgen.Str();
         outputFile.close();
     }
-    std::cout << "[+] log arkTS  end >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+    std::cout << "[-] log arkTS  end >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
 }
 
 bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::PandaFileToPandaAsmMaps *maps,
