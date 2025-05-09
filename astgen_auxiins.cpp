@@ -31,5 +31,7 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
     pandasm::Ins ins;
     [[maybe_unused]] auto enc = static_cast<AstGen*>(v);
     [[maybe_unused]] auto inst = inst_base->CastToTry();
+
+    
     std::cout << "[-] VisitTry  >>>>>>>>>>>>>>>>>" << std::endl;
 }

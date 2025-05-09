@@ -42,17 +42,45 @@ void AstGen::AppendCatchBlock(uint32_t type_id, const compiler::BasicBlock *try_
 void AstGen::VisitTryBegin(const compiler::BasicBlock *bb)
 {
     std::cout << "[+] VisitTryBegin  >>>>>>>>>>>>>>>>>" << std::endl;
-    ASSERT(bb->IsTryBegin());
-    auto try_inst = GetTryBeginInst(bb);
-    auto try_end = try_inst->GetTryEndBlock();
-    ASSERT(try_end != nullptr && try_end->IsTryEnd());
 
-    std::cout << "[-] VisitTryBegin  >>>>>>>>>>>>>>>>>" << std::endl;
+    // ASSERT(bb->IsTryBegin());
+    // auto try_inst = GetTryBeginInst(bb);
+    // auto try_end = try_inst->GetTryEndBlock();
+    // ASSERT(try_end != nullptr && try_end->IsTryEnd());
+    // bb->EnumerateCatchHandlers([&, bb, try_end](BasicBlock *catch_handler, size_t type_id) {
+    //     AppendCatchBlock(type_id, bb, try_end, catch_handler);
+    //     return true;
+    // });
+    ////////////////////////////////////////////////////////////////////////////////////////
+    auto try_inst = GetTryBeginInst(bb);
+    es2panda::ir::BlockStatement* trybegin = enc->get_blockstatement_byid(enc, bb->GetId());
+    es2panda::ir::BlockStatement* tryend = enc->get_blockstatement_byid(enc, try_inst->GetTryEndBlock()->GetId());
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+    ArenaVector<panda::es2panda::ir::Statement *> statements(enc->parser_program_->Allocator()->Adapter());
+    auto body = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
+    ArenaVector<panda::es2panda::ir::Statement *> statements(enc->parser_program_->Allocator()->Adapter());
+    auto catchClause = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
+   
+    //ir::BlockStatement *body = nullptr;
+    //ir::CatchClause *catchClause = nullptr;
+    ir::BlockStatement *finnalyClause = nullptr;
+    
+    auto *tryStatement = AllocNode<ir::TryStatement>(body, catchClause, finnalyClause);
+
+    body->AddStatementAtPos(statements.size(), ifStatement);
+
 
     bb->EnumerateCatchHandlers([&, bb, try_end](BasicBlock *catch_handler, size_t type_id) {
-        AppendCatchBlock(type_id, bb, try_end, catch_handler);
+        //AppendCatchBlock(type_id, bb, try_end, catch_handler);
+
+        es2panda::ir::BlockStatement* catchend = enc->get_blockstatement_byid(enc, catch_handler->GetId());
         return true;
-    });
+    });  
+
+
+    std::cout << "[-] VisitTryBegin  >>>>>>>>>>>>>>>>>" << std::endl;
 }
 
 bool AstGen::RunImpl()
@@ -417,13 +445,13 @@ void AstGen::VisitCastValueToAnyType([[maybe_unused]] GraphVisitor *visitor, [[m
     std::cout << "[-] VisitCastValueToAnyType  >>>>>>>>>>>>>>>>>" << std::endl;
 }
 
-// NOLINTNEXTLINE(readability-function-size)
+
 void AstGen::VisitIntrinsic(GraphVisitor *visitor, Inst *inst_base)
 {
     std::cout << "[+] VisitIntrinsic  >>>>>>>>>>>>>>>>>" << std::endl;
     ASSERT(inst_base->IsIntrinsic());
     VisitEcma(visitor, inst_base);
-    std::cout << "[+] VisitIntrinsic  >>>>>>>>>>>>>>>>>" << std::endl;
+    std::cout << "[-] VisitIntrinsic  >>>>>>>>>>>>>>>>>" << std::endl;
 }
 
 void AstGen::VisitCatchPhi(GraphVisitor *visitor, Inst *inst)
@@ -441,10 +469,11 @@ void AstGen::VisitCatchPhi(GraphVisitor *visitor, Inst *inst)
         }
         if (hasRealUsers) {
             auto enc = static_cast<AstGen *>(visitor);
-            DoSta(inst->GetDstReg(), enc->result_);
+            //DoSta(inst->GetDstReg(), enc->result_);
+            enc->set_expression_by_register(enc, inst->GetDstReg(), *enc->get_expression_by_register(enc, compiler::ACC_REG_ID));
         }
     }
-    std::cout << "[+] VisitCatchPhi  >>>>>>>>>>>>>>>>>" << std::endl;
+    std::cout << "[-] VisitCatchPhi  >>>>>>>>>>>>>>>>>" << std::endl;
 }
 
 #include "astgen_auxiins.cpp"
