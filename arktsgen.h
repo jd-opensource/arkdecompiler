@@ -210,6 +210,7 @@ private:
     void EmitDebuggerStatement(const ir::AstNode *node);
     void EmitIfStatement(const ir::AstNode *node);
     void EmitTryStatement(const ir::AstNode *node);
+    void EmitThrowStatement(const ir::AstNode *node);
 
     void EmitFunctionDeclaration(const ir::AstNode *node);
 

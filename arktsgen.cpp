@@ -349,6 +349,16 @@ void  ArkTSGen::EmitDebuggerStatement(const ir::AstNode *node){
     this->writeTrailingSemicolon();
 }
 
+void  ArkTSGen::EmitThrowStatement(const ir::AstNode *node){
+    auto throwstatement = static_cast<const panda::es2panda::ir::ThrowStatement*>(node);
+
+    this->writeKeyWords("throw");
+    this->writeSpace();
+    this->EmitExpression(throwstatement->Argument());
+    this->writeTrailingSemicolon();
+}
+
+
 void  ArkTSGen::EmitFunctionDeclaration(const ir::AstNode *node){
     auto fundeclare = static_cast<const panda::es2panda::ir::FunctionDeclaration*>(node);
     auto scriptfunction =  fundeclare->Function();
@@ -496,6 +506,11 @@ void ArkTSGen::EmitStatement(const ir::AstNode *node)
         case AstNodeType::TRY_STATEMENT:
             std::cout << "enter IF_STATEMENT STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
             this->EmitTryStatement(node);
+            break;
+
+        case AstNodeType::THROW_STATEMENT:
+            std::cout << "enter IF_STATEMENT STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
+            this->EmitThrowStatement(node);
             break;
 
         default:
