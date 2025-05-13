@@ -234,14 +234,29 @@ public:
         enc->reg2expression[key] = value;
     }
 
-    es2panda::ir::BlockStatement* get_blockstatement_byid(AstGen * enc, uint32_t block_id){
+    es2panda::ir::BlockStatement* get_blockstatement_byid(AstGen * enc, BasicBlock *block){
+        auto block_id = block->GetId();
         std::cout << "@@ block id: " << block_id << std::endl;
         if (enc->id2block.find(block_id) == enc->id2block.end()) {
             ArenaVector<panda::es2panda::ir::Statement *> statements(enc->parser_program_->Allocator()->Adapter());
             auto block = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
             enc->id2block[block_id] = block;
         }
-        return enc->id2block[block_id];
+
+        es2panda::ir::BlockStatement* curstatement = enc->id2block[block_id];
+
+        if (block->GetTryId() !=  panda::compiler::INVALID_ID && !block->IsCatch() ) {//&& !block->IsTryBegin()
+            auto it = enc->tyrid2block.find(block->GetTryId());
+            if (it == enc->tyrid2block.end()) {
+                enc->handleError("get_block by_try_id error: " + std::to_string(block->GetTryId()));
+            }
+
+            auto father_block = enc->tyrid2block[block->GetTryId()];
+            const auto &statements = father_block->Statements();
+            father_block->AddStatementAtPos(statements.size(), curstatement);
+        }
+        
+        return curstatement;
     }
 
 
@@ -268,6 +283,8 @@ public:
 
     uint32_t first_block_id_;
 
+
+
     
 
     bool success_ {true};
@@ -291,6 +308,8 @@ public:
     std::map<uint32_t, panda::es2panda::ir::NumberLiteral*> num2literals;
 
     std::map<compiler::Register, panda::es2panda::ir::Expression*> reg2expression;
+
+    std::map<uint32_t, es2panda::ir::BlockStatement*> tyrid2block;
 
     panda::es2panda::ir::Identifier* DEFINEFUNC = AllocNode<panda::es2panda::ir::Identifier>(this, "DEFINEFUNC");
 

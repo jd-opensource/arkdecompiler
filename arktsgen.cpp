@@ -378,6 +378,40 @@ void  ArkTSGen::EmitFunctionDeclaration(const ir::AstNode *node){
     this->writeNewLine();
 }
 
+void ArkTSGen::EmitTryStatement(const ir::AstNode *node){
+    auto trystatement = static_cast<const panda::es2panda::ir::TryStatement*>(node);
+    
+    // if(test)
+    this->writeKeyWords("try");
+    this->writeLeftBrace();
+    this->writeNewLine();
+
+    //  statements
+    this->indent_ = this->indent_ + this->singleindent_;
+    this->EmitStatement(trystatement->Block());
+    this->indent_ = this->indent_ - this->singleindent_;
+    this->writeIndent();
+    this->writeRightBrace();
+
+    // }catch(error){
+    this->writeKeyWords("catch");
+    this->writeLeftParentheses();
+    this->EmitExpression(trystatement->GetCatchClause()->Param());
+    this->writeRightParentheses();
+    this->writeLeftBrace();
+    this->writeNewLine();
+
+    // catch body
+    this->indent_ = this->indent_ + this->singleindent_;
+    this->EmitStatement(trystatement->GetCatchClause()->Body());
+    this->indent_ = this->indent_ - this->singleindent_;
+
+    // }
+    this->writeIndent();
+    this->writeRightBrace();
+    this->writeNewLine();
+}
+
 void ArkTSGen::EmitIfStatement(const ir::AstNode *node){
     auto ifstatement = static_cast<const panda::es2panda::ir::IfStatement*>(node);
     
@@ -411,6 +445,7 @@ void ArkTSGen::EmitIfStatement(const ir::AstNode *node){
     this->writeRightBrace();
     this->writeNewLine();
 }
+
 
 void ArkTSGen::EmitStatement(const ir::AstNode *node)
 {
@@ -457,6 +492,12 @@ void ArkTSGen::EmitStatement(const ir::AstNode *node)
             std::cout << "enter IF_STATEMENT STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
             this->EmitIfStatement(node);
             break;
+        
+        case AstNodeType::TRY_STATEMENT:
+            std::cout << "enter IF_STATEMENT STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
+            this->EmitTryStatement(node);
+            break;
+
         default:
             std::cout << "enter EmitStatement Default  >>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
     }

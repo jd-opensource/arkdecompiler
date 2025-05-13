@@ -184,21 +184,21 @@ private:
 
     void writeTrailingSemicolon();
     void writeSpace();
-    void writeLeftBrace();
-    void writeRightBrace();
-    void writeLeftBracket();
-    void writeRightBracket();
+    void writeLeftBrace();    // {
+    void writeRightBrace();   // }
+    void writeLeftBracket();  // [
+    void writeRightBracket(); // ]
 
-    void writeLeftParentheses();
-    void writeRightParentheses();
+    void writeLeftParentheses(); // (
+    void writeRightParentheses(); // )
     
 
-    void writeColon();
-    void writeEqual();
-    void writeComma();
-    void writeDot();
-    void writeSpreadDot();
-    void writeKeyWords(std::string keyword);
+    void writeColon();// :
+    void writeEqual();// =
+    void writeComma();// ,
+    void writeDot(); // .
+    void writeSpreadDot(); // ...
+    void writeKeyWords(std::string keyword); 
     void writeNewLine();
     void writeIndent();
 
@@ -209,6 +209,8 @@ private:
     void EmitReturnStatement(const ir::AstNode *node);
     void EmitDebuggerStatement(const ir::AstNode *node);
     void EmitIfStatement(const ir::AstNode *node);
+    void EmitTryStatement(const ir::AstNode *node);
+
     void EmitFunctionDeclaration(const ir::AstNode *node);
 
     void Serialize(const ArkTSGen::Property &prop);
