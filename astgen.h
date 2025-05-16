@@ -239,8 +239,16 @@ public:
         std::cout << "@@ block id: " << block_id << std::endl;
         if (enc->id2block.find(block_id) == enc->id2block.end()) {
             ArenaVector<panda::es2panda::ir::Statement *> statements(enc->parser_program_->Allocator()->Adapter());
-            auto block = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
-            enc->id2block[block_id] = block;
+            auto block_statement = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
+            enc->id2block[block_id] = block_statement;
+
+            if(!block->IsStartBlock()){
+                // to complete
+                auto predecessorblock = block->GetPredecessor(0);
+                auto parentstatement = enc->get_blockstatement_byid(enc, predecessorblock)->Parent();
+
+                parentstatement->Body()->AddStatementAtPos(parentstatement->Body()->Statements()->size(), statements);
+            }
         }
 
         es2panda::ir::BlockStatement* curstatement = enc->id2block[block_id];
@@ -256,6 +264,7 @@ public:
             father_block->AddStatementAtPos(statements.size(), curstatement);
         }
         
+
         return curstatement;
     }
 
@@ -310,6 +319,8 @@ public:
     std::map<compiler::Register, panda::es2panda::ir::Expression*> reg2expression;
 
     std::map<uint32_t, es2panda::ir::BlockStatement*> tyrid2block;
+    std::map<uint32_t, panda::es2panda::ir::TryStatement*> tyridtrystatement;
+    std::map<uint32_t, panda::es2panda::ir::CatchClause*> tyrid2catchclause;
 
     panda::es2panda::ir::Identifier* DEFINEFUNC = AllocNode<panda::es2panda::ir::Identifier>(this, "DEFINEFUNC");
 

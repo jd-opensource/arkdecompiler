@@ -39,13 +39,12 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
         enc->tyrid2block[inst->GetBasicBlock()->GetTryId()] = body;
     }
     
-    panda::es2panda::ir::Expression *param = enc->get_identifier_byname(enc, new std::string("catchexp"));;
-    panda::es2panda::ir::CatchClause *catchClause = nullptr;
     /////////////////////////////////////////////////////
     auto type_ids = inst->GetCatchTypeIds();
     auto catch_indexes = inst->GetCatchEdgeIndexes();
 
     std::cout << "##### catchsize: " << type_ids->size() << std::endl;
+    panda::es2panda::ir::CatchClause *catchClause = nullptr;
     for (size_t idx = 0; idx < type_ids->size(); idx++) {
         auto succ =  inst->GetBasicBlock()->GetSuccessor(catch_indexes->at(idx));
         
@@ -56,7 +55,14 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
         auto true_catch = succ->GetSuccessor(0);
     
         auto catch_block = enc->get_blockstatement_byid(enc, true_catch);
+
+        panda::es2panda::ir::Expression *param = enc->get_identifier_byname(enc, new std::string("catchexp"));;
+        
+        if(!succ->IsEmpty()){
+            [[maybe_unused]]auto firstinst = succ->GetFirstInst();
+        }
         catchClause =  AllocNode<panda::es2panda::ir::CatchClause>(enc, nullptr, param, catch_block);
+        enc->tyrid2catchclause[inst->GetBasicBlock()->GetTryId()] = catchClause;
         
     }
 
@@ -70,6 +76,9 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
     
     panda::es2panda::ir::BlockStatement* finnalyClause = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements3));
     auto tryStatement = AllocNode<panda::es2panda::ir::TryStatement>(enc, body, catchClause, finnalyClause);
+
+    enc->tyridtrystatement[inst->GetBasicBlock()->GetTryId()] = tryStatement;
+
     body->SetParent(block);
     catchClause->SetParent(block);
     finnalyClause->SetParent(block);
