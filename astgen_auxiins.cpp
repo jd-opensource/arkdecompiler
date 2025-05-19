@@ -54,7 +54,7 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
 
         auto true_catch = succ->GetSuccessor(0);
     
-        auto catch_block = enc->get_blockstatement_byid(enc, true_catch);
+        auto catch_block = enc->get_blockstatement_byid(enc, true_catch, false);
 
         panda::es2panda::ir::Expression *param = enc->get_identifier_byname(enc, new std::string("catchexp"));;
         
@@ -71,7 +71,7 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
         enc->handleError("analysis try-catch error for more than one predecessor");
     }
 
-    es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetPredecessor(0));
+    es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetPredecessor(0), false);
     ArenaVector<panda::es2panda::ir::Statement *> statements3(enc->parser_program_->Allocator()->Adapter());
     
     panda::es2panda::ir::BlockStatement* finnalyClause = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements3));

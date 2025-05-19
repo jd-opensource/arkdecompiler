@@ -42,58 +42,6 @@ void AstGen::AppendCatchBlock(uint32_t type_id, const compiler::BasicBlock *try_
 void AstGen::VisitTryBegin(const compiler::BasicBlock *bb)
 {
     std::cout << "[+] VisitTryBegin  >>>>>>>>>>>>>>>>>" << std::endl;
-
-    // ASSERT(bb->IsTryBegin());
-    // auto try_inst = GetTryBeginInst(bb);
-    // auto try_end = try_inst->GetTryEndBlock();
-    // ASSERT(try_end != nullptr && try_end->IsTryEnd());
-    // bb->EnumerateCatchHandlers([&, bb, try_end](BasicBlock *catch_handler, size_t type_id) {
-    //     AppendCatchBlock(type_id, bb, try_end, catch_handler);
-    //     return true;
-    // });
-    ////////////////////////////////////////////////////////////////////////////////////////
-    //auto try_inst = GetTryBeginInst(bb);
-    //es2panda::ir::BlockStatement* trybegin = enc->get_blockstatement_byid(enc, bb->GetId());
-    //es2panda::ir::BlockStatement* tryend = enc->get_blockstatement_byid(enc, try_inst->GetTryEndBlock()->GetId());
-
-
-    ///////////////////////////////////////////////////////////////////////////////////////
-    // ArenaVector<panda::es2panda::ir::Statement *> statements1(enc->parser_program_->Allocator()->Adapter());
-    // auto body = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements1));
-    // ArenaVector<panda::es2panda::ir::Statement *> statements2(enc->parser_program_->Allocator()->Adapter());
-    // auto catchClause = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements2));
-    // ArenaVector<panda::es2panda::ir::Statement *> statements3(enc->parser_program_->Allocator()->Adapter());
-    // auto finnalyClause = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements3));
-
-
-    // uint32_t block_id = bb->GetId();
-    // es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, block_id);
-
-    // body->SetParent(block);
-    // catchClause->SetParent(block);
-    // finnalyClause->SetParent(block);
-
-    // const auto &statements = block->Statements();
-    // block->AddStatementAtPos(statements.size(), ifStatement);
-
-
-    
-    // auto *tryStatement = AllocNode<panda::es2panda::irir::TryStatement>(body, catchClause, finnalyClause);
-    // body->AddStatementAtPos(statements.size(), tryStatement);
-
-
-    //ir::BlockStatement *body = nullptr;
-    //ir::CatchClause *catchClause = nullptr;
-    //ir::BlockStatement *finnalyClause = nullptr;
-
-    // bb->EnumerateCatchHandlers([&, bb, try_end](BasicBlock *catch_handler, size_t type_id) {
-    //     //AppendCatchBlock(type_id, bb, try_end, catch_handler);
-
-    //     es2panda::ir::BlockStatement* catchend = enc->get_blockstatement_byid(enc, catch_handler->GetId());
-    //     return true;
-    // });
-
-
     std::cout << "[-] VisitTryBegin  >>>>>>>>>>>>>>>>>" << std::endl;
 }
 
@@ -254,21 +202,16 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
             UNREACHABLE();
     }
 
-    es2panda::ir::BlockStatement* true_statements =   enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetTrueSuccessor());
-    es2panda::ir::BlockStatement* false_statements =  enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetFalseSuccessor());
+    es2panda::ir::BlockStatement* true_statements =   enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetTrueSuccessor(), false);
+    es2panda::ir::BlockStatement* false_statements =  enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetFalseSuccessor(), false);
 
     auto ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, test_expression, true_statements, false_statements);
-    es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, inst_base->GetBasicBlock());
 
+    es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, inst_base->GetBasicBlock(), false);
     true_statements->SetParent(block);
     false_statements->SetParent(block);
-
     const auto &statements = block->Statements();
     block->AddStatementAtPos(statements.size(), ifStatement);
-
-
-
-    
 
     std::cout << "[-] VisitIf  >>>>>>>>>>>>>>>>>" << std::endl;
 }
@@ -331,12 +274,12 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                 UNREACHABLE();
         }
 
-        es2panda::ir::BlockStatement* true_statements =   enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetTrueSuccessor());
-        es2panda::ir::BlockStatement* false_statements =  enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetFalseSuccessor());
+        es2panda::ir::BlockStatement* true_statements =   enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetTrueSuccessor(), false);
+        es2panda::ir::BlockStatement* false_statements =  enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetFalseSuccessor(), false);
 
         auto ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, test_expression, true_statements, false_statements);
 
-        es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, inst_base->GetBasicBlock());
+        es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, inst_base->GetBasicBlock(), false);
 
         true_statements->SetParent(block);
         false_statements->SetParent(block);

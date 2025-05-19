@@ -234,7 +234,36 @@ public:
         enc->reg2expression[key] = value;
     }
 
-    es2panda::ir::BlockStatement* get_blockstatement_byid(AstGen * enc, BasicBlock *block){
+     BasicBlock* lca(BasicBlock* root, BasicBlock* p, BasicBlock* q, std::set<uint32_t>& visited){
+        if(!root || root == p || root == q){
+            return root;
+        }
+
+        if(visited.find(root->GetId()) != visited.end()){
+            return nullptr;
+        }
+        visited.insert(root->GetId());
+
+        BasicBlock* left = nullptr;
+        BasicBlock* right = nullptr;
+
+        if(root->GetSuccsBlocks().size() > 0){
+            left = lca(root->GetTrueSuccessor(), p, q, visited);
+        }
+
+        if(root->GetSuccsBlocks().size() > 1){
+            right = lca(root->GetFalseSuccessor(), p, q, visited);
+        }      
+        
+        if(left && right){
+            return root;
+        }
+
+        return left? left: right;
+    }
+
+
+    es2panda::ir::BlockStatement* get_blockstatement_byid(AstGen * enc, BasicBlock *block, bool deal){
         auto block_id = block->GetId();
         std::cout << "@@ block id: " << block_id << std::endl;
         if (enc->id2block.find(block_id) == enc->id2block.end()) {
@@ -242,12 +271,19 @@ public:
             auto block_statement = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
             enc->id2block[block_id] = block_statement;
 
-            if(!block->IsStartBlock()){
-                // to complete
-                auto predecessorblock = block->GetPredecessor(0);
-                auto parentstatement = enc->get_blockstatement_byid(enc, predecessorblock)->Parent();
+            if(deal){
+                BasicBlock* ancestor_block = nullptr;
 
-                parentstatement->Body()->AddStatementAtPos(parentstatement->Body()->Statements()->size(), statements);
+                if(block->GetPredsBlocks().size() == 1){
+                    ancestor_block = block->GetPredecessor(0);
+                }else if(block->GetPredsBlocks().size() == 2){
+                    std::set<uint32_t> visited;
+                    ancestor_block = lca(block->GetGraph()->GetStartBlock(), block->GetPredecessor(0), block->GetPredecessor(1), visited);
+                }
+
+                auto ancestor_block_statements = enc->id2block[ancestor_block->GetId()];
+                const auto &ancestor_statements = ancestor_block_statements->Statements();
+                ancestor_block_statements->AddStatementAtPos(ancestor_statements.size(), block_statement);
             }
         }
 
@@ -264,7 +300,6 @@ public:
             father_block->AddStatementAtPos(statements.size(), curstatement);
         }
         
-
         return curstatement;
     }
 

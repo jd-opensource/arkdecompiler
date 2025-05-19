@@ -10,7 +10,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
     inst->DumpOpcode(&oss);
     std::cout << "VisitIntrinsicInst: " << oss.str() << std::endl;
 
-    es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, inst_base->GetBasicBlock());
+    es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, inst_base->GetBasicBlock(), true);
     const auto &statements = block->Statements();
 
 
