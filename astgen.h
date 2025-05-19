@@ -265,13 +265,15 @@ public:
 
     es2panda::ir::BlockStatement* get_blockstatement_byid(AstGen * enc, BasicBlock *block, bool deal){
         auto block_id = block->GetId();
-        std::cout << "@@ block id: " << block_id << std::endl;
+        std::cout << "@@ block id start: " << block_id << std::endl;
         if (enc->id2block.find(block_id) == enc->id2block.end()) {
+            std::cout << "@ a" << std::endl;
             ArenaVector<panda::es2panda::ir::Statement *> statements(enc->parser_program_->Allocator()->Adapter());
             auto block_statement = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
             enc->id2block[block_id] = block_statement;
+            std::cout << "@ b" << std::endl;
 
-            if(deal){
+            if(enc->specialblockid.find(block_id) == enc->specialblockid.end() ){
                 BasicBlock* ancestor_block = nullptr;
 
                 if(block->GetPredsBlocks().size() == 1){
@@ -280,26 +282,42 @@ public:
                     std::set<uint32_t> visited;
                     ancestor_block = lca(block->GetGraph()->GetStartBlock(), block->GetPredecessor(0), block->GetPredecessor(1), visited);
                 }
+                std::cout << "@ c" << std::endl;
+                if(enc->id2block.find(ancestor_block->GetId()) == enc->id2block.end()){
+                    std::cout << "@ d" << std::endl;
+                    auto ancestor_block_statements = enc->id2block[ancestor_block->GetId()];
+                    std::cout << "@ e" << std::endl;
+                    const auto &ancestor_statements = ancestor_block_statements->Statements();
+                    std::cout << "@ f" << std::endl;
+                    //ancestor_block_statements->AddStatementAtPos(ancestor_statements.size(), block_statement);
 
-                auto ancestor_block_statements = enc->id2block[ancestor_block->GetId()];
-                const auto &ancestor_statements = ancestor_block_statements->Statements();
-                ancestor_block_statements->AddStatementAtPos(ancestor_statements.size(), block_statement);
+                    size_t x = ancestor_statements.size();
+                    std::cout << "@ g" << std::endl;
+                    ancestor_block_statements->AddStatementAtPos(x, block_statement);
+                    std::cout << "@ h" << std::endl;
+                }else{
+                    enc->handleError("can't find block id in id2block for deal");
+                }
             }
         }
-
+        
         es2panda::ir::BlockStatement* curstatement = enc->id2block[block_id];
-
-        if (block->GetTryId() !=  panda::compiler::INVALID_ID && !block->IsCatch() ) {//&& !block->IsTryBegin()
+        std::cout << "@ ee" << std::endl;
+        if (block->GetTryId() !=  panda::compiler::INVALID_ID && !block->IsCatch() ) {
+            std::cout << "@ 1" << std::endl;
             auto it = enc->tyrid2block.find(block->GetTryId());
             if (it == enc->tyrid2block.end()) {
                 enc->handleError("get_block by_try_id error: " + std::to_string(block->GetTryId()));
             }
-
+            std::cout << "@ 2" << std::endl;
             auto father_block = enc->tyrid2block[block->GetTryId()];
+            std::cout << "@ 3" << std::endl;
             const auto &statements = father_block->Statements();
+            std::cout << "@ 4" << std::endl;
             father_block->AddStatementAtPos(statements.size(), curstatement);
+            std::cout << "@ 5" << std::endl;
         }
-        
+        std::cout << "@@ block id end: " << block_id << std::endl;
         return curstatement;
     }
 
@@ -344,6 +362,8 @@ public:
 
 
     std::map<uint32_t, es2panda::ir::BlockStatement*> id2block;
+
+    std::set<uint32_t> specialblockid;
 
    
     std::map<compiler::Register, panda::es2panda::ir::Identifier*> identifers;

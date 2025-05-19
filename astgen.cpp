@@ -274,6 +274,9 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                 UNREACHABLE();
         }
 
+        enc->specialblockid.insert(inst->GetBasicBlock()->GetTrueSuccessor()->GetId());
+        enc->specialblockid.insert(inst->GetBasicBlock()->GetFalseSuccessor()->GetId());
+
         es2panda::ir::BlockStatement* true_statements =   enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetTrueSuccessor(), false);
         es2panda::ir::BlockStatement* false_statements =  enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetFalseSuccessor(), false);
 
@@ -286,18 +289,6 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
 
         const auto &statements = block->Statements();
         block->AddStatementAtPos(statements.size(), ifStatement);
-        
-        // auto truesuccsor = inst->GetBasicBlock()->GetTrueSuccessor();
-        // auto falsesuccsor = inst->GetBasicBlock()->GetFalseSuccessor();
-        
-
-        // to complete
-        // if(truesuccsor->GetSuccsBlocks().size() == 1 && falsesuccsor->GetSuccsBlocks().size() == 1 && truesuccsor->GetTrueSuccessor() == falsesuccsor->GetTrueSuccessor() ){
-        //     block->AddStatementAtPos(statements.size(), enc->get_blockstatement_byid(enc, truesuccsor->GetTrueSuccessor()));
-        // }else{
-        //     enc->handleError("can't find expression in if-else successor: " + std::to_string(inst->GetBasicBlock()->GetId()));
-        // }
-
     }
     std::cout << "[-] VisitIfImm  >>>>>>>>>>>>>>>>>" << std::endl;
 }
