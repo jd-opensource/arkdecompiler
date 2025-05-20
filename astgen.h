@@ -234,7 +234,40 @@ public:
         enc->reg2expression[key] = value;
     }
 
-     BasicBlock* lca(BasicBlock* root, BasicBlock* p, BasicBlock* q, std::set<uint32_t>& visited){
+    uint_t depth(BasicBlock* node, std::map<BasickBlock*, int>&depths){
+        if(depths.find(node) != depth.end()){
+            return depths[node];
+        }
+        int depth = 0;
+        for(BasicBLock* child : node->GetSuccsBlocks()){
+            depth = std::max(depth, 1 + depth(child, depths));
+        }
+        depths[node] = depth;
+        return depth;
+    }
+
+    BasicBlock* LCA(BasicBlock* root, BasicBlock* p, BasicBlock* q, std::set<uint32_t>& visited){
+        std::map<BasicBlock*, uint_t> depths;
+        depth(root, depths);
+        
+        if(depths[p] < depths[q]){
+            std::swap(p, q);
+        }
+  
+        std::set<uint32_t> visited;
+        while(depths[p] > depths[q]){
+            
+            p = p->GetPredecessor(0);
+        }
+
+        while(p != q){
+            p = p->GetPredecessor(0);
+            q = q->GetPredecessor(0);
+        }
+        return p;
+    }
+
+    BasicBlock* lca(BasicBlock* root, BasicBlock* p, BasicBlock* q, std::set<uint32_t>& visited){
         if(!root || root == p || root == q){
             return root;
         }
@@ -243,10 +276,11 @@ public:
             return nullptr;
         }
         visited.insert(root->GetId());
-
+        
         BasicBlock* left = nullptr;
         BasicBlock* right = nullptr;
 
+        
         if(root->GetSuccsBlocks().size() > 0){
             left = lca(root->GetTrueSuccessor(), p, q, visited);
         }
@@ -255,6 +289,21 @@ public:
             right = lca(root->GetFalseSuccessor(), p, q, visited);
         }      
         
+        if(root->GetId() == 21){
+            std::cout << "p: " << std::to_string(p->GetId())  << " , q: " << std::to_string(q->GetId()) << std::endl; 
+            if(left != nullptr){
+                std::cout << "@@@ search left: " << std::to_string(left->GetId()) << std::endl;
+            }else{
+                std::cout << "left is nullptr" << std::endl;
+            }
+
+            if(right != nullptr){
+                std::cout << "@@@ search right: " << std::to_string(right->GetId()) << std::endl;
+            }else{
+                std::cout << "right is nullptr" << std::endl;
+            }
+        }
+
         if(left && right){
             return root;
         }
@@ -306,18 +355,19 @@ public:
             BasicBlock* ancestor_block = nullptr;
 
             if(block->GetPredsBlocks().size() == 2){
-                std::set<uint32_t> visited;
+                
 
                 auto left = block->GetPredecessor(0);
 
-                //while(left->IsCatchBegin() || left->IsTry()){
-                while(enc->specialblockid.find(left->GetId()) != enc->specialblockid.end()){
+                while(left->IsTryEnd() || left->IsCatchEnd()){
+                //while(enc->specialblockid.find(left->GetId()) != enc->specialblockid.end()){
                     left = left->GetPredecessor(0);
                 }
 
                 auto right = block->GetPredecessor(1);
                 //while(right->IsCatchBegin()  || right->IsTry()){//|| right->IsCatch() || right->IsCatchEnd()
-                while(enc->specialblockid.find(right->GetId()) != enc->specialblockid.end()){
+                while(right->IsTryEnd() || right->IsCatchEnd()){
+                //while(enc->specialblockid.find(right->GetId()) != enc->specialblockid.end()){
                     right = right->GetPredecessor(0);
                 }
                 logspecialblockid();
@@ -326,12 +376,20 @@ public:
                 if(left == right){
                     ancestor_block = left;
                 }else{
+                    std::set<uint32_t> visited;
+                    std::cout << "start search ancestor " << std::endl; 
                     ancestor_block = lca(block->GetGraph()->GetStartBlock(), left, right, visited);
+                    std::cout << "end search ancestor " << std::endl;
                 }
             }else{
                 enc->handleError("get_blockstatement_byid# not considered case");
             }
+
+            if(ancestor_block == nullptr){
+                enc->handleError("get_blockstatement_byid# find ancestor is nullptr");
+            }
             std::cout << "@ ancestor_block: " <<  std::to_string(ancestor_block->GetId()) <<  std::endl;
+
             if(enc->id2block.find(ancestor_block->GetId()) != enc->id2block.end()){
                 auto ancestor_block_statements = enc->id2block[ancestor_block->GetId()];
                 const auto &ancestor_statements = ancestor_block_statements->Statements();
