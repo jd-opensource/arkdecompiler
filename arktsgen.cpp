@@ -21,6 +21,10 @@ void ArkTSGen::EmitBlockStatement(const ir::AstNode *node){
 
     const auto &statements = blockstatement->Statements();
     
+    if(statements.size() == 0){
+        this->writeNewLine();
+    }
+
     for (const auto *stmt : statements) {
         this->EmitStatement(stmt);
     }

@@ -297,12 +297,14 @@ public:
 
                 auto left = block->GetPredecessor(0);
 
-                while(left->IsCatchBegin() || left->IsTry()){
-                        left = left->GetPredecessor(0);
+                //while(left->IsCatchBegin() || left->IsTry()){
+                while(enc->specialblockid.find(left->GetId()) == enc->specialblockid.end()){
+                    left = left->GetPredecessor(0);
                 }
 
                 auto right = block->GetPredecessor(1);
-                while(right->IsCatchBegin()  || right->IsTry()){//|| right->IsCatch() || right->IsCatchEnd()
+                //while(right->IsCatchBegin()  || right->IsTry()){//|| right->IsCatch() || right->IsCatchEnd()
+                while(enc->specialblockid.find(right->GetId()) == enc->specialblockid.end()){
                     right = right->GetPredecessor(0);
                 }
                 std::cout << "left: " << std::to_string(left->GetId()) << std::endl;
@@ -313,19 +315,15 @@ public:
                     ancestor_block = lca(block->GetGraph()->GetStartBlock(), left, right, visited);
                 }
             }else{
-                enc->handleError("not considered case");
+                enc->handleError("get_blockstatement_byid# not considered case");
             }
             std::cout << "@ ancestor_block: " <<  std::to_string(ancestor_block->GetId()) <<  std::endl;
             if(enc->id2block.find(ancestor_block->GetId()) != enc->id2block.end()){
-                std::cout << "@ d" << std::endl;
                 auto ancestor_block_statements = enc->id2block[ancestor_block->GetId()];
-                std::cout << "@ e" << std::endl;
                 const auto &ancestor_statements = ancestor_block_statements->Statements();
-                std::cout << "@ f" << std::endl;
                 ancestor_block_statements->AddStatementAtPos(ancestor_statements.size(), new_block_statement);
-                std::cout << "@ h" << std::endl;
             }else{
-                enc->handleError("can't find block id in id2block for deal");
+                enc->handleError("get_blockstatement_byid# can't find block id in id2block for deal");
             }
 
             return enc->id2block[block_id];

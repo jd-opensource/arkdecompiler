@@ -34,13 +34,14 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
 
     // find tryblock
     BasicBlock* tryblock = nullptr;
-    if(inst->GetBasicBlock()->GetSuccessor(0)->IsTry()){
-        tryblock = inst->GetBasicBlock()->GetSuccessor(0);
-    }else if(inst->GetBasicBlock()->GetSuccessor(1)->IsTry()){
+    if(inst->GetBasicBlock()->GetSuccessor(0)->IsCatchBegin()){
         tryblock = inst->GetBasicBlock()->GetSuccessor(1);
+    }else if(inst->GetBasicBlock()->GetSuccessor(1)->IsCatchBegin()){
+        tryblock = inst->GetBasicBlock()->GetSuccessor(0);
     }else{
-        enc->handleError("can't handle this case  in visitTry for findg try block");
+        enc->handleError("can't handle this case  in visitTry for finding try block");
     }
+    std::cout << "_________________________________________" << std::to_string(tryblock->GetId()) << std::endl;
     enc->specialblockid.insert(tryblock->GetId());
     
     panda::es2panda::ir::BlockStatement* tryblock_statement = enc->get_blockstatement_byid(enc, tryblock);
@@ -83,7 +84,9 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
     
     
     // create try-catch statement
+    std::cout << "@@@@@ --------" << std::endl;
     es2panda::ir::BlockStatement* trycatchStatements = enc->get_blockstatement_byid(enc, inst->GetBasicBlock());
+    std::cout << "##### --------" << std::endl;
 
     auto tryStatement = AllocNode<panda::es2panda::ir::TryStatement>(enc, tryblock_statement, catchClause, finnalyClause);
     enc->tyridtrystatement[inst->GetBasicBlock()->GetTryId()] = tryStatement;

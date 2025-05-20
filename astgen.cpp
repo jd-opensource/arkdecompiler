@@ -245,6 +245,52 @@ static std::optional<coretypes::TaggedValue> IsEcmaConstTemplate(Inst const *ins
 }
 #endif
 
+
+uint32_t onlyOneBranch(BasicBlock* father, AstGen * enc){
+    auto true_branch = father->GetTrueSuccessor();
+    auto false_branch = father->GetFalseSuccessor();
+
+    // 0: if-and-else
+
+    // 1: only if
+
+    // 2: only else
+
+    
+    BaickBlock* analysis_block = nullptr;
+    if(true_branch->GetPredsBlocks().size() == 2){
+        analysis_block = true_branch;
+    }else if(false_branch->GetPredsBlocks().size() == 2){
+        analysis_block = false_branch;
+    }else if(true_branch->GetPredsBlocks().size() == 1 && false_branch->GetPredsBlocks().size() == 1){
+        return 0;
+    }else{
+        enc->handleError("onlyOneBranch# not consider this case");
+    }
+
+    BaickBlock* other_father = nullptr;
+    if(analysis_block->GetPredecessor(0) == father){
+        other_father = analysis_block->GetPredecessor(1);
+    }else{
+        other_father = analysis_block->GetPredecessor(0);
+    }
+    
+    while(other_father != father && other_father->GetId() !=0 ){
+        other_father = other_father->GetPredecessor(0);
+    }
+
+    if(other_father->GetId() != 0){
+        if(analysis_block == true_branch){
+            return 2;
+        }else{
+            return 1;
+        }
+    }else{
+        enc->handleError("onlyOneBranch# found method is bad");
+
+    }
+}
+
 void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
 {
     std::cout << "[+] VisitIfImm  >>>>>>>>>>>>>>>>>" << std::endl;
@@ -277,6 +323,14 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
         enc->specialblockid.insert(inst->GetBasicBlock()->GetTrueSuccessor()->GetId());
         enc->specialblockid.insert(inst->GetBasicBlock()->GetFalseSuccessor()->GetId());
 
+        auto ret = onlyOneBranch(inst->GetBasicBlock());
+        // if(ret == 0){
+
+        // }else if(ret == 1){
+
+        // }else if{
+            
+        // }
         es2panda::ir::BlockStatement* true_statements =   enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetTrueSuccessor());
         es2panda::ir::BlockStatement* false_statements =  enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetFalseSuccessor());
 
