@@ -427,6 +427,7 @@ void ArkTSGen::EmitTryStatement(const ir::AstNode *node){
 }
 
 void ArkTSGen::EmitIfStatement(const ir::AstNode *node){
+    std::cout << "[+] start EmitIfStatement"  << std::endl;
     auto ifstatement = static_cast<const panda::es2panda::ir::IfStatement*>(node);
     
     // if(test)
@@ -444,20 +445,23 @@ void ArkTSGen::EmitIfStatement(const ir::AstNode *node){
     this->writeIndent();
     this->writeRightBrace();
 
-    // }else{
-    this->writeKeyWords("else");
-    this->writeLeftBrace();
-    this->writeNewLine();
+    if(ifstatement->Alternate() != nullptr){
+        // }else{
+        this->writeKeyWords("else");
+        this->writeLeftBrace();
+        this->writeNewLine();
 
-    // else statements
-    this->indent_ = this->indent_ + this->singleindent_;
-    this->EmitStatement(ifstatement->Alternate());
-    this->indent_ = this->indent_ - this->singleindent_;
+        // else statements
+        this->indent_ = this->indent_ + this->singleindent_;
+        this->EmitStatement(ifstatement->Alternate());
+        this->indent_ = this->indent_ - this->singleindent_;
 
-    // }
-    this->writeIndent();
-    this->writeRightBrace();
+        // }
+        this->writeIndent();
+        this->writeRightBrace();
+    }
     this->writeNewLine();
+    std::cout << "[-] end EmitIfStatement"  << std::endl;
 }
 
 

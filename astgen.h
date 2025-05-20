@@ -263,9 +263,22 @@ public:
     }
 
     void logid2blockkeys(){
+        std::cout << "id2block keys: ";
         for (const auto& pair : this->id2block) {
-            std::cout << pair.first << std::endl;
+            std::cout << pair.first << ", ";
         }
+        std::cout << std::endl;
+    }
+
+    void logspecialblockid(){
+        std::cout << "specialblockid: ";
+        for (auto it = this->specialblockid.begin(); it != this->specialblockid.end(); ++it) {
+            std::cout << *it;
+            if (std::next(it) != this->specialblockid.end()) {
+                std::cout << ", ";
+            }
+        }
+        std::cout << std::endl;
     }
  
     es2panda::ir::BlockStatement* get_blockstatement_byid(AstGen * enc, BasicBlock *block){
@@ -298,15 +311,16 @@ public:
                 auto left = block->GetPredecessor(0);
 
                 //while(left->IsCatchBegin() || left->IsTry()){
-                while(enc->specialblockid.find(left->GetId()) == enc->specialblockid.end()){
+                while(enc->specialblockid.find(left->GetId()) != enc->specialblockid.end()){
                     left = left->GetPredecessor(0);
                 }
 
                 auto right = block->GetPredecessor(1);
                 //while(right->IsCatchBegin()  || right->IsTry()){//|| right->IsCatch() || right->IsCatchEnd()
-                while(enc->specialblockid.find(right->GetId()) == enc->specialblockid.end()){
+                while(enc->specialblockid.find(right->GetId()) != enc->specialblockid.end()){
                     right = right->GetPredecessor(0);
                 }
+                logspecialblockid();
                 std::cout << "left: " << std::to_string(left->GetId()) << std::endl;
                 std::cout << "right: " << std::to_string(right->GetId()) << std::endl;
                 if(left == right){
@@ -338,21 +352,7 @@ public:
         }
         
         es2panda::ir::BlockStatement* curstatement = enc->id2block[block_id];
-        // std::cout << "@ ee" << std::endl;
-        // if (block->GetTryId() !=  panda::compiler::INVALID_ID && !block->IsCatch() ) {
-        //     std::cout << "@ 1" << std::endl;
-        //     auto it = enc->tyrid2block.find(block->GetTryId());
-        //     if (it == enc->tyrid2block.end()) {
-        //         enc->handleError("get_block by_try_id error: " + std::to_string(block->GetTryId()));
-        //     }
-        //     std::cout << "@ 2" << std::endl;
-        //     auto father_block = enc->tyrid2block[block->GetTryId()];
-        //     std::cout << "@ 3" << std::endl;
-        //     const auto &statements = father_block->Statements();
-        //     std::cout << "@ 4" << std::endl;
-        //     father_block->AddStatementAtPos(statements.size(), curstatement);
-        //     std::cout << "@ 5" << std::endl;
-        // }
+
         std::cout << "@@ block id end: " << block_id << std::endl;
         return curstatement;
     }

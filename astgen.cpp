@@ -257,7 +257,7 @@ uint32_t onlyOneBranch(BasicBlock* father, AstGen * enc){
     // 2: only else
 
     
-    BaickBlock* analysis_block = nullptr;
+    BasicBlock* analysis_block = nullptr;
     if(true_branch->GetPredsBlocks().size() == 2){
         analysis_block = true_branch;
     }else if(false_branch->GetPredsBlocks().size() == 2){
@@ -268,7 +268,7 @@ uint32_t onlyOneBranch(BasicBlock* father, AstGen * enc){
         enc->handleError("onlyOneBranch# not consider this case");
     }
 
-    BaickBlock* other_father = nullptr;
+    BasicBlock* other_father = nullptr;
     if(analysis_block->GetPredecessor(0) == father){
         other_father = analysis_block->GetPredecessor(1);
     }else{
@@ -289,6 +289,7 @@ uint32_t onlyOneBranch(BasicBlock* father, AstGen * enc){
         enc->handleError("onlyOneBranch# found method is bad");
 
     }
+    return 0;
 }
 
 void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
@@ -302,37 +303,53 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
         auto src_expression = *enc->get_expression_by_register(enc, source_reg);
         panda::es2panda::ir::Expression* test_expression;
 
+
+        auto ret = onlyOneBranch(inst->GetBasicBlock(), enc);
+
+        es2panda::ir::BlockStatement* true_statements = nullptr;
+        es2panda::ir::BlockStatement* false_statements = nullptr;
+        
+        if(ret == 0){
+            enc->specialblockid.insert(inst->GetBasicBlock()->GetTrueSuccessor()->GetId());
+            enc->specialblockid.insert(inst->GetBasicBlock()->GetFalseSuccessor()->GetId());
+            true_statements =   enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetTrueSuccessor());
+            false_statements =  enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetFalseSuccessor());
+        }else if(ret == 1){
+            enc->specialblockid.insert(inst->GetBasicBlock()->GetTrueSuccessor()->GetId());
+            true_statements =   enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetTrueSuccessor());
+        }else{
+            enc->specialblockid.insert(inst->GetBasicBlock()->GetFalseSuccessor()->GetId());
+            true_statements =   enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetFalseSuccessor());
+        }
+
+        panda::compiler::RuntimeInterface::IntrinsicId cmpid;
         switch (inst->GetCc()) {
+            
             case compiler::CC_EQ:
-                test_expression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
-                                                            src_expression,
-                                                            enc->constant_zero,
-                                                            BinIntrinsicIdToToken(compiler::RuntimeInterface::IntrinsicId::EQ_IMM8_V8));
+                if(ret != 2 ){
+                    cmpid = compiler::RuntimeInterface::IntrinsicId::EQ_IMM8_V8;
+
+                }else{
+                    cmpid = compiler::RuntimeInterface::IntrinsicId::NOTEQ_IMM8_V8;
+                }
+
                 break;
             case compiler::CC_NE:
-                test_expression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
-                                                            src_expression,
-                                                            enc->constant_zero,
-                                                            BinIntrinsicIdToToken(compiler::RuntimeInterface::IntrinsicId::NOTEQ_IMM8_V8));
+                if(ret != 2 ){
+                    cmpid = compiler::RuntimeInterface::IntrinsicId::NOTEQ_IMM8_V8;
+
+                }else{
+                    cmpid = compiler::RuntimeInterface::IntrinsicId::EQ_IMM8_V8;
+                }
                 break;
             default:
                 std::cout << "S5" << std::endl;
                 UNREACHABLE();
         }
-
-        enc->specialblockid.insert(inst->GetBasicBlock()->GetTrueSuccessor()->GetId());
-        enc->specialblockid.insert(inst->GetBasicBlock()->GetFalseSuccessor()->GetId());
-
-        auto ret = onlyOneBranch(inst->GetBasicBlock());
-        // if(ret == 0){
-
-        // }else if(ret == 1){
-
-        // }else if{
-            
-        // }
-        es2panda::ir::BlockStatement* true_statements =   enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetTrueSuccessor());
-        es2panda::ir::BlockStatement* false_statements =  enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetFalseSuccessor());
+        test_expression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
+                                                    src_expression,
+                                                    enc->constant_zero,
+                                                    BinIntrinsicIdToToken(cmpid));
 
         auto ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, test_expression, true_statements, false_statements);
 
