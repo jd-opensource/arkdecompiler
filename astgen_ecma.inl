@@ -10,7 +10,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
     inst->DumpOpcode(&oss);
     std::cout << "VisitIntrinsicInst: " << oss.str() << std::endl;
 
-    es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, inst_base->GetBasicBlock(), false);
+    es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, inst_base->GetBasicBlock());
     const auto &statements = block->Statements();
 
 
@@ -231,7 +231,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::TRYSTGLOBALBYNAME_IMM16_ID16:
        {
             auto src_reg = inst->GetSrcReg(inst->GetInputsCount() - 2);
+            
             panda::es2panda::ir::Expression* src_reg_identifier = *enc->get_expression_by_register(enc, src_reg);
+            
 
             if(src_reg_identifier != enc->DEFINEFUNC){
                 auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
@@ -248,7 +250,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     
                 auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
                                                                                         assignexpression);
-                block->AddStatementAtPos(statements.size(), assignstatement); 
+                std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << std::endl;
+                block->AddStatementAtPos(statements.size(), assignstatement);
+                std::cout << "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" << std::endl; 
             }
 
             break;

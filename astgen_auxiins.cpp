@@ -29,27 +29,31 @@ void AstGen::VisitParameter(GraphVisitor* v, Inst* inst_base) {
 void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
     std::cout << "[+] VisitTry  >>>>>>>>>>>>>>>>>" << std::endl;
     pandasm::Ins ins;
-    [[maybe_unused]] auto enc = static_cast<AstGen*>(v);
-    [[maybe_unused]] auto inst = inst_base->CastToTry();
+    auto enc = static_cast<AstGen*>(v);
+    auto inst = inst_base->CastToTry();
 
-    ArenaVector<panda::es2panda::ir::Statement *> body_statements(enc->parser_program_->Allocator()->Adapter());
-    panda::es2panda::ir::BlockStatement* body = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(body_statements));
+    // find tryblock
+    BasicBlock* tryblock = nullptr;
+    if(inst->GetBasicBlock()->GetSuccessor(0)->IsTry()){
+        tryblock = inst->GetBasicBlock()->GetSuccessor(0);
+    }else if(inst->GetBasicBlock()->GetSuccessor(1)->IsTry()){
+        tryblock = inst->GetBasicBlock()->GetSuccessor(1);
+    }else{
+        enc->handleError("can't handle this case  in visitTry for findg try block");
+    }
+    enc->specialblockid.insert(tryblock->GetId());
+    
+    panda::es2panda::ir::BlockStatement* tryblock_statement = enc->get_blockstatement_byid(enc, tryblock);
 
     if(inst->GetBasicBlock()->GetTryId() !=  panda::compiler::INVALID_ID){
-        enc->tyrid2block[inst->GetBasicBlock()->GetTryId()] = body;
+        enc->tyrid2block[inst->GetBasicBlock()->GetTryId()] = tryblock_statement;
     }
     
-    enc->specialblockid.insert(inst->GetBasicBlock()->GetId());
-    auto &succs = inst->GetBasicBlock()->GetSuccsBlocks();
-    for (auto succ : succs) {
-        enc->specialblockid.insert(succ->GetId());
-    }
 
-    /////////////////////////////////////////////////////
+    /// find case block
     auto type_ids = inst->GetCatchTypeIds();
     auto catch_indexes = inst->GetCatchEdgeIndexes();
 
-    std::cout << "##### catchsize: " << type_ids->size() << std::endl;
     panda::es2panda::ir::CatchClause *catchClause = nullptr;
     for (size_t idx = 0; idx < type_ids->size(); idx++) {
         auto succ =  inst->GetBasicBlock()->GetSuccessor(catch_indexes->at(idx));
@@ -58,42 +62,34 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
             succ = succ->GetSuccessor(0);
         }
 
-        auto true_catch = succ->GetSuccessor(0);
-
         enc->specialblockid.insert(succ->GetId());
-        enc->specialblockid.insert(true_catch->GetId());
-
-        auto catch_block = enc->get_blockstatement_byid(enc, true_catch, false);
-
+        auto catch_block = enc->get_blockstatement_byid(enc, succ);
+   
         panda::es2panda::ir::Expression *param = enc->get_identifier_byname(enc, new std::string("catchexp"));;
         
-        if(!succ->IsEmpty()){
-            [[maybe_unused]]auto firstinst = succ->GetFirstInst();
-        }
+
         catchClause =  AllocNode<panda::es2panda::ir::CatchClause>(enc, nullptr, param, catch_block);
         enc->tyrid2catchclause[inst->GetBasicBlock()->GetTryId()] = catchClause;
-        
     }
 
-    /////////////////////////////////////////////////////
+    
     if(inst->GetBasicBlock()->GetPredsBlocks().size() == 2){
         enc->handleError("analysis try-catch error for more than one predecessor");
     }
     
-    es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetPredecessor(0), false);
-    ArenaVector<panda::es2panda::ir::Statement *> statements3(enc->parser_program_->Allocator()->Adapter());
+    // create null finally case
+    ArenaVector<panda::es2panda::ir::Statement *> finally_statements(enc->parser_program_->Allocator()->Adapter());
+    panda::es2panda::ir::BlockStatement* finnalyClause = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(finally_statements));
     
-    panda::es2panda::ir::BlockStatement* finnalyClause = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements3));
-    auto tryStatement = AllocNode<panda::es2panda::ir::TryStatement>(enc, body, catchClause, finnalyClause);
+    
+    // create try-catch statement
+    es2panda::ir::BlockStatement* trycatchStatements = enc->get_blockstatement_byid(enc, inst->GetBasicBlock());
 
+    auto tryStatement = AllocNode<panda::es2panda::ir::TryStatement>(enc, tryblock_statement, catchClause, finnalyClause);
     enc->tyridtrystatement[inst->GetBasicBlock()->GetTryId()] = tryStatement;
-
-    body->SetParent(block);
-    catchClause->SetParent(block);
-    finnalyClause->SetParent(block);
-
-    const auto &statements = block->Statements();
-    block->AddStatementAtPos(statements.size(), tryStatement); 
+    
+    const auto &statements = trycatchStatements->Statements();
+    trycatchStatements->AddStatementAtPos(statements.size(), tryStatement); 
 
     std::cout << "[-] VisitTry  >>>>>>>>>>>>>>>>>" << std::endl;
 

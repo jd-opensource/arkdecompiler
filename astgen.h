@@ -262,61 +262,99 @@ public:
         return left? left: right;
     }
 
-
-    es2panda::ir::BlockStatement* get_blockstatement_byid(AstGen * enc, BasicBlock *block, bool deal){
+    void logid2blockkeys(){
+        for (const auto& pair : this->id2block) {
+            std::cout << pair.first << std::endl;
+        }
+    }
+ 
+    es2panda::ir::BlockStatement* get_blockstatement_byid(AstGen * enc, BasicBlock *block){
         auto block_id = block->GetId();
         std::cout << "@@ block id start: " << block_id << std::endl;
-        if (enc->id2block.find(block_id) == enc->id2block.end()) {
-            std::cout << "@ a" << std::endl;
-            ArenaVector<panda::es2panda::ir::Statement *> statements(enc->parser_program_->Allocator()->Adapter());
-            auto block_statement = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
-            enc->id2block[block_id] = block_statement;
-            std::cout << "@ b" << std::endl;
 
-            if(enc->specialblockid.find(block_id) == enc->specialblockid.end() ){
-                BasicBlock* ancestor_block = nullptr;
+        // case1: found blockstatment
+        if (enc->id2block.find(block_id) != enc->id2block.end()) {
+            return enc->id2block[block_id];
+        }
 
-                if(block->GetPredsBlocks().size() == 1){
-                    ancestor_block = block->GetPredecessor(0);
-                }else if(block->GetPredsBlocks().size() == 2){
-                    std::set<uint32_t> visited;
-                    ancestor_block = lca(block->GetGraph()->GetStartBlock(), block->GetPredecessor(0), block->GetPredecessor(1), visited);
+        // case2: found unique predecessor with unique successor
+        if(block->GetPredsBlocks().size() == 1 && block_id != 0 && block->GetPredecessor(0)->GetSuccsBlocks().size() == 1){
+            BasicBlock* ancestor_block = block->GetPredecessor(0);
+            enc->id2block[block_id] =  enc->id2block[ancestor_block->GetId()];;
+            return enc->id2block[block_id];
+        }
+        
+        // case3:create new statements
+        ArenaVector<panda::es2panda::ir::Statement *> statements(enc->parser_program_->Allocator()->Adapter());
+        auto new_block_statement = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
+        enc->id2block[block_id] = new_block_statement;
+
+        if(enc->specialblockid.find(block_id) == enc->specialblockid.end() ){
+            BasicBlock* ancestor_block = nullptr;
+
+            if(block->GetPredsBlocks().size() == 2){
+                std::set<uint32_t> visited;
+
+                auto left = block->GetPredecessor(0);
+
+                while(left->IsCatchBegin() || left->IsTry()){
+                        left = left->GetPredecessor(0);
                 }
-                std::cout << "@ c" << std::endl;
-                if(enc->id2block.find(ancestor_block->GetId()) == enc->id2block.end()){
-                    std::cout << "@ d" << std::endl;
-                    auto ancestor_block_statements = enc->id2block[ancestor_block->GetId()];
-                    std::cout << "@ e" << std::endl;
-                    const auto &ancestor_statements = ancestor_block_statements->Statements();
-                    std::cout << "@ f" << std::endl;
-                    //ancestor_block_statements->AddStatementAtPos(ancestor_statements.size(), block_statement);
 
-                    size_t x = ancestor_statements.size();
-                    std::cout << "@ g" << std::endl;
-                    ancestor_block_statements->AddStatementAtPos(x, block_statement);
-                    std::cout << "@ h" << std::endl;
+                auto right = block->GetPredecessor(1);
+                while(right->IsCatchBegin()  || right->IsTry()){//|| right->IsCatch() || right->IsCatchEnd()
+                    right = right->GetPredecessor(0);
+                }
+                std::cout << "left: " << std::to_string(left->GetId()) << std::endl;
+                std::cout << "right: " << std::to_string(right->GetId()) << std::endl;
+                if(left == right){
+                    ancestor_block = left;
                 }else{
-                    enc->handleError("can't find block id in id2block for deal");
+                    ancestor_block = lca(block->GetGraph()->GetStartBlock(), left, right, visited);
                 }
+            }else{
+                enc->handleError("not considered case");
             }
+            std::cout << "@ ancestor_block: " <<  std::to_string(ancestor_block->GetId()) <<  std::endl;
+            if(enc->id2block.find(ancestor_block->GetId()) != enc->id2block.end()){
+                std::cout << "@ d" << std::endl;
+                auto ancestor_block_statements = enc->id2block[ancestor_block->GetId()];
+                std::cout << "@ e" << std::endl;
+                const auto &ancestor_statements = ancestor_block_statements->Statements();
+                std::cout << "@ f" << std::endl;
+                ancestor_block_statements->AddStatementAtPos(ancestor_statements.size(), new_block_statement);
+                std::cout << "@ h" << std::endl;
+            }else{
+                enc->handleError("can't find block id in id2block for deal");
+            }
+
+            return enc->id2block[block_id];
+        }else{
+            /**
+             * add statement in special statements
+             * a) if
+             * b) try-catch 
+             * c) ...
+            */
+
         }
         
         es2panda::ir::BlockStatement* curstatement = enc->id2block[block_id];
-        std::cout << "@ ee" << std::endl;
-        if (block->GetTryId() !=  panda::compiler::INVALID_ID && !block->IsCatch() ) {
-            std::cout << "@ 1" << std::endl;
-            auto it = enc->tyrid2block.find(block->GetTryId());
-            if (it == enc->tyrid2block.end()) {
-                enc->handleError("get_block by_try_id error: " + std::to_string(block->GetTryId()));
-            }
-            std::cout << "@ 2" << std::endl;
-            auto father_block = enc->tyrid2block[block->GetTryId()];
-            std::cout << "@ 3" << std::endl;
-            const auto &statements = father_block->Statements();
-            std::cout << "@ 4" << std::endl;
-            father_block->AddStatementAtPos(statements.size(), curstatement);
-            std::cout << "@ 5" << std::endl;
-        }
+        // std::cout << "@ ee" << std::endl;
+        // if (block->GetTryId() !=  panda::compiler::INVALID_ID && !block->IsCatch() ) {
+        //     std::cout << "@ 1" << std::endl;
+        //     auto it = enc->tyrid2block.find(block->GetTryId());
+        //     if (it == enc->tyrid2block.end()) {
+        //         enc->handleError("get_block by_try_id error: " + std::to_string(block->GetTryId()));
+        //     }
+        //     std::cout << "@ 2" << std::endl;
+        //     auto father_block = enc->tyrid2block[block->GetTryId()];
+        //     std::cout << "@ 3" << std::endl;
+        //     const auto &statements = father_block->Statements();
+        //     std::cout << "@ 4" << std::endl;
+        //     father_block->AddStatementAtPos(statements.size(), curstatement);
+        //     std::cout << "@ 5" << std::endl;
+        // }
         std::cout << "@@ block id end: " << block_id << std::endl;
         return curstatement;
     }

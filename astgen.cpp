@@ -202,12 +202,12 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
             UNREACHABLE();
     }
 
-    es2panda::ir::BlockStatement* true_statements =   enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetTrueSuccessor(), false);
-    es2panda::ir::BlockStatement* false_statements =  enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetFalseSuccessor(), false);
+    es2panda::ir::BlockStatement* true_statements =   enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetTrueSuccessor());
+    es2panda::ir::BlockStatement* false_statements =  enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetFalseSuccessor());
 
     auto ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, test_expression, true_statements, false_statements);
 
-    es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, inst_base->GetBasicBlock(), false);
+    es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, inst_base->GetBasicBlock());
     true_statements->SetParent(block);
     false_statements->SetParent(block);
     const auto &statements = block->Statements();
@@ -277,15 +277,15 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
         enc->specialblockid.insert(inst->GetBasicBlock()->GetTrueSuccessor()->GetId());
         enc->specialblockid.insert(inst->GetBasicBlock()->GetFalseSuccessor()->GetId());
 
-        es2panda::ir::BlockStatement* true_statements =   enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetTrueSuccessor(), false);
-        es2panda::ir::BlockStatement* false_statements =  enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetFalseSuccessor(), false);
+        es2panda::ir::BlockStatement* true_statements =   enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetTrueSuccessor());
+        es2panda::ir::BlockStatement* false_statements =  enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetFalseSuccessor());
 
         auto ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, test_expression, true_statements, false_statements);
 
-        es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, inst_base->GetBasicBlock(), false);
+        es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, inst->GetBasicBlock());
 
-        true_statements->SetParent(block);
-        false_statements->SetParent(block);
+        //true_statements->SetParent(block);
+        //false_statements->SetParent(block);
 
         const auto &statements = block->Statements();
         block->AddStatementAtPos(statements.size(), ifStatement);
