@@ -249,9 +249,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 );
                     
                 auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
-                std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << std::endl;
                 block->AddStatementAtPos(statements.size(), assignstatement);
-                std::cout << "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" << std::endl; 
             }
 
             break;
