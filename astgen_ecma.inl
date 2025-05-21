@@ -248,8 +248,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                     es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
                                                                                 );
                     
-                auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
-                                                                                        assignexpression);
+                auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
                 std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << std::endl;
                 block->AddStatementAtPos(statements.size(), assignstatement);
                 std::cout << "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" << std::endl; 
