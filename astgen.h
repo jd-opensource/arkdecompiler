@@ -403,34 +403,36 @@ public:
             BasicBlock* ancestor_block = nullptr;
 
             if(block->GetPredsBlocks().size() == 2){
-                
+                // auto left = block->GetPredecessor(0);
 
-                auto left = block->GetPredecessor(0);
+                // while(left->IsTryEnd() || left->IsCatchEnd()){
+                // //while(enc->specialblockid.find(left->GetId()) != enc->specialblockid.end()){
+                //     left = left->GetPredecessor(0);
+                // }
 
-                while(left->IsTryEnd() || left->IsCatchEnd()){
-                //while(enc->specialblockid.find(left->GetId()) != enc->specialblockid.end()){
-                    left = left->GetPredecessor(0);
-                }
-
-                auto right = block->GetPredecessor(1);
-                //while(right->IsCatchBegin()  || right->IsTry()){//|| right->IsCatch() || right->IsCatchEnd()
-                while(right->IsTryEnd() || right->IsCatchEnd()){
-                //while(enc->specialblockid.find(right->GetId()) != enc->specialblockid.end()){
-                    right = right->GetPredecessor(0);
-                }
-                logspecialblockid();
-                std::cout << "left: " << std::to_string(left->GetId()) << std::endl;
-                std::cout << "right: " << std::to_string(right->GetId()) << std::endl;
-                if(left == right){
-                    ancestor_block = left;
+                // auto right = block->GetPredecessor(1);
+                // //while(right->IsCatchBegin()  || right->IsTry()){//|| right->IsCatch() || right->IsCatchEnd()
+                // while(right->IsTryEnd() || right->IsCatchEnd()){
+                // //while(enc->specialblockid.find(right->GetId()) != enc->specialblockid.end()){
+                //     right = right->GetPredecessor(0);
+                // }
+                // logspecialblockid();
+                // std::cout << "left: " << std::to_string(left->GetId()) << std::endl;
+                // std::cout << "right: " << std::to_string(right->GetId()) << std::endl;
+                // if(left == right){
+                //     ancestor_block = left;
+                // }else{
+                //     std::cout << "start search ancestor " << std::endl; 
+                //     ancestor_block = lcaFinder->findLCA(left, right);
+                //     std::cout << "end search ancestor " << std::endl;
+                // }
+                ancestor_block = block->GetDominator();
+                if(ancestor_block == nullptr){
+                    std::cout << "@@@@@@@@@@@@@@@@@@@@@@ ancestor_block nullptr" << std::endl;
                 }else{
-                    //std::set<uint32_t> visited;
-                    std::cout << "start search ancestor " << std::endl; 
-                   // ancestor_block = lca(block->GetGraph()->GetStartBlock(), left, right, visited);
-                    ancestor_block = lcaFinder->findLCA(left, right);
-
-                    std::cout << "end search ancestor " << std::endl;
+                    std::cout << "@@@@@@@@@@@@@@@@@@@@@@ ancestor_block not nullptr" << std::endl;
                 }
+
             }else{
                 enc->handleError("get_blockstatement_byid# not considered case");
             }
@@ -441,13 +443,21 @@ public:
             std::cout << "@ ancestor_block: " <<  std::to_string(ancestor_block->GetId()) <<  std::endl;
 
              
-            if(enc->id2block.find(ancestor_block->GetId()) != enc->id2block.end()){
-                auto ancestor_block_statements = enc->id2block[ancestor_block->GetId()];
-                const auto &ancestor_statements = ancestor_block_statements->Statements();
-                ancestor_block_statements->AddStatementAtPos(ancestor_statements.size(), new_block_statement);
-            }else{
-                enc->handleError("get_blockstatement_byid# can't find block id in id2block for deal");
-            }
+            // if(enc->id2block.find(ancestor_block->GetId()) != enc->id2block.end()){
+            //     auto ancestor_block_statements = enc->id2block[ancestor_block->GetId()];
+            //     const auto &ancestor_statements = ancestor_block_statements->Statements();
+            //     ancestor_block_statements->AddStatementAtPos(ancestor_statements.size(), new_block_statement);
+            // }else{
+            //     enc->handleError("get_blockstatement_byid# can't find block id in id2block for deal");
+            // }
+
+            auto ancestor_block_statements = enc->get_blockstatement_byid(enc, ancestor_block);
+            enc->id2block[block_id] =  ancestor_block_statements;
+
+            const auto &ancestor_statements = ancestor_block_statements->Statements();
+            ancestor_block_statements->AddStatementAtPos(ancestor_statements.size(), new_block_statement);
+
+            
 
             return enc->id2block[block_id];
         }else{
