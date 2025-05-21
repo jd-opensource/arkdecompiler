@@ -500,52 +500,7 @@ void AstGen::VisitCatchPhi(GraphVisitor *visitor, Inst *inst)
         }
         if (hasRealUsers) {
             auto enc = static_cast<AstGen *>(visitor);
-            //DoSta(inst->GetDstReg(), enc->result_);
-            auto error = *enc->get_expression_by_register(enc, compiler::ACC_REG_ID);
-            enc->set_expression_by_register(enc, inst->GetDstReg(), error);
-        
-            std::cout << "!!!!!!!!!!!!!!!!!!!! try to set error " << std::endl;
-            
-
-
-            if (inst->GetBasicBlock()->GetTryId() !=  panda::compiler::INVALID_ID ) {//&& !block->IsTryBegin()
-                auto it = enc->tyridtrystatement.find(inst->GetBasicBlock()->GetTryId());
-                if (it == enc->tyridtrystatement.end()) {
-                    enc->handleError("get_block by_try_id error: " + std::to_string(inst->GetBasicBlock()->GetTryId()));
-                }
-            
-                panda::es2panda::ir::TryStatement* trystatment = enc->tyridtrystatement[inst->GetBasicBlock()->GetTryId()];
-                trystatment->UpdateSelf(
-                    [&enc, error](auto * Node){
-                        std::cout << "1111111111111111111111111111111111111111111" << std::endl;
-                        panda::es2panda::ir::AstNode * ret;
-                        switch(Node->Type()){
-                            case es2panda::ir::AstNodeType::CATCH_CLAUSE:{
-                                std::cout << "22222222222222222222222222222222222222222" << std::endl;
-                                auto childNode = Node->AsCatchClause();
-                                std::cout << "33333333333333333333333333333333333333333" << std::endl;
-                                ret =  AllocNode<panda::es2panda::ir::CatchClause>(enc, nullptr, error, childNode->Body());
-                                std::cout << "44444444444444444444444444444444444444444" << std::endl;
-                                break;
-                            }
-
-                            default:{
-                                std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << std::endl;
-                                ret = Node;
-                                std::cout << "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" << std::endl;
-                            }
-                        }
-                        return ret;
-                    }, 
-                    nullptr
-                );
-            }
-
-
-            //panda::es2panda::ir::Expression* param = std::move(clause->Param());
-
-            //*param = **enc->get_expression_by_register(enc, compiler::ACC_REG_ID);
-            std::cout << "!!!!!!!!!!!!!!!!!!!! try to set error " << std::endl;
+            enc->set_expression_by_register(enc, inst->GetDstReg(), enc->constant_catcherror);
         }
     }
     std::cout << "[-] VisitCatchPhi  >>>>>>>>>>>>>>>>>" << std::endl;

@@ -66,7 +66,7 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
         enc->specialblockid.insert(succ->GetId());
         auto catch_block = enc->get_blockstatement_byid(enc, succ);
    
-        panda::es2panda::ir::Expression *param = enc->get_identifier_byname(enc, new std::string("catchexp"));;
+        panda::es2panda::ir::Expression *param = enc->constant_catcherror;
         
 
         catchClause =  AllocNode<panda::es2panda::ir::CatchClause>(enc, nullptr, param, catch_block);
