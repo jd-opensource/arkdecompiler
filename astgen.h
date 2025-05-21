@@ -94,7 +94,7 @@ public:
 
         this->id2block[0] = body;
 
-        this->lcaFinder = std::make_unique<LCAFinder>(graph);
+        //this->lcaFinder = std::make_unique<LCAFinder>(graph);
 
     }
     ~AstGen() override = default;
@@ -282,83 +282,6 @@ public:
         enc->reg2expression[key] = value;
     }
 
-    // uint32_t depth(BasicBlock* node, std::map<BasicBlock*, uint32_t>&depths){
-    //     if(depths.find(node) != depth.end()){
-    //         return depths[node];
-    //     }
-    //     int depth = 0;
-    //     for(BasicBlock* child : node->GetSuccsBlocks()){
-    //         depth = std::max(depth, 1 + depth(child, depths));
-    //     }
-    //     depths[node] = depth;
-    //     return depth;
-    // }
-
-    // BasicBlock* LCA(BasicBlock* root, BasicBlock* p, BasicBlock* q, std::set<uint32_t>& visited){
-    //     std::map<BasicBlock*, uint_t> depths;
-    //     depth(root, depths);
-        
-    //     if(depths[p] < depths[q]){
-    //         std::swap(p, q);
-    //     }
-  
-    //     std::set<uint32_t> visited;
-    //     while(depths[p] > depths[q]){
-            
-    //         p = p->GetPredecessor(0);
-    //     }
-
-    //     while(p != q){
-    //         p = p->GetPredecessor(0);
-    //         q = q->GetPredecessor(0);
-    //     }
-    //     return p;
-    // }
-
-    // BasicBlock* lca(BasicBlock* root, BasicBlock* p, BasicBlock* q, std::set<uint32_t>& visited){
-    //     if(!root || root == p || root == q){
-    //         return root;
-    //     }
-
-    //     if(visited.find(root->GetId()) != visited.end()){
-    //         return nullptr;
-    //     }
-    //     visited.insert(root->GetId());
-        
-    //     BasicBlock* left = nullptr;
-    //     BasicBlock* right = nullptr;
-
-        
-    //     if(root->GetSuccsBlocks().size() > 0){
-    //         left = lca(root->GetTrueSuccessor(), p, q, visited);
-    //     }
-
-    //     if(root->GetSuccsBlocks().size() > 1){
-    //         right = lca(root->GetFalseSuccessor(), p, q, visited);
-    //     }      
-        
-    //     if(root->GetId() == 21){
-    //         std::cout << "p: " << std::to_string(p->GetId())  << " , q: " << std::to_string(q->GetId()) << std::endl; 
-    //         if(left != nullptr){
-    //             std::cout << "@@@ search left: " << std::to_string(left->GetId()) << std::endl;
-    //         }else{
-    //             std::cout << "left is nullptr" << std::endl;
-    //         }
-
-    //         if(right != nullptr){
-    //             std::cout << "@@@ search right: " << std::to_string(right->GetId()) << std::endl;
-    //         }else{
-    //             std::cout << "right is nullptr" << std::endl;
-    //         }
-    //     }
-
-    //     if(left && right){
-    //         return root;
-    //     }
-
-    //     return left? left: right;
-    // }
-
     void logid2blockkeys(){
         std::cout << "id2block keys: ";
         for (const auto& pair : this->id2block) {
@@ -402,37 +325,8 @@ public:
         if(enc->specialblockid.find(block_id) == enc->specialblockid.end() ){
             BasicBlock* ancestor_block = nullptr;
 
-            if(block->GetPredsBlocks().size() == 2){
-                // auto left = block->GetPredecessor(0);
-
-                // while(left->IsTryEnd() || left->IsCatchEnd()){
-                // //while(enc->specialblockid.find(left->GetId()) != enc->specialblockid.end()){
-                //     left = left->GetPredecessor(0);
-                // }
-
-                // auto right = block->GetPredecessor(1);
-                // //while(right->IsCatchBegin()  || right->IsTry()){//|| right->IsCatch() || right->IsCatchEnd()
-                // while(right->IsTryEnd() || right->IsCatchEnd()){
-                // //while(enc->specialblockid.find(right->GetId()) != enc->specialblockid.end()){
-                //     right = right->GetPredecessor(0);
-                // }
-                // logspecialblockid();
-                // std::cout << "left: " << std::to_string(left->GetId()) << std::endl;
-                // std::cout << "right: " << std::to_string(right->GetId()) << std::endl;
-                // if(left == right){
-                //     ancestor_block = left;
-                // }else{
-                //     std::cout << "start search ancestor " << std::endl; 
-                //     ancestor_block = lcaFinder->findLCA(left, right);
-                //     std::cout << "end search ancestor " << std::endl;
-                // }
+            if(block->GetPredsBlocks().size() >= 2){
                 ancestor_block = block->GetDominator();
-                if(ancestor_block == nullptr){
-                    std::cout << "@@@@@@@@@@@@@@@@@@@@@@ ancestor_block nullptr" << std::endl;
-                }else{
-                    std::cout << "@@@@@@@@@@@@@@@@@@@@@@ ancestor_block not nullptr" << std::endl;
-                }
-
             }else{
                 enc->handleError("get_blockstatement_byid# not considered case");
             }
@@ -441,15 +335,6 @@ public:
                 enc->handleError("get_blockstatement_byid# find ancestor is nullptr");
             }
             std::cout << "@ ancestor_block: " <<  std::to_string(ancestor_block->GetId()) <<  std::endl;
-
-             
-            // if(enc->id2block.find(ancestor_block->GetId()) != enc->id2block.end()){
-            //     auto ancestor_block_statements = enc->id2block[ancestor_block->GetId()];
-            //     const auto &ancestor_statements = ancestor_block_statements->Statements();
-            //     ancestor_block_statements->AddStatementAtPos(ancestor_statements.size(), new_block_statement);
-            // }else{
-            //     enc->handleError("get_blockstatement_byid# can't find block id in id2block for deal");
-            // }
 
             auto ancestor_block_statements = enc->get_blockstatement_byid(enc, ancestor_block);
             enc->id2block[block_id] =  ancestor_block_statements;
