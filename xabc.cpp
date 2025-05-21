@@ -66,6 +66,7 @@ using namespace bytecodeopt;
 
 std::string inputFileName = "demo.abc";
 std::string outputFileName = "arkdemo.ts";
+std::string outputAstFileName = "arkdemo.ast";
 
 template <typename T>
 constexpr void RunOpts(compiler::Graph *graph)
@@ -262,10 +263,18 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
     return true;
 }
 
-void LogAst(panda::es2panda::parser::Program *parser_program){
+void LogAst(panda::es2panda::parser::Program *parser_program, std::string outputFileName){
     std::cout << "[+] log raw ast start >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
     std::string res = parser_program->Dump();
-    std::cout << res << std::endl;
+    //std::cout << res << std::endl;
+    std::cout << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
+    std::ofstream outputFile(outputFileName);
+    if (!outputFile.is_open()) {
+        std::cerr << "can't open output file: " << outputFileName << std::endl;
+    }else{
+        outputFile << res;
+        outputFile.close();
+    }
     std::cout << "[-] log raw ast end >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
 }
 
@@ -276,7 +285,7 @@ void LogArkTS2File(panda::es2panda::parser::Program *parser_program, std::string
 
     std::cout << astsgen.Str() << std::endl;
     std::cout << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
-     std::ofstream outputFile(outputFileName);
+    std::ofstream outputFile(outputFileName);
     if (!outputFile.is_open()) {
         std::cerr << "can't open output file: " << outputFileName << std::endl;
     }else{
@@ -319,7 +328,7 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
             if (!mda.IsExternal()) {
                 result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic) && result;
                 if(result){
-                    LogAst(parser_program);
+                    LogAst(parser_program, outputAstFileName);
                     LogArkTS2File(parser_program, outputFileName);
                 }
             }
