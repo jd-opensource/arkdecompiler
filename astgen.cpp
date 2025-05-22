@@ -129,7 +129,12 @@ void AstGen::VisitSpillFill(GraphVisitor *visitor, Inst *inst)
     std::cout << "[+] VisitSpillFill  >>>>>>>>>>>>>>>>>" << std::endl;
     auto *enc = static_cast<AstGen *>(visitor);
     for (auto sf : inst->CastToSpillFill()->GetSpillFills()) {
-        enc->set_expression_by_register(enc, sf.DstValue(), *enc->get_expression_by_register(enc, sf.SrcValue()));
+        auto it = enc->reg2expression.find(sf.SrcValue());
+        if (it == enc->reg2expression.end()) {
+            std::cout << "SpillFill none register"  << std::endl; 
+        }else{
+            enc->set_expression_by_register(enc, sf.DstValue(), *enc->get_expression_by_register(enc, sf.SrcValue()));
+        }
     }
     std::cout << "[-] VisitSpillFill  >>>>>>>>>>>>>>>>>" << std::endl;
 }

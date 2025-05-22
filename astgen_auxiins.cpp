@@ -7,7 +7,10 @@ void AstGen::VisitPhi(GraphVisitor* v, Inst* inst_base) {
     ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
 
     for (size_t i = 0; i < inst->GetInputsCount(); i++) {
+        std::cout << "[+] phi: " << std::to_string(i) << std::endl;
+        std::cout << "[*] " << std::to_string(i) << " , " << std::to_string(inst->GetSrcReg(i)) << std::endl;
         arguments.push_back(*enc->get_expression_by_register(enc, inst->GetSrcReg(i) ));
+        std::cout << "[-] phi: " << std::to_string(i) << std::endl;
     }
 
     auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
