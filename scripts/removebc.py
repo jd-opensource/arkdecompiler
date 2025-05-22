@@ -9,13 +9,14 @@ def remove_bc_data(input_file):
         for line in infile:
             bc_index = line.find('bc:')
             if bc_index != -1:
-                line = line[:bc_index].rstrip() + '\n'
+                line = line[:bc_index]
+            line = line.rstrip() + '\n'
             outfile.write(line)
     
     shutil.move(temp_file, input_file)
 
 def main():
-    parser = argparse.ArgumentParser(description='Remove data after "bc:" in each line of a file.')
+    parser = argparse.ArgumentParser(description='Remove data after "bc:" in each line of a file and strip trailing whitespace.')
     parser.add_argument('-f', '--file', type=str, help='Input file name', default='logs/func_main_0:(any,any,any).ir')
 
     args = parser.parse_args()

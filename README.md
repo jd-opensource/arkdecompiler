@@ -15,7 +15,7 @@ run scripts/prepare.sh
 
 ## Clone arkdecompiler in harmonyos
 ```bash
-git clone git@coding.jd.com:hexiaoyu11/arkdecompiler.git
+git clone https://github.com/jd-opensource/arkdecompiler.git
 ```
 
 

@@ -57,6 +57,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         }
 
        case compiler::RuntimeInterface::IntrinsicId::LDHOLE:
+       {
+            auto dst_reg = inst->GetDstReg();
+            enc->set_expression_by_register(enc, dst_reg, enc->constant_hole);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, enc->constant_hole);
+            break;
+        }
+
        case compiler::RuntimeInterface::IntrinsicId::LDUNDEFINED:
        {
             auto dst_reg = inst->GetDstReg();

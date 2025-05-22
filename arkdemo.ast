@@ -608,7 +608,7 @@
                   "operator": "!=",
                   "left": {
                     "type": "Identifier",
-                    "name": "undefined",
+                    "name": "hole",
                     "loc": {
                       "start": {
                         "line": 1,
@@ -621,8 +621,52 @@
                     }
                   },
                   "right": {
-                    "type": "Identifier",
-                    "name": "error",
+                    "type": "CallExpression",
+                    "callee": {
+                      "type": "Identifier",
+                      "name": "φ",
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 1
+                        }
+                      }
+                    },
+                    "arguments": [
+                      {
+                        "type": "Identifier",
+                        "name": "undefined",
+                        "loc": {
+                          "start": {
+                            "line": 1,
+                            "column": 1
+                          },
+                          "end": {
+                            "line": 1,
+                            "column": 1
+                          }
+                        }
+                      },
+                      {
+                        "type": "Identifier",
+                        "name": "undefined",
+                        "loc": {
+                          "start": {
+                            "line": 1,
+                            "column": 1
+                          },
+                          "end": {
+                            "line": 1,
+                            "column": 1
+                          }
+                        }
+                      }
+                    ],
+                    "optional": false,
                     "loc": {
                       "start": {
                         "line": 1,
@@ -773,8 +817,52 @@
                   {
                     "type": "ThrowStatement",
                     "argument": {
-                      "type": "Identifier",
-                      "name": "error",
+                      "type": "CallExpression",
+                      "callee": {
+                        "type": "Identifier",
+                        "name": "φ",
+                        "loc": {
+                          "start": {
+                            "line": 1,
+                            "column": 1
+                          },
+                          "end": {
+                            "line": 1,
+                            "column": 1
+                          }
+                        }
+                      },
+                      "arguments": [
+                        {
+                          "type": "Identifier",
+                          "name": "undefined",
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 1
+                            }
+                          }
+                        },
+                        {
+                          "type": "Identifier",
+                          "name": "undefined",
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 1
+                            }
+                          }
+                        }
+                      ],
+                      "optional": false,
                       "loc": {
                         "start": {
                           "line": 1,

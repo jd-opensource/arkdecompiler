@@ -490,7 +490,12 @@ void AstGen::VisitCatchPhi(GraphVisitor *visitor, Inst *inst)
     std::cout << "[+] VisitCatchPhi  >>>>>>>>>>>>>>>>>" << std::endl;
     // The Acc register stores the exception object.
     // Create an STA instruction if the exception is used later in virtual registers.
+    
     if (inst->CastToCatchPhi()->IsAcc()) {
+        std::cout << "cast to catchphi" << std::endl;
+        auto enc = static_cast<AstGen *>(visitor);
+            enc->set_expression_by_register(enc, inst->GetDstReg(), enc->constant_catcherror);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, enc->constant_catcherror);
         bool hasRealUsers = false;
         for (auto &user : inst->GetUsers()) {
             if (!user.GetInst()->IsSaveState()) {
@@ -499,8 +504,9 @@ void AstGen::VisitCatchPhi(GraphVisitor *visitor, Inst *inst)
             }
         }
         if (hasRealUsers) {
-            auto enc = static_cast<AstGen *>(visitor);
+            
             enc->set_expression_by_register(enc, inst->GetDstReg(), enc->constant_catcherror);
+            enc->set_expression_by_register(enc, compiler::ACC_REG_ID, enc->constant_catcherror);
         }
     }
     std::cout << "[-] VisitCatchPhi  >>>>>>>>>>>>>>>>>" << std::endl;

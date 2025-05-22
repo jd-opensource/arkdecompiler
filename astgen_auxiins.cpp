@@ -3,6 +3,23 @@ void AstGen::VisitPhi(GraphVisitor* v, Inst* inst_base) {
     pandasm::Ins ins;
     [[maybe_unused]] auto enc = static_cast<AstGen*>(v);
     [[maybe_unused]] auto inst = inst_base->CastToPhi();
+    panda::es2panda::ir::Expression* funname = enc->get_identifier_byname(enc, new std::string("φ"));
+    ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+
+    for (size_t i = 0; i < inst->GetInputsCount(); i++) {
+        arguments.push_back(*enc->get_expression_by_register(enc, inst->GetSrcReg(i) ));
+    }
+
+    auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
+                                                        funname,
+                                                        std::move(arguments),
+                                                        nullptr,
+                                                        false
+                                                        );
+    auto acc_dst = inst->GetDstReg();
+    enc->set_expression_by_register(enc, acc_dst, callexpression);
+    //enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callexpression);
+
     std::cout << "[-] VisitPhi  <<<<<<<<<<<<<<<" << std::endl;
 }
 
