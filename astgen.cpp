@@ -274,12 +274,16 @@ uint32_t onlyOneBranch(BasicBlock* father, AstGen * enc){
     }else{
         other_father = analysis_block->GetPredecessor(0);
     }
-    
+    std::cout << "true branch: " << std::to_string(true_branch->GetId()) << std::endl;
+    std::cout << "false_branch: " << std::to_string(false_branch->GetId()) << std::endl;
+    std::cout << "other_fater: " << std::to_string(other_father->GetId()) << std::endl;
+
     while(other_father != father && other_father->GetId() !=0 ){
         other_father = other_father->GetPredecessor(0);
     }
 
-    if(other_father->GetId() != 0){
+
+    if(other_father == father ){
         if(analysis_block == true_branch){
             return 2;
         }else{
