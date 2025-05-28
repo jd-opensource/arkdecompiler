@@ -7,10 +7,11 @@ void AstGen::VisitPhi(GraphVisitor* v, Inst* inst_base) {
     ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
 
     for (size_t i = 0; i < inst->GetInputsCount(); i++) {
-        std::cout << "[+] phi: " << std::to_string(i) << std::endl;
-        std::cout << "[*] " << std::to_string(i) << " , " << std::to_string(inst->GetSrcReg(i)) << std::endl;
-        arguments.push_back(*enc->get_expression_by_register(enc, inst->GetSrcReg(i) ));
-        std::cout << "[-] phi: " << std::to_string(i) << std::endl;
+        std::cout << "[+] phi: end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+        std::cout << "[*] reg " << std::to_string(i) << " , " << std::to_string(inst->GetSrcReg(i-2)) << std::endl;
+        auto reg = inst->GetInput(i).GetInst()->GetDstReg();
+        arguments.push_back(*enc->get_expression_by_register(enc, reg ));
+        std::cout << "[-] phi: end >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
     }
 
     auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
@@ -21,7 +22,6 @@ void AstGen::VisitPhi(GraphVisitor* v, Inst* inst_base) {
                                                         );
     auto acc_dst = inst->GetDstReg();
     enc->set_expression_by_register(enc, acc_dst, callexpression);
-    //enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callexpression);
 
     std::cout << "[-] VisitPhi  <<<<<<<<<<<<<<<" << std::endl;
 }
@@ -41,6 +41,7 @@ void AstGen::VisitParameter(GraphVisitor* v, Inst* inst_base) {
     panda::es2panda::ir::Expression* arg = enc->get_identifier_byname(enc, new std::string("arg" + std::to_string(paramInst->GetArgNumber())));
     
     auto inst_dst_reg = paramInst->GetDstReg();
+    
     enc->set_expression_by_register(enc, inst_dst_reg, arg);
 
     std::cout << "[-] VisitParameter  >>>>>>>>>>>>>>>>>" << std::endl;

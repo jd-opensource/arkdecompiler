@@ -8,3 +8,5 @@ out/*
 *.pa
 *.abc
 *.ts
+*.ast
+*.swp
