@@ -96,5 +96,5 @@
 #include "compiler/optimizer/ir/graph_visitor.h"
 #include "utils/logger.h"
 
-    
+#include "compiler/optimizer/analysis/loop_analyzer.h"
 #endif

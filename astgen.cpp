@@ -255,6 +255,7 @@ static std::optional<coretypes::TaggedValue> IsEcmaConstTemplate(Inst const *ins
 
 
 uint32_t onlyOneBranch(BasicBlock* father, AstGen * enc){
+    std::cout << "if block: " << std::to_string(father->GetId()) << std::endl;
     auto true_branch = father->GetTrueSuccessor();
     auto false_branch = father->GetFalseSuccessor();
 
@@ -297,9 +298,11 @@ uint32_t onlyOneBranch(BasicBlock* father, AstGen * enc){
         }else{
             return 1;
         }
+    }else if(other_father->GetId() ==0 ){
+        return 0;
     }else{
+        //std::cout << "end other_father: " << std::to_string(other_father->GetId()) << std::endl;
         enc->handleError("onlyOneBranch# found method is bad");
-
     }
     return 0;
 }

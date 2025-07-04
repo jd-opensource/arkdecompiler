@@ -309,6 +309,22 @@ public:
         if (enc->id2block.find(block_id) != enc->id2block.end()) {
             return enc->id2block[block_id];
         }
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        if(block->IsLoopValid() && block->IsLoopHeader() ){
+            std::cout << "[+] @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+            auto &back_edges = block->GetLoop()->GetBackEdges();
+            for (auto back_edge : back_edges) {
+                auto succs_size = back_edge->GetSuccsBlocks().size();
+                if(succs_size > 1){
+                    std::cout << "find do-while loop !!!!!!!!!!!"  << std::endl;
+                }else{
+                    std::cout << "find while loop !!!!!!!!!!!"  << std::endl;
+                }
+            }
+            std::cout << "[-] @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////
 
         // case2: found unique predecessor with unique successor
         if(block->GetPredsBlocks().size() == 1 && block_id != 0 && block->GetPredecessor(0)->GetSuccsBlocks().size() == 1){
@@ -322,14 +338,16 @@ public:
         auto new_block_statement = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
         enc->id2block[block_id] = new_block_statement;
 
+        logspecialblockid();
+
         if(enc->specialblockid.find(block_id) == enc->specialblockid.end() ){
             BasicBlock* ancestor_block = nullptr;
 
-            if(block->GetPredsBlocks().size() >= 2){
+            //if(block->GetPredsBlocks().size() >= 2){
                 ancestor_block = block->GetDominator();
-            }else{
-                enc->handleError("get_blockstatement_byid# not considered case");
-            }
+           // }else{
+            //    enc->handleError("get_blockstatement_byid# not considered case");
+           // }
 
             if(ancestor_block == nullptr){
                 enc->handleError("get_blockstatement_byid# find ancestor is nullptr");

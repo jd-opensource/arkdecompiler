@@ -1088,8 +1088,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-
-
        case compiler::RuntimeInterface::IntrinsicId::THROW_PREF_NONE:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -1105,6 +1103,39 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
+
+       case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM8:
+       case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM16:
+       {
+            std::cout << "111111111111111111111111111111" << std::endl;
+            panda::es2panda::ir::Expression* funname = enc->get_identifier_byname(enc, new std::string("GetIterator"));
+            std::cout << "222222222222222222222222222222" << std::endl;
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+            std::cout << "333333333333333333333333333333" << std::endl;
+            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
+            std::cout << "444444444444444444444444444444" << std::endl;
+            arguments.push_back(*enc->get_expression_by_register(enc, acc_src));
+            std::cout << "555555555555555555555555555555" << std::endl;
+            auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
+                                                                funname,
+                                                                std::move(arguments),
+                                                                nullptr,
+                                                                false
+                                                                );
+            std::cout << "666666666666666666666666666666" << std::endl;
+            auto acc_dst = inst->GetDstReg();
+            std::cout << "777777777777777777777777777777" << std::endl;
+            enc->set_expression_by_register(enc, acc_dst, callexpression);
+            std::cout << "888888888888888888888888888888" << std::endl;
+            //if(inst->IsAccWrite()){
+                std::cout << "hello @@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+                enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callexpression);
+            std::cout << "999999999999999999999999999999" << std::endl;
+            //}
+            break;
+        }
+
+       
         case compiler::RuntimeInterface::IntrinsicId::NEWLEXENV_IMM8:{
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
@@ -1115,9 +1146,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-
-
-       
 
        case compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM8_ID16_IMM8:
        {
@@ -1309,21 +1337,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_GETITERATOR(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::CLOSEITERATOR_IMM8_V8:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -1715,21 +1729,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->result_.emplace_back(pandasm::Create_STOWNBYVALUEWITHNAMESET(imm0, v0, v1));
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM16:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_GETITERATOR(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::CLOSEITERATOR_IMM16_V8:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
