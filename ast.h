@@ -50,7 +50,6 @@
 #include "../ets_frontend/es2panda/ir/module/exportNamedDeclaration.h"
 #include "../ets_frontend/es2panda/ir/statements/blockStatement.h"
 #include "../ets_frontend/es2panda/ir/statements/classDeclaration.h"
-#include "../ets_frontend/es2panda/ir/statements/doWhileStatement.h"
 #include "../ets_frontend/es2panda/ir/statements/expressionStatement.h"
 #include "../ets_frontend/es2panda/ir/statements/forInStatement.h"
 #include "../ets_frontend/es2panda/ir/statements/forOfStatement.h"
@@ -60,11 +59,14 @@
 #include "../ets_frontend/es2panda/ir/statements/switchStatement.h"
 #include "../ets_frontend/es2panda/ir/statements/variableDeclaration.h"
 #include "../ets_frontend/es2panda/ir/statements/variableDeclarator.h"
-#include "../ets_frontend/es2panda/ir/statements/whileStatement.h"
 #include "../ets_frontend/es2panda/ir/statements/debuggerStatement.h"
 #include "../ets_frontend/es2panda/ir/statements/ifStatement.h"
 #include "../ets_frontend/es2panda/ir/statements/tryStatement.h"
 #include "../ets_frontend/es2panda/ir/statements/throwStatement.h"
+
+
+#include "../ets_frontend/es2panda/ir/statements/whileStatement.h"
+#include "../ets_frontend/es2panda/ir/statements/doWhileStatement.h"
 
 #include "../ets_frontend/es2panda/ir/ts/tsConstructorType.h"
 #include "../ets_frontend/es2panda/ir/ts/tsEnumDeclaration.h"

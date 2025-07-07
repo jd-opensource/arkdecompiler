@@ -464,6 +464,30 @@ void ArkTSGen::EmitIfStatement(const ir::AstNode *node){
     std::cout << "[-] end EmitIfStatement"  << std::endl;
 }
 
+void ArkTSGen::EmitWhileStatement(const ir::AstNode *node){
+    std::cout << "[+] start EmitWhileStatement"  << std::endl;
+    auto whilestatement = static_cast<const panda::es2panda::ir::WhileStatement*>(node);
+    
+    // while(test){
+    this->writeKeyWords("while");
+    this->writeLeftParentheses();
+    this->EmitExpression(whilestatement->Test());
+    this->writeRightParentheses();
+    this->writeLeftBrace();
+    this->writeNewLine();
+
+    // while statement
+    this->indent_ = this->indent_ + this->singleindent_;
+    this->EmitStatement(whilestatement->Body());
+    this->indent_ = this->indent_ - this->singleindent_;
+
+    // }
+    this->writeIndent();
+    this->writeRightBrace();
+    this->writeNewLine();
+        
+    std::cout << "[-] end EmitIfStatement"  << std::endl;
+}
 
 void ArkTSGen::EmitStatement(const ir::AstNode *node)
 {
@@ -512,13 +536,18 @@ void ArkTSGen::EmitStatement(const ir::AstNode *node)
             break;
         
         case AstNodeType::TRY_STATEMENT:
-            std::cout << "enter IF_STATEMENT STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
+            std::cout << "enter TRY_STATEMENT STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
             this->EmitTryStatement(node);
             break;
 
         case AstNodeType::THROW_STATEMENT:
-            std::cout << "enter IF_STATEMENT STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
+            std::cout << "enter THROW_STATEMENT STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
             this->EmitThrowStatement(node);
+            break;
+
+        case AstNodeType::WHILE_STATEMENT:
+            std::cout << "enter WHILE_STATEMENT STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
+            this->EmitWhileStatement(node);
             break;
 
         default:

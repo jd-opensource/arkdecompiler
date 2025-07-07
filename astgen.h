@@ -301,6 +301,33 @@ public:
         std::cout << std::endl;
     }
  
+    BasicBlock* search_preheader(BasicBlock* header){
+        for (auto pred : header->GetPredsBlocks()) {
+            if(pred->IsLoopPreHeader()){
+                return pred;
+            }
+        }
+        return nullptr;
+    }
+
+    void judge_looptype(BasicBlock* header){
+        auto &back_edges = header->GetLoop()->GetBackEdges();
+        for (auto back_edge : back_edges) {
+            auto succs_size = back_edge->GetSuccsBlocks().size();
+            if(succs_size > 1){
+                loop2type[header->GetLoop()] = 1;  // do-whle
+            }else{
+                loop2type[header->GetLoop()] = 0;  // while
+            }
+        } 
+
+        ArenaVector<BasicBlock *> bbs = header->GetLoop()->GetBlocks();
+
+        for (size_t i = 0; i < bbs.size(); i++) {
+            std::cout << bbs[i]->GetId() << " ";
+        } 
+    }
+
     es2panda::ir::BlockStatement* get_blockstatement_byid(AstGen * enc, BasicBlock *block){
         auto block_id = block->GetId();
         std::cout << "@@ block id start: " << block_id << std::endl;
@@ -309,34 +336,36 @@ public:
         if (enc->id2block.find(block_id) != enc->id2block.end()) {
             return enc->id2block[block_id];
         }
-        ///////////////////////////////////////////////////////////////////////////////////////////
+        
+        // case2: found loop
         if(block->IsLoopValid() && block->IsLoopHeader() ){
-            
-            auto &back_edges = block->GetLoop()->GetBackEdges();
-            for (auto back_edge : back_edges) {
-                auto succs_size = back_edge->GetSuccsBlocks().size();
-                if(succs_size > 1){
-                    std::cout << "[+] do-while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+            judge_looptype(block);
 
-                    std::cout << "[-] do-while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+            //////////////////////////////////////////////////////////////////////////////////////
+            if(block->GetPredsBlocks().size() == 2){
+                BasicBlock* preheader = this->search_preheader(block);
+                if(preheader != nullptr){
+                    return enc->id2block[preheader->GetId()];
                 }else{
-                    std::cout << "[+] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
-
-                    std::cout << "[-] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+                    enc->handleError("get_blockstatement_byid# find search_preheader error");
                 }
+                
+                BasicBlock* ancestor_block = block->GetPredecessor(0);
+                enc->id2block[block_id] =  enc->id2block[ancestor_block->GetId()];;
+                return enc->id2block[block_id];
             }
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////
 
-        // case2: found unique predecessor with unique successor
+        // case3: found unique predecessor with unique successor
         if(block->GetPredsBlocks().size() == 1 && block_id != 0 && block->GetPredecessor(0)->GetSuccsBlocks().size() == 1){
             BasicBlock* ancestor_block = block->GetPredecessor(0);
             enc->id2block[block_id] =  enc->id2block[ancestor_block->GetId()];;
             return enc->id2block[block_id];
         }
         
-        // case3:create new statements
+        // case4:create new statements
         ArenaVector<panda::es2panda::ir::Statement *> statements(enc->parser_program_->Allocator()->Adapter());
         auto new_block_statement = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
         enc->id2block[block_id] = new_block_statement;
@@ -420,6 +449,7 @@ public:
 
     es2panda::parser::Program* parser_program_;
 
+    std::map<compiler::Loop *, uint32_t> loop2type; // 0-while, 1-dowhile
 
     std::map<uint32_t, es2panda::ir::BlockStatement*> id2block;
 

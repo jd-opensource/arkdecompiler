@@ -209,17 +209,51 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
             std::cout << "S5" << std::endl;
             UNREACHABLE();
     }
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+    /// deal with while/do-while
+    auto block = inst_base->GetBasicBlock();
+    es2panda::ir::BlockStatement* block_statement = enc->get_blockstatement_byid(enc, block);
 
-    es2panda::ir::BlockStatement* true_statements =   enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetTrueSuccessor());
-    es2panda::ir::BlockStatement* false_statements =  enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetFalseSuccessor());
+    if(block->IsLoopValid() && block->IsLoopHeader()){
+        std::cout << "1%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+        if(enc->loop2type[block->GetLoop()] == 1){
+            std::cout << "[+] do-while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
 
-    auto ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, test_expression, true_statements, false_statements);
+            std::cout << "[-] do-while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+        }else{
+            std::cout << "[+] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
 
-    es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, inst_base->GetBasicBlock());
-    true_statements->SetParent(block);
-    false_statements->SetParent(block);
-    const auto &statements = block->Statements();
-    block->AddStatementAtPos(statements.size(), ifStatement);
+            es2panda::ir::BlockStatement* true_statements =   enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetTrueSuccessor());
+            es2panda::ir::BlockStatement* false_statements =  enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetFalseSuccessor());
+    
+
+            auto whilestatement = AllocNode<es2panda::ir::WhileStatement>(enc,
+                                    nullptr,
+                                    test_expression, 
+                                    true_statements);
+            const auto &statements = block_statement->Statements();
+            block_statement->AddStatementAtPos(statements.size(), whilestatement);
+
+            block_statement->AddStatementAtPos(statements.size(), false_statements);
+
+            std::cout << "[-] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+        }
+    }else{
+        std::cout << "2%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+        es2panda::ir::BlockStatement* true_statements =   enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetTrueSuccessor());
+        es2panda::ir::BlockStatement* false_statements =  enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetFalseSuccessor());
+
+        auto ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, test_expression, true_statements, false_statements);
+        true_statements->SetParent(block_statement);
+        false_statements->SetParent(block_statement);
+        const auto &statements = block_statement->Statements();
+        block_statement->AddStatementAtPos(statements.size(), ifStatement);
+
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////
 
     std::cout << "[-] VisitIf  >>>>>>>>>>>>>>>>>" << std::endl;
 }
@@ -316,7 +350,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
     if (imm == 0) {
         auto source_reg = inst->GetSrcReg(0);
         auto src_expression = *enc->get_expression_by_register(enc, source_reg);
-        panda::es2panda::ir::Expression* test_expression;
+        //panda::es2panda::ir::Expression* test_expression;
 
 
         auto ret = onlyOneBranch(inst->GetBasicBlock(), enc);
@@ -361,20 +395,56 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                 std::cout << "S5" << std::endl;
                 UNREACHABLE();
         }
-        test_expression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
-                                                    src_expression,
-                                                    enc->constant_zero,
-                                                    BinIntrinsicIdToToken(cmpid));
+        // test_expression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
+        //                                             src_expression,
+        //                                             enc->constant_zero,
+        //                                             BinIntrinsicIdToToken(cmpid));
 
-        auto ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, test_expression, true_statements, false_statements);
+        
 
-        es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, inst->GetBasicBlock());
+        /////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////////////
+        /// deal with while/do-while
+        auto block = inst_base->GetBasicBlock();
+        es2panda::ir::BlockStatement* block_statement = enc->get_blockstatement_byid(enc, block);
+
+        if(block->IsLoopValid() && block->IsLoopHeader()){
+            std::cout << "1%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+            if(enc->loop2type[block->GetLoop()] == 1){
+                std::cout << "[+] do-while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+
+                std::cout << "[-] do-while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+            }else{
+                std::cout << "[+] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+                
+                //compiler::Loop* loop = block->GetLoop();
+                // if( std::find(loop->GetBlocks().begin(), loop->GetBlocks().end(), inst->GetBasicBlock()->GetTrueSuccessor()) == loop->GetBlocks().end() ){
+                //     std::cout << "true ###########################################################################################################" << std::endl;
+                //     std::swap(true_statements, false_statements);
+                // }
+
+                auto whilestatement = AllocNode<es2panda::ir::WhileStatement>(enc,
+                                        nullptr,
+                                        src_expression, 
+                                        false_statements);
+                const auto &statements = block_statement->Statements();
+
+                block_statement->AddStatementAtPos(statements.size(), whilestatement);
+                block_statement->AddStatementAtPos(statements.size(), true_statements);
+
+                std::cout << "[-] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+            }
+        }else{
+            std::cout << "2%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+            auto ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, src_expression, false_statements, true_statements);
+            const auto &statements = block_statement->Statements();
+            block_statement->AddStatementAtPos(statements.size(), ifStatement);
+
+        }
+        /////////////////////////////////////////////////////////////////////////////////////////////////
 
         //true_statements->SetParent(block);
         //false_statements->SetParent(block);
-
-        const auto &statements = block->Statements();
-        block->AddStatementAtPos(statements.size(), ifStatement);
     }
     std::cout << "[-] VisitIfImm  >>>>>>>>>>>>>>>>>" << std::endl;
 }
