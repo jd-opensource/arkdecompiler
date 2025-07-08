@@ -316,16 +316,29 @@ public:
             auto succs_size = back_edge->GetSuccsBlocks().size();
             if(succs_size > 1){
                 loop2type[header->GetLoop()] = 1;  // do-whle
+
             }else{
                 loop2type[header->GetLoop()] = 0;  // while
+                if(header->GetTrueSuccessor()->IsLoopValid()){
+                    loop2exit[header->GetLoop()] = header->GetFalseSuccessor();
+                }else{
+                    loop2exit[header->GetLoop()] = header->GetTrueSuccessor();
+                }
             }
         } 
 
         ArenaVector<BasicBlock *> bbs = header->GetLoop()->GetBlocks();
 
+        std::cout << "loop list >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " << std::endl;
         for (size_t i = 0; i < bbs.size(); i++) {
-            std::cout << bbs[i]->GetId() << " ";
+            BasicBlock * bb = bbs[i];
+            std::cout << bb->GetId() << " ";
+            if(bb->IsLoopValid() && bb->GetLoop()->IsRoot()){
+                std::cout << "sb@ " << bb->GetId() << std::endl;
+            }
         } 
+
+        std::cout << std::endl;
     }
 
     es2panda::ir::BlockStatement* get_blockstatement_byid(AstGen * enc, BasicBlock *block){
@@ -450,6 +463,7 @@ public:
     es2panda::parser::Program* parser_program_;
 
     std::map<compiler::Loop *, uint32_t> loop2type; // 0-while, 1-dowhile
+    std::map<compiler::Loop *, BasicBlock*> loop2exit; 
 
     std::map<uint32_t, es2panda::ir::BlockStatement*> id2block;
 

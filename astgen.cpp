@@ -56,8 +56,9 @@ bool AstGen::RunImpl()
     }
 
     for (auto *bb : GetGraph()->GetBlocksLinearOrder()) {
+        std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: " << bb->GetId() << std::endl;
         EmitLabel(AstGen::LabelName(bb->GetId()));
-
+        
         if (bb->IsTryEnd() || bb->IsCatchEnd()) {
             auto label = "end_" + AstGen::LabelName(bb->GetId());
             EmitLabel(label);
@@ -76,6 +77,27 @@ bool AstGen::RunImpl()
 
             ASSERT(end >= start);
         }
+
+        
+        if(bb->IsLoopValid() && !bb->GetLoop()->IsRoot()){
+            
+            BasicBlock* header = bb->GetLoop()->GetHeader();
+            ArenaVector<BasicBlock *> bbs = bb->GetLoop()->GetBlocks();
+            if(std::find(bbs.begin(), bbs.end(), bb) == bbs.end()){
+                if(bb->GetSuccsBlocks().size() == 1 &&  header->GetTrueSuccessor() == bb->GetSuccessor(0)){
+                    std::cout << "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ###########: " <<   bb->GetId()      <<  std::endl;
+                        es2panda::ir::BlockStatement* block_statement = get_blockstatement_byid(this, bb);
+                        auto breakstatement = AllocNode<es2panda::ir::BreakStatement>(this);
+                        const auto &statements = block_statement->Statements();
+                        block_statement->AddStatementAtPos(statements.size(), breakstatement);
+                }else{
+                     handleError("#:RunImpl undeal this case!!!");
+                }
+            }
+            
+        }
+
+
 
         if (bb->NeedsJump()) {
             EmitJump(bb);
@@ -400,8 +422,6 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
         //                                             enc->constant_zero,
         //                                             BinIntrinsicIdToToken(cmpid));
 
-        
-
         /////////////////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////////////////
         /// deal with while/do-while
@@ -434,6 +454,11 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
 
                 std::cout << "[-] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
             }
+        }else if(block->IsLoopValid() && block->IsLoopHeader()  ){
+            
+
+
+
         }else{
             std::cout << "2%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
             auto ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, src_expression, false_statements, true_statements);

@@ -68,6 +68,8 @@
 #include "../ets_frontend/es2panda/ir/statements/whileStatement.h"
 #include "../ets_frontend/es2panda/ir/statements/doWhileStatement.h"
 
+#include "../ets_frontend/es2panda/ir/statements/breakStatement.h"
+
 #include "../ets_frontend/es2panda/ir/ts/tsConstructorType.h"
 #include "../ets_frontend/es2panda/ir/ts/tsEnumDeclaration.h"
 #include "../ets_frontend/es2panda/ir/ts/tsEnumMember.h"
