@@ -328,7 +328,7 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
             if (!mda.IsExternal()) {
                 result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic) && result;
                 if(result){
-                    LogAst(parser_program, outputAstFileName);
+                    //LogAst(parser_program, outputAstFileName);
                     LogArkTS2File(parser_program, outputFileName);
                 }
             }

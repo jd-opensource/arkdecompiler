@@ -314,7 +314,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto literalarray = enc->findLiteralArrayByOffset(ir_id0);
             if(!literalarray){
-                enc->handleError("get literalarray error");
+                handleError("get literalarray error");
             }
 
             /*
@@ -341,7 +341,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
                     elements.push_back(AllocNode<es2panda::ir::StringLiteral>(enc, literal_strview));
                 }else{
-                    enc->handleError("unsupport literal type error");
+                    handleError("unsupport literal type error");
                 }
 
                 // std::visit([](const auto& value) {
@@ -393,7 +393,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     es2panda::util::StringView literal_strview(std::get<std::string>(literal.value_));
                     tmp = AllocNode<es2panda::ir::StringLiteral>(enc, literal_strview);
                 }else{
-                    enc->handleError("unsupport literal type error");
+                    handleError("unsupport literal type error");
                 }
 
                 if(count++ % 2==0){

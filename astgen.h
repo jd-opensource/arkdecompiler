@@ -347,11 +347,13 @@ public:
 
         // case1: found blockstatment
         if (enc->id2block.find(block_id) != enc->id2block.end()) {
+            std::cout << "@@ case 1" << std::endl;
             return enc->id2block[block_id];
         }
         
         // case2: found loop
         if(block->IsLoopValid() && block->IsLoopHeader() ){
+            std::cout << "@@ case 2" << std::endl;
             judge_looptype(block);
 
             //////////////////////////////////////////////////////////////////////////////////////
@@ -360,7 +362,7 @@ public:
                 if(preheader != nullptr){
                     return enc->id2block[preheader->GetId()];
                 }else{
-                    enc->handleError("get_blockstatement_byid# find search_preheader error");
+                    handleError("get_blockstatement_byid# find search_preheader error");
                 }
                 
                 BasicBlock* ancestor_block = block->GetPredecessor(0);
@@ -373,12 +375,14 @@ public:
 
         // case3: found unique predecessor with unique successor
         if(block->GetPredsBlocks().size() == 1 && block_id != 0 && block->GetPredecessor(0)->GetSuccsBlocks().size() == 1){
+            std::cout << "@@ case 3" << std::endl;
             BasicBlock* ancestor_block = block->GetPredecessor(0);
             enc->id2block[block_id] =  enc->id2block[ancestor_block->GetId()];;
             return enc->id2block[block_id];
         }
         
         // case4:create new statements
+        std::cout << "@@ case 4" << std::endl;
         ArenaVector<panda::es2panda::ir::Statement *> statements(enc->parser_program_->Allocator()->Adapter());
         auto new_block_statement = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
         enc->id2block[block_id] = new_block_statement;
@@ -395,7 +399,7 @@ public:
            // }
 
             if(ancestor_block == nullptr){
-                enc->handleError("get_blockstatement_byid# find ancestor is nullptr");
+                handleError("get_blockstatement_byid# find ancestor is nullptr");
             }
             std::cout << "@ ancestor_block: " <<  std::to_string(ancestor_block->GetId()) <<  std::endl;
 
@@ -425,10 +429,7 @@ public:
     }
 
 
-    void handleError(const std::string& errorMessage) {
-        std::cerr << "Error: " << errorMessage << std::endl;
-        std::exit(EXIT_FAILURE); 
-    }
+
 
 
 #include "compiler/optimizer/ir/visitor.inc"

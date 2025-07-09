@@ -101,4 +101,10 @@
 #include "utils/logger.h"
 
 #include "compiler/optimizer/analysis/loop_analyzer.h"
+
+
+void handleError(const std::string& errorMessage);
+
 #endif
+
+

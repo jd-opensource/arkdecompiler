@@ -468,6 +468,8 @@ void ArkTSGen::EmitWhileStatement(const ir::AstNode *node){
     std::cout << "[+] start EmitWhileStatement"  << std::endl;
     auto whilestatement = static_cast<const panda::es2panda::ir::WhileStatement*>(node);
     
+    std::cout << "111111111111111111111111111111111111111111111111" << std::endl;
+
     // while(test){
     this->writeKeyWords("while");
     this->writeLeftParentheses();
@@ -476,25 +478,42 @@ void ArkTSGen::EmitWhileStatement(const ir::AstNode *node){
     this->writeLeftBrace();
     this->writeNewLine();
 
+    std::cout << "222222222222222222222222222222222222222222222222" << std::endl;
+    
     // while statement
     this->indent_ = this->indent_ + this->singleindent_;
+    std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << std::endl;
+    
+    [[maybe_unused]] auto x = whilestatement->Body();
+    std::cout << "------------------------------------------------" << std::endl;
+
     this->EmitStatement(whilestatement->Body());
+
+    std::cout << "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" << std::endl;
     this->indent_ = this->indent_ - this->singleindent_;
+
+    std::cout << "33333333333333333333333333333333333333333333333" << std::endl;
 
     // }
     this->writeIndent();
     this->writeRightBrace();
     this->writeNewLine();
         
-    std::cout << "[-] end EmitIfStatement"  << std::endl;
+    std::cout << "[-] end EmitWhileStatement"  << std::endl;
 }
 
 void ArkTSGen::EmitStatement(const ir::AstNode *node)
 {
+    if(node == nullptr){
+        handleError("#EmitStatement: emitStatement for null astnode");
+    }
+
     if(node->Type() != AstNodeType::BLOCK_STATEMENT && node->Type() != AstNodeType::VARIABLE_DECLARATOR ){
         this->writeIndent();
     }
-    
+
+
+    std::cout << "emit statement start " << std::endl;
     switch(node->Type()){
         case AstNodeType::EXPRESSION_STATEMENT:
             std::cout << "enter EXPRESSION_STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;

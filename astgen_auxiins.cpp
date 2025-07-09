@@ -60,7 +60,7 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
     }else if(inst->GetBasicBlock()->GetSuccessor(1)->IsCatchBegin()){
         tryblock = inst->GetBasicBlock()->GetSuccessor(0);
     }else{
-        enc->handleError("can't handle this case  in visitTry for finding try block");
+        handleError("can't handle this case  in visitTry for finding try block");
     }
 
     enc->specialblockid.insert(tryblock->GetId());
@@ -96,7 +96,7 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
 
     
     if(inst->GetBasicBlock()->GetPredsBlocks().size() == 2){
-        enc->handleError("analysis try-catch error for more than one predecessor");
+        handleError("analysis try-catch error for more than one predecessor");
     }
     
     // create null finally case

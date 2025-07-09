@@ -152,7 +152,7 @@ void AstGen::VisitSpillFill(GraphVisitor *visitor, Inst *inst)
     auto *enc = static_cast<AstGen *>(visitor);
     for (auto sf : inst->CastToSpillFill()->GetSpillFills()) {
         if(sf.SrcType() != compiler::LocationType::REGISTER || sf.DstType() != compiler::LocationType::REGISTER ){
-            enc->handleError("VisitSpillFill # unsupoort SpillFill type");
+            handleError("VisitSpillFill # unsupoort SpillFill type");
         }
         auto it = enc->reg2expression.find(sf.SrcValue());
         if (it == enc->reg2expression.end()) {
@@ -330,7 +330,7 @@ uint32_t onlyOneBranch(BasicBlock* father, AstGen * enc){
     }else if(true_branch->GetPredsBlocks().size() == 1 && false_branch->GetPredsBlocks().size() == 1){
         return 0;
     }else{
-        enc->handleError("onlyOneBranch# not consider this case");
+        handleError("onlyOneBranch# not consider this case");
     }
 
     BasicBlock* other_father = nullptr;
@@ -358,7 +358,7 @@ uint32_t onlyOneBranch(BasicBlock* father, AstGen * enc){
         return 0;
     }else{
         //std::cout << "end other_father: " << std::to_string(other_father->GetId()) << std::endl;
-        enc->handleError("onlyOneBranch# found method is bad");
+        handleError("onlyOneBranch# found method is bad");
     }
     return 0;
 }
@@ -454,13 +454,9 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
 
                 std::cout << "[-] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
             }
-        }else if(block->IsLoopValid() && block->IsLoopHeader()  ){
-            
-
-
-
         }else{
             std::cout << "2%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+            std::cout << "ret: " << ret << std::endl;
             auto ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, src_expression, false_statements, true_statements);
             const auto &statements = block_statement->Statements();
             block_statement->AddStatementAtPos(statements.size(), ifStatement);
