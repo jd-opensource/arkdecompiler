@@ -352,6 +352,11 @@ void ArkTSGen::EmitReturnStatement(const ir::AstNode *node){
     this->writeTrailingSemicolon();
 }
 
+void ArkTSGen::EmitBreakStatement(const ir::AstNode *node){
+    this->writeKeyWords("break");
+    this->writeTrailingSemicolon();
+}
+
 void  ArkTSGen::EmitDebuggerStatement(const ir::AstNode *node){
     this->writeKeyWords("debugger");
     this->writeTrailingSemicolon();
@@ -472,8 +477,6 @@ void ArkTSGen::EmitWhileStatement(const ir::AstNode *node){
     std::cout << "[+] start emit while statement"  << std::endl;
     auto whilestatement = static_cast<const panda::es2panda::ir::WhileStatement*>(node);
     
-    std::cout << "111111111111111111111111111111111111111111111111" << std::endl;
-
     // while(test){
     this->writeKeyWords("while");
     this->writeLeftParentheses();
@@ -482,18 +485,10 @@ void ArkTSGen::EmitWhileStatement(const ir::AstNode *node){
     this->writeLeftBrace();
     this->writeNewLine();
 
-    std::cout << "222222222222222222222222222222222222222222222222" << std::endl;
-    
     // while statement
     this->indent_ = this->indent_ + this->singleindent_;
-    std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << std::endl;
-    
     this->EmitStatement(whilestatement->Body());
-
-    std::cout << "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" << std::endl;
     this->indent_ = this->indent_ - this->singleindent_;
-
-    std::cout << "33333333333333333333333333333333333333333333333" << std::endl;
 
     // }
     this->writeIndent();
@@ -568,6 +563,11 @@ void ArkTSGen::EmitStatement(const ir::AstNode *node)
         case AstNodeType::WHILE_STATEMENT:
             std::cout << "enter WHILE_STATEMENT STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
             this->EmitWhileStatement(node);
+            break;
+
+        case AstNodeType::BREAK_STATEMENT:
+            std::cout << "enter BREAK_STATEMENT STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
+            this->EmitBreakStatement(node);
             break;
 
         default:

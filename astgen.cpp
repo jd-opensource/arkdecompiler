@@ -78,26 +78,23 @@ bool AstGen::RunImpl()
             ASSERT(end >= start);
         }
 
-        
-        if(bb->IsLoopValid() && !bb->GetLoop()->IsRoot()){
-            
-            BasicBlock* header = bb->GetLoop()->GetHeader();
-            ArenaVector<BasicBlock *> bbs = bb->GetLoop()->GetBlocks();
-            if(std::find(bbs.begin(), bbs.end(), bb) == bbs.end()){
-                if(bb->GetSuccsBlocks().size() == 1 &&  header->GetTrueSuccessor() == bb->GetSuccessor(0)){
-                    std::cout << "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ###########: " <<   bb->GetId()      <<  std::endl;
-                        es2panda::ir::BlockStatement* block_statement = get_blockstatement_byid(this, bb);
-                        auto breakstatement = AllocNode<es2panda::ir::BreakStatement>(this);
-                        const auto &statements = block_statement->Statements();
-                        block_statement->AddStatementAtPos(statements.size(), breakstatement);
-                }else{
-                     handleError("#:RunImpl undeal this case!!!");
+        if(!bb->IsStartBlock()){
+            BasicBlock* father = bb->GetPredecessor(0);
+            if(father->IsLoopValid() && !father->GetLoop()->IsRoot()){
+                if(bb->GetLoop() != father->GetLoop()  ){
+                    if(bb->GetSuccsBlocks().size() == 1){
+                        //std::cout << "truesucc: " << bb->GetTrueSuccessor()->GetId() << ", falsesucc: " <<  loop2exit[father->GetLoop()]->GetId() << std::endl;
+                        if(bb->GetTrueSuccessor() == loop2exit[father->GetLoop()]){ 
+                            es2panda::ir::BlockStatement* block_statement = get_blockstatement_byid(this, bb);
+                            auto breakstatement = AllocNode<es2panda::ir::BreakStatement>(this);
+                            const auto &statements = block_statement->Statements();
+                            block_statement->AddStatementAtPos(statements.size(), breakstatement);
+                        }
+                    }
+
                 }
             }
-            
         }
-
-
 
         if (bb->NeedsJump()) {
             EmitJump(bb);

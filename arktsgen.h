@@ -207,6 +207,8 @@ private:
     void EmitVariableDeclarationStatement(const ir::AstNode *node);
     void EmitVariableDeclaratorStatement(const ir::AstNode *node);
     void EmitReturnStatement(const ir::AstNode *node);
+    void EmitBreakStatement(const ir::AstNode *node);
+
     void EmitDebuggerStatement(const ir::AstNode *node);
     void EmitIfStatement(const ir::AstNode *node);
     void EmitTryStatement(const ir::AstNode *node);
