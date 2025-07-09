@@ -249,6 +249,7 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
             es2panda::ir::BlockStatement* true_statements =   enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetTrueSuccessor());
             es2panda::ir::BlockStatement* false_statements =  enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetFalseSuccessor());
     
+            
 
             auto whilestatement = AllocNode<es2panda::ir::WhileStatement>(enc,
                                     nullptr,
@@ -321,7 +322,11 @@ uint32_t onlyOneBranch(BasicBlock* father, AstGen * enc){
 
     // 2: only else
 
-    
+    // loop-header === 0
+    if(father->IsLoopValid() && father->IsLoopHeader()){
+        return 0;
+    }
+
     BasicBlock* analysis_block = nullptr;
     if(true_branch->GetPredsBlocks().size() == 2){
         analysis_block = true_branch;
@@ -443,6 +448,11 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                 //     std::swap(true_statements, false_statements);
                 // }
 
+                if(false_statements== nullptr){
+                    std::stringstream ss;
+                    ss << "# VisitIfImm : create while statement but body is nullptr, ret is: " << ret;
+                    handleError(ss.str());
+                }
                 auto whilestatement = AllocNode<es2panda::ir::WhileStatement>(enc,
                                         nullptr,
                                         src_expression, 

@@ -97,6 +97,10 @@ void ArkTSGen::writeIndent(){
 }
 
 void ArkTSGen::EmitExpression(const ir::AstNode *node){
+    if(node == nullptr){
+        handleError("#EmitExpression: emitExpression for null astnode");
+    }
+
     switch(node->Type()){ 
         case AstNodeType::BINARY_EXPRESSION:{
             std::cout << "enter BINARY_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
@@ -295,7 +299,7 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
         }
 
         default:
-            std::cout << "enter EmitExpression Default  >>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+            handleError("#EmitExpression : unsupport expression");;
 
     }
 }
@@ -465,7 +469,7 @@ void ArkTSGen::EmitIfStatement(const ir::AstNode *node){
 }
 
 void ArkTSGen::EmitWhileStatement(const ir::AstNode *node){
-    std::cout << "[+] start EmitWhileStatement"  << std::endl;
+    std::cout << "[+] start emit while statement"  << std::endl;
     auto whilestatement = static_cast<const panda::es2panda::ir::WhileStatement*>(node);
     
     std::cout << "111111111111111111111111111111111111111111111111" << std::endl;
@@ -484,9 +488,6 @@ void ArkTSGen::EmitWhileStatement(const ir::AstNode *node){
     this->indent_ = this->indent_ + this->singleindent_;
     std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << std::endl;
     
-    [[maybe_unused]] auto x = whilestatement->Body();
-    std::cout << "------------------------------------------------" << std::endl;
-
     this->EmitStatement(whilestatement->Body());
 
     std::cout << "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" << std::endl;
@@ -499,7 +500,7 @@ void ArkTSGen::EmitWhileStatement(const ir::AstNode *node){
     this->writeRightBrace();
     this->writeNewLine();
         
-    std::cout << "[-] end EmitWhileStatement"  << std::endl;
+    std::cout << "[-] end emit while statement"  << std::endl;
 }
 
 void ArkTSGen::EmitStatement(const ir::AstNode *node)
@@ -570,7 +571,7 @@ void ArkTSGen::EmitStatement(const ir::AstNode *node)
             break;
 
         default:
-            std::cout << "enter EmitStatement Default  >>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+            handleError("#EmitStatement : unsupport statement");;
     }
 
 
