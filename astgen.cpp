@@ -246,7 +246,9 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
             es2panda::ir::BlockStatement* true_statements =   enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetTrueSuccessor());
             es2panda::ir::BlockStatement* false_statements =  enc->get_blockstatement_byid(enc, inst->GetBasicBlock()->GetFalseSuccessor());
     
-            
+            if(enc->loop2exit[inst->GetBasicBlock()->GetLoop() ] == inst->GetBasicBlock()->GetTrueSuccessor() ){
+                std::swap(true_statements, false_statements);
+            }
 
             auto whilestatement = AllocNode<es2panda::ir::WhileStatement>(enc,
                                     nullptr,

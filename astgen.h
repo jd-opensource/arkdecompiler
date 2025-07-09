@@ -319,7 +319,7 @@ public:
 
             }else{
                 loop2type[header->GetLoop()] = 0;  // while
-                if(header->GetTrueSuccessor()->IsLoopValid() && !header->GetTrueSuccessor()->GetLoop()->IsRoot()){
+                if(header->GetTrueSuccessor()->GetLoop() == header->GetLoop()){
                     loop2exit[header->GetLoop()] = header->GetFalseSuccessor();
                 }else{
                     loop2exit[header->GetLoop()] = header->GetTrueSuccessor();
