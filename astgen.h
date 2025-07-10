@@ -466,6 +466,8 @@ public:
     std::map<compiler::Loop *, uint32_t> loop2type; // 0-while, 1-dowhile
     std::map<compiler::Loop *, BasicBlock*> loop2exit; 
 
+    std::map<compiler::Loop *, es2panda::ir::BlockStatement*> header2redundacystms;
+
     std::map<uint32_t, es2panda::ir::BlockStatement*> id2block;
 
     std::set<uint32_t> specialblockid;

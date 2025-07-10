@@ -466,7 +466,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
         }else{
             std::cout << "2%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
             std::cout << "ret: " << ret << std::endl;
-            auto ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, src_expression, false_statements, true_statements);
+            auto ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, src_expression, true_statements, false_statements);
             const auto &statements = block_statement->Statements();
             block_statement->AddStatementAtPos(statements.size(), ifStatement);
 
