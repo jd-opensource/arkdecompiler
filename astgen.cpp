@@ -451,14 +451,22 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                     ss << "# VisitIfImm : create while statement but body is nullptr, ret is: " << ret;
                     handleError(ss.str());
                 }
-                if(inst->GetCc() == compiler::CC_EQ){
-                   std::swap(true_statements, false_statements); 
-                }
+
+                //es2panda::ir::WhileStatement* whilestatement;
+
+                //if(inst->GetCc() != compiler::CC_EQ){
+                //   std::swap(true_statements, false_statements); 
+               // }
+
                 auto whilestatement = AllocNode<es2panda::ir::WhileStatement>(enc,
                                         nullptr,
-                                        src_expression, 
+                                        test_expression, 
                                         true_statements
                                         );
+
+                //else{
+
+                //}
                 const auto &statements = block_statement->Statements();
 
                 block_statement->AddStatementAtPos(statements.size(), whilestatement);
