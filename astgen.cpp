@@ -376,7 +376,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
     if (imm == 0) {
         auto source_reg = inst->GetSrcReg(0);
         auto src_expression = *enc->get_expression_by_register(enc, source_reg);
-        //panda::es2panda::ir::Expression* test_expression;
+        panda::es2panda::ir::Expression* test_expression;
 
 
         auto ret = onlyOneBranch(inst->GetBasicBlock(), enc);
@@ -399,7 +399,6 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
 
         panda::compiler::RuntimeInterface::IntrinsicId cmpid;
         switch (inst->GetCc()) {
-            
             case compiler::CC_EQ:
                 if(ret != 2 ){
                     cmpid = compiler::RuntimeInterface::IntrinsicId::EQ_IMM8_V8;
@@ -421,10 +420,10 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                 std::cout << "S5" << std::endl;
                 UNREACHABLE();
         }
-        // test_expression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
-        //                                             src_expression,
-        //                                             enc->constant_zero,
-        //                                             BinIntrinsicIdToToken(cmpid));
+        test_expression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
+                                                    src_expression,
+                                                    enc->constant_zero,
+                                                    BinIntrinsicIdToToken(cmpid));
 
         /////////////////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -452,21 +451,37 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                     ss << "# VisitIfImm : create while statement but body is nullptr, ret is: " << ret;
                     handleError(ss.str());
                 }
+                if(inst->GetCc() == compiler::CC_EQ){
+                   std::swap(true_statements, false_statements); 
+                }
                 auto whilestatement = AllocNode<es2panda::ir::WhileStatement>(enc,
                                         nullptr,
                                         src_expression, 
-                                        false_statements);
+                                        true_statements
+                                        );
                 const auto &statements = block_statement->Statements();
 
                 block_statement->AddStatementAtPos(statements.size(), whilestatement);
-                block_statement->AddStatementAtPos(statements.size(), true_statements);
+                block_statement->AddStatementAtPos(statements.size(), false_statements);
 
                 std::cout << "[-] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
             }
         }else{
             std::cout << "2%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
             std::cout << "ret: " << ret << std::endl;
-            auto ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, src_expression, true_statements, false_statements);
+            es2panda::ir::IfStatement* ifStatement;
+
+            if(ret == 2){
+                ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, test_expression, true_statements, false_statements);
+            }else{
+                if(inst->GetCc() == compiler::CC_EQ){
+                   std::swap(true_statements, false_statements); 
+                }
+
+                ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, src_expression, true_statements, false_statements);
+
+            }
+
             const auto &statements = block_statement->Statements();
             block_statement->AddStatementAtPos(statements.size(), ifStatement);
 

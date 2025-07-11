@@ -1,0 +1,326 @@
+ninja: Entering directory `out'
+ninja: no work to do.
+1 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: 140 % i
+1 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: 143 % x
+2 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: func_main_0:(any,any,any)
+3 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: _ESScopeNamesRecord
+3 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: _ESSlotNumberAnnotation
+3 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: _GLOBAL
+<<<<<<<<<<<<<<<<<<<<   enumerate method index: 1  >>>>>>>>>>>>>>>>>>>>
+@@@ 111111111111111111111111111111111111111111
+@@@ 22222222222222222222222222222222222222222
+@@@ 33333333333333333333333333333333333333333
+@@@ 444444444444444444444444444444444444444444
+@@@ 55555555555555555555555555555555555555555
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: 7
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: 0
+[+] VisitConstant  >>>>>>>>>>>>>>>>>
+set_expression_by_register: 0
+[-] VisitConstant  >>>>>>>>>>>>>>>>>
+[+] VisitConstant  >>>>>>>>>>>>>>>>>
+set_expression_by_register: 1
+[-] VisitConstant  >>>>>>>>>>>>>>>>>
+[+] VisitConstant  >>>>>>>>>>>>>>>>>
+set_expression_by_register: 2
+[-] VisitConstant  >>>>>>>>>>>>>>>>>
+[+] VisitSaveState  >>>>>>>>>>>>>>>>>
+[-] VisitSaveState  >>>>>>>>>>>>>>>>>
+[+] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+VisitIntrinsicInst:       Intrinsic.ldundefined 
+@@ block id start: 0
+@@ case 1
+set_expression_by_register: 254
+set_expression_by_register: 254
+[-] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+[+] VisitSaveState  >>>>>>>>>>>>>>>>>
+[-] VisitSaveState  >>>>>>>>>>>>>>>>>
+[+] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+VisitIntrinsicInst:       Intrinsic.stglobalvar 
+@@ block id start: 0
+@@ case 1
+get_expression_by_register: 254
+[-] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+[+] VisitSaveState  >>>>>>>>>>>>>>>>>
+[-] VisitSaveState  >>>>>>>>>>>>>>>>>
+[+] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+VisitIntrinsicInst:       Intrinsic.ldundefined 
+@@ block id start: 0
+@@ case 1
+set_expression_by_register: 254
+set_expression_by_register: 254
+[-] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+[+] VisitSaveState  >>>>>>>>>>>>>>>>>
+[-] VisitSaveState  >>>>>>>>>>>>>>>>>
+[+] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+VisitIntrinsicInst:       Intrinsic.stglobalvar 
+@@ block id start: 0
+@@ case 1
+get_expression_by_register: 254
+[-] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+[+] VisitSaveState  >>>>>>>>>>>>>>>>>
+[-] VisitSaveState  >>>>>>>>>>>>>>>>>
+[+] VisitConstant  >>>>>>>>>>>>>>>>>
+set_expression_by_register: 3
+[-] VisitConstant  >>>>>>>>>>>>>>>>>
+[+] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+VisitIntrinsicInst:       Intrinsic.stglobalvar 
+@@ block id start: 0
+@@ case 1
+get_expression_by_register: 3
+[-] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+[+] VisitSaveState  >>>>>>>>>>>>>>>>>
+[-] VisitSaveState  >>>>>>>>>>>>>>>>>
+[+] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+VisitIntrinsicInst:       Intrinsic.stglobalvar 
+@@ block id start: 0
+@@ case 1
+get_expression_by_register: 3
+[-] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: 6
+[+] VisitSaveState  >>>>>>>>>>>>>>>>>
+[-] VisitSaveState  >>>>>>>>>>>>>>>>>
+[+] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+VisitIntrinsicInst:       Intrinsic.ldglobalvar 
+@@ block id start: 6
+@@ case 2
+loop list >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 
+6 5 4 2 3 
+set_expression_by_register: 3
+set_expression_by_register: 254
+[-] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+[+] VisitSaveState  >>>>>>>>>>>>>>>>>
+[-] VisitSaveState  >>>>>>>>>>>>>>>>>
+[+] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+VisitIntrinsicInst:              Intrinsic.less 
+@@ block id start: 6
+@@ case 2
+loop list >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 
+6 5 4 2 3 
+get_expression_by_register: 0
+get_expression_by_register: 3
+set_expression_by_register: 254
+set_expression_by_register: 254
+[-] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+[+] VisitIfImm  >>>>>>>>>>>>>>>>>
+get_expression_by_register: 254
+if block: 6
+@@ block id start: 1
+@@ case 4
+specialblockid: 1, 2
+@@ block id end: 1
+@@ block id start: 2
+@@ case 4
+specialblockid: 1, 2
+@@ block id end: 2
+@@ block id start: 6
+@@ case 2
+loop list >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 
+6 5 4 2 3 
+1%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+[+] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+[-] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+[-] VisitIfImm  >>>>>>>>>>>>>>>>>
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: 2
+[+] VisitSaveState  >>>>>>>>>>>>>>>>>
+[-] VisitSaveState  >>>>>>>>>>>>>>>>>
+[+] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+VisitIntrinsicInst:       Intrinsic.ldglobalvar 
+@@ block id start: 2
+@@ case 1
+set_expression_by_register: 3
+set_expression_by_register: 254
+[-] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+[+] VisitSaveState  >>>>>>>>>>>>>>>>>
+[-] VisitSaveState  >>>>>>>>>>>>>>>>>
+[+] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+VisitIntrinsicInst:          Intrinsic.stricteq 
+@@ block id start: 2
+@@ case 1
+get_expression_by_register: 1
+get_expression_by_register: 3
+set_expression_by_register: 254
+set_expression_by_register: 254
+[-] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+[+] VisitIfImm  >>>>>>>>>>>>>>>>>
+get_expression_by_register: 254
+if block: 2
+@@ block id start: 3
+@@ case 4
+specialblockid: 1, 2, 3, 4
+@@ block id end: 3
+@@ block id start: 4
+@@ case 4
+specialblockid: 1, 2, 3, 4
+@@ block id end: 4
+@@ block id start: 2
+@@ case 1
+2%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ret: 0
+[-] VisitIfImm  >>>>>>>>>>>>>>>>>
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: 4
+[+] VisitSaveState  >>>>>>>>>>>>>>>>>
+[-] VisitSaveState  >>>>>>>>>>>>>>>>>
+[+] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+VisitIntrinsicInst:       Intrinsic.stglobalvar 
+@@ block id start: 4
+@@ case 1
+get_expression_by_register: 2
+[-] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: 3
+[+] VisitSaveState  >>>>>>>>>>>>>>>>>
+[-] VisitSaveState  >>>>>>>>>>>>>>>>>
+[+] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+VisitIntrinsicInst:       Intrinsic.stglobalvar 
+@@ block id start: 3
+@@ case 1
+get_expression_by_register: 1
+[-] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: 5
+[+] VisitSaveState  >>>>>>>>>>>>>>>>>
+[-] VisitSaveState  >>>>>>>>>>>>>>>>>
+[+] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+VisitIntrinsicInst:       Intrinsic.ldglobalvar 
+@@ block id start: 5
+@@ case 4
+specialblockid: 1, 2, 3, 4
+@ ancestor_block: 2
+@@ block id start: 2
+@@ case 1
+set_expression_by_register: 254
+set_expression_by_register: 254
+[-] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+[+] VisitSaveState  >>>>>>>>>>>>>>>>>
+[-] VisitSaveState  >>>>>>>>>>>>>>>>>
+[+] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+VisitIntrinsicInst:         Intrinsic.tonumeric 
+@@ block id start: 5
+@@ case 1
+get_expression_by_register: 254
+set_expression_by_register: 254
+set_expression_by_register: 254
+[-] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+[+] VisitSaveState  >>>>>>>>>>>>>>>>>
+[-] VisitSaveState  >>>>>>>>>>>>>>>>>
+[+] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+VisitIntrinsicInst:               Intrinsic.inc 
+@@ block id start: 5
+@@ case 1
+get_expression_by_register: 254
+set_expression_by_register: 254
+set_expression_by_register: 254
+[-] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+[+] VisitSaveState  >>>>>>>>>>>>>>>>>
+[-] VisitSaveState  >>>>>>>>>>>>>>>>>
+[+] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+VisitIntrinsicInst:       Intrinsic.stglobalvar 
+@@ block id start: 5
+@@ case 1
+get_expression_by_register: 254
+[-] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: 1
+[+] VisitSaveState  >>>>>>>>>>>>>>>>>
+[-] VisitSaveState  >>>>>>>>>>>>>>>>>
+[+] VisitConstant  >>>>>>>>>>>>>>>>>
+set_expression_by_register: 254
+[-] VisitConstant  >>>>>>>>>>>>>>>>>
+[+] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+VisitIntrinsicInst:       Intrinsic.stglobalvar 
+@@ block id start: 1
+@@ case 1
+get_expression_by_register: 254
+[-] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+[+] VisitSaveState  >>>>>>>>>>>>>>>>>
+[-] VisitSaveState  >>>>>>>>>>>>>>>>>
+[+] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+VisitIntrinsicInst:       Intrinsic.ldundefined 
+@@ block id start: 1
+@@ case 1
+set_expression_by_register: 254
+set_expression_by_register: 254
+[-] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+[+] VisitSaveState  >>>>>>>>>>>>>>>>>
+[-] VisitSaveState  >>>>>>>>>>>>>>>>>
+[+] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+VisitIntrinsicInst:   Intrinsic.returnundefined 
+@@ block id start: 1
+@@ case 1
+[-] VisitIntrinsic  >>>>>>>>>>>>>>>>>
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: 8
+Decompiled: func_main_0:(any,any,any)
+[+] log raw ast start >>>>>>>>>>>>>>>>>>>>>>>>>>>
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+[-] log raw ast end >>>>>>>>>>>>>>>>>>>>>>>>>>>
+[+] log arkTS  start >>>>>>>>>>>>>>>>>>>>>>>>>>>
+emit statement start 
+enter BLOCK_STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+emit statement start 
+enter FUNCTION_DECLARATION STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+emit statement start 
+enter BLOCK_STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+emit statement start 
+enter EXPRESSION_STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>
+enter ASSIGNMENT_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>
+emit statement start 
+enter EXPRESSION_STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>
+enter ASSIGNMENT_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>
+emit statement start 
+enter EXPRESSION_STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>
+enter ASSIGNMENT_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>
+emit statement start 
+enter EXPRESSION_STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>
+enter ASSIGNMENT_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>
+emit statement start 
+enter WHILE_STATEMENT STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[+] start emit while statement
+enter BINARY_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>
+emit statement start 
+enter BLOCK_STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+emit statement start 
+enter IF_STATEMENT STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+[+] start EmitIfStatement
+enter BINARY_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>
+emit statement start 
+enter BLOCK_STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+emit statement start 
+enter EXPRESSION_STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>
+enter ASSIGNMENT_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>
+emit statement start 
+enter BLOCK_STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+emit statement start 
+enter EXPRESSION_STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>
+enter ASSIGNMENT_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>
+[-] end EmitIfStatement
+emit statement start 
+enter BLOCK_STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+emit statement start 
+enter EXPRESSION_STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>
+enter ASSIGNMENT_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>
+enter BINARY_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>
+[-] end emit while statement
+emit statement start 
+enter BLOCK_STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+emit statement start 
+enter EXPRESSION_STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>
+enter ASSIGNMENT_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>
+emit statement start 
+enter RETURN STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+function func_main_0:(any,any,any)(arg0, arg1, arg2){
+  i = undefined;
+  x = undefined;
+  x = 0;
+  i = 0;
+  while(i < 5){
+    if((i === 2){
+      x = 2;
+    }else{
+      x = 1;
+    }
+    i = Number(i) + 1;
+  }
+  x = 3;
+  return undefined;
+}
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+[-] log arkTS  end >>>>>>>>>>>>>>>>>>>>>>>>>>>
+Processing complete. Changes applied to 'logs/func_main_0:(any,any,any).ir'.
