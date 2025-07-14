@@ -482,6 +482,12 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
 
                 es2panda::ir::WhileStatement* whilestatement;
                 if( std::find(loop->GetBlocks().begin(), loop->GetBlocks().end(), block->GetFalseSuccessor()) != loop->GetBlocks().end() ){
+                    if(enc->whileheader2redundant[block]->Statements().size() != 0){
+                        std::cout << "insert <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+                        enc->add_insAst_to_blockstatemnt_by_block(block->GetFalseSuccessor(), enc->whileheader2redundant[block] );
+
+                    }
+
                     std::swap(true_statements, false_statements);
                     whilestatement = AllocNode<es2panda::ir::WhileStatement>(enc,
                             nullptr,
@@ -489,6 +495,11 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                             true_statements
                             );
                 }else{
+                    if(enc->whileheader2redundant[block]->Statements().size() != 0){
+                        std::cout << "insert <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+                        enc->add_insAst_to_blockstatemnt_by_block(block->GetTrueSuccessor(), enc->whileheader2redundant[block] );
+
+                    }
                     whilestatement = AllocNode<es2panda::ir::WhileStatement>(enc,
                             nullptr,
                             test_expression, 

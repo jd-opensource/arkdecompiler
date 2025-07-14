@@ -324,7 +324,17 @@ public:
     }
 
     void add_insAst_to_blockstatemnt_by_inst(Inst *inst, es2panda::ir::Statement *statement){
-        this->add_insAst_to_blockstatemnt_by_block(inst->GetBasicBlock(), statement);
+        BasicBlock* block = inst->GetBasicBlock();
+        this->add_insAst_to_blockstatemnt_by_block(block, statement);
+
+        if(block->IsLoopValid() && block->IsLoopHeader() && inst->GetOpcode()!= Opcode::If   && inst->GetOpcode()!= Opcode::IfImm ){
+            std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+            auto headerblockstatements = this->whileheader2redundant[block];
+            const auto &statements = headerblockstatements->Statements();
+            headerblockstatements->AddStatementAtPos(statements.size(), statement);
+        }
+
+        
     }
 
     void add_insAst_to_blockstatemnt_by_block(BasicBlock* block, es2panda::ir::Statement *statement){
