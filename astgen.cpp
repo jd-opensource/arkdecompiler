@@ -117,10 +117,12 @@ bool AstGen::RunImpl()
                     if(bb->GetSuccsBlocks().size() == 1){
                         //std::cout << "truesucc: " << bb->GetTrueSuccessor()->GetId() << ", falsesucc: " <<  loop2exit[father->GetLoop()]->GetId() << std::endl;
                         if(bb->GetTrueSuccessor() == loop2exit[father->GetLoop()]){ 
-                            es2panda::ir::BlockStatement* block_statement = get_blockstatement_byid(this, bb);
+                            //es2panda::ir::BlockStatement* block_statement = get_blockstatement_byid(this, bb);
+
+                            this->get_blockstatement_byid(this, bb);
                             auto breakstatement = AllocNode<es2panda::ir::BreakStatement>(this);
-                            const auto &statements = block_statement->Statements();
-                            block_statement->AddStatementAtPos(statements.size(), breakstatement);
+
+                            this->add_insAst_to_blockstatemnt_by_block(bb, breakstatement);
 
                         }
                     }
@@ -288,8 +290,8 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
                                     test_expression, 
                                     true_statements);
 
-            enc->add_insAst_to_blockstatemnt(inst_base, whilestatement);
-            enc->add_insAst_to_blockstatemnt(inst_base, false_statements);
+            enc->add_insAst_to_blockstatemnt_by_inst(inst_base, whilestatement);
+            enc->add_insAst_to_blockstatemnt_by_inst(inst_base, false_statements);
 
             std::cout << "[-] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
         }
@@ -302,7 +304,7 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
         true_statements->SetParent(block_statement);
         false_statements->SetParent(block_statement);
         
-        enc->add_insAst_to_blockstatemnt(inst_base, ifStatement);
+        enc->add_insAst_to_blockstatemnt_by_inst(inst_base, ifStatement);
 
     }
 
@@ -500,8 +502,8 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                     handleError(ss.str());
                 }
 
-                enc->add_insAst_to_blockstatemnt(inst_base, whilestatement);
-                enc->add_insAst_to_blockstatemnt(inst_base, false_statements);
+                enc->add_insAst_to_blockstatemnt_by_inst(inst_base, whilestatement);
+                enc->add_insAst_to_blockstatemnt_by_inst(inst_base, false_statements);
 
                 std::cout << "[-] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
             }
@@ -521,7 +523,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
 
             }
 
-            enc->add_insAst_to_blockstatemnt(inst_base, ifStatement);
+            enc->add_insAst_to_blockstatemnt_by_inst(inst_base, ifStatement);
 
         }
         /////////////////////////////////////////////////////////////////////////////////////////////////

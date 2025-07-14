@@ -93,7 +93,7 @@ public:
         // add 0 block statement
         program_block->AddStatementAtPos(program_statements.size(), funcDecl);
 
-
+        
         this->id2block[0] = body;
 
         //this->lcaFinder = std::make_unique<LCAFinder>(graph);
@@ -323,8 +323,12 @@ public:
         return nullptr;
     }
 
-    void add_insAst_to_blockstatemnt(Inst *inst, es2panda::ir::Statement *statement){
-        es2panda::ir::BlockStatement* block_statements = this->get_blockstatement_byid(this, inst->GetBasicBlock());
+    void add_insAst_to_blockstatemnt_by_inst(Inst *inst, es2panda::ir::Statement *statement){
+        this->add_insAst_to_blockstatemnt_by_block(inst->GetBasicBlock(), statement);
+    }
+
+    void add_insAst_to_blockstatemnt_by_block(BasicBlock* block, es2panda::ir::Statement *statement){
+        es2panda::ir::BlockStatement* block_statements = this->get_blockstatement_byid(this, block);
         const auto &statements = block_statements->Statements();
         block_statements->AddStatementAtPos(statements.size(), statement);
     }
@@ -423,9 +427,7 @@ public:
             auto ancestor_block_statements = enc->get_blockstatement_byid(enc, ancestor_block);
             enc->id2block[block_id] =  ancestor_block_statements;
 
-            const auto &ancestor_statements = ancestor_block_statements->Statements();
-            ancestor_block_statements->AddStatementAtPos(ancestor_statements.size(), new_block_statement);
-
+            this->add_insAst_to_blockstatemnt_by_block(ancestor_block, new_block_statement);
             
 
             return enc->id2block[block_id];

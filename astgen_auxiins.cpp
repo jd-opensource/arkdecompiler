@@ -111,7 +111,7 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
     auto tryStatement = AllocNode<panda::es2panda::ir::TryStatement>(enc, tryblock_statement, catchClause, finnalyClause);
     enc->tyridtrystatement[inst->GetBasicBlock()->GetTryId()] = tryStatement;
     
-    enc->add_insAst_to_blockstatemnt(inst_base, tryStatement);
+    enc->add_insAst_to_blockstatemnt_by_inst(inst_base, tryStatement);
 
     std::cout << "[-] VisitTry  >>>>>>>>>>>>>>>>>" << std::endl;
 
