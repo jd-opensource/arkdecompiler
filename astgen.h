@@ -390,18 +390,20 @@ public:
             judge_looptype(block);
 
             //////////////////////////////////////////////////////////////////////////////////////
-            if(block->GetPredsBlocks().size() == 2){
-                BasicBlock* preheader = this->search_preheader(block);
-                if(preheader != nullptr){
-                    return enc->id2block[preheader->GetId()];
-                }else{
-                    handleError("get_blockstatement_byid# find search_preheader error");
-                }
-                
-                BasicBlock* ancestor_block = block->GetPredecessor(0);
-                enc->id2block[block_id] =  enc->id2block[ancestor_block->GetId()];;
-                return enc->id2block[block_id];
-            }
+            ArenaVector<panda::es2panda::ir::Statement *> statements(enc->parser_program_->Allocator()->Adapter());
+            auto new_block_statement = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
+            enc->id2block[block_id] = new_block_statement;
+            return enc->id2block[block_id];
+
+            //////////////////////////////////////////////////////////////////////////////////////
+            // if(block->GetPredsBlocks().size() == 2){
+            //     BasicBlock* preheader = this->search_preheader(block);
+            //     if(preheader != nullptr){
+            //         return enc->id2block[preheader->GetId()];
+            //     }else{
+            //         handleError("get_blockstatement_byid# find search_preheader error");
+            //     }
+            // }
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////

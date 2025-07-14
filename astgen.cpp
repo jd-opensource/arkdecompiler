@@ -468,6 +468,8 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             if(enc->loop2type[block->GetLoop()] == 1){
                 std::cout << "[+] do-while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
 
+
+
                 std::cout << "[-] do-while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
             }else{
                 std::cout << "[+] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
@@ -510,7 +512,8 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                 }
 
                 enc->add_insAst_to_blockstatemnt_by_inst(inst_base, whilestatement);
-                enc->add_insAst_to_blockstatemnt_by_inst(inst_base, false_statements);
+                enc->add_insAst_to_blockstatemnt_by_block(loop->GetPreHeader(), enc->get_blockstatement_byid(enc, block));
+                enc->add_insAst_to_blockstatemnt_by_block(loop->GetPreHeader(), false_statements);
 
                 std::cout << "[-] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
             }
