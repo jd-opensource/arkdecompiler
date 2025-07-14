@@ -10,15 +10,15 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
     inst->DumpOpcode(&oss);
     std::cout << "VisitIntrinsicInst: " << oss.str() << std::endl;
 
-    es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, inst_base->GetBasicBlock());
-    const auto &statements = block->Statements();
+    //es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, inst_base->GetBasicBlock());
+    //const auto &statements = block->Statements();
 
 
     switch (inst->GetIntrinsicId()) {
        case compiler::RuntimeInterface::IntrinsicId::RETURNUNDEFINED:
        {
             auto returnstatement = AllocNode<es2panda::ir::ReturnStatement>(enc,  enc->constant_undefined);
-            block->AddStatementAtPos(statements.size(), returnstatement);
+            enc->add_insAst_to_blockstatemnt(inst_base, returnstatement);
             break;
         }
 
@@ -256,7 +256,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 );
                     
                 auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
-                block->AddStatementAtPos(statements.size(), assignstatement);
+                enc->add_insAst_to_blockstatemnt(inst_base, assignstatement);
             }
 
             break;
@@ -519,14 +519,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                     std::move(declarators),
                                                                                     true
                                                                                 );
-                block->AddStatementAtPos(statements.size(), variadeclaration);
+                enc->add_insAst_to_blockstatemnt(inst_base, variadeclaration);
             }else{
                 auto variadeclaration = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
                                                                                     es2panda::ir::VariableDeclaration::VariableDeclarationKind::LET,
                                                                                     std::move(declarators),
                                                                                     true
                                                                                 );
-                block->AddStatementAtPos(statements.size(), variadeclaration);
+                enc->add_insAst_to_blockstatemnt(inst_base, variadeclaration);
             }
 
             
@@ -548,7 +548,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             );
 
             //auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc,  callarg0expression);
-            //block->AddStatementAtPos(statements.size(), callarg0statement);
+            //enc->add_insAst_to_blockstatemnt(inst_base, callarg0statement);
             auto acc_dst = inst->GetDstReg();
             enc->set_expression_by_register(enc, acc_dst, callarg0expression);
             enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callarg0expression);
@@ -597,7 +597,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             );
 
             //auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc,  callarg0expression);
-            //block->AddStatementAtPos(statements.size(), callarg0statement);
+            //enc->add_insAst_to_blockstatemnt(inst_base, callarg0statement);
             auto acc_dst = inst->GetDstReg();
             enc->set_expression_by_register(enc, acc_dst, callarg0expression);
             enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callarg0expression);
@@ -621,7 +621,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             );
 
             //auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc,  callarg0expression);
-            //block->AddStatementAtPos(statements.size(), callarg0statement);
+            //enc->add_insAst_to_blockstatemnt(inst_base, callarg0statement);
             auto acc_dst = inst->GetDstReg();
             enc->set_expression_by_register(enc, acc_dst, callarg0expression);
             enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callarg0expression);
@@ -646,7 +646,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             
             //auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc,  callarg0expression);
-            //block->AddStatementAtPos(statements.size(), callarg0statement);
+            //enc->add_insAst_to_blockstatemnt(inst_base, callarg0statement);
             auto acc_dst = inst->GetDstReg();
             enc->set_expression_by_register(enc, acc_dst, callarg0expression);
             enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callarg0expression);
@@ -672,7 +672,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             );
 
             //auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc,  callarg0expression);
-            //block->AddStatementAtPos(statements.size(), callarg0statement);
+            //enc->add_insAst_to_blockstatemnt(inst_base, callarg0statement);
             auto acc_dst = inst->GetDstReg();
             enc->set_expression_by_register(enc, acc_dst, callarg0expression);
             enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callarg0expression);
@@ -697,7 +697,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             );
 
             //auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc,  callarg0expression);
-            //block->AddStatementAtPos(statements.size(), callarg0statement);
+            //enc->add_insAst_to_blockstatemnt(inst_base, callarg0statement);
             auto acc_dst = inst->GetDstReg();
             enc->set_expression_by_register(enc, acc_dst, callarg0expression);
             enc->set_expression_by_register(enc, compiler::ACC_REG_ID, callarg0expression);
@@ -724,7 +724,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             );
 
             //auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc,  callarg0expression);
-            //block->AddStatementAtPos(statements.size(), callarg0statement);
+            //enc->add_insAst_to_blockstatemnt(inst_base, callarg0statement);
 
             auto acc_dst = inst->GetDstReg();
             enc->set_expression_by_register(enc, acc_dst, callarg0expression);
@@ -755,7 +755,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                         ); 
             auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
                                                                                 assignexpression);
-            block->AddStatementAtPos(statements.size(), assignstatement);
+            enc->add_insAst_to_blockstatemnt(inst_base, assignstatement);
             break;
 
         }
@@ -786,7 +786,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                         ); 
             auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
                                                                                 assignexpression);
-            block->AddStatementAtPos(statements.size(), assignstatement);
+            enc->add_insAst_to_blockstatemnt(inst_base, assignstatement);
             break;
         }
 
@@ -927,7 +927,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::DEBUGGER:
        {
             auto debuggerstatement = AllocNode<es2panda::ir::DebuggerStatement>(enc );
-            block->AddStatementAtPos(statements.size(), debuggerstatement);
+            enc->add_insAst_to_blockstatemnt(inst_base, debuggerstatement);
             break;
        }
 
@@ -1075,7 +1075,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
             auto returnexpression = *enc->get_expression_by_register(enc, acc_src); 
             auto returnstatement = AllocNode<es2panda::ir::ReturnStatement>(enc,  returnexpression);
-            block->AddStatementAtPos(statements.size(), returnstatement);
+            enc->add_insAst_to_blockstatemnt(inst_base, returnstatement);
             break;
         }
 
@@ -1093,7 +1093,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
             auto argument = *enc->get_expression_by_register(enc, acc_src);
             auto throwStatement = AllocNode<es2panda::ir::ThrowStatement>(enc, argument);
-            block->AddStatementAtPos(statements.size(), throwStatement);
+            enc->add_insAst_to_blockstatemnt(inst_base, throwStatement);
 
             break;
         }
@@ -2937,7 +2937,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             
             auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
                                                                                 assignexpression);
-            block->AddStatementAtPos(statements.size(), assignstatement);
+            enc->add_insAst_to_blockstatemnt(inst_base, assignstatement);
             break;        
         
         }

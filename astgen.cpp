@@ -55,7 +55,38 @@ bool AstGen::RunImpl()
         result_.emplace_back(pandasm::Create_NOP());
     }
 
+    /*
+        if(block->IsLoopValid() && block->IsLoopHeader() ){
+            std::cout << "@@ case 2" << std::endl;
+            judge_looptype(block);
+
+            //////////////////////////////////////////////////////////////////////////////////////
+            if(block->GetPredsBlocks().size() == 2){
+                BasicBlock* preheader = this->search_preheader(block);
+                if(preheader != nullptr){
+                    return enc->id2block[preheader->GetId()];
+                }else{
+                    handleError("get_blockstatement_byid# find search_preheader error");
+                }
+                
+                BasicBlock* ancestor_block = block->GetPredecessor(0);
+                enc->id2block[block_id] =  enc->id2block[ancestor_block->GetId()];;
+                return enc->id2block[block_id];
+            }
+        }
+    */
+
+
+
     for (auto *bb : GetGraph()->GetBlocksLinearOrder()) {
+        if(bb->IsLoopValid() && bb->IsLoopHeader() ){
+            judge_looptype(bb);
+            /////////////////////////////////////////////////////////////////
+            ArenaVector<panda::es2panda::ir::Statement *> statements(this->parser_program_->Allocator()->Adapter());
+            auto new_block_statement = this->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
+            this->whileheader2redundant[bb] = new_block_statement;
+        }
+
         std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: " << bb->GetId() << std::endl;
         EmitLabel(AstGen::LabelName(bb->GetId()));
         
@@ -78,6 +109,7 @@ bool AstGen::RunImpl()
             ASSERT(end >= start);
         }
 
+        // check whehter add break statement
         if(!bb->IsStartBlock()){
             BasicBlock* father = bb->GetPredecessor(0);
             if(father->IsLoopValid() && !father->GetLoop()->IsRoot()){
@@ -89,6 +121,7 @@ bool AstGen::RunImpl()
                             auto breakstatement = AllocNode<es2panda::ir::BreakStatement>(this);
                             const auto &statements = block_statement->Statements();
                             block_statement->AddStatementAtPos(statements.size(), breakstatement);
+
                         }
                     }
 
@@ -254,10 +287,9 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
                                     nullptr,
                                     test_expression, 
                                     true_statements);
-            const auto &statements = block_statement->Statements();
-            block_statement->AddStatementAtPos(statements.size(), whilestatement);
 
-            block_statement->AddStatementAtPos(statements.size(), false_statements);
+            enc->add_insAst_to_blockstatemnt(inst_base, whilestatement);
+            enc->add_insAst_to_blockstatemnt(inst_base, false_statements);
 
             std::cout << "[-] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
         }
@@ -269,8 +301,8 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
         auto ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, test_expression, true_statements, false_statements);
         true_statements->SetParent(block_statement);
         false_statements->SetParent(block_statement);
-        const auto &statements = block_statement->Statements();
-        block_statement->AddStatementAtPos(statements.size(), ifStatement);
+        
+        enc->add_insAst_to_blockstatemnt(inst_base, ifStatement);
 
     }
 
@@ -429,7 +461,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
         /////////////////////////////////////////////////////////////////////////////////////////////////
         /// deal with while/do-while
         auto block = inst_base->GetBasicBlock();
-        es2panda::ir::BlockStatement* block_statement = enc->get_blockstatement_byid(enc, block);
+        //es2panda::ir::BlockStatement* block_statement = enc->get_blockstatement_byid(enc, block);
 
         if(block->IsLoopValid() && block->IsLoopHeader()){
             std::cout << "1%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
@@ -440,11 +472,27 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             }else{
                 std::cout << "[+] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
                 
-                //compiler::Loop* loop = block->GetLoop();
-                // if( std::find(loop->GetBlocks().begin(), loop->GetBlocks().end(), inst->GetBasicBlock()->GetTrueSuccessor()) == loop->GetBlocks().end() ){
-                //     std::cout << "true ###########################################################################################################" << std::endl;
-                //     std::swap(true_statements, false_statements);
-                // }
+                compiler::Loop* loop = block->GetLoop();
+                auto back_edges = loop->GetBackEdges();
+                enc->logbackedgeid(back_edges);
+                std::cout << "current bb id: " << block->GetId() << std::endl;
+                std::cout << "current bb false succ id: " << block->GetFalseSuccessor()->GetId() << std::endl;
+
+                es2panda::ir::WhileStatement* whilestatement;
+                if( std::find(loop->GetBlocks().begin(), loop->GetBlocks().end(), block->GetFalseSuccessor()) != loop->GetBlocks().end() ){
+                    std::swap(true_statements, false_statements);
+                    whilestatement = AllocNode<es2panda::ir::WhileStatement>(enc,
+                            nullptr,
+                            src_expression, 
+                            true_statements
+                            );
+                }else{
+                    whilestatement = AllocNode<es2panda::ir::WhileStatement>(enc,
+                            nullptr,
+                            test_expression, 
+                            true_statements
+                            );
+                }
 
                 if(false_statements== nullptr){
                     std::stringstream ss;
@@ -452,25 +500,8 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                     handleError(ss.str());
                 }
 
-                //es2panda::ir::WhileStatement* whilestatement;
-
-                //if(inst->GetCc() != compiler::CC_EQ){
-                //   std::swap(true_statements, false_statements); 
-               // }
-
-                auto whilestatement = AllocNode<es2panda::ir::WhileStatement>(enc,
-                                        nullptr,
-                                        test_expression, 
-                                        true_statements
-                                        );
-
-                //else{
-
-                //}
-                const auto &statements = block_statement->Statements();
-
-                block_statement->AddStatementAtPos(statements.size(), whilestatement);
-                block_statement->AddStatementAtPos(statements.size(), false_statements);
+                enc->add_insAst_to_blockstatemnt(inst_base, whilestatement);
+                enc->add_insAst_to_blockstatemnt(inst_base, false_statements);
 
                 std::cout << "[-] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
             }
@@ -490,8 +521,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
 
             }
 
-            const auto &statements = block_statement->Statements();
-            block_statement->AddStatementAtPos(statements.size(), ifStatement);
+            enc->add_insAst_to_blockstatemnt(inst_base, ifStatement);
 
         }
         /////////////////////////////////////////////////////////////////////////////////////////////////

@@ -105,13 +105,13 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
     
     
     // create try-catch statement
-    es2panda::ir::BlockStatement* trycatchStatements = enc->get_blockstatement_byid(enc, inst->GetBasicBlock());
+    //es2panda::ir::BlockStatement* trycatchStatements = enc->get_blockstatement_byid(enc, inst->GetBasicBlock());
+    enc->get_blockstatement_byid(enc, inst->GetBasicBlock());
 
     auto tryStatement = AllocNode<panda::es2panda::ir::TryStatement>(enc, tryblock_statement, catchClause, finnalyClause);
     enc->tyridtrystatement[inst->GetBasicBlock()->GetTryId()] = tryStatement;
     
-    const auto &statements = trycatchStatements->Statements();
-    trycatchStatements->AddStatementAtPos(statements.size(), tryStatement); 
+    enc->add_insAst_to_blockstatemnt(inst_base, tryStatement);
 
     std::cout << "[-] VisitTry  >>>>>>>>>>>>>>>>>" << std::endl;
 

@@ -89,6 +89,8 @@ public:
 
         auto program_block = parser_program->Ast();
         auto program_statements = program_block->Statements();
+
+        // add 0 block statement
         program_block->AddStatementAtPos(program_statements.size(), funcDecl);
 
 
@@ -301,6 +303,17 @@ public:
         std::cout << std::endl;
     }
  
+    void logbackedgeid(ArenaVector<BasicBlock *> backedges){
+        std::cout << "backedgeid: ";
+        for (auto it = backedges.begin(); it != backedges.end(); ++it) {
+            std::cout << (*it)->GetId();
+            if (std::next(it) != backedges.end()) {
+                std::cout << ", ";
+            }
+        }
+        std::cout << std::endl;
+    }
+
     BasicBlock* search_preheader(BasicBlock* header){
         for (auto pred : header->GetPredsBlocks()) {
             if(pred->IsLoopPreHeader()){
@@ -309,6 +322,13 @@ public:
         }
         return nullptr;
     }
+
+    void add_insAst_to_blockstatemnt(Inst *inst, es2panda::ir::Statement *statement){
+        es2panda::ir::BlockStatement* block_statements = this->get_blockstatement_byid(this, inst->GetBasicBlock());
+        const auto &statements = block_statements->Statements();
+        block_statements->AddStatementAtPos(statements.size(), statement);
+    }
+
 
     void judge_looptype(BasicBlock* header){
         auto &back_edges = header->GetLoop()->GetBackEdges();
@@ -389,14 +409,11 @@ public:
 
         logspecialblockid();
 
+        // nested if-else
         if(enc->specialblockid.find(block_id) == enc->specialblockid.end() ){
             BasicBlock* ancestor_block = nullptr;
 
-            //if(block->GetPredsBlocks().size() >= 2){
-                ancestor_block = block->GetDominator();
-           // }else{
-            //    enc->handleError("get_blockstatement_byid# not considered case");
-           // }
+            ancestor_block = block->GetDominator();
 
             if(ancestor_block == nullptr){
                 handleError("get_blockstatement_byid# find ancestor is nullptr");
@@ -466,7 +483,7 @@ public:
     std::map<compiler::Loop *, uint32_t> loop2type; // 0-while, 1-dowhile
     std::map<compiler::Loop *, BasicBlock*> loop2exit; 
 
-    std::map<compiler::Loop *, es2panda::ir::BlockStatement*> header2redundacystms;
+    std::map<compiler::BasicBlock*, es2panda::ir::BlockStatement*> whileheader2redundant;
 
     std::map<uint32_t, es2panda::ir::BlockStatement*> id2block;
 
