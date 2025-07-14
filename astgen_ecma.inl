@@ -10,10 +10,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
     inst->DumpOpcode(&oss);
     std::cout << "VisitIntrinsicInst: " << oss.str() << std::endl;
 
-    //es2panda::ir::BlockStatement* block = enc->get_blockstatement_byid(enc, inst_base->GetBasicBlock());
-    //const auto &statements = block->Statements();
-
-
     switch (inst->GetIntrinsicId()) {
        case compiler::RuntimeInterface::IntrinsicId::RETURNUNDEFINED:
        {
