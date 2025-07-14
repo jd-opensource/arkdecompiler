@@ -348,14 +348,16 @@ public:
         for (auto back_edge : back_edges) {
             auto succs_size = back_edge->GetSuccsBlocks().size();
             if(succs_size > 1){
-                loop2type[header->GetLoop()] = 1;  // do-whle
+                this->loop2type[header->GetLoop()] = 1;  // do-whle
+
+                this->backedge2dowhileloop[back_edge] = header->GetLoop();
 
             }else{
-                loop2type[header->GetLoop()] = 0;  // while
+                this->loop2type[header->GetLoop()] = 0;  // while
                 if(header->GetTrueSuccessor()->GetLoop() == header->GetLoop()){
-                    loop2exit[header->GetLoop()] = header->GetFalseSuccessor();
+                    this->loop2exit[header->GetLoop()] = header->GetFalseSuccessor();
                 }else{
-                    loop2exit[header->GetLoop()] = header->GetTrueSuccessor();
+                    this->loop2exit[header->GetLoop()] = header->GetTrueSuccessor();
                 }
             }
         } 
@@ -495,6 +497,7 @@ public:
 
     std::map<compiler::Loop *, uint32_t> loop2type; // 0-while, 1-dowhile
     std::map<compiler::Loop *, BasicBlock*> loop2exit; 
+    std::map<compiler::BasicBlock*, compiler::Loop *> backedge2dowhileloop;
 
     std::map<compiler::BasicBlock*, es2panda::ir::BlockStatement*> whileheader2redundant;
 

@@ -82,6 +82,8 @@ bool AstGen::RunImpl()
         if(bb->IsLoopValid() && bb->IsLoopHeader() ){
             judge_looptype(bb);
             /////////////////////////////////////////////////////////////////
+
+            
             ArenaVector<panda::es2panda::ir::Statement *> statements(this->parser_program_->Allocator()->Adapter());
             auto new_block_statement = this->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
             this->whileheader2redundant[bb] = new_block_statement;
@@ -463,15 +465,39 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
         /////////////////////////////////////////////////////////////////////////////////////////////////
         /// deal with while/do-while
         auto block = inst_base->GetBasicBlock();
-        if(block->IsLoopValid() && block->IsLoopHeader()){
-            std::cout << "1%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-            if(enc->loop2type[block->GetLoop()] == 1){
-                std::cout << "[+] do-while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+        if(enc->backedge2dowhileloop.find(block) != enc->backedge2dowhileloop.end()){
+            std::cout << "[+] do-while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+                         compiler::Loop* loop = block->GetLoop();
+                auto back_edges = loop->GetBackEdges();
+                enc->logbackedgeid(back_edges);
+
+                std::cout << "ret: " << ret << std::endl;
+                std::cout << "current bb id: " << block->GetId() << std::endl;
+                std::cout << "current bb false succ id: " << block->GetFalseSuccessor()->GetId() << std::endl;
 
 
-
-                std::cout << "[-] do-while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+            //auto loop = enc->backedge2dowhileloop[block];
+            es2panda::ir::DoWhileStatement* dowhilestatement;
+            if(block->GetTrueSuccessor() == loop->GetHeader()){
+                 dowhilestatement = AllocNode<es2panda::ir::DoWhileStatement>(enc,
+                     nullptr,
+                     true_statements,
+                     src_expression
+                 );
             }else{
+                std::swap(true_statements, false_statements);
+                dowhilestatement = AllocNode<es2panda::ir::DoWhileStatement>(enc,
+                        nullptr,
+                        true_statements,
+                        test_expression
+                        );
+            }
+            enc->add_insAst_to_blockstatemnt_by_block(loop->GetPreHeader(), dowhilestatement);
+            enc->add_insAst_to_blockstatemnt_by_block(loop->GetPreHeader(), false_statements);
+            std::cout << "[-] do-while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+        }else if(block->IsLoopValid() && block->IsLoopHeader()){
+            std::cout << "1%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+            if(enc->loop2type[block->GetLoop()] == 0){
                 std::cout << "[+] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
                 
                 compiler::Loop* loop = block->GetLoop();
@@ -503,12 +529,6 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                             test_expression, 
                             true_statements
                             );
-                }
-
-                if(false_statements== nullptr){
-                    std::stringstream ss;
-                    ss << "# VisitIfImm : create while statement but body is nullptr, ret is: " << ret;
-                    handleError(ss.str());
                 }
 
                 enc->add_insAst_to_blockstatemnt_by_inst(inst_base, whilestatement);

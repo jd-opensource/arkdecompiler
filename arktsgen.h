@@ -182,7 +182,7 @@ private:
 
     void EmitBlockStatement(const ir::AstNode *node);
 
-    void writeTrailingSemicolon();
+    void writeTrailingSemicolon(); //;
     void writeSpace();
     void writeLeftBrace();    // {
     void writeRightBrace();   // }
@@ -214,6 +214,7 @@ private:
     void EmitTryStatement(const ir::AstNode *node);
     void EmitThrowStatement(const ir::AstNode *node);
     void EmitWhileStatement(const ir::AstNode *node);
+    void EmitDoWhileStatement(const ir::AstNode *node);
 
     void EmitFunctionDeclaration(const ir::AstNode *node);
 

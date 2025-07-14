@@ -498,6 +498,33 @@ void ArkTSGen::EmitWhileStatement(const ir::AstNode *node){
     std::cout << "[-] end emit while statement"  << std::endl;
 }
 
+void ArkTSGen::EmitDoWhileStatement(const ir::AstNode *node){
+    std::cout << "[+] start emit dowhile statement"  << std::endl;
+    auto dowhilestatement = static_cast<const panda::es2panda::ir::DoWhileStatement*>(node);
+    
+    // do {
+    this->writeKeyWords("do");
+    this->writeLeftParentheses();
+    this->writeNewLine();
+
+    // while statement
+    this->indent_ = this->indent_ + this->singleindent_;
+    this->EmitStatement(dowhilestatement->Body());
+    this->indent_ = this->indent_ - this->singleindent_;
+
+    // }while(test)
+    this->writeIndent();
+    this->writeRightBrace();
+    this->writeKeyWords("while");
+    this->writeLeftParentheses();
+    this->EmitExpression(dowhilestatement->Test());
+    this->writeRightParentheses();
+    this->writeTrailingSemicolon();
+    this->writeNewLine();
+        
+    std::cout << "[-] end emit dowhile statement"  << std::endl;
+}
+
 void ArkTSGen::EmitStatement(const ir::AstNode *node)
 {
     if(node == nullptr){
@@ -563,6 +590,11 @@ void ArkTSGen::EmitStatement(const ir::AstNode *node)
         case AstNodeType::WHILE_STATEMENT:
             std::cout << "enter WHILE_STATEMENT STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
             this->EmitWhileStatement(node);
+            break;
+        
+        case AstNodeType::DO_WHILE_STATEMENT:
+            std::cout << "enter DOWHILE_STATEMENT STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
+            this->EmitDoWhileStatement(node);
             break;
 
         case AstNodeType::BREAK_STATEMENT:
