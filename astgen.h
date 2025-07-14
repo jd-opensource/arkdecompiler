@@ -328,7 +328,6 @@ public:
         this->add_insAst_to_blockstatemnt_by_block(block, statement);
 
         if(block->IsLoopValid() && block->IsLoopHeader() && inst->GetOpcode()!= Opcode::If   && inst->GetOpcode()!= Opcode::IfImm ){
-            std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
             auto headerblockstatements = this->whileheader2redundant[block];
             const auto &statements = headerblockstatements->Statements();
             headerblockstatements->AddStatementAtPos(statements.size(), statement);
@@ -361,18 +360,18 @@ public:
             }
         } 
 
-        ArenaVector<BasicBlock *> bbs = header->GetLoop()->GetBlocks();
+        // ArenaVector<BasicBlock *> bbs = header->GetLoop()->GetBlocks();
 
-        std::cout << "loop list >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " << std::endl;
-        for (size_t i = 0; i < bbs.size(); i++) {
-            BasicBlock * bb = bbs[i];
-            std::cout << bb->GetId() << " ";
-            if(bb->IsLoopValid() && bb->GetLoop()->IsRoot()){
-                std::cout << "sb@ " << bb->GetId() << std::endl;
-            }
-        } 
+        // std::cout << "loop list >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " << std::endl;
+        // for (size_t i = 0; i < bbs.size(); i++) {
+        //     BasicBlock * bb = bbs[i];
+        //     std::cout << bb->GetId() << " ";
+        //     if(bb->IsLoopValid() && bb->GetLoop()->IsRoot()){
+        //         std::cout << "sb@ " << bb->GetId() << std::endl;
+        //     }
+        // } 
 
-        std::cout << std::endl;
+        // std::cout << std::endl;
     }
 
     es2panda::ir::BlockStatement* get_blockstatement_byid(AstGen * enc, BasicBlock *block){

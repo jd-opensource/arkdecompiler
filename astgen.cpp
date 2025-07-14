@@ -463,8 +463,6 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
         /////////////////////////////////////////////////////////////////////////////////////////////////
         /// deal with while/do-while
         auto block = inst_base->GetBasicBlock();
-        //es2panda::ir::BlockStatement* block_statement = enc->get_blockstatement_byid(enc, block);
-
         if(block->IsLoopValid() && block->IsLoopHeader()){
             std::cout << "1%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
             if(enc->loop2type[block->GetLoop()] == 1){
@@ -483,9 +481,8 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                 es2panda::ir::WhileStatement* whilestatement;
                 if( std::find(loop->GetBlocks().begin(), loop->GetBlocks().end(), block->GetFalseSuccessor()) != loop->GetBlocks().end() ){
                     if(enc->whileheader2redundant[block]->Statements().size() != 0){
-                        std::cout << "insert <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+                        // add redundant statement in while-header
                         enc->add_insAst_to_blockstatemnt_by_block(block->GetFalseSuccessor(), enc->whileheader2redundant[block] );
-
                     }
 
                     std::swap(true_statements, false_statements);
@@ -496,9 +493,8 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                             );
                 }else{
                     if(enc->whileheader2redundant[block]->Statements().size() != 0){
-                        std::cout << "insert <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+                        // add redundant statement in while-header
                         enc->add_insAst_to_blockstatemnt_by_block(block->GetTrueSuccessor(), enc->whileheader2redundant[block] );
-
                     }
                     whilestatement = AllocNode<es2panda::ir::WhileStatement>(enc,
                             nullptr,
