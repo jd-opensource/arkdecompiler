@@ -914,8 +914,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto acc_dst = inst->GetDstReg();
             uint32_t size = elements.size();
-            enc->set_expression_by_register(acc_dst, enc->get_literal_bynum(enc, size));
-            enc->set_expression_by_register(compiler::ACC_REG_ID, enc->get_literal_bynum(enc, size));
+            enc->set_expression_by_register(acc_dst, enc->get_literal_bynum(size));
+            enc->set_expression_by_register(compiler::ACC_REG_ID, enc->get_literal_bynum(size));
             break;
         }
 
@@ -2888,7 +2888,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 imm = static_cast<uint32_t>(inst->GetImms()[1]);
             }
 
-            panda::es2panda::ir::Expression* attr_expression = enc->get_literal_bynum(enc, imm);
+            panda::es2panda::ir::Expression* attr_expression = enc->get_literal_bynum(imm);
 
             auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
                                                         obj_expression,
@@ -2918,7 +2918,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
                                                         *enc->get_expression_by_register(inst->GetSrcReg(0)),
-                                                        enc->get_literal_bynum(enc, imm), 
+                                                        enc->get_literal_bynum(imm), 
                                                         es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
                                                         true, 
                                                         false);

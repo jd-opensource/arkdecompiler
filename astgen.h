@@ -240,13 +240,13 @@ public:
     }
 
 
-    static panda::es2panda::ir::NumberLiteral* get_literal_bynum(AstGen * enc, uint32_t index){
+    panda::es2panda::ir::NumberLiteral* get_literal_bynum(uint32_t index){
         panda::es2panda::ir::NumberLiteral* literal;
-        if (enc->num2literals.find(index)  != enc->num2literals.end()) {
-            literal = enc->num2literals[index];
+        if (this->num2literals.find(index)  != this->num2literals.end()) {
+            literal = this->num2literals[index];
         } else {
-            literal = AllocNode<panda::es2panda::ir::NumberLiteral>(enc, index);
-            enc->num2literals[index] = literal;
+            literal = AllocNode<panda::es2panda::ir::NumberLiteral>(this, index);
+            this->num2literals[index] = literal;
         }
         return literal;
     }
