@@ -112,7 +112,7 @@ void AstGen::VisitSpillFill(GraphVisitor *visitor, Inst *inst)
         if (it == enc->reg2expression.end()) {
             std::cout << "VisitSpillFill # SpillFill none register"  << std::endl; 
         }else{
-            enc->set_expression_by_register(inst, sf.DstValue(), *enc->get_expression_by_register(sf.SrcValue()));
+            enc->set_expression_by_register(inst, sf.DstValue(), *enc->get_expression_by_register(inst, sf.SrcValue()));
         }
     }
     std::cout << "[-] VisitSpillFill  >>>>>>>>>>>>>>>>>" << std::endl;
@@ -163,8 +163,8 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
     auto enc = static_cast<AstGen *>(v);
     auto inst = inst_base->CastToIf();
 
-    auto left_expression = *enc->get_expression_by_register(inst->GetSrcReg(0));
-    auto right_expression = *enc->get_expression_by_register(inst->GetSrcReg(1));
+    auto left_expression = *enc->get_expression_by_register(inst, inst->GetSrcReg(0));
+    auto right_expression = *enc->get_expression_by_register(inst, inst->GetSrcReg(1));
 
     panda::es2panda::ir::Expression* test_expression;
 
@@ -331,7 +331,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
     auto imm = inst->GetImm();
     if (imm == 0) {
         auto source_reg = inst->GetSrcReg(0);
-        auto src_expression = *enc->get_expression_by_register(source_reg);
+        auto src_expression = *enc->get_expression_by_register(inst, source_reg);
         panda::es2panda::ir::Expression* test_expression;
 
 
@@ -561,7 +561,7 @@ void AstGen::VisitCastValueToAnyType([[maybe_unused]] GraphVisitor *visitor, [[m
         case compiler::AnyBaseType::ECMASCRIPT_STRING_TYPE: {
             auto ls = cvat->GetInput(0).GetInst()->CastToLoadString();
             auto ls_dst_reg = ls->GetDstReg();
-            source = *enc->get_expression_by_register(ls_dst_reg);            
+            source = *enc->get_expression_by_register(inst, ls_dst_reg);            
             break;
         }
 

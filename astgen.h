@@ -227,7 +227,7 @@ public:
         return identifier;
     }
 
-    std::optional<panda::es2panda::ir::Expression*> get_expression_by_register(compiler::Register key){
+    std::optional<panda::es2panda::ir::Expression*> get_expression_by_register(Inst* inst, compiler::Register key){
         auto it = this->reg2expression.find(key);
         if (it != this->reg2expression.end()) {
             std::cout << "get_expression_by_register: " << std::to_string(key) << std::endl;
