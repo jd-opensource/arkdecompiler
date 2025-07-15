@@ -105,10 +105,6 @@ public:
     {
         return "AstGen";
     }
-    std::vector<pandasm::Ins> GetEncodedInstructions() const
-    {
-        return res_;
-    }
 
     void Reserve(size_t res_size = 0)
     {
@@ -131,22 +127,6 @@ public:
     {
         return std::move(result_);
     }
-
-    static std::string LabelName(uint32_t id)
-    {
-        return "label_" + std::to_string(id);
-    }
-
-    void EmitLabel(const std::string label)
-    {
-        pandasm::Ins l;
-        l.label = label;
-        l.set_label = true;
-        result_.emplace_back(l);
-    }
-
-
-    void EmitJump(const BasicBlock *bb);
 
     const ArenaVector<BasicBlock *> &GetBlocksToVisit() const override
     {
@@ -436,15 +416,9 @@ public:
         return curstatement;
     }
 
-
-
-
-
 #include "compiler/optimizer/ir/visitor.inc"
 
 private:
-    void AppendCatchBlock(uint32_t type_id, const compiler::BasicBlock *try_begin, const compiler::BasicBlock *try_end,
-                          const compiler::BasicBlock *catch_begin, const compiler::BasicBlock *catch_end = nullptr);
     void VisitTryBegin(const compiler::BasicBlock *bb);
 
 public:

@@ -23,21 +23,6 @@ void DoSta(compiler::Register reg, std::vector<pandasm::Ins> &result)
     }
 }
 
-void AstGen::AppendCatchBlock(uint32_t type_id, const compiler::BasicBlock *try_begin,
-                                   const compiler::BasicBlock *try_end, const compiler::BasicBlock *catch_begin,
-                                   const compiler::BasicBlock *catch_end)
-{
-    auto cb = pandasm::Function::CatchBlock();
-    if (type_id != 0) {
-        cb.exception_record = ir_interface_->GetTypeIdByOffset(type_id);
-    }
-    cb.try_begin_label = AstGen::LabelName(try_begin->GetId());
-    cb.try_end_label = "end_" + AstGen::LabelName(try_end->GetId());
-    cb.catch_begin_label = AstGen::LabelName(catch_begin->GetId());
-    cb.catch_end_label =
-        catch_end == nullptr ? cb.catch_begin_label : "end_" + AstGen::LabelName(catch_end->GetId());
-    catch_blocks_.emplace_back(cb);
-}
 
 void AstGen::VisitTryBegin(const compiler::BasicBlock *bb)
 {
@@ -49,7 +34,6 @@ bool AstGen::RunImpl()
 {
     
     Reserve(function_->ins.size());
-    int32_t insn_order = 0;
     if (!GetGraph()->GetTryBeginBlocks().empty()) {
         // Workaround for AOT and JIT
         result_.emplace_back(pandasm::Create_NOP());
@@ -65,12 +49,6 @@ bool AstGen::RunImpl()
         }
 
         std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: " << bb->GetId() << std::endl;
-        EmitLabel(AstGen::LabelName(bb->GetId()));
-        
-        if (bb->IsTryEnd() || bb->IsCatchEnd()) {
-            auto label = "end_" + AstGen::LabelName(bb->GetId());
-            EmitLabel(label);
-        }
 
         for (const auto &inst : bb->AllInsts()) {
             [[maybe_unused]] auto start = GetResult().size();
@@ -107,11 +85,6 @@ bool AstGen::RunImpl()
             }
         }
 
-        if (bb->NeedsJump()) {
-            EmitJump(bb);
-            insn_order++;
-        }
-        
     }
 
     if (!GetStatus()) {
@@ -125,33 +98,6 @@ bool AstGen::RunImpl()
     function_->catch_blocks = catch_blocks_;
     return true;
 }
-
-void AstGen::EmitJump(const BasicBlock *bb)
-{
-    BasicBlock *suc_bb = nullptr;
-    ASSERT(bb != nullptr);
-
-    if (bb->GetLastInst() == nullptr) {
-        ASSERT(bb->IsEmpty());
-        suc_bb = bb->GetSuccsBlocks()[0];
-        result_.push_back(pandasm::Create_JMP(AstGen::LabelName(suc_bb->GetId())));
-        return;
-    }
-
-    ASSERT(bb->GetLastInst() != nullptr);
-    switch (bb->GetLastInst()->GetOpcode()) {
-        case Opcode::If:
-        case Opcode::IfImm:
-            ASSERT(bb->GetSuccsBlocks().size() == compiler::MAX_SUCCS_NUM);
-            suc_bb = bb->GetFalseSuccessor();
-            break;
-        default:
-            suc_bb = bb->GetSuccsBlocks()[0];
-            break;
-    }
-    result_.push_back(pandasm::Create_JMP(AstGen::LabelName(suc_bb->GetId())));
-}
-
 
 
 void AstGen::VisitSpillFill(GraphVisitor *visitor, Inst *inst)
