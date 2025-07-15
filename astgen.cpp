@@ -30,6 +30,25 @@ void AstGen::VisitTryBegin(const compiler::BasicBlock *bb)
     std::cout << "[-] VisitTryBegin  >>>>>>>>>>>>>>>>>" << std::endl;
 }
 
+
+BasicBlock* AstGen::find_nearest_visited_pred(const std::vector<BasicBlock*>& visited, BasicBlock* block) {
+    if (visited.empty()) return nullptr;
+    
+    ArenaVector<BasicBlock*> preds = block->GetPredsBlocks();
+    if (preds.empty()) return nullptr;
+    
+    std::unordered_set<BasicBlock*> pred_set(preds.begin(), preds.end());
+    
+
+    for (auto it = visited.rbegin(); it != visited.rend(); ++it) {
+        if (pred_set.find(*it) != pred_set.end()) {
+            return *it;  
+        }
+    }
+    
+    return nullptr; 
+}
+
 bool AstGen::RunImpl()
 {
     
@@ -39,7 +58,10 @@ bool AstGen::RunImpl()
         result_.emplace_back(pandasm::Create_NOP());
     }
 
+    std::vector<BasicBlock *> visited;
+
     for (auto *bb : GetGraph()->GetBlocksLinearOrder()) {
+        
         if(bb->IsLoopValid() && bb->IsLoopHeader() ){
             judge_looptype(bb);
             /////////////////////////////////////////////////////////////////
@@ -50,6 +72,18 @@ bool AstGen::RunImpl()
 
         std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ visit bbid: " << bb->GetId() << std::endl;
 
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+        auto nearestpre = this->find_nearest_visited_pred(visited, bb);
+        if(nearestpre != nullptr && this->bb2acc2expression[nearestpre] != nullptr){
+            std::cout << "!!!!!!!!!!!!!!!!!!!! found " << std::endl;
+            this->bb2acc2expression[bb] = this->bb2acc2expression[nearestpre];
+        }else{
+            this->bb2acc2expression[bb] = nullptr;
+        }
+
+        visited.push_back(bb);        
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
         for (const auto &inst : bb->AllInsts()) {
             [[maybe_unused]] auto start = GetResult().size();
 

@@ -153,6 +153,7 @@ public:
     static void VisitSaveState(GraphVisitor* v, Inst* inst_base);
     static void VisitParameter(GraphVisitor* v, Inst* inst_base);
     
+    BasicBlock* find_nearest_visited_pred(const std::vector<BasicBlock*>& visited, BasicBlock* block);
 
     template <typename T, typename... Args>
     static T *AllocNode(AstGen * xx, Args &&... args)
@@ -228,11 +229,20 @@ public:
     }
 
     std::optional<panda::es2panda::ir::Expression*> get_expression_by_register(Inst* inst, compiler::Register key){
+        if(key == compiler::ACC_REG_ID){
+            if(this->bb2acc2expression[inst->GetBasicBlock()] != nullptr){
+                return this->bb2acc2expression[inst->GetBasicBlock()];
+            }else{
+                handleError("#get_expression_by_register: acc point to null");
+            }
+        }
+
         auto it = this->reg2expression.find(key);
         if (it != this->reg2expression.end()) {
-            std::cout << "get_expression_by_register: " << std::to_string(key) << std::endl;
+            std::cout << "#get_expression_by_register: " << std::to_string(key) << std::endl;
             return it->second;  
         }
+
         handleError("can't find expression in reg2expression: " + std::to_string(key));
         
         return std::nullopt;
@@ -248,11 +258,12 @@ public:
         if(value == nullptr){
             handleError("can't set null expression in reg2expression");
         }
+
         std::cout << "set_expression_by_register: " << std::to_string(key) << std::endl;
         this->reg2expression[key] = value;
 
         if(inst->IsAccWrite()){
-            this->reg2expression[compiler::ACC_REG_ID] = value;
+            this->bb2acc2expression[inst->GetBasicBlock()] = value;
         }
     }
 
