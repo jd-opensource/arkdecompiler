@@ -428,10 +428,7 @@ public:
     std::vector<pandasm::Ins> res_;
     std::vector<pandasm::Function::CatchBlock> catch_blocks_;
 
-    uint32_t first_block_id_;
-
     std::unique_ptr<LCAFinder> lcaFinder;
-
 
     bool success_ {true};
     std::vector<pandasm::Ins> result_;
@@ -454,13 +451,13 @@ public:
 
     std::set<uint32_t> specialblockid;
 
-   
     std::map<compiler::Register, panda::es2panda::ir::Identifier*> identifers;
 
     std::map<std::string, panda::es2panda::ir::Identifier*> str2identifers;
     std::map<uint32_t, panda::es2panda::ir::NumberLiteral*> num2literals;
 
     std::map<compiler::Register, panda::es2panda::ir::Expression*> reg2expression;
+    std::map<compiler::BasicBlock*, panda::es2panda::ir::Expression*> bb2acc2expression;
 
     std::map<uint32_t, es2panda::ir::BlockStatement*> tyrid2block;
     std::map<uint32_t, panda::es2panda::ir::TryStatement*> tyridtrystatement;

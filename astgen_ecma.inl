@@ -543,11 +543,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 false
                                                                             );
 
-            //auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc,  callarg0expression);
-            //enc->add_insAst_to_blockstatemnt_by_inst(inst_base, callarg0statement);
-            auto acc_dst = inst->GetDstReg();
-            enc->set_expression_by_register(acc_dst, callarg0expression);
-            enc->set_expression_by_register(compiler::ACC_REG_ID, callarg0expression);
+            if(inst->HasUsers()){
+                auto acc_dst = inst->GetDstReg();
+                enc->set_expression_by_register(acc_dst, callarg0expression);
+                enc->set_expression_by_register(compiler::ACC_REG_ID, callarg0expression);
+            }else{
+                auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc, callarg0expression);
+                enc->add_insAst_to_blockstatemnt_by_inst(inst_base, callarg0statement);
+            }
 
             break;
         }
@@ -592,11 +595,15 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 false
                                                                             );
 
-            //auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc,  callarg0expression);
-            //enc->add_insAst_to_blockstatemnt_by_inst(inst_base, callarg0statement);
-            auto acc_dst = inst->GetDstReg();
-            enc->set_expression_by_register(acc_dst, callarg0expression);
-            enc->set_expression_by_register(compiler::ACC_REG_ID, callarg0expression);
+            if(inst->HasUsers()){
+                auto acc_dst = inst->GetDstReg();
+                enc->set_expression_by_register(acc_dst, callarg0expression);
+                enc->set_expression_by_register(compiler::ACC_REG_ID, callarg0expression);
+            }else{
+                auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc, callarg0expression);
+                enc->add_insAst_to_blockstatemnt_by_inst(inst_base, callarg0statement);
+            }
+
             break;
 
         }
@@ -616,11 +623,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 false
                                                                             );
 
-            //auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc,  callarg0expression);
-            //enc->add_insAst_to_blockstatemnt_by_inst(inst_base, callarg0statement);
-            auto acc_dst = inst->GetDstReg();
-            enc->set_expression_by_register(acc_dst, callarg0expression);
-            enc->set_expression_by_register(compiler::ACC_REG_ID, callarg0expression);
+            if(inst->HasUsers()){
+                auto acc_dst = inst->GetDstReg();
+                enc->set_expression_by_register(acc_dst, callarg0expression);
+                enc->set_expression_by_register(compiler::ACC_REG_ID, callarg0expression);
+            }else{
+                auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc, callarg0expression);
+                enc->add_insAst_to_blockstatemnt_by_inst(inst_base, callarg0statement);
+            }
 
             break;
         }
@@ -641,11 +651,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             );
 
             
-            //auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc,  callarg0expression);
-            //enc->add_insAst_to_blockstatemnt_by_inst(inst_base, callarg0statement);
-            auto acc_dst = inst->GetDstReg();
-            enc->set_expression_by_register(acc_dst, callarg0expression);
-            enc->set_expression_by_register(compiler::ACC_REG_ID, callarg0expression);
+            if(inst->HasUsers()){
+                auto acc_dst = inst->GetDstReg();
+                enc->set_expression_by_register(acc_dst, callarg0expression);
+                enc->set_expression_by_register(compiler::ACC_REG_ID, callarg0expression);
+            }else{
+                auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc, callarg0expression);
+                enc->add_insAst_to_blockstatemnt_by_inst(inst_base, callarg0statement);
+            }
             break;
         }
 
@@ -666,12 +679,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 nullptr,
                                                                                 false
                                                                             );
-
-            //auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc,  callarg0expression);
-            //enc->add_insAst_to_blockstatemnt_by_inst(inst_base, callarg0statement);
-            auto acc_dst = inst->GetDstReg();
-            enc->set_expression_by_register(acc_dst, callarg0expression);
-            enc->set_expression_by_register(compiler::ACC_REG_ID, callarg0expression);
+            if(inst->HasUsers()){
+                auto acc_dst = inst->GetDstReg();
+                enc->set_expression_by_register(acc_dst, callarg0expression);
+                enc->set_expression_by_register(compiler::ACC_REG_ID, callarg0expression);
+            }else{
+                auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc, callarg0expression);
+                enc->add_insAst_to_blockstatemnt_by_inst(inst_base, callarg0statement);
+            }
 
             break;
         }
@@ -692,11 +707,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 false
                                                                             );
 
-            //auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc,  callarg0expression);
-            //enc->add_insAst_to_blockstatemnt_by_inst(inst_base, callarg0statement);
-            auto acc_dst = inst->GetDstReg();
-            enc->set_expression_by_register(acc_dst, callarg0expression);
-            enc->set_expression_by_register(compiler::ACC_REG_ID, callarg0expression);
+            if(inst->HasUsers()){
+                auto acc_dst = inst->GetDstReg();
+                enc->set_expression_by_register(acc_dst, callarg0expression);
+                enc->set_expression_by_register(compiler::ACC_REG_ID, callarg0expression);
+            }else{
+                auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc, callarg0expression);
+                enc->add_insAst_to_blockstatemnt_by_inst(inst_base, callarg0statement);
+            }
 
             break;
         }
@@ -719,12 +737,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 false
                                                                             );
 
-            //auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc,  callarg0expression);
-            //enc->add_insAst_to_blockstatemnt_by_inst(inst_base, callarg0statement);
-
-            auto acc_dst = inst->GetDstReg();
-            enc->set_expression_by_register(acc_dst, callarg0expression);
-            enc->set_expression_by_register(compiler::ACC_REG_ID, callarg0expression);
+            if(inst->HasUsers()){
+                auto acc_dst = inst->GetDstReg();
+                enc->set_expression_by_register(acc_dst, callarg0expression);
+                enc->set_expression_by_register(compiler::ACC_REG_ID, callarg0expression);
+            }else{
+                auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc, callarg0expression);
+                enc->add_insAst_to_blockstatemnt_by_inst(inst_base, callarg0statement);
+            }
 
             break;
         }
