@@ -3,7 +3,7 @@ void AstGen::VisitPhi(GraphVisitor* v, Inst* inst_base) {
     pandasm::Ins ins;
     [[maybe_unused]] auto enc = static_cast<AstGen*>(v);
     [[maybe_unused]] auto inst = inst_base->CastToPhi();
-    panda::es2panda::ir::Expression* funname = enc->get_identifier_byname(enc, new std::string("φ"));
+    panda::es2panda::ir::Expression* funname = enc->get_identifier_byname(new std::string("φ"));
     ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
 
     for (size_t i = 0; i < inst->GetInputsCount(); i++) {
@@ -38,7 +38,7 @@ void AstGen::VisitParameter(GraphVisitor* v, Inst* inst_base) {
     auto enc = static_cast<AstGen *>(v);
     auto paramInst = inst_base->CastToParameter();
 
-    panda::es2panda::ir::Expression* arg = enc->get_identifier_byname(enc, new std::string("arg" + std::to_string(paramInst->GetArgNumber())));
+    panda::es2panda::ir::Expression* arg = enc->get_identifier_byname(new std::string("arg" + std::to_string(paramInst->GetArgNumber())));
     
     auto inst_dst_reg = paramInst->GetDstReg();
     

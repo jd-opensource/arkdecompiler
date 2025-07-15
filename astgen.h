@@ -251,16 +251,16 @@ public:
         return literal;
     }
 
-    static panda::es2panda::ir::Identifier* get_identifier_byname(AstGen * enc, std::string* raw_name){
+    panda::es2panda::ir::Identifier* get_identifier_byname(std::string* raw_name){
         panda::es2panda::ir::Identifier* identifier;
-        if (enc->str2identifers.find(*raw_name)  != enc->str2identifers.end()) {
-            identifier = enc->str2identifers[*raw_name];
+        if (this->str2identifers.find(*raw_name)  != this->str2identifers.end()) {
+            identifier = this->str2identifers[*raw_name];
         } else {
             panda::es2panda::util::StringView name_view = panda::es2panda::util::StringView(*raw_name);
             //std::cout << "@@@ name_view: " << name_view << std::endl;
 
-            identifier = AllocNode<panda::es2panda::ir::Identifier>(enc, name_view);
-            enc->str2identifers[*raw_name] = identifier;
+            identifier = AllocNode<panda::es2panda::ir::Identifier>(this, name_view);
+            this->str2identifers[*raw_name] = identifier;
         }
         return identifier;
     }
