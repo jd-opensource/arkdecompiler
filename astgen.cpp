@@ -467,7 +467,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
         auto block = inst_base->GetBasicBlock();
         if(enc->backedge2dowhileloop.find(block) != enc->backedge2dowhileloop.end()){
             std::cout << "[+] do-while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
-                         compiler::Loop* loop = block->GetLoop();
+                compiler::Loop* loop = block->GetLoop();
                 auto back_edges = loop->GetBackEdges();
                 enc->logbackedgeid(back_edges);
 
@@ -479,13 +479,12 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             //auto loop = enc->backedge2dowhileloop[block];
             es2panda::ir::DoWhileStatement* dowhilestatement;
             if(block->GetTrueSuccessor() == loop->GetHeader()){
-                 dowhilestatement = AllocNode<es2panda::ir::DoWhileStatement>(enc,
-                     nullptr,
-                     true_statements,
-                     src_expression
-                 );
+                dowhilestatement = AllocNode<es2panda::ir::DoWhileStatement>(enc,
+                    nullptr,
+                    true_statements,
+                    src_expression
+                );
             }else{
-                std::swap(true_statements, false_statements);
                 dowhilestatement = AllocNode<es2panda::ir::DoWhileStatement>(enc,
                         nullptr,
                         true_statements,
@@ -495,48 +494,44 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             enc->add_insAst_to_blockstatemnt_by_block(loop->GetPreHeader(), dowhilestatement);
             enc->add_insAst_to_blockstatemnt_by_block(loop->GetPreHeader(), false_statements);
             std::cout << "[-] do-while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
-        }else if(block->IsLoopValid() && block->IsLoopHeader()){
-            std::cout << "1%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-            if(enc->loop2type[block->GetLoop()] == 0){
-                std::cout << "[+] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
-                
-                compiler::Loop* loop = block->GetLoop();
-                auto back_edges = loop->GetBackEdges();
-                enc->logbackedgeid(back_edges);
-                std::cout << "current bb id: " << block->GetId() << std::endl;
-                std::cout << "current bb false succ id: " << block->GetFalseSuccessor()->GetId() << std::endl;
+        }else if(block->IsLoopValid() && block->IsLoopHeader() && enc->loop2type[block->GetLoop()] == 0 ){
+            std::cout << "[+] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+            compiler::Loop* loop = block->GetLoop();
+            auto back_edges = loop->GetBackEdges();
+            enc->logbackedgeid(back_edges);
+            std::cout << "current bb id: " << block->GetId() << std::endl;
+            std::cout << "current bb false succ id: " << block->GetFalseSuccessor()->GetId() << std::endl;
 
-                es2panda::ir::WhileStatement* whilestatement;
-                if( std::find(loop->GetBlocks().begin(), loop->GetBlocks().end(), block->GetFalseSuccessor()) != loop->GetBlocks().end() ){
-                    if(enc->whileheader2redundant[block]->Statements().size() != 0){
-                        // add redundant statement in while-header
-                        enc->add_insAst_to_blockstatemnt_by_block(block->GetFalseSuccessor(), enc->whileheader2redundant[block] );
-                    }
-
-                    std::swap(true_statements, false_statements);
-                    whilestatement = AllocNode<es2panda::ir::WhileStatement>(enc,
-                            nullptr,
-                            src_expression, 
-                            true_statements
-                            );
-                }else{
-                    if(enc->whileheader2redundant[block]->Statements().size() != 0){
-                        // add redundant statement in while-header
-                        enc->add_insAst_to_blockstatemnt_by_block(block->GetTrueSuccessor(), enc->whileheader2redundant[block] );
-                    }
-                    whilestatement = AllocNode<es2panda::ir::WhileStatement>(enc,
-                            nullptr,
-                            test_expression, 
-                            true_statements
-                            );
+            es2panda::ir::WhileStatement* whilestatement;
+            if( std::find(loop->GetBlocks().begin(), loop->GetBlocks().end(), block->GetFalseSuccessor()) != loop->GetBlocks().end() ){
+                if(enc->whileheader2redundant[block]->Statements().size() != 0){
+                    // add redundant statement in while-header
+                    enc->add_insAst_to_blockstatemnt_by_block(block->GetFalseSuccessor(), enc->whileheader2redundant[block] );
                 }
 
-                enc->add_insAst_to_blockstatemnt_by_inst(inst_base, whilestatement);
-                enc->add_insAst_to_blockstatemnt_by_block(loop->GetPreHeader(), enc->get_blockstatement_byid(enc, block));
-                enc->add_insAst_to_blockstatemnt_by_block(loop->GetPreHeader(), false_statements);
-
-                std::cout << "[-] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+                std::swap(true_statements, false_statements);
+                whilestatement = AllocNode<es2panda::ir::WhileStatement>(enc,
+                        nullptr,
+                        src_expression, 
+                        true_statements
+                        );
+            }else{
+                if(enc->whileheader2redundant[block]->Statements().size() != 0){
+                    // add redundant statement in while-header
+                    enc->add_insAst_to_blockstatemnt_by_block(block->GetTrueSuccessor(), enc->whileheader2redundant[block] );
+                }
+                whilestatement = AllocNode<es2panda::ir::WhileStatement>(enc,
+                        nullptr,
+                        test_expression, 
+                        true_statements
+                        );
             }
+
+            enc->add_insAst_to_blockstatemnt_by_inst(inst_base, whilestatement);
+            enc->add_insAst_to_blockstatemnt_by_block(loop->GetPreHeader(), enc->get_blockstatement_byid(enc, block));
+            enc->add_insAst_to_blockstatemnt_by_block(loop->GetPreHeader(), false_statements);
+
+            std::cout << "[-] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
         }else{
             std::cout << "2%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
             std::cout << "ret: " << ret << std::endl;
