@@ -822,8 +822,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto src_obj = *enc->get_expression_by_register(acc_src);
 
             auto v0 = inst->GetSrcReg(0);
-            //auto target_obj = enc->get_identifier(enc, v0);
-
 
             ArenaVector<es2panda::ir::Expression *> elements(enc->parser_program_->Allocator()->Adapter());
             

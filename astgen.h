@@ -222,24 +222,6 @@ public:
     }
 
 
-    static panda::es2panda::ir::Identifier* get_identifier(AstGen * enc, compiler::Register reg){
-        panda::es2panda::ir::Identifier* identifier;
-        if (enc->identifers.find(reg)  != enc->identifers.end()) {
-            identifier =  enc->identifers[reg];
-        } else {
-            std::string* raw_name =  new std::string("v" + std::to_string(reg));
-
-            panda::es2panda::util::StringView reg_name = panda::es2panda::util::StringView( *raw_name);
-            //std::cout << raw_name << " reg_name: " << reg_name << std::endl;
-
-            identifier = AllocNode<panda::es2panda::ir::Identifier>(enc, reg_name);
-            enc->identifers[reg] = identifier;
-            enc->str2identifers[*raw_name ] = identifier;
-        }
-        return identifier;
-    }
-
-
     panda::es2panda::ir::NumberLiteral* get_literal_bynum(uint32_t index){
         panda::es2panda::ir::NumberLiteral* literal;
         if (this->num2literals.find(index)  != this->num2literals.end()) {
