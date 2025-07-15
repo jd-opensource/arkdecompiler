@@ -349,9 +349,13 @@ public:
             auto succs_size = back_edge->GetSuccsBlocks().size();
             if(succs_size > 1){
                 this->loop2type[header->GetLoop()] = 1;  // do-whle
-
                 this->backedge2dowhileloop[back_edge] = header->GetLoop();
 
+                if(back_edge->GetTrueSuccessor()->GetLoop() == header->GetLoop()){
+                    this->loop2exit[header->GetLoop()] = back_edge->GetFalseSuccessor();
+                }else{
+                    this->loop2exit[header->GetLoop()] = back_edge->GetTrueSuccessor();
+                }
             }else{
                 this->loop2type[header->GetLoop()] = 0;  // while
                 if(header->GetTrueSuccessor()->GetLoop() == header->GetLoop()){
