@@ -239,11 +239,21 @@ public:
     }
 
     void set_expression_by_register(Inst* inst, compiler::Register key, panda::es2panda::ir::Expression* value){
+        /**
+            std::map<compiler::Register, panda::es2panda::ir::Expression*> reg2expression;
+            std::map<compiler::BasicBlock*, panda::es2panda::ir::Expression*> bb2acc2expression;
+         * 
+        */
+
         if(value == nullptr){
             handleError("can't set null expression in reg2expression");
         }
         std::cout << "set_expression_by_register: " << std::to_string(key) << std::endl;
         this->reg2expression[key] = value;
+
+        if(inst->IsAccWrite()){
+            this->reg2expression[compiler::ACC_REG_ID] = value;
+        }
     }
 
     void logid2blockkeys(){
