@@ -55,35 +55,10 @@ bool AstGen::RunImpl()
         result_.emplace_back(pandasm::Create_NOP());
     }
 
-    /*
-        if(block->IsLoopValid() && block->IsLoopHeader() ){
-            std::cout << "@@ case 2" << std::endl;
-            judge_looptype(block);
-
-            //////////////////////////////////////////////////////////////////////////////////////
-            if(block->GetPredsBlocks().size() == 2){
-                BasicBlock* preheader = this->search_preheader(block);
-                if(preheader != nullptr){
-                    return enc->id2block[preheader->GetId()];
-                }else{
-                    handleError("get_blockstatement_byid# find search_preheader error");
-                }
-                
-                BasicBlock* ancestor_block = block->GetPredecessor(0);
-                enc->id2block[block_id] =  enc->id2block[ancestor_block->GetId()];;
-                return enc->id2block[block_id];
-            }
-        }
-    */
-
-
-
     for (auto *bb : GetGraph()->GetBlocksLinearOrder()) {
         if(bb->IsLoopValid() && bb->IsLoopHeader() ){
             judge_looptype(bb);
             /////////////////////////////////////////////////////////////////
-
-            
             ArenaVector<panda::es2panda::ir::Statement *> statements(this->parser_program_->Allocator()->Adapter());
             auto new_block_statement = this->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
             this->whileheader2redundant[bb] = new_block_statement;
