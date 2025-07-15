@@ -238,7 +238,7 @@ public:
         return std::nullopt;
     }
 
-    void set_expression_by_register(compiler::Register key, panda::es2panda::ir::Expression* value){
+    void set_expression_by_register(Inst* inst, compiler::Register key, panda::es2panda::ir::Expression* value){
         if(value == nullptr){
             handleError("can't set null expression in reg2expression");
         }

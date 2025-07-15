@@ -21,7 +21,7 @@ void AstGen::VisitPhi(GraphVisitor* v, Inst* inst_base) {
                                                         false
                                                         );
     auto acc_dst = inst->GetDstReg();
-    enc->set_expression_by_register(acc_dst, callexpression);
+    enc->set_expression_by_register(inst_base, acc_dst, callexpression);
 
     std::cout << "[-] VisitPhi  <<<<<<<<<<<<<<<" << std::endl;
 }
@@ -42,7 +42,7 @@ void AstGen::VisitParameter(GraphVisitor* v, Inst* inst_base) {
     
     auto inst_dst_reg = paramInst->GetDstReg();
     
-    enc->set_expression_by_register(inst_dst_reg, arg);
+    enc->set_expression_by_register(inst_base, inst_dst_reg, arg);
 
     std::cout << "[-] VisitParameter  >>>>>>>>>>>>>>>>>" << std::endl;
 }

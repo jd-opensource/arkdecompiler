@@ -112,7 +112,7 @@ void AstGen::VisitSpillFill(GraphVisitor *visitor, Inst *inst)
         if (it == enc->reg2expression.end()) {
             std::cout << "VisitSpillFill # SpillFill none register"  << std::endl; 
         }else{
-            enc->set_expression_by_register(sf.DstValue(), *enc->get_expression_by_register(sf.SrcValue()));
+            enc->set_expression_by_register(inst, sf.DstValue(), *enc->get_expression_by_register(sf.SrcValue()));
         }
     }
     std::cout << "[-] VisitSpillFill  >>>>>>>>>>>>>>>>>" << std::endl;
@@ -151,7 +151,7 @@ void AstGen::VisitConstant(GraphVisitor *visitor, Inst *inst)
             enc->success_ = false;
     }
     auto dst_reg = inst->GetDstReg();
-    enc->set_expression_by_register(dst_reg, number);
+    enc->set_expression_by_register(inst, dst_reg, number);
     
     std::cout << "[-] VisitConstant  >>>>>>>>>>>>>>>>>" << std::endl;
 }
@@ -483,7 +483,7 @@ void AstGen::VisitLoadString(GraphVisitor *v, Inst *inst_base)
     auto src_expression  = AllocNode<es2panda::ir::StringLiteral>(enc, name_view);
 
      auto dst_reg = inst->GetDstReg();
-    enc->set_expression_by_register(dst_reg, src_expression);
+    enc->set_expression_by_register(inst_base, dst_reg, src_expression);
    
 
     std::cout << "[-] VisitLoadString  >>>>>>>>>>>>>>>>>" << std::endl;
@@ -573,7 +573,7 @@ void AstGen::VisitCastValueToAnyType([[maybe_unused]] GraphVisitor *visitor, [[m
     }
 
     auto inst_dst_reg = cvat->GetDstReg();
-    enc->set_expression_by_register(inst_dst_reg, source);
+    enc->set_expression_by_register(inst, inst_dst_reg, source);
 
     std::cout << "[-] VisitCastValueToAnyType  >>>>>>>>>>>>>>>>>" << std::endl;
 }
@@ -596,8 +596,8 @@ void AstGen::VisitCatchPhi(GraphVisitor *visitor, Inst *inst)
     if (inst->CastToCatchPhi()->IsAcc()) {
         std::cout << "cast to catchphi" << std::endl;
         auto enc = static_cast<AstGen *>(visitor);
-            enc->set_expression_by_register(inst->GetDstReg(), enc->constant_catcherror);
-            enc->set_expression_by_register(compiler::ACC_REG_ID, enc->constant_catcherror);
+            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->constant_catcherror);
+            enc->set_expression_by_register(inst, compiler::ACC_REG_ID, enc->constant_catcherror);
         bool hasRealUsers = false;
         for (auto &user : inst->GetUsers()) {
             if (!user.GetInst()->IsSaveState()) {
@@ -607,8 +607,8 @@ void AstGen::VisitCatchPhi(GraphVisitor *visitor, Inst *inst)
         }
         if (hasRealUsers) {
             
-            enc->set_expression_by_register(inst->GetDstReg(), enc->constant_catcherror);
-            enc->set_expression_by_register(compiler::ACC_REG_ID, enc->constant_catcherror);
+            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->constant_catcherror);
+            enc->set_expression_by_register(inst, compiler::ACC_REG_ID, enc->constant_catcherror);
         }
     }
     std::cout << "[-] VisitCatchPhi  >>>>>>>>>>>>>>>>>" << std::endl;
