@@ -294,8 +294,6 @@ public:
             const auto &statements = headerblockstatements->Statements();
             headerblockstatements->AddStatementAtPos(statements.size(), statement);
         }
-
-        
     }
 
     void add_insAst_to_blockstatemnt_by_block(BasicBlock* block, es2panda::ir::Statement *statement){
@@ -304,6 +302,20 @@ public:
         block_statements->AddStatementAtPos(statements.size(), statement);
     }
 
+    void log_loop_bbs(BasicBlock* header){
+        ArenaVector<BasicBlock *> bbs = header->GetLoop()->GetBlocks();
+        std::cout << "[+] loop list >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " << std::endl;
+        for (size_t i = 0; i < bbs.size(); i++) {
+            BasicBlock * bb = bbs[i];
+            std::cout << bb->GetId() << " ";
+            if(bb->IsLoopValid() && bb->GetLoop()->IsRoot()){
+                std::cout << "bbi@ " << bb->GetId() << std::endl;
+            }
+        } 
+
+        std::cout << std::endl;
+        std::cout << "[-] loop list >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " << std::endl;
+    }
 
     void judge_looptype(BasicBlock* header){
         auto &back_edges = header->GetLoop()->GetBackEdges();
@@ -328,23 +340,12 @@ public:
             }
         } 
 
-        // ArenaVector<BasicBlock *> bbs = header->GetLoop()->GetBlocks();
-
-        // std::cout << "loop list >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " << std::endl;
-        // for (size_t i = 0; i < bbs.size(); i++) {
-        //     BasicBlock * bb = bbs[i];
-        //     std::cout << bb->GetId() << " ";
-        //     if(bb->IsLoopValid() && bb->GetLoop()->IsRoot()){
-        //         std::cout << "sb@ " << bb->GetId() << std::endl;
-        //     }
-        // } 
-
-        // std::cout << std::endl;
+        //log_loop_bbs(header);
     }
 
     es2panda::ir::BlockStatement* get_blockstatement_byid(BasicBlock *block){
         auto block_id = block->GetId();
-        std::cout << "@@ block id start: " << block_id << std::endl;
+        std::cout << "[*] get_blockstatement_byid bbid: " << block_id << ", ";
 
         // case1: found blockstatment
         if (this->id2block.find(block_id) != this->id2block.end()) {
@@ -411,8 +412,6 @@ public:
         }
         
         es2panda::ir::BlockStatement* curstatement = this->id2block[block_id];
-
-        std::cout << "@@ block id end: " << block_id << std::endl;
         return curstatement;
     }
 
@@ -485,9 +484,6 @@ public:
 
 
 };
-
-
-
 
 }  // namespace panda::bytecodeopt
 

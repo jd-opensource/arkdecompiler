@@ -48,7 +48,7 @@ bool AstGen::RunImpl()
             this->whileheader2redundant[bb] = new_block_statement;
         }
 
-        std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: " << bb->GetId() << std::endl;
+        std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ visit bbid: " << bb->GetId() << std::endl;
 
         for (const auto &inst : bb->AllInsts()) {
             [[maybe_unused]] auto start = GetResult().size();
@@ -194,11 +194,11 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
     if(block->IsLoopValid() && block->IsLoopHeader()){
         std::cout << "1%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
         if(enc->loop2type[block->GetLoop()] == 1){
-            std::cout << "[+] do-while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+            std::cout << "[+] do-while ===" << std::endl;
 
-            std::cout << "[-] do-while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+            std::cout << "[-] do-while ===" << std::endl;
         }else{
-            std::cout << "[+] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+            std::cout << "[+] while ===" << std::endl;
 
             es2panda::ir::BlockStatement* true_statements =   enc->get_blockstatement_byid(inst->GetBasicBlock()->GetTrueSuccessor());
             es2panda::ir::BlockStatement* false_statements =  enc->get_blockstatement_byid(inst->GetBasicBlock()->GetFalseSuccessor());
@@ -215,7 +215,7 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
             enc->add_insAst_to_blockstatemnt_by_inst(inst_base, whilestatement);
             enc->add_insAst_to_blockstatemnt_by_inst(inst_base, false_statements);
 
-            std::cout << "[-] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+            std::cout << "[-] while ===" << std::endl;
         }
     }else{
         std::cout << "2%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
@@ -267,7 +267,7 @@ static std::optional<coretypes::TaggedValue> IsEcmaConstTemplate(Inst const *ins
 
 
 uint32_t onlyOneBranch(BasicBlock* father, AstGen * enc){
-    std::cout << "if block: " << std::to_string(father->GetId()) << std::endl;
+    //std::cout << "if block: " << std::to_string(father->GetId()) << std::endl;
     auto true_branch = father->GetTrueSuccessor();
     auto false_branch = father->GetFalseSuccessor();
 
@@ -386,17 +386,11 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
         /// deal with while/do-while
         auto block = inst_base->GetBasicBlock();
         if(enc->backedge2dowhileloop.find(block) != enc->backedge2dowhileloop.end()){
-            std::cout << "[+] do-while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
-                compiler::Loop* loop = block->GetLoop();
-                auto back_edges = loop->GetBackEdges();
-                enc->logbackedgeid(back_edges);
+            std::cout << "[+] do-while =====" << std::endl;
+            compiler::Loop* loop = block->GetLoop();
+            auto back_edges = loop->GetBackEdges();
+            enc->logbackedgeid(back_edges);
 
-                std::cout << "ret: " << ret << std::endl;
-                std::cout << "current bb id: " << block->GetId() << std::endl;
-                std::cout << "current bb false succ id: " << block->GetFalseSuccessor()->GetId() << std::endl;
-
-
-            //auto loop = enc->backedge2dowhileloop[block];
             es2panda::ir::DoWhileStatement* dowhilestatement;
             if(block->GetTrueSuccessor() == loop->GetHeader()){
                 dowhilestatement = AllocNode<es2panda::ir::DoWhileStatement>(enc,
@@ -413,14 +407,12 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             }
             enc->add_insAst_to_blockstatemnt_by_block(loop->GetPreHeader(), dowhilestatement);
             enc->add_insAst_to_blockstatemnt_by_block(loop->GetPreHeader(), false_statements);
-            std::cout << "[-] do-while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+            std::cout << "[-] do-while =====" << std::endl;
         }else if(block->IsLoopValid() && block->IsLoopHeader() && enc->loop2type[block->GetLoop()] == 0 ){
-            std::cout << "[+] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+            std::cout << "[+] while ===" << std::endl;
             compiler::Loop* loop = block->GetLoop();
             auto back_edges = loop->GetBackEdges();
             enc->logbackedgeid(back_edges);
-            std::cout << "current bb id: " << block->GetId() << std::endl;
-            std::cout << "current bb false succ id: " << block->GetFalseSuccessor()->GetId() << std::endl;
 
             es2panda::ir::WhileStatement* whilestatement;
             if( std::find(loop->GetBlocks().begin(), loop->GetBlocks().end(), block->GetFalseSuccessor()) != loop->GetBlocks().end() ){
@@ -451,10 +443,8 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             enc->add_insAst_to_blockstatemnt_by_block(loop->GetPreHeader(), enc->get_blockstatement_byid(block));
             enc->add_insAst_to_blockstatemnt_by_block(loop->GetPreHeader(), false_statements);
 
-            std::cout << "[-] while @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+            std::cout << "[-] while ===" << std::endl;
         }else{
-            std::cout << "2%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-            std::cout << "ret: " << ret << std::endl;
             es2panda::ir::IfStatement* ifStatement;
 
             if(ret == 2){
@@ -490,9 +480,6 @@ void AstGen::VisitLoadString(GraphVisitor *v, Inst *inst_base)
     std::string source_str = enc->ir_interface_->GetStringIdByOffset(inst->GetTypeId()); 
     panda::es2panda::util::StringView name_view = panda::es2panda::util::StringView(*new std::string(source_str));
     
-    
-   // es2panda::util::StringView literal_strview(source_str);
-
     auto src_expression  = AllocNode<es2panda::ir::StringLiteral>(enc, name_view);
 
      auto dst_reg = inst->GetDstReg();
