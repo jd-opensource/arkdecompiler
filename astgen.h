@@ -276,12 +276,12 @@ public:
         return std::nullopt;
     }
 
-    void set_expression_by_register(AstGen * enc, compiler::Register key, panda::es2panda::ir::Expression* value){
+    void set_expression_by_register(compiler::Register key, panda::es2panda::ir::Expression* value){
         if(value == nullptr){
             handleError("can't set null expression in reg2expression");
         }
         std::cout << "set_expression_by_register: " << std::to_string(key) << std::endl;
-        enc->reg2expression[key] = value;
+        this->reg2expression[key] = value;
     }
 
     void logid2blockkeys(){
