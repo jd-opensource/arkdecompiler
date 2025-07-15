@@ -100,11 +100,13 @@ bool AstGen::RunImpl()
 }
 
 
-void AstGen::VisitSpillFill(GraphVisitor *visitor, Inst *inst)
+void AstGen::VisitSpillFill(GraphVisitor *visitor, Inst *inst_base)
 {
     std::cout << "[+] VisitSpillFill  >>>>>>>>>>>>>>>>>" << std::endl;
     auto *enc = static_cast<AstGen *>(visitor);
-    for (auto sf : inst->CastToSpillFill()->GetSpillFills()) {
+    auto inst = inst_base->CastToSpillFill();
+
+    for (auto sf : inst->GetSpillFills()) {
         if(sf.SrcType() != compiler::LocationType::REGISTER || sf.DstType() != compiler::LocationType::REGISTER ){
             handleError("VisitSpillFill # unsupoort SpillFill type");
         }
@@ -119,10 +121,11 @@ void AstGen::VisitSpillFill(GraphVisitor *visitor, Inst *inst)
 }
 
 
-void AstGen::VisitConstant(GraphVisitor *visitor, Inst *inst)
+void AstGen::VisitConstant(GraphVisitor *visitor, Inst *inst_base)
 {
     std::cout << "[+] VisitConstant  >>>>>>>>>>>>>>>>>" << std::endl;
     auto *enc = static_cast<AstGen *>(visitor);
+    auto inst = inst_base->CastToConstant();
     auto type = inst->GetType();
    
     es2panda::ir::Expression* number;
@@ -130,18 +133,18 @@ void AstGen::VisitConstant(GraphVisitor *visitor, Inst *inst)
         case compiler::DataType::INT64:
         case compiler::DataType::UINT64:
             number = AllocNode<es2panda::ir::NumberLiteral>(enc, 
-                                                            inst->CastToConstant()->GetInt64Value()
+                                                            inst->GetInt64Value()
                                                         );
             break;
         case compiler::DataType::FLOAT64:
             number = AllocNode<es2panda::ir::NumberLiteral>(enc, 
-                                                            inst->CastToConstant()->GetDoubleValue()
+                                                            inst->GetDoubleValue()
                                                         );
             break;
         case compiler::DataType::INT32:
         case compiler::DataType::UINT32:
             number = AllocNode<es2panda::ir::NumberLiteral>(enc, 
-                                                            inst->CastToConstant()->GetInt32Value()
+                                                            inst->GetInt32Value()
                                                         );
             break;
         default:
@@ -188,7 +191,7 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
     /////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////
     /// deal with while/do-while
-    auto block = inst_base->GetBasicBlock();
+    auto block = inst->GetBasicBlock();
     es2panda::ir::BlockStatement* block_statement = enc->get_blockstatement_byid(block);
 
     if(block->IsLoopValid() && block->IsLoopHeader()){
@@ -212,8 +215,8 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
                                     test_expression, 
                                     true_statements);
 
-            enc->add_insAst_to_blockstatemnt_by_inst(inst_base, whilestatement);
-            enc->add_insAst_to_blockstatemnt_by_inst(inst_base, false_statements);
+            enc->add_insAst_to_blockstatemnt_by_inst(inst, whilestatement);
+            enc->add_insAst_to_blockstatemnt_by_inst(inst, false_statements);
 
             std::cout << "[-] while ===" << std::endl;
         }
@@ -226,7 +229,7 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
         true_statements->SetParent(block_statement);
         false_statements->SetParent(block_statement);
         
-        enc->add_insAst_to_blockstatemnt_by_inst(inst_base, ifStatement);
+        enc->add_insAst_to_blockstatemnt_by_inst(inst, ifStatement);
 
     }
 
@@ -384,7 +387,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
         /////////////////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////////////////
         /// deal with while/do-while
-        auto block = inst_base->GetBasicBlock();
+        auto block = inst->GetBasicBlock();
         if(enc->backedge2dowhileloop.find(block) != enc->backedge2dowhileloop.end()){
             std::cout << "[+] do-while =====" << std::endl;
             compiler::Loop* loop = block->GetLoop();
@@ -439,7 +442,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                         );
             }
 
-            enc->add_insAst_to_blockstatemnt_by_inst(inst_base, whilestatement);
+            enc->add_insAst_to_blockstatemnt_by_inst(inst, whilestatement);
             enc->add_insAst_to_blockstatemnt_by_block(loop->GetPreHeader(), enc->get_blockstatement_byid(block));
             enc->add_insAst_to_blockstatemnt_by_block(loop->GetPreHeader(), false_statements);
 
@@ -458,7 +461,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
 
             }
 
-            enc->add_insAst_to_blockstatemnt_by_inst(inst_base, ifStatement);
+            enc->add_insAst_to_blockstatemnt_by_inst(inst, ifStatement);
 
         }
         /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -482,7 +485,7 @@ void AstGen::VisitLoadString(GraphVisitor *v, Inst *inst_base)
     
     auto src_expression  = AllocNode<es2panda::ir::StringLiteral>(enc, name_view);
 
-    enc->set_expression_by_register(inst_base, inst->GetDstReg(), src_expression);
+    enc->set_expression_by_register(inst, inst->GetDstReg(), src_expression);
    
 
     std::cout << "[-] VisitLoadString  >>>>>>>>>>>>>>>>>" << std::endl;
