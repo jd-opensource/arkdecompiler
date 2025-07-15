@@ -337,7 +337,7 @@ public:
     }
 
     void add_insAst_to_blockstatemnt_by_block(BasicBlock* block, es2panda::ir::Statement *statement){
-        es2panda::ir::BlockStatement* block_statements = this->get_blockstatement_byid(this, block);
+        es2panda::ir::BlockStatement* block_statements = this->get_blockstatement_byid(block);
         const auto &statements = block_statements->Statements();
         block_statements->AddStatementAtPos(statements.size(), statement);
     }
@@ -380,14 +380,14 @@ public:
         // std::cout << std::endl;
     }
 
-    es2panda::ir::BlockStatement* get_blockstatement_byid(AstGen * enc, BasicBlock *block){
+    es2panda::ir::BlockStatement* get_blockstatement_byid(BasicBlock *block){
         auto block_id = block->GetId();
         std::cout << "@@ block id start: " << block_id << std::endl;
 
         // case1: found blockstatment
-        if (enc->id2block.find(block_id) != enc->id2block.end()) {
+        if (this->id2block.find(block_id) != this->id2block.end()) {
             std::cout << "@@ case 1" << std::endl;
-            return enc->id2block[block_id];
+            return this->id2block[block_id];
         }
         
         // case2: found loop
@@ -396,10 +396,10 @@ public:
             judge_looptype(block);
 
             //////////////////////////////////////////////////////////////////////////////////////
-            ArenaVector<panda::es2panda::ir::Statement *> statements(enc->parser_program_->Allocator()->Adapter());
-            auto new_block_statement = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
-            enc->id2block[block_id] = new_block_statement;
-            return enc->id2block[block_id];
+            ArenaVector<panda::es2panda::ir::Statement *> statements(this->parser_program_->Allocator()->Adapter());
+            auto new_block_statement = this->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
+            this->id2block[block_id] = new_block_statement;
+            return this->id2block[block_id];
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////
@@ -408,20 +408,20 @@ public:
         if(block->GetPredsBlocks().size() == 1 && block_id != 0 && block->GetPredecessor(0)->GetSuccsBlocks().size() == 1){
             std::cout << "@@ case 3" << std::endl;
             BasicBlock* ancestor_block = block->GetPredecessor(0);
-            enc->id2block[block_id] =  enc->id2block[ancestor_block->GetId()];;
-            return enc->id2block[block_id];
+            this->id2block[block_id] =  this->id2block[ancestor_block->GetId()];;
+            return this->id2block[block_id];
         }
         
         // case4:create new statements
         std::cout << "@@ case 4" << std::endl;
-        ArenaVector<panda::es2panda::ir::Statement *> statements(enc->parser_program_->Allocator()->Adapter());
-        auto new_block_statement = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
-        enc->id2block[block_id] = new_block_statement;
+        ArenaVector<panda::es2panda::ir::Statement *> statements(this->parser_program_->Allocator()->Adapter());
+        auto new_block_statement = this->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
+        this->id2block[block_id] = new_block_statement;
 
         logspecialblockid();
 
         // nested if-else
-        if(enc->specialblockid.find(block_id) == enc->specialblockid.end() ){
+        if(this->specialblockid.find(block_id) == this->specialblockid.end() ){
             BasicBlock* ancestor_block = nullptr;
 
             ancestor_block = block->GetDominator();
@@ -431,13 +431,13 @@ public:
             }
             std::cout << "@ ancestor_block: " <<  std::to_string(ancestor_block->GetId()) <<  std::endl;
 
-            auto ancestor_block_statements = enc->get_blockstatement_byid(enc, ancestor_block);
-            enc->id2block[block_id] =  ancestor_block_statements;
+            auto ancestor_block_statements = this->get_blockstatement_byid(ancestor_block);
+            this->id2block[block_id] =  ancestor_block_statements;
 
             this->add_insAst_to_blockstatemnt_by_block(ancestor_block, new_block_statement);
             
 
-            return enc->id2block[block_id];
+            return this->id2block[block_id];
         }else{
             /**
              * add statement in special statements
@@ -448,7 +448,7 @@ public:
 
         }
         
-        es2panda::ir::BlockStatement* curstatement = enc->id2block[block_id];
+        es2panda::ir::BlockStatement* curstatement = this->id2block[block_id];
 
         std::cout << "@@ block id end: " << block_id << std::endl;
         return curstatement;

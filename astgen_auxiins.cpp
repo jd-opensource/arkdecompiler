@@ -65,7 +65,7 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
 
     enc->specialblockid.insert(tryblock->GetId());
     
-    panda::es2panda::ir::BlockStatement* tryblock_statement = enc->get_blockstatement_byid(enc, tryblock);
+    panda::es2panda::ir::BlockStatement* tryblock_statement = enc->get_blockstatement_byid(tryblock);
 
     if(inst->GetBasicBlock()->GetTryId() !=  panda::compiler::INVALID_ID){
         enc->tyrid2block[inst->GetBasicBlock()->GetTryId()] = tryblock_statement;
@@ -85,7 +85,7 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
         }
 
         enc->specialblockid.insert(succ->GetId());
-        auto catch_block = enc->get_blockstatement_byid(enc, succ);
+        auto catch_block = enc->get_blockstatement_byid(succ);
    
         panda::es2panda::ir::Expression *param = enc->constant_catcherror;
         
@@ -105,8 +105,7 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
     
     
     // create try-catch statement
-    //es2panda::ir::BlockStatement* trycatchStatements = enc->get_blockstatement_byid(enc, inst->GetBasicBlock());
-    enc->get_blockstatement_byid(enc, inst->GetBasicBlock());
+    enc->get_blockstatement_byid(inst->GetBasicBlock());
 
     auto tryStatement = AllocNode<panda::es2panda::ir::TryStatement>(enc, tryblock_statement, catchClause, finnalyClause);
     enc->tyridtrystatement[inst->GetBasicBlock()->GetTryId()] = tryStatement;
