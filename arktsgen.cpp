@@ -504,7 +504,7 @@ void ArkTSGen::EmitDoWhileStatement(const ir::AstNode *node){
     
     // do {
     this->writeKeyWords("do");
-    this->writeLeftParentheses();
+    this->writeLeftBrace();
     this->writeNewLine();
 
     // while statement
