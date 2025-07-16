@@ -256,15 +256,16 @@ public:
         */
 
         if(value == nullptr){
-            handleError("can't set null expression in reg2expression");
+            handleError("#set_expression_by_register: can't set null expression in reg2expression");
         }
 
-        std::cout << "set_expression_by_register: " << std::to_string(key) << std::endl;
-        this->reg2expression[key] = value;
-
+        std::cout << "############################################################################set_expression_by_register: " << std::to_string(key) << std::endl;
+        
         if(inst->IsAccWrite()){
             this->bb2acc2expression[inst->GetBasicBlock()] = value;
         }
+
+        this->reg2expression[key] = value;
     }
 
     void logid2blockkeys(){

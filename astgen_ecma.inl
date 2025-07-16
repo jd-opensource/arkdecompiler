@@ -104,6 +104,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::STRICTEQ_IMM8_V8:
        case compiler::RuntimeInterface::IntrinsicId::EXP_IMM8_V8:{
             auto source_reg = inst->GetSrcReg(inst->GetInputsCount() - 2);
+
+            if(source_reg == compiler::ACC_REG_ID){
+                std::cout << "@@@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+            }else{
+                std::cout << "@@@ BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB: " << std::to_string(source_reg) << std::endl;
+            }
+
             panda::es2panda::ir::Expression* source_expression = *enc->get_expression_by_register(inst, source_reg); 
             
             auto binexpression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
@@ -397,6 +404,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
             auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
 
+            std::cout << "########################################## load global string imm id : " << ir_id0 << ", str: " << bc_id0  <<  std::endl;
 
             es2panda::ir::Expression* sourceexpression = enc->get_identifier_byname(new std::string(bc_id0));
             enc->set_expression_by_register(inst, inst->GetDstReg(), sourceexpression);
@@ -1030,7 +1038,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto argument = *enc->get_expression_by_register(inst, source_reg);
             auto throwStatement = AllocNode<es2panda::ir::ThrowStatement>(enc, argument);
             enc->add_insAst_to_blockstatemnt_by_inst(inst, throwStatement);
-
             break;
         }
         /////////////////////////////////////////////////////////////////////////////////////

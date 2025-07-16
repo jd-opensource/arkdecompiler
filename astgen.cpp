@@ -76,7 +76,7 @@ bool AstGen::RunImpl()
 
         auto nearestpre = this->find_nearest_visited_pred(visited, bb);
         if(nearestpre != nullptr && this->bb2acc2expression[nearestpre] != nullptr){
-            std::cout << "!!!!!!!!!!!!!!!!!!!! found " << std::endl;
+            std::cout << "!!!!!!!!!!!!!!!!!!!! found pre id: " << nearestpre->GetId() << std::endl;
             this->bb2acc2expression[bb] = this->bb2acc2expression[nearestpre];
         }else{
             this->bb2acc2expression[bb] = nullptr;
