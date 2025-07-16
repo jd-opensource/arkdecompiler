@@ -282,7 +282,7 @@ public:
         }
         this->set_expression_by_id(inst, inst->GetId(), value);
 
-        std::cout << "############################################################################set_expression_by_register: " << std::to_string(key) << std::endl;
+        std::cout << "#set_expression_by_register: " << std::to_string(key) << std::endl;
         
         if(inst->IsAccWrite()){
             this->bb2acc2expression[inst->GetBasicBlock()] = value;

@@ -103,15 +103,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::STRICTNOTEQ_IMM8_V8:
        case compiler::RuntimeInterface::IntrinsicId::STRICTEQ_IMM8_V8:
        case compiler::RuntimeInterface::IntrinsicId::EXP_IMM8_V8:{
-            auto source_reg = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            std::cout << "raw tmp id: " << inst->GetInput(inst->GetInputsCount() - 2).GetInst()->GetId() << std::endl;
-            std::cout << "raw tmp id: " << inst->GetInput(0).GetInst()->GetId() << std::endl;
-            if(source_reg == compiler::ACC_REG_ID){
-                std::cout << "@@@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
-            }else{
-                std::cout << "@@@ BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB: " << std::to_string(source_reg) << std::endl;
-            }
-
             //panda::es2panda::ir::Expression* source_expression = *enc->get_expression_by_register(inst, source_reg);
             panda::es2panda::ir::Expression* source_expression = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);  
             
@@ -2097,6 +2088,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         }
        case compiler::RuntimeInterface::IntrinsicId::STOWNBYVALUE_IMM16_V8_V8:
        {
+            
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
             if (acc_src != compiler::ACC_REG_ID) {
                 DoLda(acc_src, enc->result_);
