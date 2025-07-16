@@ -438,6 +438,10 @@ void ArkTSGen::EmitTryStatement(const ir::AstNode *node){
 void ArkTSGen::EmitIfStatement(const ir::AstNode *node){
     std::cout << "[+] start EmitIfStatement"  << std::endl;
     auto ifstatement = static_cast<const panda::es2panda::ir::IfStatement*>(node);
+    if(ifstatement->Consequent() == nullptr ||  static_cast<const panda::es2panda::ir::BlockStatement*>(ifstatement->Consequent())->Statements().size() == 0){
+        return;
+    }
+
     // if(test)
     this->writeKeyWords("if");
     this->writeLeftParentheses();
@@ -519,9 +523,7 @@ void ArkTSGen::EmitDoWhileStatement(const ir::AstNode *node){
     this->writeLeftParentheses();
     this->EmitExpression(dowhilestatement->Test());
     this->writeRightParentheses();
-    this->writeTrailingSemicolon();
-    this->writeNewLine();
-        
+    this->writeTrailingSemicolon();        
     std::cout << "[-] end emit dowhile statement"  << std::endl;
 }
 
