@@ -9,8 +9,9 @@ void AstGen::VisitPhi(GraphVisitor* v, Inst* inst_base) {
     for (size_t i = 0; i < inst->GetInputsCount(); i++) {
         std::cout << "[+] phi: end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
         std::cout << "[*] reg " << std::to_string(i) << " , " << std::to_string(inst->GetSrcReg(i-2)) << std::endl;
-        auto reg = inst->GetInput(i).GetInst()->GetDstReg();
-        arguments.push_back(*enc->get_expression_by_register(inst, reg));
+        //auto reg = inst->GetInput(i).GetInst()->GetDstReg();
+        //arguments.push_back(*enc->get_expression_by_register(inst, reg));
+        arguments.push_back(*enc->get_expression_by_id(inst, i));
         std::cout << "[-] phi: end >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
     }
 

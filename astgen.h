@@ -228,7 +228,9 @@ public:
         return identifier;
     }
 
-    std::optional<panda::es2panda::ir::Expression*> get_expression_by_id(Inst* inst, uint32_t id){
+    std::optional<panda::es2panda::ir::Expression*> get_expression_by_id(Inst* inst, uint32_t index){
+        auto id = inst->GetInput(index).GetInst()->GetId();
+        
         auto it = this->id2expression.find(id);
         if (it != this->id2expression.end()) {
             std::cout << "#get_expression_by_register: " << std::to_string(id) << std::endl;
