@@ -228,6 +228,26 @@ public:
         return identifier;
     }
 
+    std::optional<panda::es2panda::ir::Expression*> get_expression_by_id(Inst* inst, uint32_t id){
+        auto it = this->id2expression.find(id);
+        if (it != this->id2expression.end()) {
+            std::cout << "#get_expression_by_register: " << std::to_string(id) << std::endl;
+            return it->second;  
+        }
+
+        handleError("can't find expression in reg2expression: " + std::to_string(id));
+        
+        return std::nullopt;
+    }
+
+    void set_expression_by_id(Inst* inst, uint32_t id, panda::es2panda::ir::Expression* value){
+        if(value == nullptr){
+            handleError("#set_expression_by_register: can't set null expression in reg2expression");
+        }
+        this->id2expression[id] = value;
+    }
+
+
     std::optional<panda::es2panda::ir::Expression*> get_expression_by_register(Inst* inst, compiler::Register key){
         if(key == compiler::ACC_REG_ID){
             if(this->bb2acc2expression[inst->GetBasicBlock()] != nullptr){
@@ -258,6 +278,7 @@ public:
         if(value == nullptr){
             handleError("#set_expression_by_register: can't set null expression in reg2expression");
         }
+        this->set_expression_by_id(inst, inst->GetId(), value);
 
         std::cout << "############################################################################set_expression_by_register: " << std::to_string(key) << std::endl;
         
@@ -480,6 +501,9 @@ public:
 
     std::map<compiler::Register, panda::es2panda::ir::Expression*> reg2expression;
     std::map<compiler::BasicBlock*, panda::es2panda::ir::Expression*> bb2acc2expression;
+
+    std::map<uint32_t, panda::es2panda::ir::Expression*> id2expression;
+    
 
     std::map<uint32_t, es2panda::ir::BlockStatement*> tyrid2block;
     std::map<uint32_t, panda::es2panda::ir::TryStatement*> tyridtrystatement;

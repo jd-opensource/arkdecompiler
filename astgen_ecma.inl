@@ -104,7 +104,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::STRICTEQ_IMM8_V8:
        case compiler::RuntimeInterface::IntrinsicId::EXP_IMM8_V8:{
             auto source_reg = inst->GetSrcReg(inst->GetInputsCount() - 2);
-
+            std::cout << "raw tmp id: " << inst->GetInput(inst->GetInputsCount() - 2).GetInst()->GetId() << std::endl;
+            std::cout << "raw tmp id: " << inst->GetInput(0).GetInst()->GetId() << std::endl;
             if(source_reg == compiler::ACC_REG_ID){
                 std::cout << "@@@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
             }else{

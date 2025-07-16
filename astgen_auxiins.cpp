@@ -21,8 +21,7 @@ void AstGen::VisitPhi(GraphVisitor* v, Inst* inst_base) {
                                                         false
                                                         );
 
-    enc->set_expression_by_register(inst_base, inst->GetDstReg(), callexpression);
-
+    enc->set_expression_by_register(inst, inst->GetDstReg(), callexpression);
     std::cout << "[-] VisitPhi  <<<<<<<<<<<<<<<" << std::endl;
 }
 
@@ -36,12 +35,11 @@ void AstGen::VisitSaveState(GraphVisitor* v, Inst* inst_base) {
 void AstGen::VisitParameter(GraphVisitor* v, Inst* inst_base) {
     std::cout << "[+] VisitParameter  >>>>>>>>>>>>>>>>>" << std::endl;
     auto enc = static_cast<AstGen *>(v);
-    auto paramInst = inst_base->CastToParameter();
+    auto inst = inst_base->CastToParameter();
 
-    panda::es2panda::ir::Expression* arg = enc->get_identifier_byname(new std::string("arg" + std::to_string(paramInst->GetArgNumber())));
+    panda::es2panda::ir::Expression* arg = enc->get_identifier_byname(new std::string("arg" + std::to_string(inst->GetArgNumber())));
     
-    enc->set_expression_by_register(inst_base, paramInst->GetDstReg(), arg);
-
+    enc->set_expression_by_register(inst, inst->GetDstReg(), arg);
     std::cout << "[-] VisitParameter  >>>>>>>>>>>>>>>>>" << std::endl;
 }
 
