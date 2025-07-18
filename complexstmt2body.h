@@ -13,13 +13,6 @@ es2panda::ir::BlockStatement* complexstmt2body(panda::es2panda::compiler::ir *as
             return astnode->AsForOfStatement()->Body();
             break;
 
-        case AstNodeType::IF_STATEMENT:
-
-
-        case :;
-
         default :;
-
-
     }
 }
