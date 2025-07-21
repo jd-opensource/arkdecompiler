@@ -214,6 +214,21 @@ public:
         return literal;
     }
 
+    panda::es2panda::ir::Identifier* get_identifier_byreg(compiler::Register reg){
+        panda::es2panda::ir::Identifier* identifier;
+        if (this->identifers.find(reg)  != this->identifers.end()) {
+            identifier =  this->identifers[reg];
+        } else {
+            std::string* raw_name =  new std::string("v" + std::to_string(reg));
+
+            panda::es2panda::util::StringView reg_name = panda::es2panda::util::StringView( *raw_name);
+            identifier = AllocNode<panda::es2panda::ir::Identifier>(this, reg_name);
+            this->identifers[reg] = identifier;
+            this->str2identifers[*raw_name ] = identifier;
+        }
+        return identifier;
+    }
+
     panda::es2panda::ir::Identifier* get_identifier_byname(std::string* raw_name){
         panda::es2panda::ir::Identifier* identifier;
         if (this->str2identifers.find(*raw_name)  != this->str2identifers.end()) {
@@ -497,6 +512,7 @@ public:
     std::set<uint32_t> specialblockid;
 
     std::map<compiler::Register, panda::es2panda::ir::Identifier*> identifers;
+    
 
     std::map<std::string, panda::es2panda::ir::Identifier*> str2identifers;
     std::map<uint32_t, panda::es2panda::ir::NumberLiteral*> num2literals;
