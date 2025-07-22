@@ -1029,6 +1029,51 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
+        case compiler::RuntimeInterface::IntrinsicId::STOWNBYINDEX_IMM8_V8_IMM16: // tobetested
+        case compiler::RuntimeInterface::IntrinsicId::STOWNBYINDEX_IMM16_V8_IMM16: // tobetested
+        case compiler::RuntimeInterface::IntrinsicId::WIDE_STOWNBYINDEX_PREF_V8_IMM32: // tobetested
+       {
+            uint32_t imm;
+            if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::WIDE_STOWNBYINDEX_PREF_V8_IMM32){
+                imm = static_cast<uint32_t>(inst->GetImms()[0]);
+            }else{
+                imm = static_cast<uint32_t>(inst->GetImms()[1]);
+            }
+
+            panda::es2panda::ir::Identifier* obj_reg_identifier = enc->get_identifier_byreg(inst->GetSrcReg(0));
+            auto expression1 = *enc->get_expression_by_id(inst, 0);
+
+            enc->set_expression_by_register(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), obj_reg_identifier);
+            ArenaVector<es2panda::ir::VariableDeclarator *> declarators1(enc->parser_program_->Allocator()->Adapter());
+            auto *declarator1 = AllocNode<es2panda::ir::VariableDeclarator>(enc,
+                                                                                obj_reg_identifier, 
+                                                                                expression1);
+            declarators1.push_back(declarator1);
+            auto variadeclaration1 = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
+                                                                                    es2panda::ir::VariableDeclaration::VariableDeclarationKind::VAR,
+                                                                                    std::move(declarators1),
+                                                                                    true
+                                                                                );
+            enc->add_insAst_to_blockstatemnt_by_inst(inst, variadeclaration1);
+            
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
+                                                        obj_reg_identifier,
+                                                        enc->get_literal_bynum(imm),  
+                                                        es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                        true, 
+                                                        false);   
+            panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                            objattrexpression,
+                                                                            *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2),
+                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                        ); 
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
+                                                                                assignexpression);
+            enc->add_insAst_to_blockstatemnt_by_inst(inst, assignstatement);
+
+            break;
+        }
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
@@ -1401,20 +1446,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-       case compiler::RuntimeInterface::IntrinsicId::STOWNBYINDEX_IMM8_V8_IMM16:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-            enc->result_.emplace_back(pandasm::Create_STOWNBYINDEX(imm0, v0, imm1));
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::STOWNBYNAME_IMM8_ID16_V8:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -1971,20 +2003,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->result_.emplace_back(pandasm::Create_STSUPERBYVALUE(imm0, v0, v1));
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::STOWNBYINDEX_IMM16_V8_IMM16:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-            enc->result_.emplace_back(pandasm::Create_STOWNBYINDEX(imm0, v0, imm1));
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::STOWNBYNAME_IMM16_ID16_V8:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -2476,18 +2495,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-       case compiler::RuntimeInterface::IntrinsicId::WIDE_STOWNBYINDEX_PREF_V8_IMM32:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-            auto v0 = inst->GetSrcReg(0);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_WIDE_STOWNBYINDEX(v0, imm0));
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_NEWSENDABLEENV_PREF_IMM8:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
