@@ -3,7 +3,7 @@
 
 #include "ins_create_api.h"
 #include "ast.h"
-
+#include "lexicalenv.h"
 
 namespace panda::bytecodeopt {
 

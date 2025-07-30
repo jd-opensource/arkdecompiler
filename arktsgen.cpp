@@ -1,8 +1,5 @@
 #include "arktsgen.h"
 
-
-
-
 namespace panda::es2panda::ir {
 
 ArkTSGen::ArkTSGen(const BlockStatement *program, util::StringView sourceCode) : index_(sourceCode), indent_(0)

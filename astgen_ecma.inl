@@ -1536,10 +1536,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
  
-       
-
-
-
        case compiler::RuntimeInterface::IntrinsicId::LDSUPERBYVALUE_IMM16_V8:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
