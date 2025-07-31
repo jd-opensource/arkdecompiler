@@ -520,6 +520,11 @@ public:
     std::map<compiler::Register, panda::es2panda::ir::Expression*> reg2expression;
     std::map<compiler::BasicBlock*, panda::es2panda::ir::Expression*> bb2acc2expression;
 
+    LexicalEnv* acc_lexicalenv = NULL;
+
+    std::map<compiler::BasicBlock*, LexicalEnvStack*> bb2lexicalenvstack;
+
+
     std::map<uint32_t, panda::es2panda::ir::Expression*> id2expression;
     
 

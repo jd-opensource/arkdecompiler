@@ -1153,13 +1153,62 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
        
         case compiler::RuntimeInterface::IntrinsicId::NEWLEXENV_IMM8:{
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_NEWLEXENV(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
+            std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+            auto lexenv_size = static_cast<uint32_t>(inst->GetImms()[0]);
+            auto lexicalenv = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
+            enc->acc_lexicalenv = lexicalenv->push(lexenv_size);
+
+            
+
+            break;
+        }
+
+       case compiler::RuntimeInterface::IntrinsicId::STLEXVAR_IMM4_IMM4:
+       {
+            std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
+        //     auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
+        //     if (acc_src != compiler::ACC_REG_ID) {
+        //         DoLda(acc_src, enc->result_);
+        //     }
+        //    ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
+        //     auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
+        //    ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
+        //     auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
+        //     enc->result_.emplace_back(pandasm::Create_STLEXVAR(imm0, imm1));
+
+            auto tier = static_cast<uint32_t>(inst->GetImms()[0]);
+            auto index = static_cast<uint32_t>(inst->GetImms()[1]);
+
+            
+            std::cout << "tier: " << std::to_string(tier) << ", index: " << std::to_string(index) << std::endl;
+            auto lexicalenv = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
+            lexicalenv->set(tier, index, *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2));
+
+            break;
+        }
+
+       case compiler::RuntimeInterface::IntrinsicId::LDLEXVAR_IMM4_IMM4:
+       {
+            std::cout << "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC" << std::endl;
+        //    ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
+        //     auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
+        //    ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
+        //     auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
+        //     enc->result_.emplace_back(pandasm::Create_LDLEXVAR(imm0, imm1));
+        //     auto acc_dst = inst->GetDstReg();
+        //     if (acc_dst != compiler::ACC_REG_ID) {
+        //         DoSta(inst->GetDstReg(), enc->result_);
+        //     }
+
+            auto tier = static_cast<uint32_t>(inst->GetImms()[0]);
+            auto index = static_cast<uint32_t>(inst->GetImms()[1]);
+
+            std::cout << "tier: " << std::to_string(tier) << ", index: " << std::to_string(index) << std::endl;
+            auto lexicalenv = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
+            auto expression = lexicalenv->get(tier, index);
+
+            enc->set_expression_by_register(inst, inst->GetDstReg(), expression);
+
             break;
         }
 
@@ -1233,32 +1282,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         }
 
 
-       case compiler::RuntimeInterface::IntrinsicId::LDLEXVAR_IMM4_IMM4:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-            enc->result_.emplace_back(pandasm::Create_LDLEXVAR(imm0, imm1));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::STLEXVAR_IMM4_IMM4:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-            enc->result_.emplace_back(pandasm::Create_STLEXVAR(imm0, imm1));
-            break;
-        }
+
+
        
 
        case compiler::RuntimeInterface::IntrinsicId::LDSUPERBYNAME_IMM8_ID16:

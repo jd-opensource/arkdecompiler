@@ -81,6 +81,14 @@ bool AstGen::RunImpl()
         }else{
             this->bb2acc2expression[bb] = nullptr;
         }
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
+        if(nearestpre != nullptr && this->bb2lexicalenvstack[nearestpre] != nullptr){
+            std::cout << "!!!!!!!!!!!!!!!!!!!! found pre id: " << nearestpre->GetId() << std::endl;
+            this->bb2lexicalenvstack[bb] = this->bb2lexicalenvstack[nearestpre];
+        }else{
+            this->bb2lexicalenvstack[bb] = new LexicalEnvStack();
+        }
+
 
         visited.push_back(bb);        
         ///////////////////////////////////////////////////////////////////////////////////////////////////
