@@ -44,7 +44,7 @@ ohos_executable("xabc") {
   sources = [
     "xabc.cpp",
     "astgen.cpp",
-    "arktsgen.cpp",
+    "arkts.cpp",
     "ast.cpp",
     "lexicalenv.cpp",
     "lca.cpp"
