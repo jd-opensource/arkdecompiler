@@ -4,6 +4,7 @@
 #include "ins_create_api.h"
 #include "ast.h"
 #include "lexicalenv.h"
+#include "lca.h"
 
 namespace panda::bytecodeopt {
 
@@ -13,53 +14,6 @@ using compiler::Opcode;
 
 void DoLda(compiler::Register reg, std::vector<pandasm::Ins> &result);
 void DoSta(compiler::Register reg, std::vector<pandasm::Ins> &result);
-
-class LCAFinder {
-public:
-    LCAFinder(compiler::Graph* graph) : graph(graph) {
-        initialize();
-    }
-
-    BasicBlock* findLCA(BasicBlock* u, BasicBlock* v) {
-        std::unordered_set<BasicBlock*> commonAncestors;
-        const auto& ancestorsU = ancestors[u];
-        const auto& ancestorsV = ancestors[v];
-
-        for (auto ancestor : ancestorsU) {
-            if (ancestorsV.count(ancestor)) {
-                commonAncestors.insert(ancestor);
-            }
-        }
-
-        BasicBlock* lca = nullptr;
-        int maxDepth = -1;
-        for (auto ancestor : commonAncestors) {
-            int depth = ancestors[ancestor].size();
-            if (depth > maxDepth) {
-                maxDepth = depth;
-                lca = ancestor;
-            }
-        }
-        return lca;
-    }
-
-private:
-    compiler::Graph* graph;
-
-    std::unordered_map<BasicBlock*, std::unordered_set<BasicBlock*>> ancestors;
-
-    void initialize() {
-        for (auto node : graph->GetBlocksRPO()) {
-            std::unordered_set<BasicBlock*> nodeAncestors;
-            for (auto parent : node->GetPredsBlocks()) {
-                nodeAncestors.insert(parent);
-                nodeAncestors.insert(ancestors[parent].begin(), ancestors[parent].end());
-            }
-            ancestors[node] = nodeAncestors;
-        }
-    }
-};
-
 
 class AstGen : public compiler::Optimization, public compiler::GraphVisitor {
 public:

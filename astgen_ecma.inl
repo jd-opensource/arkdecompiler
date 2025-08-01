@@ -957,6 +957,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM8_ID16_IMM8:
         case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM16_ID16_IMM8:
         {
+            std::cout << "define function >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
             enc->set_expression_by_register(inst, inst->GetDstReg(), enc->DEFINEFUNC);
             break;
         }
@@ -1155,10 +1156,12 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         case compiler::RuntimeInterface::IntrinsicId::NEWLEXENV_IMM8:{
             std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
             auto lexenv_size = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto lexicalenv = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
-            enc->acc_lexicalenv = lexicalenv->push(lexenv_size);
+            std::cout << "lexenv_size: " << lexenv_size << std::endl;
+            auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
+            std::cout << "size: " << lexicalenvstack->size() << std::endl; 
+            enc->acc_lexicalenv = lexicalenvstack->push(lexenv_size);
+            std::cout << "size: " << lexicalenvstack->size() << " ,enc->acc_lexicalenv: " << enc->acc_lexicalenv->size() << std::endl; 
 
-            
 
             break;
         }
@@ -1179,10 +1182,27 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto tier = static_cast<uint32_t>(inst->GetImms()[0]);
             auto index = static_cast<uint32_t>(inst->GetImms()[1]);
 
-            
             std::cout << "tier: " << std::to_string(tier) << ", index: " << std::to_string(index) << std::endl;
-            auto lexicalenv = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
-            lexicalenv->set(tier, index, *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2));
+
+            auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
+            std::cout << "size: " << lexicalenvstack->size() << std::endl; 
+            std::cout << "env size: " << lexicalenvstack->getLexicalEnv(0).size() << std::endl;
+
+            if(lexicalenvstack->getLexicalEnv(0)[0]== nullptr){
+                std::cout << "lexicalenv null" << std::endl;
+            }else{
+                std::cout << "lexicalenv not null" << std::endl;
+            }
+
+            lexicalenvstack->set(tier, index, *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2));
+            std::cout << "size: " << lexicalenvstack->size() << std::endl;
+            std::cout << "env size: " << lexicalenvstack->getLexicalEnv(0).size() << std::endl;
+
+            if(lexicalenvstack->getLexicalEnv(0)[0]== nullptr){
+                std::cout << "lexicalenv null" << std::endl;
+            }else{
+                std::cout << "lexicalenv not null" << std::endl;
+            }
 
             break;
         }
@@ -1204,8 +1224,21 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto index = static_cast<uint32_t>(inst->GetImms()[1]);
 
             std::cout << "tier: " << std::to_string(tier) << ", index: " << std::to_string(index) << std::endl;
-            auto lexicalenv = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
-            auto expression = lexicalenv->get(tier, index);
+            auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
+            std::cout << "size: " << lexicalenvstack->size() << std::endl;
+            std::cout << "11111111111111111111111111111111111111111111111111111111111111111" << std::endl;
+            [[maybe_unused]]auto x = lexicalenvstack->getLexicalEnv(0);
+            std::cout << "22222222222222222222222222222222222222222222222222222222222222222" << std::endl;
+
+            if(lexicalenvstack->getLexicalEnv(0)[0]== nullptr){
+                std::cout << "lexicalenv null" << std::endl;
+            }else{
+                std::cout << "lexicalenv not null" << std::endl;
+            }
+            std::cout << "33333333333333333333333333333333333333333333333333333333333333333" << std::endl;
+            auto expression = lexicalenvstack->get(tier, index);
+
+            
 
             enc->set_expression_by_register(inst, inst->GetDstReg(), expression);
 
