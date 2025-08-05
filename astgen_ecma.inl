@@ -1199,8 +1199,11 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }else{
                 std::cout << "lexicalenv not null" << std::endl;
             }
+            auto raw_expression  = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            std::string identifier_name = static_cast<std::string>(raw_expression->AsIdentifier()->Name());
 
-            lexicalenvstack->set(tier, index, *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2));
+            std::cout << "add lexical name: " << identifier_name << std::endl;
+            lexicalenvstack->set(tier, index, new std::string(identifier_name));
             std::cout << "size: " << lexicalenvstack->size() << std::endl;
             std::cout << "env size: " << lexicalenvstack->getLexicalEnv(0).size() << std::endl;
 
@@ -1242,9 +1245,11 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 std::cout << "lexicalenv not null" << std::endl;
             }
             std::cout << "33333333333333333333333333333333333333333333333333333333333333333" << std::endl;
-            auto expression = lexicalenvstack->get(tier, index);
+            auto identifier_name = lexicalenvstack->get(tier, index);
+            std::cout << "ref name: " << identifier_name << std::endl;
+            std::cout << "44444444444444444444444444444444444444444444444444444444444444444" << std::endl;
 
-            enc->set_expression_by_register(inst, inst->GetDstReg(), expression);
+            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(*identifier_name)));
 
             break;
         }

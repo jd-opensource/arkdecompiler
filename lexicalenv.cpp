@@ -44,22 +44,22 @@ LexicalEnv& LexicalEnv::operator=(LexicalEnv&& other) noexcept {
     return *this;
 }
 
-panda::es2panda::ir::Expression*& LexicalEnv::operator[](size_t index) {
+std::string*& LexicalEnv::operator[](size_t index) {
     checkIndex(index);
     return expressions_[index];
 }
 
-const panda::es2panda::ir::Expression* LexicalEnv::operator[](size_t index) const {
+const std::string* LexicalEnv::operator[](size_t index) const {
     checkIndex(index);
     return expressions_[index];
 }
 
-panda::es2panda::ir::Expression* LexicalEnv::get(size_t index) const {
+std::string* LexicalEnv::get(size_t index) const {
     checkIndex(index);
     return expressions_[index];
 }
 
-void LexicalEnv::set(size_t index, panda::es2panda::ir::Expression* expr) {
+void LexicalEnv::set(size_t index, std::string* expr) {
     checkIndex(index);
     expressions_[index] = expr;
 }
@@ -131,14 +131,14 @@ bool LexicalEnvStack::empty() const {
     return stack_.empty();
 }
 
-panda::es2panda::ir::Expression* LexicalEnvStack::get(size_t A, size_t B) const {
+std::string* LexicalEnvStack::get(size_t A, size_t B) const {
     checkIndex(A, B);
     
     size_t actualIndex = stack_.size() - 1 - A;
     return stack_[actualIndex].get(B);
 }
 
-void LexicalEnvStack::set(size_t A, size_t B, panda::es2panda::ir::Expression* expr) {
+void LexicalEnvStack::set(size_t A, size_t B, std::string* expr) {
     checkIndex(A, B);
     
     size_t actualIndex = stack_.size() - 1 - A;
