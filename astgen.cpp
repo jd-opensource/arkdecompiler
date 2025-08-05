@@ -74,22 +74,27 @@ bool AstGen::RunImpl()
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+        
         auto nearestpre = this->find_nearest_visited_pred(visited, bb);
         if(nearestpre != nullptr && this->bb2acc2expression[nearestpre] != nullptr){
-            std::cout << "!!!!!!!!!!!!!!!!!!!! found pre id: " << nearestpre->GetId() << std::endl;
+            std::cout << "!!!!!!!!!!!!!!!!!!!! found pre id for bb2acc2expression: " << nearestpre->GetId() << std::endl;
             this->bb2acc2expression[bb] = this->bb2acc2expression[nearestpre];
         }else{
+            std::cout << "!!!!!!!!!!!!!!!!!!!! not found pre id for bb2acc2expression: " << "curid: " << bb->GetId()  << std::endl;
             this->bb2acc2expression[bb] = nullptr;
         }
         ///////////////////////////////////////////////////////////////////////////////////////////////////
-        if(nearestpre != nullptr && this->bb2lexicalenvstack[nearestpre] != nullptr){
-            std::cout << "!!!!!!!!!!!!!!!!!!!! found pre id: " << nearestpre->GetId() << std::endl;
-            this->bb2lexicalenvstack[bb] = this->bb2lexicalenvstack[nearestpre];
-        }else{
-            this->bb2lexicalenvstack[bb] = new LexicalEnvStack();
+
+        if(bb != this->GetGraph()->GetStartBlock()) {
+            if(nearestpre != nullptr && this->bb2lexicalenvstack[nearestpre] != nullptr){
+                std::cout << "!!!!!!!!!!!!!!!!!!!! found pre id for bb2lexicalenvstack: " << nearestpre->GetId() << std::endl;
+                this->bb2lexicalenvstack[bb] = new LexicalEnvStack(*this->bb2lexicalenvstack[nearestpre]);
+                std::cout << "size: " << (*this->bb2lexicalenvstack[nearestpre]).size()  << std::endl;
+            }else{
+                std::cout << "!!!!!!!!!!!!!!!!!!!! not found pre id for bb2lexicalenvstack: "<< "curid: " << bb->GetId()  << std::endl;
+                this->bb2lexicalenvstack[bb] = new LexicalEnvStack();
+            }
         }
-
-
         visited.push_back(bb);        
         ///////////////////////////////////////////////////////////////////////////////////////////////////
         for (const auto &inst : bb->AllInsts()) {

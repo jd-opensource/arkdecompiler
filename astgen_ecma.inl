@@ -958,6 +958,12 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM16_ID16_IMM8:
         {
             std::cout << "define function >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+            auto methodoffset = static_cast<uint32_t>(inst->GetImms()[1]);
+
+            std::cout << "before size: " << enc->method2lexicalenvstack->size() <<  std::endl;
+            (*enc->method2lexicalenvstack)[methodoffset] = new LexicalEnvStack(*(enc->bb2lexicalenvstack[inst->GetBasicBlock()]));
+            std::cout << "after  size: " << enc->method2lexicalenvstack->size() << ", envsize: " << (*enc->method2lexicalenvstack)[methodoffset]->size()  << std::endl;
+
             enc->set_expression_by_register(inst, inst->GetDstReg(), enc->DEFINEFUNC);
             break;
         }
@@ -1188,7 +1194,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "size: " << lexicalenvstack->size() << std::endl; 
             std::cout << "env size: " << lexicalenvstack->getLexicalEnv(0).size() << std::endl;
 
-            if(lexicalenvstack->getLexicalEnv(0)[0]== nullptr){
+            if(lexicalenvstack->getLexicalEnv(tier)[index] == nullptr){
                 std::cout << "lexicalenv null" << std::endl;
             }else{
                 std::cout << "lexicalenv not null" << std::endl;
@@ -1198,7 +1204,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "size: " << lexicalenvstack->size() << std::endl;
             std::cout << "env size: " << lexicalenvstack->getLexicalEnv(0).size() << std::endl;
 
-            if(lexicalenvstack->getLexicalEnv(0)[0]== nullptr){
+            if(lexicalenvstack->getLexicalEnv(tier)[index]== nullptr){
                 std::cout << "lexicalenv null" << std::endl;
             }else{
                 std::cout << "lexicalenv not null" << std::endl;
@@ -1237,8 +1243,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             std::cout << "33333333333333333333333333333333333333333333333333333333333333333" << std::endl;
             auto expression = lexicalenvstack->get(tier, index);
-
-            
 
             enc->set_expression_by_register(inst, inst->GetDstReg(), expression);
 

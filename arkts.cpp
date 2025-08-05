@@ -1,4 +1,4 @@
-#include "arktsgen.h"
+#include "arkts.h"
 
 namespace panda::es2panda::ir {
 

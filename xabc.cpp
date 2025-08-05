@@ -57,8 +57,10 @@
 #include "common.h"
 
 
-#include "arktsgen.h"
+#include "arkts.h"
 #include "ast.h"
+
+#include "lexicalenv.h"
 
 using namespace std;
 using namespace panda;
@@ -103,11 +105,6 @@ void BuildMapFromPcToIns(pandasm::Function &function, BytecodeOptIrInterface &ir
     compiler::BytecodeInstructions instructions(instructions_buf, graph->GetRuntime()->GetMethodCodeSize(method_ptr));
     compiler::BytecodeIterator insn_iter = instructions.begin();
     for (pandasm::Ins &ins : function.ins) {
-        /**
-         * pc_ins_map is built with instructions data from the emitted abc file and the original function assembly.
-         * Instructions of invalid opcode will be removed during emitter, but kept within function assembly structure,
-         * therefore these instructions need to be skipped here
-         **/
         if (ins.opcode == pandasm::Opcode::INVALID) {
             continue;
         }
@@ -195,7 +192,8 @@ std::string extractTrueFunName(const std::string& input) {
 
 bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program *parser_program, 
                         const pandasm::AsmEmitter::PandaFileToPandaAsmMaps *maps,
-                        const panda_file::MethodDataAccessor &mda, bool is_dynamic)
+                        const panda_file::MethodDataAccessor &mda, bool is_dynamic,
+                        std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack)
 {
 
     ArenaAllocator allocator {SpaceType::SPACE_TYPE_COMPILER};
@@ -220,6 +218,12 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
     auto graph = allocator.New<compiler::Graph>(&allocator, &local_allocator, Arch::NONE, method_ptr, &adapter, false,
                                                 nullptr, is_dynamic, true);
     
+    if(graph->GetParentGraph() != nullptr){
+        std::cout << "################################################################################################# parent graph exist !!!" << std::endl;
+    }else{
+        std::cout << "################################################################################################# parent graph is null !!!" << std::endl;
+    }
+
     panda::pandasm::Function &function = it->second;
 
     if (SkipFunction(function, func_name)) {
@@ -250,7 +254,7 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
     std::ofstream dump_out("logs/" + func_name+ ".ir");
     graph->Dump(&dump_out);
 
-    if (!graph->RunPass<AstGen>(&function, &ir_interface, prog, parser_program, extractTrueFunName(func_name))) {
+    if (!graph->RunPass<AstGen>(&function, &ir_interface, prog, parser_program, mda.GetMethodId().GetOffset(), method2lexicalenvstack, extractTrueFunName(func_name))) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Code generation failed!";
 
         std::cout << "Decompiling " << func_name << ": Code generation failed!" << std::endl;
@@ -304,12 +308,13 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
     }
 
     bool result = true;
-    
     panda::es2panda::parser::Program *parser_program = new panda::es2panda::parser::Program(panda::es2panda::ScriptExtension::TS);
     
     ArenaVector<panda::es2panda::ir::Statement *> program_statements(parser_program->Allocator()->Adapter());
     auto program_ast = parser_program->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(program_statements));
     parser_program->SetAst(program_ast);
+
+    std::map<uint32_t, LexicalEnvStack*> method2lexicalenvstack;
 
     for (uint32_t id : pfile->GetClasses()) {
         panda_file::File::EntityId record_id {id};
@@ -322,11 +327,11 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
 
         int count = 0;
 
-        cda.EnumerateMethods([&count, prog, parser_program, maps, is_dynamic, &result](panda_file::MethodDataAccessor &mda)  {
+        cda.EnumerateMethods([&count, prog, parser_program, maps, is_dynamic, &result, &method2lexicalenvstack](panda_file::MethodDataAccessor &mda)  {
             count = count + 1;
             std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "enumerate method index: " << count << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
             if (!mda.IsExternal()) {
-                result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic) && result;
+                result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic, &method2lexicalenvstack) && result;
                 if(result){
                     LogAst(parser_program, outputAstFileName);
                     LogArkTS2File(parser_program, outputFileName);

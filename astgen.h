@@ -18,10 +18,25 @@ void DoSta(compiler::Register reg, std::vector<pandasm::Ins> &result);
 class AstGen : public compiler::Optimization, public compiler::GraphVisitor {
 public:
     explicit AstGen(compiler::Graph *graph, pandasm::Function *function,
-        const BytecodeOptIrInterface *iface, pandasm::Program *prog,  es2panda::parser::Program* parser_program, std::string fun_name)
-        : compiler::Optimization(graph), function_(function), ir_interface_(iface), program_(prog),  parser_program_(parser_program)
+        const BytecodeOptIrInterface *iface, pandasm::Program *prog,  es2panda::parser::Program* parser_program, 
+        uint32_t methodoffset, std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack, std::string fun_name)
+        : compiler::Optimization(graph), function_(function), ir_interface_(iface), program_(prog), methodoffset(methodoffset),
+        method2lexicalenvstack(method2lexicalenvstack), parser_program_(parser_program)
     {
         ArenaVector<es2panda::ir::Expression*> arguments(parser_program->Allocator()->Adapter());
+
+        if(method2lexicalenvstack->find(methodoffset) != method2lexicalenvstack->end()){
+            std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX found lexicalenvstack " << std::endl;
+            auto x = (*this->method2lexicalenvstack)[methodoffset];
+            std::cout << "lexicalenvstack size: " << x->size() << std::endl;
+        }else{
+            std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX not found lexicalenvstack " << std::endl;
+            (*this->method2lexicalenvstack)[methodoffset] = new LexicalEnvStack();
+        }
+        this->bb2lexicalenvstack[graph->GetStartBlock()] = (*this->method2lexicalenvstack)[methodoffset];
+
+        std::cout << "start id: " << graph->GetStartBlock()->GetId() << " , size: " << (*this->bb2lexicalenvstack[graph->GetStartBlock()]).size() << std::endl;
+        
 
         for (size_t i = 0; i < function->GetParamsNum(); ++i) {
             panda::es2panda::util::StringView tmp_name_view = panda::es2panda::util::StringView(*new std::string("arg"+std::to_string(i)));
@@ -205,10 +220,13 @@ public:
             std::cout << "#get_expression_by_register: " << std::to_string(id) << std::endl;
             return it->second;  
         }
-
-        handleError("can't find expression in reg2expression: " + std::to_string(id));
         
-        return std::nullopt;
+
+        // @@@###@@@TODO temp test
+        return this->get_identifier_byname(new std::string(std::to_string(index))); 
+        
+        //handleError("can't find expression in reg2expression: " + std::to_string(id));
+        //return std::nullopt;
     }
 
     void set_expression_by_id(Inst* inst, uint32_t id, panda::es2panda::ir::Expression* value){
@@ -439,8 +457,12 @@ public:
     const BytecodeOptIrInterface *ir_interface_;
     pandasm::Program *program_;
 
+    uint32_t methodoffset;
+
     std::vector<pandasm::Ins> res_;
     std::vector<pandasm::Function::CatchBlock> catch_blocks_;
+
+    std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack;
 
     std::unique_ptr<LCAFinder> lcaFinder;
 
@@ -478,10 +500,8 @@ public:
 
     std::map<compiler::BasicBlock*, LexicalEnvStack*> bb2lexicalenvstack;
 
-
     std::map<uint32_t, panda::es2panda::ir::Expression*> id2expression;
     
-
     std::map<uint32_t, es2panda::ir::BlockStatement*> tyrid2block;
     std::map<uint32_t, panda::es2panda::ir::TryStatement*> tyridtrystatement;
     std::map<uint32_t, panda::es2panda::ir::CatchClause*> tyrid2catchclause;
