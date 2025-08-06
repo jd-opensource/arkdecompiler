@@ -1164,11 +1164,12 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 }
             }
 
+            // enc->set_expression_by_register(inst, inst->GetDstReg(), enc->DEFINEFUNC);
 
-           // [[maybe_unused]] auto xx = (*enc->method2lexicalenvstack)[methodoffset]->get(0, 1);
-           // std::cout << "@@@@: " << *xx << std::endl;
-
-            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->DEFINEFUNC);
+            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
+            auto bc_id0 = enc->ir_interface_->GetMethodIdByOffset(ir_id0);
+ 
+            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(bc_id0)));
             break;
         }
 
