@@ -23,6 +23,9 @@ public:
         : compiler::Optimization(graph), function_(function), ir_interface_(iface), program_(prog), methodoffset(methodoffset),
         method2lexicalenvstack(method2lexicalenvstack), parser_program_(parser_program)
     {
+
+        this->closure_count = 0;
+        
         ArenaVector<es2panda::ir::Expression*> arguments(parser_program->Allocator()->Adapter());
 
         if(method2lexicalenvstack->find(methodoffset) != method2lexicalenvstack->end()){
@@ -458,6 +461,7 @@ public:
     pandasm::Program *program_;
 
     uint32_t methodoffset;
+    uint32_t closure_count;
 
     std::vector<pandasm::Ins> res_;
     std::vector<pandasm::Function::CatchBlock> catch_blocks_;

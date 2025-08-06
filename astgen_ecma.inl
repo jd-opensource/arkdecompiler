@@ -1153,13 +1153,17 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             
             std::cout << "before size: " << enc->method2lexicalenvstack->size() <<  std::endl;
-            if(enc->bb2lexicalenvstack[inst->GetBasicBlock()]->top().IsFull() ){
-                (*enc->method2lexicalenvstack)[methodoffset] = new LexicalEnvStack(*(enc->bb2lexicalenvstack[inst->GetBasicBlock()]));
-                std::cout << "after  size: " << enc->method2lexicalenvstack->size() << ", envsize: " << (*enc->method2lexicalenvstack)[methodoffset]->size()  << std::endl;
 
-            }else{
-                enc->waitmethods.push(methodoffset);
+            if(!enc->bb2lexicalenvstack[inst->GetBasicBlock()]->empty()){
+                if(enc->bb2lexicalenvstack[inst->GetBasicBlock()]->top().IsFull() ){
+                    (*enc->method2lexicalenvstack)[methodoffset] = new LexicalEnvStack(*(enc->bb2lexicalenvstack[inst->GetBasicBlock()]));
+                    std::cout << "after  size: " << enc->method2lexicalenvstack->size() << ", envsize: " << (*enc->method2lexicalenvstack)[methodoffset]->size()  << std::endl;
+
+                }else{
+                    enc->waitmethods.push(methodoffset);
+                }
             }
+
 
            // [[maybe_unused]] auto xx = (*enc->method2lexicalenvstack)[methodoffset]->get(0, 1);
            // std::cout << "@@@@: " << *xx << std::endl;
@@ -1174,8 +1178,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "lexenv_size: " << lexenv_size << std::endl;
             auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
             std::cout << "size: " << lexicalenvstack->size() << std::endl; 
-            enc->acc_lexicalenv = lexicalenvstack->push(lexenv_size);
-            std::cout << "size: " << lexicalenvstack->size() << " ,enc->acc_lexicalenv: " << enc->acc_lexicalenv->size() << std::endl; 
+            lexicalenvstack->push(lexenv_size);
+            //enc->acc_lexicalenv = lexicalenvstack->push(lexenv_size);
+            //std::cout << "size: " << lexicalenvstack->size() << " ,enc->acc_lexicalenv: " << enc->acc_lexicalenv->size() << std::endl; 
 
 
             break;
@@ -1198,11 +1203,26 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }else{
                 std::cout << "lexicalenv not null" << std::endl;
             }
+            std::cout << "11111111111111111111111111111111111111111" << std::endl;
             auto raw_expression  = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
-            std::string identifier_name = static_cast<std::string>(raw_expression->AsIdentifier()->Name());
+            std::string closure_name =  "closure_" + std::to_string(enc->methodoffset) + "_" + std::to_string(enc->closure_count);
+            enc->closure_count++;
 
-            std::cout << "add lexical name: " << identifier_name << std::endl;
-            lexicalenvstack->set(tier, index, new std::string(identifier_name));
+            //std::string identifier_name = static_cast<std::string>(raw_expression->AsIdentifier()->Name());
+
+            panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                            enc->get_identifier_byname(new std::string(closure_name)),
+                                                                            raw_expression,
+                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                        ); 
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
+                                                                                assignexpression);
+            enc->add_insAst_to_blockstatemnt_by_inst(inst, assignstatement);
+
+
+
+            std::cout << "add lexical name: " << closure_name << std::endl;
+            lexicalenvstack->set(tier, index, new std::string(closure_name));
 
             auto yy = lexicalenvstack->get(tier, index);
             std::cout << "##: " << *yy << std::endl; 
