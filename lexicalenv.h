@@ -26,6 +26,7 @@ public:
     std::string *& operator[](size_t index);
     const std::string* operator[](size_t index) const;
     
+    bool IsFull();
     std::string* get(size_t index) const;
     void set(size_t index, std::string* expr);
     

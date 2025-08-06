@@ -464,6 +464,9 @@ public:
 
     std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack;
 
+    std::stack<uint32_t> waitmethods;
+
+
     std::unique_ptr<LCAFinder> lcaFinder;
 
     bool success_ {true};

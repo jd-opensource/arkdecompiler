@@ -204,6 +204,7 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
     auto ir_interface = BytecodeOptIrInterface(maps, prog);
 
     auto func_name = ir_interface.GetMethodIdByOffset(mda.GetMethodId().GetOffset() );
+    std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>> "  << func_name << " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
     [[maybe_unused]] auto it = prog->function_table.find(func_name);
     if (it == prog->function_table.end()) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Cannot find function: " << func_name;
@@ -253,6 +254,8 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
     
     std::ofstream dump_out("logs/" + func_name+ ".ir");
     graph->Dump(&dump_out);
+
+    
 
     if (!graph->RunPass<AstGen>(&function, &ir_interface, prog, parser_program, mda.GetMethodId().GetOffset(), method2lexicalenvstack, extractTrueFunName(func_name))) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Code generation failed!";

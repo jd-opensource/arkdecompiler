@@ -7,22 +7,40 @@ LexicalEnv::LexicalEnv(size_t capacity)
     : expressions_(capacity, nullptr), capacity_(capacity) {
 }
 
+bool LexicalEnv::IsFull() {
+    for (size_t i = 0; i < capacity_; ++i) {
+        if(expressions_[i] == nullptr){
+            return false;
+        }
+    }
+    return true;
+}
+
 LexicalEnv::LexicalEnv(const LexicalEnv& other) 
     : expressions_(other.capacity_), capacity_(other.capacity_) {
     
     for (size_t i = 0; i < capacity_; ++i) {
-        expressions_[i] = other.expressions_[i];
+        std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << std::endl;
+        if(other.expressions_[i] == nullptr){
+            std::cout << "null" << std::endl;
+        }else{
+            std::cout << "not null" << std::endl;
+            expressions_[i] = new std::string(*(other.expressions_[i]));
+        }
+        
+        std::cout << "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" << std::endl;
     }
 }
 
 LexicalEnv& LexicalEnv::operator=(const LexicalEnv& other) {
+    std::cout << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
     if (this != &other) {
         expressions_.clear();
         capacity_ = other.capacity_;
         expressions_.resize(capacity_);
         
         for (size_t i = 0; i < capacity_; ++i) {
-            expressions_[i] = other.expressions_[i];
+            expressions_[i] = new std::string(*other.expressions_[i]);
         }
     }
     return *this;

@@ -954,20 +954,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-        case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM8_ID16_IMM8:
-        case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM16_ID16_IMM8:
-        {
-            std::cout << "define function >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-            auto methodoffset = static_cast<uint32_t>(inst->GetImms()[1]);
-
-            std::cout << "before size: " << enc->method2lexicalenvstack->size() <<  std::endl;
-            (*enc->method2lexicalenvstack)[methodoffset] = new LexicalEnvStack(*(enc->bb2lexicalenvstack[inst->GetBasicBlock()]));
-            std::cout << "after  size: " << enc->method2lexicalenvstack->size() << ", envsize: " << (*enc->method2lexicalenvstack)[methodoffset]->size()  << std::endl;
-
-            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->DEFINEFUNC);
-            break;
-        }
-
        case compiler::RuntimeInterface::IntrinsicId::THROW_PREF_NONE:
        {
             auto argument = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
@@ -1158,7 +1144,30 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-       
+        case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM8_ID16_IMM8:
+        case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM16_ID16_IMM8:
+        {
+            std::cout << "define function >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+            auto methodoffset = static_cast<uint32_t>(inst->GetImms()[1]);
+            std::cout << "new func offset: " << methodoffset << std::endl;
+
+            
+            std::cout << "before size: " << enc->method2lexicalenvstack->size() <<  std::endl;
+            if(enc->bb2lexicalenvstack[inst->GetBasicBlock()]->top().IsFull() ){
+                (*enc->method2lexicalenvstack)[methodoffset] = new LexicalEnvStack(*(enc->bb2lexicalenvstack[inst->GetBasicBlock()]));
+                std::cout << "after  size: " << enc->method2lexicalenvstack->size() << ", envsize: " << (*enc->method2lexicalenvstack)[methodoffset]->size()  << std::endl;
+
+            }else{
+                enc->waitmethods.push(methodoffset);
+            }
+
+           // [[maybe_unused]] auto xx = (*enc->method2lexicalenvstack)[methodoffset]->get(0, 1);
+           // std::cout << "@@@@: " << *xx << std::endl;
+
+            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->DEFINEFUNC);
+            break;
+        }
+
         case compiler::RuntimeInterface::IntrinsicId::NEWLEXENV_IMM8:{
             std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
             auto lexenv_size = static_cast<uint32_t>(inst->GetImms()[0]);
@@ -1175,16 +1184,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::STLEXVAR_IMM4_IMM4:
        {
             std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
-        //     auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-        //     if (acc_src != compiler::ACC_REG_ID) {
-        //         DoLda(acc_src, enc->result_);
-        //     }
-        //    ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-        //     auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-        //    ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-        //     auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-        //     enc->result_.emplace_back(pandasm::Create_STLEXVAR(imm0, imm1));
-
             auto tier = static_cast<uint32_t>(inst->GetImms()[0]);
             auto index = static_cast<uint32_t>(inst->GetImms()[1]);
 
@@ -1204,6 +1203,10 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             std::cout << "add lexical name: " << identifier_name << std::endl;
             lexicalenvstack->set(tier, index, new std::string(identifier_name));
+
+            auto yy = lexicalenvstack->get(tier, index);
+            std::cout << "##: " << *yy << std::endl; 
+
             std::cout << "size: " << lexicalenvstack->size() << std::endl;
             std::cout << "env size: " << lexicalenvstack->getLexicalEnv(0).size() << std::endl;
 
@@ -1213,22 +1216,24 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 std::cout << "lexicalenv not null" << std::endl;
             }
 
+            ////////////////////////////////////////////////////////////////////////////////
+            /// deal forward reference stack
+            
+            if(enc->bb2lexicalenvstack[inst->GetBasicBlock()]->top().IsFull() ){
+                std::cout << "@@@@@@ start deal forward reference stack >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+                while(!enc->waitmethods.empty()){
+                    auto curmethodoffset = enc->waitmethods.top();
+                    (*enc->method2lexicalenvstack)[curmethodoffset] = new LexicalEnvStack(*(enc->bb2lexicalenvstack[inst->GetBasicBlock()]));
+                     enc->waitmethods.pop();
+                }
+            }
             break;
         }
 
        case compiler::RuntimeInterface::IntrinsicId::LDLEXVAR_IMM4_IMM4:
        {
             std::cout << "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC" << std::endl;
-        //    ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-        //     auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-        //    ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-        //     auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-        //     enc->result_.emplace_back(pandasm::Create_LDLEXVAR(imm0, imm1));
-        //     auto acc_dst = inst->GetDstReg();
-        //     if (acc_dst != compiler::ACC_REG_ID) {
-        //         DoSta(inst->GetDstReg(), enc->result_);
-        //     }
-
+            std::cout << enc->methodoffset << std::endl;
             auto tier = static_cast<uint32_t>(inst->GetImms()[0]);
             auto index = static_cast<uint32_t>(inst->GetImms()[1]);
 
@@ -1237,9 +1242,10 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "size: " << lexicalenvstack->size() << std::endl;
             std::cout << "11111111111111111111111111111111111111111111111111111111111111111" << std::endl;
             [[maybe_unused]]auto x = lexicalenvstack->getLexicalEnv(0);
+            std::cout << "xxx: " << x.size() << std::endl;
             std::cout << "22222222222222222222222222222222222222222222222222222222222222222" << std::endl;
 
-            if(lexicalenvstack->getLexicalEnv(0)[0]== nullptr){
+            if(lexicalenvstack->getLexicalEnv(tier)[index] == nullptr){
                 std::cout << "lexicalenv null" << std::endl;
             }else{
                 std::cout << "lexicalenv not null" << std::endl;
