@@ -1111,38 +1111,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             break;
         }
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-
-       case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM8:
-       case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM16:
-       {
-            std::cout << "111111111111111111111111111111" << std::endl;
-            panda::es2panda::ir::Expression* funname = enc->get_identifier_byname(new std::string("GetIterator"));
-            std::cout << "222222222222222222222222222222" << std::endl;
-            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
-            std::cout << "333333333333333333333333333333" << std::endl;
-
-            arguments.push_back(*enc->get_expression_by_id(inst, inst->GetInputsCount() - 2));
-            std::cout << "555555555555555555555555555555" << std::endl;
-            auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
-                                                                funname,
-                                                                std::move(arguments),
-                                                                nullptr,
-                                                                false
-                                                                );
-            std::cout << "666666666666666666666666666666" << std::endl;
-            std::cout << "777777777777777777777777777777" << std::endl;
-            enc->set_expression_by_register(inst, inst->GetDstReg(), callexpression);
-            std::cout << "888888888888888888888888888888" << std::endl;
  
-
-            break;
-        }
 
         case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM8_ID16_IMM8:
         case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM16_ID16_IMM8:
@@ -1195,6 +1164,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::WIDE_STLEXVAR_PREF_IMM16_IMM16:
        {
             std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
+            std::cout << enc->methodoffset << std::endl;
+
             auto tier = static_cast<uint32_t>(inst->GetImms()[0]);
             auto index = static_cast<uint32_t>(inst->GetImms()[1]);
 
@@ -1256,6 +1227,47 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto identifier_name = lexicalenvstack->get(tier, index);
             enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(*identifier_name)));
+
+            break;
+        }
+
+        case compiler::RuntimeInterface::IntrinsicId::POPLEXENV:
+        {
+            auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
+            lexicalenvstack->pop();
+            break;
+        }
+
+
+       /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+
+       case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM8:
+       case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM16:
+       {
+            std::cout << "111111111111111111111111111111" << std::endl;
+            panda::es2panda::ir::Expression* funname = enc->get_identifier_byname(new std::string("GetIterator"));
+            std::cout << "222222222222222222222222222222" << std::endl;
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+            std::cout << "333333333333333333333333333333" << std::endl;
+
+            arguments.push_back(*enc->get_expression_by_id(inst, inst->GetInputsCount() - 2));
+            std::cout << "555555555555555555555555555555" << std::endl;
+            auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
+                                                                funname,
+                                                                std::move(arguments),
+                                                                nullptr,
+                                                                false
+                                                                );
+            std::cout << "666666666666666666666666666666" << std::endl;
+            std::cout << "777777777777777777777777777777" << std::endl;
+            enc->set_expression_by_register(inst, inst->GetDstReg(), callexpression);
+            std::cout << "888888888888888888888888888888" << std::endl;
+ 
 
             break;
         }
@@ -1439,12 +1451,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::POPLEXENV:
-       {
-            enc->result_.emplace_back(pandasm::Create_POPLEXENV());
-            break;
-        }
-
 
        case compiler::RuntimeInterface::IntrinsicId::GETUNMAPPEDARGS:
        {
