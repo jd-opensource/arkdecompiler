@@ -1173,6 +1173,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
+       case compiler::RuntimeInterface::IntrinsicId::WIDE_NEWLEXENVWITHNAME_PREF_IMM16_ID16:// current no use default name
+        case compiler::RuntimeInterface::IntrinsicId::NEWLEXENVWITHNAME_IMM8_ID16: // current no use default name
         case compiler::RuntimeInterface::IntrinsicId::WIDE_NEWLEXENV_PREF_IMM16:
         case compiler::RuntimeInterface::IntrinsicId::NEWLEXENV_IMM8:
         {
@@ -1184,7 +1186,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             lexicalenvstack->push(lexenv_size);
             //enc->acc_lexicalenv = lexicalenvstack->push(lexenv_size);
             //std::cout << "size: " << lexicalenvstack->size() << " ,enc->acc_lexicalenv: " << enc->acc_lexicalenv->size() << std::endl; 
-
 
             break;
         }
@@ -1203,17 +1204,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "size: " << lexicalenvstack->size() << std::endl; 
             std::cout << "env size: " << lexicalenvstack->getLexicalEnv(0).size() << std::endl;
 
-            if(lexicalenvstack->getLexicalEnv(tier)[index] == nullptr){
-                std::cout << "lexicalenv null" << std::endl;
-            }else{
-                std::cout << "lexicalenv not null" << std::endl;
-            }
-            std::cout << "11111111111111111111111111111111111111111" << std::endl;
             auto raw_expression  = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
             std::string closure_name =  "closure_" + std::to_string(enc->methodoffset) + "_" + std::to_string(enc->closure_count);
             enc->closure_count++;
-
-            //std::string identifier_name = static_cast<std::string>(raw_expression->AsIdentifier()->Name());
 
             panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
                                                                             enc->get_identifier_byname(new std::string(closure_name)),
@@ -1223,23 +1216,10 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
                                                                                 assignexpression);
             enc->add_insAst_to_blockstatemnt_by_inst(inst, assignstatement);
-
-
-
-            std::cout << "add lexical name: " << closure_name << std::endl;
             lexicalenvstack->set(tier, index, new std::string(closure_name));
-
-            auto yy = lexicalenvstack->get(tier, index);
-            std::cout << "##: " << *yy << std::endl; 
 
             std::cout << "size: " << lexicalenvstack->size() << std::endl;
             std::cout << "env size: " << lexicalenvstack->getLexicalEnv(0).size() << std::endl;
-
-            if(lexicalenvstack->getLexicalEnv(tier)[index]== nullptr){
-                std::cout << "lexicalenv null" << std::endl;
-            }else{
-                std::cout << "lexicalenv not null" << std::endl;
-            }
 
             ////////////////////////////////////////////////////////////////////////////////
             /// deal forward reference stack
@@ -1267,21 +1247,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "tier: " << std::to_string(tier) << ", index: " << std::to_string(index) << std::endl;
             auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
             std::cout << "size: " << lexicalenvstack->size() << std::endl;
-            std::cout << "11111111111111111111111111111111111111111111111111111111111111111" << std::endl;
-            [[maybe_unused]]auto x = lexicalenvstack->getLexicalEnv(0);
-            std::cout << "xxx: " << x.size() << std::endl;
-            std::cout << "22222222222222222222222222222222222222222222222222222222222222222" << std::endl;
 
             if(lexicalenvstack->getLexicalEnv(tier)[index] == nullptr){
                 std::cout << "lexicalenv null" << std::endl;
             }else{
                 std::cout << "lexicalenv not null" << std::endl;
             }
-            std::cout << "33333333333333333333333333333333333333333333333333333333333333333" << std::endl;
-            auto identifier_name = lexicalenvstack->get(tier, index);
-            std::cout << "ref name: " << identifier_name << std::endl;
-            std::cout << "44444444444444444444444444444444444444444444444444444444444444444" << std::endl;
 
+            auto identifier_name = lexicalenvstack->get(tier, index);
             enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(*identifier_name)));
 
             break;
@@ -1850,20 +1823,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::NEWLEXENVWITHNAME_IMM8_ID16:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto bc_id0 = enc->ir_interface_->GetLiteralArrayByOffset(ir_id0);
-            enc->result_.emplace_back(pandasm::Create_NEWLEXENVWITHNAME(imm0, bc_id0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::CREATEASYNCGENERATOROBJ_V8:
        {
             auto v0 = inst->GetSrcReg(0);
@@ -2341,20 +2301,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-       case compiler::RuntimeInterface::IntrinsicId::WIDE_NEWLEXENVWITHNAME_PREF_IMM16_ID16:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto bc_id0 = enc->ir_interface_->GetLiteralArrayByOffset(ir_id0);
-            enc->result_.emplace_back(pandasm::Create_WIDE_NEWLEXENVWITHNAME(imm0, bc_id0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::THROW_DELETESUPERPROPERTY_PREF_NONE:
        {
             enc->result_.emplace_back(pandasm::Create_THROW_DELETESUPERPROPERTY());
