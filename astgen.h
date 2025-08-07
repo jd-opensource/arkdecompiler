@@ -25,15 +25,15 @@ public:
     {
 
         this->closure_count = 0;
-        
+
         ArenaVector<es2panda::ir::Expression*> arguments(parser_program->Allocator()->Adapter());
 
         if(method2lexicalenvstack->find(methodoffset) != method2lexicalenvstack->end()){
-            std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX found lexicalenvstack " << std::endl;
-            auto x = (*this->method2lexicalenvstack)[methodoffset];
-            std::cout << "lexicalenvstack size: " << x->size() << std::endl;
+            //std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX found lexicalenvstack " << std::endl;
+            //auto x = (*this->method2lexicalenvstack)[methodoffset];
+           // std::cout << "lexicalenvstack size: " << x->size() << std::endl;
         }else{
-            std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX not found lexicalenvstack " << std::endl;
+            //std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX not found lexicalenvstack " << std::endl;
             (*this->method2lexicalenvstack)[methodoffset] = new LexicalEnvStack();
         }
         this->bb2lexicalenvstack[graph->GetStartBlock()] = (*this->method2lexicalenvstack)[methodoffset];
@@ -225,11 +225,11 @@ public:
         }
         
 
-        // @@@###@@@TODO temp test
-        return this->get_identifier_byname(new std::string(std::to_string(index))); 
+        // @@@###@@@TODO temp test suport for phi
+        //return this->get_identifier_byname(new std::string(std::to_string(index))); 
         
-        //handleError("can't find expression in reg2expression: " + std::to_string(id));
-        //return std::nullopt;
+        handleError("can't find expression in reg2expression: " + std::to_string(id));
+        return std::nullopt;
     }
 
     void set_expression_by_id(Inst* inst, uint32_t id, panda::es2panda::ir::Expression* value){
