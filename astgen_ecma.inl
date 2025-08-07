@@ -1142,7 +1142,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-       case compiler::RuntimeInterface::IntrinsicId::WIDE_NEWLEXENVWITHNAME_PREF_IMM16_ID16:// current no use default name
+        case compiler::RuntimeInterface::IntrinsicId::WIDE_NEWLEXENVWITHNAME_PREF_IMM16_ID16:// current no use default name
         case compiler::RuntimeInterface::IntrinsicId::NEWLEXENVWITHNAME_IMM8_ID16: // current no use default name
         case compiler::RuntimeInterface::IntrinsicId::WIDE_NEWLEXENV_PREF_IMM16:
         case compiler::RuntimeInterface::IntrinsicId::NEWLEXENV_IMM8:
@@ -1267,8 +1267,54 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "777777777777777777777777777777" << std::endl;
             enc->set_expression_by_register(inst, inst->GetDstReg(), callexpression);
             std::cout << "888888888888888888888888888888" << std::endl;
- 
+            break;
+        }
 
+       case compiler::RuntimeInterface::IntrinsicId::GETMODULENAMESPACE_IMM8:
+       {
+           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
+            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
+            enc->result_.emplace_back(pandasm::Create_GETMODULENAMESPACE(imm0));
+            auto acc_dst = inst->GetDstReg();
+            if (acc_dst != compiler::ACC_REG_ID) {
+                DoSta(inst->GetDstReg(), enc->result_);
+            }
+            break;
+        }
+
+       case compiler::RuntimeInterface::IntrinsicId::STMODULEVAR_IMM8:
+       {
+            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
+            if (acc_src != compiler::ACC_REG_ID) {
+                DoLda(acc_src, enc->result_);
+            }
+           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
+            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
+            enc->result_.emplace_back(pandasm::Create_STMODULEVAR(imm0));
+            break;
+        }
+
+       case compiler::RuntimeInterface::IntrinsicId::LDLOCALMODULEVAR_IMM8:
+       {
+           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
+            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
+            enc->result_.emplace_back(pandasm::Create_LDLOCALMODULEVAR(imm0));
+            auto acc_dst = inst->GetDstReg();
+            if (acc_dst != compiler::ACC_REG_ID) {
+                DoSta(inst->GetDstReg(), enc->result_);
+            }
+            break;
+        }
+
+       case compiler::RuntimeInterface::IntrinsicId::LDEXTERNALMODULEVAR_IMM8:
+       {
+           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
+            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
+            enc->result_.emplace_back(pandasm::Create_LDEXTERNALMODULEVAR(imm0));
+            auto acc_dst = inst->GetDstReg();
+            if (acc_dst != compiler::ACC_REG_ID) {
+                DoSta(inst->GetDstReg(), enc->result_);
+            }
             break;
         }
 
@@ -1323,7 +1369,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-
        case compiler::RuntimeInterface::IntrinsicId::LDSUPERBYVALUE_IMM8_V8:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -1340,11 +1385,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-
-
-
-
-       
 
        case compiler::RuntimeInterface::IntrinsicId::LDSUPERBYNAME_IMM8_ID16:
        {
@@ -1364,9 +1404,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-
-
-        
 
        case compiler::RuntimeInterface::IntrinsicId::LDTHISBYNAME_IMM8_ID16:
        {
@@ -1423,7 +1460,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->result_.emplace_back(pandasm::Create_STTHISBYVALUE(imm0, v0));
             break;
         }
-
 
        case compiler::RuntimeInterface::IntrinsicId::GETPROPITERATOR:
        {
@@ -1567,51 +1603,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
             auto v0 = inst->GetSrcReg(0);
             enc->result_.emplace_back(pandasm::Create_SETOBJECTWITHPROTO(imm0, v0));
-            break;
-        }
-
-       case compiler::RuntimeInterface::IntrinsicId::GETMODULENAMESPACE_IMM8:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_GETMODULENAMESPACE(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::STMODULEVAR_IMM8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_STMODULEVAR(imm0));
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::LDLOCALMODULEVAR_IMM8:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_LDLOCALMODULEVAR(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::LDEXTERNALMODULEVAR_IMM8:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_LDEXTERNALMODULEVAR(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
             break;
         }
  
@@ -2368,7 +2359,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-
        case compiler::RuntimeInterface::IntrinsicId::THROW_UNDEFINEDIFHOLE_PREF_V8_V8:
        {
             auto v0 = inst->GetSrcReg(0);
@@ -2461,18 +2451,12 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         }
 
 
+        // nothing todo
        case compiler::RuntimeInterface::IntrinsicId::THROW_UNDEFINEDIFHOLEWITHNAME_PREF_ID16:
        {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
-            enc->result_.emplace_back(pandasm::Create_THROW_UNDEFINEDIFHOLEWITHNAME(bc_id0));
             break;
         }
+
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_WIDELDSENDABLEEXTERNALMODULEVAR_PREF_IMM16:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -2484,7 +2468,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-
 
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_NEWSENDABLEENV_PREF_IMM8:
        {
@@ -2513,7 +2496,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_STSENDABLEVAR_PREF_IMM4_IMM4:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -2527,7 +2509,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_STSENDABLEVAR(imm0, imm1));
             break;
         }
-
 
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_STSENDABLEVAR_PREF_IMM8_IMM8:
        {
