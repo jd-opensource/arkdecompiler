@@ -88,6 +88,8 @@
 
 #include "../ets_frontend/es2panda/parser/parserImpl.h"
 
+#include "../ets_frontend/es2panda/ir/module/importSpecifier.h"
+
 //////////////////////////////////////////////////////////////////////////////
 #include "assembler/annotation.h"
 #include "assembler/assembly-function.h"

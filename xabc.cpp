@@ -13,6 +13,7 @@
 #include "libpandafile/method_data_accessor.h"
 
 #include "libpandafile/file.h"
+#include "libpandafile/util/collect_util.h"
 
 #include "compiler/optimizer/ir/graph.h"
 
@@ -302,13 +303,126 @@ void LogArkTS2File(panda::es2panda::parser::Program *parser_program, std::string
     std::cout << "[-] log arkTS  end >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
 }
 
+std::string GetStringByOffset(std::unique_ptr<const panda_file::File>& file_, uint32_t offset) 
+{
+    const auto sd = file_->GetStringData(panda_file::File::EntityId(offset));
+    return std::string(utf::Mutf8AsCString(sd.data));
+}
+
+
+bool IsValidOffset(std::unique_ptr<const panda_file::File>& file_, uint32_t offset) 
+{
+    return panda_file::File::EntityId(offset).IsValid() && offset < file_->GetHeader()->file_size;
+}
+
+void GetModuleLiteralArray(std::unique_ptr<const panda_file::File>& file_, panda_file::File::EntityId &module_id, panda::disasm::Disassembler& disasm)
+{
+    panda_file::ModuleDataAccessor mda(*file_, module_id);
+    const std::vector<uint32_t> &request_modules_offset = mda.getRequestModules();
+    std::vector<std::string> module_literal_array;
+    std::stringstream module_requests_stringstream;
+    module_requests_stringstream << "\tMODULE_REQUEST_ARRAY: {\n";
+
+    for (size_t index = 0; index < request_modules_offset.size(); ++index) {
+        module_requests_stringstream << "\t\t" << index <<
+            " : " << GetStringByOffset(file_, request_modules_offset[index]) << ",\n";
+    }
+
+    module_requests_stringstream << "\t}";
+    module_literal_array.push_back(module_requests_stringstream.str());
+
+    mda.EnumerateModuleRecord([&](panda_file::ModuleTag tag, uint32_t export_name_offset, uint32_t request_module_idx,
+                                  uint32_t import_name_offset, uint32_t local_name_offset) {
+        std::stringstream ss;
+        //ss << "\tModuleTag: " << ModuleTagToString(tag);
+        if (tag == panda_file::ModuleTag::REGULAR_IMPORT ||
+            tag == panda_file::ModuleTag::NAMESPACE_IMPORT || tag == panda_file::ModuleTag::LOCAL_EXPORT) {
+            if (!disasm.IsValidOffset(local_name_offset)) {
+                LOG(ERROR, DISASSEMBLER) << "Get invalid local name offset!" << std::endl;
+                return;
+            }
+            ss << ", local_name: " << GetStringByOffset(file_, local_name_offset);
+        }
+        if (tag == panda_file::ModuleTag::LOCAL_EXPORT || tag == panda_file::ModuleTag::INDIRECT_EXPORT) {
+            if (!IsValidOffset(file_, export_name_offset)) {
+                LOG(ERROR, DISASSEMBLER) << "Get invalid export name offset!" << std::endl;
+                return;
+            }
+            ss << ", export_name: " << GetStringByOffset(file_, export_name_offset);
+        }
+        if (tag == panda_file::ModuleTag::REGULAR_IMPORT || tag == panda_file::ModuleTag::INDIRECT_EXPORT) {
+            if (!IsValidOffset(file_, import_name_offset)) {
+                LOG(ERROR, DISASSEMBLER) << "Get invalid import name offset!" << std::endl;
+                return;
+            }
+            ss << ", import_name: " << GetStringByOffset(file_, import_name_offset);
+        }
+        if (tag != panda_file::ModuleTag::LOCAL_EXPORT) {
+            if (request_module_idx >= request_modules_offset.size() ||
+                !IsValidOffset(file_, request_modules_offset[request_module_idx])) {
+                LOG(ERROR, DISASSEMBLER) << "Get invalid request module offset!" << std::endl;
+                return;
+            }
+            ss << ", module_request: " << GetStringByOffset(file_, request_modules_offset[request_module_idx]);
+        }
+        std::cout << ss.str() << std::endl;;
+    });
+
+}
+
+
+void parseModuleVars(std::unique_ptr<const panda_file::File>& file_, panda::disasm::Disassembler& disasm){
+    std::cout << "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH" << std::endl;
+    panda::libpandafile::CollectUtil collect_util;
+
+    std::unordered_set<uint32_t> literal_array_ids;
+    collect_util.CollectLiteralArray(*file_, literal_array_ids);
+    size_t index = 0;
+
+    if (panda_file::ContainsLiteralArrayInHeader(file_->GetHeader()->version)) {
+        const auto lit_arrays_id = file_->GetLiteralArraysId();
+
+        panda_file::LiteralDataAccessor lda(*file_, lit_arrays_id);
+        size_t num_litarrays = lda.GetLiteralNum();
+
+        for (size_t index = 0; index < num_litarrays; index++) {
+            
+            auto id = lda.GetLiteralArrayId(index);
+            if (disasm.module_request_phase_literals_.count(id.GetOffset())) {
+                continue;
+            }
+            if (disasm.IsModuleLiteralOffset(id)) {
+                std::stringstream ss;
+                ss << index << " 0x" << std::hex << id.GetOffset();
+                GetModuleLiteralArray(file_, id, disasm);
+            }
+        }
+    }else{
+        for (uint32_t literal_array_id : literal_array_ids) {
+            panda_file::File::EntityId id {literal_array_id};
+            // FillLiteralArrayTable(id, index);
+            if (disasm.IsModuleLiteralOffset(id)) {
+                std::stringstream ss;
+                ss << index << " 0x" << std::hex << id.GetOffset();
+                GetModuleLiteralArray(file_, id, disasm);
+            }
+            
+            index++;
+        }
+    }
+
+    std::cout << "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE" << std::endl;
+}
+
 bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::PandaFileToPandaAsmMaps *maps,
-                       const std::string &pfile_name, bool is_dynamic)
+                       const std::string &pfile_name, panda::disasm::Disassembler& disasm, bool is_dynamic)
 {
     auto pfile = panda_file::OpenPandaFile(pfile_name);
     if (!pfile) {
         LOG(FATAL, BYTECODE_OPTIMIZER) << "Can not open binary file: " << pfile_name;
     }
+
+    parseModuleVars(pfile, disasm);
 
     bool result = true;
     panda::es2panda::parser::Program *parser_program = new panda::es2panda::parser::Program(panda::es2panda::ScriptExtension::TS);
@@ -316,6 +430,20 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
     ArenaVector<panda::es2panda::ir::Statement *> program_statements(parser_program->Allocator()->Adapter());
     auto program_ast = parser_program->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(program_statements));
     parser_program->SetAst(program_ast);
+
+    ///////////////////////////////////////////////////////////////// mock import statement
+    panda::es2panda::util::StringView imported_name = panda::es2panda::util::StringView(*new std::string("a"));
+    auto imported_nameid = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(imported_name);
+
+    panda::es2panda::util::StringView local_name = panda::es2panda::util::StringView(*new std::string("b"));
+    auto local_nameid = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(local_name);  
+
+    auto importspefic = parser_program->Allocator()->New<panda::es2panda::ir::ImportSpecifier>(imported_nameid, local_nameid, false, false);
+
+    program_ast->AddStatementAtPos(program_statements.size(), importspefic);
+
+    ////////////////////////////////////////////////////////////////
+
 
     std::map<uint32_t, LexicalEnvStack*> method2lexicalenvstack;
 
@@ -354,7 +482,8 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
 
 
 bool DecompileBytecode(pandasm::Program *prog, const pandasm::AsmEmitter::PandaFileToPandaAsmMaps *maps,
-                      const std::string &pandafile_name, bool is_dynamic, bool has_memory_pool)
+                      const std::string &pandafile_name, panda::disasm::Disassembler& disasm, 
+                       bool is_dynamic, bool has_memory_pool)
 {
     ASSERT(prog != nullptr);
     ASSERT(maps != nullptr);
@@ -363,7 +492,7 @@ bool DecompileBytecode(pandasm::Program *prog, const pandasm::AsmEmitter::PandaF
         PoolManager::Initialize(PoolType::MALLOC);
     }
     
-    auto res = DecompilePandaFile(prog, maps, pandafile_name, is_dynamic);
+    auto res = DecompilePandaFile(prog, maps, pandafile_name, disasm, is_dynamic);
     
     if (!has_memory_pool) {
         PoolManager::Finalize();
@@ -375,9 +504,9 @@ bool DecompileBytecode(pandasm::Program *prog, const pandasm::AsmEmitter::PandaF
 
 
 
-void startDecompile(std::string &abc_file_name, panda::pandasm::Program &program, panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps& panda_file_to_asm_maps) {
+void startDecompile(std::string &abc_file_name, panda::pandasm::Program &program, panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps& panda_file_to_asm_maps, panda::disasm::Disassembler& disasm) {
    
-    DecompileBytecode(&program, &panda_file_to_asm_maps, abc_file_name, true, false);
+    DecompileBytecode(&program, &panda_file_to_asm_maps, abc_file_name, disasm, true, false);
 }
 
 void construct_PandaFileToPandaAsmMaps(panda::disasm::Disassembler& disas, pandasm::AsmEmitter::PandaFileToPandaAsmMaps* maps){
@@ -442,7 +571,7 @@ int main(int argc, char* argv[]) {
     /////////////////////////////////////////////////////////
     construct_PandaFileToPandaAsmMaps(disasm, &maps_);
 
-    startDecompile(inputFileName, *program, maps_);
+    startDecompile(inputFileName, *program, maps_, disasm);
 
     return 0;
 }

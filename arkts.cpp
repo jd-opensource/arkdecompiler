@@ -295,6 +295,7 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
             break;
         }
 
+
         default:
             handleError("#EmitExpression : unsupport expression");;
 
@@ -524,6 +525,27 @@ void ArkTSGen::EmitDoWhileStatement(const ir::AstNode *node){
     std::cout << "[-] end emit dowhile statement"  << std::endl;
 }
 
+
+// 
+void ArkTSGen::EmitImportSpecifier(const ir::AstNode *node){
+    std::cout << "[+] start emit dowhile statement"  << std::endl;
+    auto importspecifier = static_cast<const panda::es2panda::ir::ImportSpecifier*>(node);
+    
+    this->writeKeyWords("import");
+
+    this->writeSpace();
+    this->EmitExpression(importspecifier->Imported());
+
+    if(importspecifier->Local()){
+        this->writeSpace();
+        this->writeKeyWords("as");
+        this->writeSpace();
+        this->EmitExpression(importspecifier->Local());
+    }
+    this->writeTrailingSemicolon();
+}
+
+
 void ArkTSGen::EmitStatement(const ir::AstNode *node)
 {
     if(node == nullptr){
@@ -600,6 +622,12 @@ void ArkTSGen::EmitStatement(const ir::AstNode *node)
             std::cout << "enter BREAK_STATEMENT STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
             this->EmitBreakStatement(node);
             break;
+
+        case AstNodeType::IMPORT_SPECIFIER:{
+            std::cout << "enter ImportSpecifier STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+            this->EmitImportSpecifier(node);
+            break;
+        }
 
         default:
             handleError("#EmitStatement : unsupport statement");;

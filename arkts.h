@@ -216,6 +216,8 @@ private:
     void EmitWhileStatement(const ir::AstNode *node);
     void EmitDoWhileStatement(const ir::AstNode *node);
 
+    void EmitImportSpecifier(const ir::AstNode *node);
+
     void EmitFunctionDeclaration(const ir::AstNode *node);
 
     void Serialize(const ArkTSGen::Property &prop);
