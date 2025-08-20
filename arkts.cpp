@@ -526,7 +526,6 @@ void ArkTSGen::EmitDoWhileStatement(const ir::AstNode *node){
 }
 
 
-// 
 void ArkTSGen::EmitImportSpecifier(const ir::AstNode *node){
     std::cout << "[+] start emit dowhile statement"  << std::endl;
     auto importspecifier = static_cast<const panda::es2panda::ir::ImportSpecifier*>(node);
@@ -545,6 +544,32 @@ void ArkTSGen::EmitImportSpecifier(const ir::AstNode *node){
     this->writeTrailingSemicolon();
 }
 
+void ArkTSGen::EmitImportDeclaration(const ir::AstNode *node){
+    std::cout << "[+] start emit dowhile statement"  << std::endl;
+    auto importdeclaration = static_cast<const panda::es2panda::ir::ImportDeclaration*>(node);
+    
+    for (const auto *astnode : importdeclaration->Specifiers()) {
+        auto importspecifier = static_cast<const panda::es2panda::ir::ImportSpecifier*>(astnode);
+        this->writeKeyWords("import");
+
+        this->writeSpace();
+        this->EmitExpression(importspecifier->Imported());
+
+        if(importspecifier->Local() != importspecifier->Imported()){
+            this->writeSpace();
+            this->writeKeyWords("as");
+            this->writeSpace();
+            this->EmitExpression(importspecifier->Local());
+        }
+
+        this->writeSpace();
+        this->writeKeyWords("from");
+        this->writeSpace();
+
+        this->EmitExpression(importdeclaration->Source());
+    }
+    this->writeTrailingSemicolon();
+}
 
 void ArkTSGen::EmitStatement(const ir::AstNode *node)
 {
@@ -626,6 +651,12 @@ void ArkTSGen::EmitStatement(const ir::AstNode *node)
         case AstNodeType::IMPORT_SPECIFIER:{
             std::cout << "enter ImportSpecifier STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
             this->EmitImportSpecifier(node);
+            break;
+        }
+
+        case AstNodeType::IMPORT_DECLARATION:{
+            std::cout << "enter IMPORT_DECLARATION STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+            this->EmitImportDeclaration(node);
             break;
         }
 

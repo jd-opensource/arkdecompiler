@@ -89,6 +89,8 @@
 #include "../ets_frontend/es2panda/parser/parserImpl.h"
 
 #include "../ets_frontend/es2panda/ir/module/importSpecifier.h"
+#include "../ets_frontend/es2panda/ir/module/importDeclaration.h"
+
 
 //////////////////////////////////////////////////////////////////////////////
 #include "assembler/annotation.h"
@@ -106,6 +108,16 @@
 
 
 void handleError(const std::string& errorMessage);
+
+template <typename T, typename... Args>
+static T *AllocNode(panda::es2panda::parser::Program *parser_program_, Args &&... args)
+{
+    auto ret = parser_program_->Allocator()->New<T>(std::forward<Args>(args)...);
+    if (ret == nullptr) {
+        std::cout << "Unsuccessful allocation during parsing" << std::endl;;
+    }
+    return ret;
+}
 
 #endif
 

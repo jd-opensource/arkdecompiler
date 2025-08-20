@@ -217,6 +217,7 @@ private:
     void EmitDoWhileStatement(const ir::AstNode *node);
 
     void EmitImportSpecifier(const ir::AstNode *node);
+    void EmitImportDeclaration(const ir::AstNode *node);
 
     void EmitFunctionDeclaration(const ir::AstNode *node);
 

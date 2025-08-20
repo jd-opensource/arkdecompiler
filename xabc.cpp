@@ -438,12 +438,26 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
     panda::es2panda::util::StringView local_name = panda::es2panda::util::StringView(*new std::string("b"));
     [[maybe_unused]] auto local_nameid = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(local_name);  
 
+    
+    auto importspefic = parser_program->Allocator()->New<panda::es2panda::ir::ImportSpecifier>(imported_nameid, local_nameid, false, false);
+    //program_ast->AddStatementAtPos(program_statements.size(), importspefic);
 
-    auto importspefic = parser_program->Allocator()->New<panda::es2panda::ir::ImportSpecifier>(imported_nameid, imported_nameid, false, false);
-    program_ast->AddStatementAtPos(program_statements.size(), importspefic);
+
+    ArenaVector<panda::es2panda::ir::AstNode *> specifiers(parser_program->Allocator()->Adapter());
+    specifiers.push_back(importspefic);
+
+
+    std::string* source_str_ptr = new std::string("./module_foo2");
+    es2panda::util::StringView literal_strview(*source_str_ptr);
+
+    auto source = AllocNode<panda::es2panda::ir::StringLiteral>(parser_program, literal_strview);
+
+    auto *importDeclaration = AllocNode<panda::es2panda::ir::ImportDeclaration>(parser_program, source, std::move(specifiers), nullptr, false, false);
+    program_ast->AddStatementAtPos(program_statements.size(), importDeclaration);
+    
+    
 
     ////////////////////////////////////////////////////////////////
-
 
     std::map<uint32_t, LexicalEnvStack*> method2lexicalenvstack;
 
@@ -458,7 +472,7 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
 
         int count = 0;
 
-        cda.EnumerateMethods([&count, prog, parser_program, maps, is_dynamic, &result, &method2lexicalenvstack](panda_file::MethodDataAccessor &mda)  {
+        cda.EnumerateMethods([&count, prog, parser_program, maps, is_dynamic, &result, &method2lexicalenvstack](panda_file::MethodDataAccessor &mda){
             count = count + 1;
             std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "enumerate method index: " << count << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
             if (!mda.IsExternal()) {
@@ -468,7 +482,6 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
                     LogArkTS2File(parser_program, outputFileName);
                 }
             }
-            
         });
 
     }
