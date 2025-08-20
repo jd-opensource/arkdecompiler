@@ -91,6 +91,11 @@
 #include "../ets_frontend/es2panda/ir/module/importSpecifier.h"
 #include "../ets_frontend/es2panda/ir/module/importDeclaration.h"
 
+#include "../ets_frontend/es2panda/ir/module/exportAllDeclaration.h"
+#include "../ets_frontend/es2panda/ir/module/exportNamedDeclaration.h"
+#include "../ets_frontend/es2panda/ir/module/exportSpecifier.h"
+
+
 
 //////////////////////////////////////////////////////////////////////////////
 #include "assembler/annotation.h"

@@ -339,6 +339,61 @@ void addimportast(panda::es2panda::parser::Program *parser_program, std::string 
     program_ast->AddStatementAtPos(program_statements.size(), importDeclaration);
 }
 
+void addexportast_all(panda::es2panda::parser::Program *parser_program,  std::string module_name){
+    auto program_ast = parser_program->Ast();
+    auto program_statements = program_ast->Statements();
+
+    panda::es2panda::util::StringView local_name_strview = panda::es2panda::util::StringView(*new std::string("*"));
+    [[maybe_unused]] auto local_nameid = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(local_name_strview);  
+
+    
+    std::string* source_str_ptr = new std::string(module_name);
+    es2panda::util::StringView literal_strview(*source_str_ptr);
+    auto source = AllocNode<panda::es2panda::ir::StringLiteral>(parser_program, literal_strview);
+
+    auto *export_all = AllocNode<panda::es2panda::ir::ExportAllDeclaration>(parser_program, source, local_nameid, nullptr);
+    program_ast->AddStatementAtPos(program_statements.size(), export_all);
+}
+
+void addexportast_named(panda::es2panda::parser::Program *parser_program, std::string import_name, std::string export_name, std::string module_name){
+    auto program_ast = parser_program->Ast();
+    auto program_statements = program_ast->Statements();
+
+    panda::es2panda::util::StringView import_name_view = panda::es2panda::util::StringView(*new std::string(import_name));
+    auto import_nameid = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(import_name_view);
+
+    panda::es2panda::util::StringView export_name_strview = panda::es2panda::util::StringView(*new std::string(export_name));
+    [[maybe_unused]] auto export_nameid = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(export_name_strview);  
+
+    
+    auto exportspefic = parser_program->Allocator()->New<panda::es2panda::ir::ExportSpecifier >(import_nameid, export_nameid, false);
+
+    ArenaVector<panda::es2panda::ir::ExportSpecifier  *> specifiers(parser_program->Allocator()->Adapter());
+    specifiers.push_back(exportspefic);
+
+
+    std::string* source_str_ptr = new std::string(module_name);
+    es2panda::util::StringView literal_strview(*source_str_ptr);
+    auto source = AllocNode<panda::es2panda::ir::StringLiteral>(parser_program, literal_strview);
+    auto *exportDeclaration = AllocNode<panda::es2panda::ir::ExportNamedDeclaration>(parser_program, source, std::move(specifiers), nullptr, false);
+    program_ast->AddStatementAtPos(program_statements.size(), exportDeclaration);
+}
+
+void addexportast(panda::es2panda::parser::Program *parser_program,  std::string local_name, std::string export_name){
+    auto program_ast = parser_program->Ast();
+    auto program_statements = program_ast->Statements();
+
+    panda::es2panda::util::StringView local_name_strview = panda::es2panda::util::StringView(*new std::string(local_name));
+    [[maybe_unused]] auto local_nameid = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(local_name_strview);  
+
+    panda::es2panda::util::StringView export_name_strview = panda::es2panda::util::StringView(*new std::string(export_name));
+    [[maybe_unused]] auto export_nameid = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(export_name_strview);  
+
+
+    auto *exportast = AllocNode<panda::es2panda::ir::ExportSpecifier >(parser_program, local_nameid, export_nameid, false);
+    program_ast->AddStatementAtPos(program_statements.size(), exportast);
+
+}
 
 void GetModuleLiteralArray(std::unique_ptr<const panda_file::File>& file_, panda_file::File::EntityId &module_id, panda::disasm::Disassembler& disasm,
             panda::es2panda::parser::Program *parser_program)
@@ -409,7 +464,9 @@ void GetModuleLiteralArray(std::unique_ptr<const panda_file::File>& file_, panda
             ss << ", module_request: " << GetStringByOffset(file_, request_modules_offset[request_module_idx]);
         }
 
-        if(curmaps.count("module_request") > 0){
+
+        if(tag == panda_file::ModuleTag::REGULAR_IMPORT  || tag == panda_file::ModuleTag::NAMESPACE_IMPORT){
+            ss << ", IMPORT ";
             auto module_request_name = curmaps["module_request"];
             auto index = importmodule2index[module_request_name];
 
@@ -420,9 +477,19 @@ void GetModuleLiteralArray(std::unique_ptr<const panda_file::File>& file_, panda
                 addimportast(parser_program, "*", curmaps["local_name"], curmaps["module_request"]);
             }
         }else{
+            ss << ", EXPORT ";
             exportmaps_arrays.push_back(curmaps);
+            if(curmaps.count("export_name") < 0 ){
+                // ExportAllDeclaration 
+                addexportast_all(parser_program, curmaps["module_request"]);
+            }else if(curmaps.count("module_request") < 0){
+                // ExportSpecifier 
+                addexportast(parser_program, curmaps["local_name"], curmaps["export_name"]);
+            }else{
+                // ExportNamedDeclaration 
+                addexportast_named(parser_program, curmaps["import_name"], curmaps["export_name"], curmaps["module_name"]);
+            }
         }
-
 
         std::cout << ss.str() << std::endl;;
     });
