@@ -436,10 +436,10 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
     auto imported_nameid = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(imported_name);
 
     panda::es2panda::util::StringView local_name = panda::es2panda::util::StringView(*new std::string("b"));
-    auto local_nameid = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(local_name);  
+    [[maybe_unused]] auto local_nameid = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(local_name);  
 
-    auto importspefic = parser_program->Allocator()->New<panda::es2panda::ir::ImportSpecifier>(imported_nameid, local_nameid, false, false);
 
+    auto importspefic = parser_program->Allocator()->New<panda::es2panda::ir::ImportSpecifier>(imported_nameid, imported_nameid, false, false);
     program_ast->AddStatementAtPos(program_statements.size(), importspefic);
 
     ////////////////////////////////////////////////////////////////

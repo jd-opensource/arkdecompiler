@@ -536,7 +536,7 @@ void ArkTSGen::EmitImportSpecifier(const ir::AstNode *node){
     this->writeSpace();
     this->EmitExpression(importspecifier->Imported());
 
-    if(importspecifier->Local()){
+    if(importspecifier->Local() != importspecifier->Imported()){
         this->writeSpace();
         this->writeKeyWords("as");
         this->writeSpace();
