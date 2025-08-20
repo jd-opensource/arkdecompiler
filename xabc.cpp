@@ -315,24 +315,59 @@ bool IsValidOffset(std::unique_ptr<const panda_file::File>& file_, uint32_t offs
     return panda_file::File::EntityId(offset).IsValid() && offset < file_->GetHeader()->file_size;
 }
 
-void GetModuleLiteralArray(std::unique_ptr<const panda_file::File>& file_, panda_file::File::EntityId &module_id, panda::disasm::Disassembler& disasm)
+void addimportast(panda::es2panda::parser::Program *parser_program, std::string imported_name, std::string local_name, std::string module_name){
+    auto program_ast = parser_program->Ast();
+    auto program_statements = program_ast->Statements();
+
+    panda::es2panda::util::StringView imported_name_view = panda::es2panda::util::StringView(*new std::string(imported_name));
+    auto imported_nameid = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(imported_name_view);
+
+    panda::es2panda::util::StringView local_name_strview = panda::es2panda::util::StringView(*new std::string(local_name));
+    [[maybe_unused]] auto local_nameid = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(local_name_strview);  
+
+    
+    auto importspefic = parser_program->Allocator()->New<panda::es2panda::ir::ImportSpecifier>(imported_nameid, local_nameid, false, false);
+
+    ArenaVector<panda::es2panda::ir::AstNode *> specifiers(parser_program->Allocator()->Adapter());
+    specifiers.push_back(importspefic);
+
+
+    std::string* source_str_ptr = new std::string(module_name);
+    es2panda::util::StringView literal_strview(*source_str_ptr);
+    auto source = AllocNode<panda::es2panda::ir::StringLiteral>(parser_program, literal_strview);
+    auto *importDeclaration = AllocNode<panda::es2panda::ir::ImportDeclaration>(parser_program, source, std::move(specifiers), nullptr, false, false);
+    program_ast->AddStatementAtPos(program_statements.size(), importDeclaration);
+}
+
+
+void GetModuleLiteralArray(std::unique_ptr<const panda_file::File>& file_, panda_file::File::EntityId &module_id, panda::disasm::Disassembler& disasm,
+            panda::es2panda::parser::Program *parser_program)
 {
+    ////////////////////////// mock refs //////////////////////////////
+    //addimportast(parser_program, "a", "b", "./module_foo1");
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+
+    std::map<size_t, std::string> index2importmodule;
+    std::map<std::string, size_t> importmodule2index;
+
+    std::map<size_t, std::map<std::string, std::string>> index2importmaps;
+    std::vector<std::map<std::string, std::string>> exportmaps_arrays;
+
     panda_file::ModuleDataAccessor mda(*file_, module_id);
     const std::vector<uint32_t> &request_modules_offset = mda.getRequestModules();
     std::vector<std::string> module_literal_array;
-    std::stringstream module_requests_stringstream;
-    module_requests_stringstream << "\tMODULE_REQUEST_ARRAY: {\n";
 
     for (size_t index = 0; index < request_modules_offset.size(); ++index) {
-        module_requests_stringstream << "\t\t" << index <<
-            " : " << GetStringByOffset(file_, request_modules_offset[index]) << ",\n";
+        index2importmodule[index] = GetStringByOffset(file_, request_modules_offset[index]);
+        importmodule2index[GetStringByOffset(file_, request_modules_offset[index])] = index;
     }
-
-    module_requests_stringstream << "\t}";
-    module_literal_array.push_back(module_requests_stringstream.str());
 
     mda.EnumerateModuleRecord([&](panda_file::ModuleTag tag, uint32_t export_name_offset, uint32_t request_module_idx,
                                   uint32_t import_name_offset, uint32_t local_name_offset) {
+
+        std::map<std::string, std::string> curmaps;
+
         std::stringstream ss;
         //ss << "\tModuleTag: " << ModuleTagToString(tag);
         if (tag == panda_file::ModuleTag::REGULAR_IMPORT ||
@@ -341,6 +376,8 @@ void GetModuleLiteralArray(std::unique_ptr<const panda_file::File>& file_, panda
                 LOG(ERROR, DISASSEMBLER) << "Get invalid local name offset!" << std::endl;
                 return;
             }
+            curmaps["local_name"] = GetStringByOffset(file_, local_name_offset);
+
             ss << ", local_name: " << GetStringByOffset(file_, local_name_offset);
         }
         if (tag == panda_file::ModuleTag::LOCAL_EXPORT || tag == panda_file::ModuleTag::INDIRECT_EXPORT) {
@@ -348,6 +385,8 @@ void GetModuleLiteralArray(std::unique_ptr<const panda_file::File>& file_, panda
                 LOG(ERROR, DISASSEMBLER) << "Get invalid export name offset!" << std::endl;
                 return;
             }
+            curmaps["export_name"] = GetStringByOffset(file_, export_name_offset);
+
             ss << ", export_name: " << GetStringByOffset(file_, export_name_offset);
         }
         if (tag == panda_file::ModuleTag::REGULAR_IMPORT || tag == panda_file::ModuleTag::INDIRECT_EXPORT) {
@@ -355,6 +394,8 @@ void GetModuleLiteralArray(std::unique_ptr<const panda_file::File>& file_, panda
                 LOG(ERROR, DISASSEMBLER) << "Get invalid import name offset!" << std::endl;
                 return;
             }
+            curmaps["import_name"] = GetStringByOffset(file_, import_name_offset);
+
             ss << ", import_name: " << GetStringByOffset(file_, import_name_offset);
         }
         if (tag != panda_file::ModuleTag::LOCAL_EXPORT) {
@@ -363,15 +404,33 @@ void GetModuleLiteralArray(std::unique_ptr<const panda_file::File>& file_, panda
                 LOG(ERROR, DISASSEMBLER) << "Get invalid request module offset!" << std::endl;
                 return;
             }
+            curmaps["module_request"] = GetStringByOffset(file_, request_modules_offset[request_module_idx]);
+
             ss << ", module_request: " << GetStringByOffset(file_, request_modules_offset[request_module_idx]);
         }
+
+        if(curmaps.count("module_request") > 0){
+            auto module_request_name = curmaps["module_request"];
+            auto index = importmodule2index[module_request_name];
+
+            index2importmaps[index] = curmaps;
+            if(curmaps.count("import_name") > 0){
+                addimportast(parser_program, curmaps["import_name"], curmaps["local_name"], curmaps["module_request"]);
+            }else{
+                addimportast(parser_program, "*", curmaps["local_name"], curmaps["module_request"]);
+            }
+        }else{
+            exportmaps_arrays.push_back(curmaps);
+        }
+
+
         std::cout << ss.str() << std::endl;;
     });
 
 }
 
 
-void parseModuleVars(std::unique_ptr<const panda_file::File>& file_, panda::disasm::Disassembler& disasm){
+void parseModuleVars(std::unique_ptr<const panda_file::File>& file_, panda::disasm::Disassembler& disasm, panda::es2panda::parser::Program *parser_program){
     std::cout << "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH" << std::endl;
     panda::libpandafile::CollectUtil collect_util;
 
@@ -394,7 +453,7 @@ void parseModuleVars(std::unique_ptr<const panda_file::File>& file_, panda::disa
             if (disasm.IsModuleLiteralOffset(id)) {
                 std::stringstream ss;
                 ss << index << " 0x" << std::hex << id.GetOffset();
-                GetModuleLiteralArray(file_, id, disasm);
+                GetModuleLiteralArray(file_, id, disasm, parser_program);
             }
         }
     }else{
@@ -404,7 +463,7 @@ void parseModuleVars(std::unique_ptr<const panda_file::File>& file_, panda::disa
             if (disasm.IsModuleLiteralOffset(id)) {
                 std::stringstream ss;
                 ss << index << " 0x" << std::hex << id.GetOffset();
-                GetModuleLiteralArray(file_, id, disasm);
+                GetModuleLiteralArray(file_, id, disasm, parser_program);
             }
             
             index++;
@@ -422,8 +481,6 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
         LOG(FATAL, BYTECODE_OPTIMIZER) << "Can not open binary file: " << pfile_name;
     }
 
-    parseModuleVars(pfile, disasm);
-
     bool result = true;
     panda::es2panda::parser::Program *parser_program = new panda::es2panda::parser::Program(panda::es2panda::ScriptExtension::TS);
     
@@ -431,29 +488,10 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
     auto program_ast = parser_program->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(program_statements));
     parser_program->SetAst(program_ast);
 
+    parseModuleVars(pfile, disasm, parser_program);
+
     ///////////////////////////////////////////////////////////////// mock import statement
-    panda::es2panda::util::StringView imported_name = panda::es2panda::util::StringView(*new std::string("a"));
-    auto imported_nameid = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(imported_name);
 
-    panda::es2panda::util::StringView local_name = panda::es2panda::util::StringView(*new std::string("b"));
-    [[maybe_unused]] auto local_nameid = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(local_name);  
-
-    
-    auto importspefic = parser_program->Allocator()->New<panda::es2panda::ir::ImportSpecifier>(imported_nameid, local_nameid, false, false);
-    //program_ast->AddStatementAtPos(program_statements.size(), importspefic);
-
-
-    ArenaVector<panda::es2panda::ir::AstNode *> specifiers(parser_program->Allocator()->Adapter());
-    specifiers.push_back(importspefic);
-
-
-    std::string* source_str_ptr = new std::string("./module_foo2");
-    es2panda::util::StringView literal_strview(*source_str_ptr);
-
-    auto source = AllocNode<panda::es2panda::ir::StringLiteral>(parser_program, literal_strview);
-
-    auto *importDeclaration = AllocNode<panda::es2panda::ir::ImportDeclaration>(parser_program, source, std::move(specifiers), nullptr, false, false);
-    program_ast->AddStatementAtPos(program_statements.size(), importDeclaration);
     
     
 
