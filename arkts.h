@@ -1,11 +1,8 @@
 #ifndef ES2PANDA_IR_ASTDUMP_H
 #define ES2PANDA_IR_ASTDUMP_H
 
-#include "libpandabaseheaders.h"
+#include "base.h"
 #include "ast.h"
-
-#include <sstream>
-#include <variant>
 
 namespace panda::es2panda::ir {
 

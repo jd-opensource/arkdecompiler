@@ -1,5 +1,5 @@
 #include "ast.h"
-#include "libpandabaseheaders.h"
+#include "base.h"
 
 class LCAFinder {
 public:

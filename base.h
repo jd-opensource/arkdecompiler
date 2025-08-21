@@ -39,6 +39,7 @@
 #include "bytecode_optimizer/optimize_bytecode.h"
 #include "bytecode_optimizer/reg_acc_alloc.h"
 #include "bytecode_optimizer/reg_encoder.h"
+#include "bytecode_optimizer/tagged_value.h"
 
 /////////////////////////////////////////////////////////////
 #include "assembler/annotation.h"
@@ -53,3 +54,5 @@
 
 #include <string>
 #include <typeinfo>
+#include <sstream>
+#include <variant>

@@ -1,10 +1,10 @@
 #ifndef BYTECODE_OPTIMIZER_CODEGEN_H
 #define BYTECODE_OPTIMIZER_CODEGEN_H
 
-#include "libpandabaseheaders.h"
+#include "base.h"
 #include "ins_create_api.h"
 #include "ast.h"
-#include "lexicalenv.h"
+#include "lexicalenv.h"p
 #include "lca.h"
 
 

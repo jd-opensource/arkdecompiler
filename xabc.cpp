@@ -8,7 +8,7 @@
 #include "arkts.h"
 #include "ast.h"
 #include "lexicalenv.h"
-#include "libpandabaseheaders.h"
+#include "base.h"
 #include "modulevar.h"
 
 using namespace std;
