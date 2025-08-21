@@ -165,11 +165,6 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
     auto graph = allocator.New<compiler::Graph>(&allocator, &local_allocator, Arch::NONE, method_ptr, &adapter, false,
                                                 nullptr, is_dynamic, true);
     
-    if(graph->GetParentGraph() != nullptr){
-        std::cout << "################################################################################################# parent graph exist !!!" << std::endl;
-    }else{
-        std::cout << "################################################################################################# parent graph is null !!!" << std::endl;
-    }
 
     panda::pandasm::Function &function = it->second;
 
@@ -264,13 +259,6 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
     parser_program->SetAst(program_ast);
 
     parseModuleVars(pfile, disasm, parser_program);
-
-    ///////////////////////////////////////////////////////////////// mock import statement
-
-    
-    
-
-    ////////////////////////////////////////////////////////////////
 
     std::map<uint32_t, LexicalEnvStack*> method2lexicalenvstack;
 
