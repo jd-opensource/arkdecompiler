@@ -1,7 +1,7 @@
 #ifndef DECOMPILER_COMPLEX2BODY
 #define DECOMPILER_COMPLEX2BODY
-#include "base.h"
 
+#include "base.h"
 
 es2panda::ir::BlockStatement* complexstmt2body(panda::es2panda::compiler::ir *astnode){
     switch(astnode->Type()){
