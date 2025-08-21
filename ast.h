@@ -96,11 +96,12 @@
 #include "../ets_frontend/es2panda/ir/module/exportNamedDeclaration.h"
 #include "../ets_frontend/es2panda/ir/module/exportSpecifier.h"
 
+#include "../ets_frontend/es2panda/ir/astNode.h"
 
+#include "../ets_frontend/es2panda/lexer/token/sourceLocation.h"
+#include "../ets_frontend/es2panda/lexer/token/tokenType.h"
 
-//////////////////////////////////////////////////////////////////////////////
-
-
+#include "../ets_frontend/es2panda/util/ustring.h"
 
 void handleError(const std::string& errorMessage);
 

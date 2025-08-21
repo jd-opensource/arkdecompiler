@@ -1,21 +1,7 @@
 #ifndef ES2PANDA_IR_ASTDUMP_H
 #define ES2PANDA_IR_ASTDUMP_H
 
-#include "ir_interface.h"
-#include "compiler/optimizer/pass.h"
-#include "compiler/optimizer/ir/basicblock.h"
-#include "compiler/optimizer/ir/graph.h"
-#include "compiler/optimizer/ir/graph_visitor.h"
-#include "utils/logger.h"
-
-
-
-
-#include <ir/astNode.h>
-#include <lexer/token/sourceLocation.h>
-#include <lexer/token/tokenType.h>
-#include <util/ustring.h>
-
+#include "libpandabaseheaders.h"
 #include "ast.h"
 
 #include <sstream>
