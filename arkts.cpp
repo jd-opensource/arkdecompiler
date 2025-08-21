@@ -527,7 +527,7 @@ void ArkTSGen::EmitDoWhileStatement(const ir::AstNode *node){
 
 
 void ArkTSGen::EmitImportSpecifier(const ir::AstNode *node){
-    std::cout << "[+] start emit dowhile statement"  << std::endl;
+    std::cout << "[+] start emit import specifier statement"  << std::endl;
     auto importspecifier = static_cast<const panda::es2panda::ir::ImportSpecifier*>(node);
     
     this->writeKeyWords("import");
@@ -545,7 +545,7 @@ void ArkTSGen::EmitImportSpecifier(const ir::AstNode *node){
 }
 
 void ArkTSGen::EmitImportDeclaration(const ir::AstNode *node){
-    std::cout << "[+] start emit dowhile statement"  << std::endl;
+    std::cout << "[+] start emit import declaration statement"  << std::endl;
     auto importdeclaration = static_cast<const panda::es2panda::ir::ImportDeclaration*>(node);
     
     for (const auto *astnode : importdeclaration->Specifiers()) {
@@ -567,6 +567,61 @@ void ArkTSGen::EmitImportDeclaration(const ir::AstNode *node){
         this->writeSpace();
 
         this->EmitExpression(importdeclaration->Source());
+    }
+    this->writeTrailingSemicolon();
+}
+
+void ArkTSGen::EmitExportAllDeclaration(const ir::AstNode *node){
+    std::cout << "[+] start emit export all declaration statement"  << std::endl;
+    auto exportdeclaration = static_cast<const panda::es2panda::ir::ExportAllDeclaration*>(node);
+    
+    this->writeKeyWords("export");
+    this->writeSpace();
+    this->writeKeyWords("*");
+    this->writeSpace();
+    this->writeKeyWords("from");
+    this->writeSpace();
+    this->EmitExpression(exportdeclaration->Source());
+    this->writeTrailingSemicolon();
+}
+
+void ArkTSGen::EmitExportSpecifier(const ir::AstNode *node){
+    std::cout << "[+] start emit export specifier statement"  << std::endl;
+    auto exportspecifier = static_cast<const panda::es2panda::ir::ExportSpecifier*>(node);
+    
+    this->writeKeyWords("export");
+    this->writeSpace();
+    this->EmitExpression(exportspecifier->Local());
+    this->writeSpace();
+    this->writeKeyWords("as");
+    this->writeSpace();
+    this->EmitExpression(exportspecifier->Exported());
+    this->writeTrailingSemicolon();
+}
+
+void ArkTSGen::EmitExportNamedDeclaration(const ir::AstNode *node){
+    std::cout << "[+] start emit export named declaration statement"  << std::endl;
+    auto exportnameddeclaration = static_cast<const panda::es2panda::ir::ExportNamedDeclaration*>(node);
+    
+    for (const auto *astnode : exportnameddeclaration->Specifiers()) {
+        auto exportspecifier = static_cast<const panda::es2panda::ir::ExportSpecifier*>(astnode);
+        this->writeKeyWords("export");
+
+        this->writeSpace();
+        this->EmitExpression(exportspecifier->Local());
+
+        if(exportspecifier->Local() != exportspecifier->Exported()){
+            this->writeSpace();
+            this->writeKeyWords("as");
+            this->writeSpace();
+            this->EmitExpression(exportspecifier->Exported());
+        }
+
+        this->writeSpace();
+        this->writeKeyWords("from");
+        this->writeSpace();
+
+        this->EmitExpression(exportnameddeclaration->Source());
     }
     this->writeTrailingSemicolon();
 }
@@ -657,6 +712,24 @@ void ArkTSGen::EmitStatement(const ir::AstNode *node)
         case AstNodeType::IMPORT_DECLARATION:{
             std::cout << "enter IMPORT_DECLARATION STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
             this->EmitImportDeclaration(node);
+            break;
+        }
+
+        case AstNodeType::EXPORT_ALL_DECLARATION:{
+            std::cout << "enter EXPORT_ALL_DECLARATION STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+            this->EmitExportAllDeclaration(node);
+            break;
+        }
+
+        case AstNodeType::EXPORT_SPECIFIER:{
+            std::cout << "enter EXPORT_SPECIFIER STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+            this->EmitExportSpecifier(node);
+            break;
+        }
+
+        case AstNodeType::EXPORT_NAMED_DECLARATION:{
+            std::cout << "enter EXPORT_NAMED_DECLARATION STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+            this->EmitExportNamedDeclaration(node);
             break;
         }
 

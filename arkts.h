@@ -219,6 +219,10 @@ private:
     void EmitImportSpecifier(const ir::AstNode *node);
     void EmitImportDeclaration(const ir::AstNode *node);
 
+    void EmitExportAllDeclaration(const ir::AstNode *node);
+    void EmitExportSpecifier(const ir::AstNode *node);
+    void EmitExportNamedDeclaration(const ir::AstNode *node);
+
     void EmitFunctionDeclaration(const ir::AstNode *node);
 
     void Serialize(const ArkTSGen::Property &prop);

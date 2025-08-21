@@ -479,15 +479,19 @@ void GetModuleLiteralArray(std::unique_ptr<const panda_file::File>& file_, panda
         }else{
             ss << ", EXPORT ";
             exportmaps_arrays.push_back(curmaps);
-            if(curmaps.count("export_name") < 0 ){
-                // ExportAllDeclaration 
+            std::cout << curmaps.count("export_name") << " , " << curmaps.count("import_name") << " , " << curmaps.count("local_name") << " , " << curmaps.count("module_request") << std::endl;
+            if(curmaps.count("export_name") == 0 && curmaps.count("local_name") == 0){
+                // ExportAllDeclaration
+                std::cout << "1" << std::endl;
                 addexportast_all(parser_program, curmaps["module_request"]);
-            }else if(curmaps.count("module_request") < 0){
-                // ExportSpecifier 
+            }else if(curmaps.count("module_request") == 0){
+                // ExportSpecifier
+                std::cout << "2" << std::endl;
                 addexportast(parser_program, curmaps["local_name"], curmaps["export_name"]);
             }else{
-                // ExportNamedDeclaration 
-                addexportast_named(parser_program, curmaps["import_name"], curmaps["export_name"], curmaps["module_name"]);
+                // ExportNamedDeclaration
+                std::cout << "3" << std::endl; 
+                addexportast_named(parser_program, curmaps["import_name"], curmaps["export_name"], curmaps["module_request"]);
             }
         }
 
