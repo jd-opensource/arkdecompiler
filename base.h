@@ -52,6 +52,7 @@
 
 #include "disassembler/disassembler.h"
 
+#include "ast.h"
 #include <string>
 #include <typeinfo>
 #include <sstream>

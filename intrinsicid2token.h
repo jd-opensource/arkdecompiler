@@ -1,5 +1,4 @@
 #include "base.h"
-#include "ast.h"
 
 #include "intrinsicid2name.h"
 

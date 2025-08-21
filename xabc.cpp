@@ -5,7 +5,6 @@
 #include "astgen.h"
 #include "base.h"
 #include "arkts.h"
-#include "ast.h"
 #include "lexicalenv.h"
 #include "modulevar.h"
 

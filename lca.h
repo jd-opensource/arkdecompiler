@@ -1,4 +1,3 @@
-#include "ast.h"
 #include "base.h"
 
 class LCAFinder {

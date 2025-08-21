@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 #include <stdexcept>
-#include "ast.h"
+#include "base.h"
 
 
 class LexicalEnv {

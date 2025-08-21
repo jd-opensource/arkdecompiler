@@ -2,7 +2,6 @@
 #define ES2PANDA_IR_ASTDUMP_H
 
 #include "base.h"
-#include "ast.h"
 
 namespace panda::es2panda::ir {
 
