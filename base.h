@@ -41,6 +41,8 @@
 #include "bytecode_optimizer/reg_encoder.h"
 #include "bytecode_optimizer/tagged_value.h"
 #include "bytecode_optimizer/codegen.h"
+#include "bytecode_optimizer/common.h"
+
 /////////////////////////////////////////////////////////////
 #include "assembler/annotation.h"
 #include "assembler/assembly-function.h"
@@ -49,8 +51,6 @@
 #include "assembler/assembly-parser.h"
 
 #include "disassembler/disassembler.h"
-
-
 
 #include <string>
 #include <typeinfo>

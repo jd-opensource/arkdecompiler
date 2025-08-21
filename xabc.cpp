@@ -3,11 +3,10 @@
 #define PANDA_TARGET_UNIX 1
 
 #include "astgen.h"
-#include "common.h"
+#include "base.h"
 #include "arkts.h"
 #include "ast.h"
 #include "lexicalenv.h"
-#include "base.h"
 #include "modulevar.h"
 
 using namespace std;
