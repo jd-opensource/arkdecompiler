@@ -45,10 +45,10 @@ ohos_executable("xabc") {
     "xabc.cpp",
     "astgen.cpp",
     "arkts.cpp",
-    "ast.cpp",
     "lexicalenv.cpp",
     "lca.cpp",
-    "modulevar.cpp"
+    "modulevar.cpp",
+    "base.cpp"
   ]
   
   configs =  [

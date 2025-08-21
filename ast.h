@@ -103,7 +103,7 @@
 
 #include "../ets_frontend/es2panda/util/ustring.h"
 
-void handleError(const std::string& errorMessage);
+
 
 template <typename T, typename... Args>
 static T *AllocNode(panda::es2panda::parser::Program *parser_program_, Args &&... args)

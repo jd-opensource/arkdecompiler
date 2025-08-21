@@ -3,7 +3,6 @@
 #define PANDA_TARGET_UNIX 1
 
 #include "astgen.h"
-#include "codegen.h"
 #include "common.h"
 #include "arkts.h"
 #include "ast.h"
