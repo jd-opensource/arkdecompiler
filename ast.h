@@ -48,6 +48,7 @@
 
 #include "../ets_frontend/es2panda/ir/module/exportDefaultDeclaration.h"
 #include "../ets_frontend/es2panda/ir/module/exportNamedDeclaration.h"
+
 #include "../ets_frontend/es2panda/ir/statements/blockStatement.h"
 #include "../ets_frontend/es2panda/ir/statements/classDeclaration.h"
 #include "../ets_frontend/es2panda/ir/statements/expressionStatement.h"
@@ -98,18 +99,7 @@
 
 
 //////////////////////////////////////////////////////////////////////////////
-#include "assembler/annotation.h"
-#include "assembler/assembly-function.h"
-#include "assembler/assembly-ins.h"
 
-#include "ir_interface.h"
-#include "compiler/optimizer/pass.h"
-#include "compiler/optimizer/ir/basicblock.h"
-#include "compiler/optimizer/ir/graph.h"
-#include "compiler/optimizer/ir/graph_visitor.h"
-#include "utils/logger.h"
-
-#include "compiler/optimizer/analysis/loop_analyzer.h"
 
 
 void handleError(const std::string& errorMessage);

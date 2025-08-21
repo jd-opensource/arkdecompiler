@@ -1,10 +1,12 @@
 #ifndef BYTECODE_OPTIMIZER_CODEGEN_H
 #define BYTECODE_OPTIMIZER_CODEGEN_H
 
+#include "libpandabaseheaders.h"
 #include "ins_create_api.h"
 #include "ast.h"
 #include "lexicalenv.h"
 #include "lca.h"
+
 
 namespace panda::bytecodeopt {
 

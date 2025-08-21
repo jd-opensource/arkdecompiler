@@ -1,14 +1,6 @@
 #include "ast.h"
 #include "libpandabaseheaders.h"
 
-#include "assembly-parser.h"
-#include "assembler/assembly-parser.h"
-#include "mem/pool_manager.h"
-#include "disassembler/disassembler.h"
-
-
-
-
 using namespace panda;
 
 std::string GetStringByOffset(std::unique_ptr<const panda_file::File>& file_, uint32_t offset);

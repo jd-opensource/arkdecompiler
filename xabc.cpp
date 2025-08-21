@@ -2,67 +2,13 @@
 #define PANDA_USE_FUTEX 1
 #define PANDA_TARGET_UNIX 1
 
-#include "bytecode_optimizer/ir_interface.h"
-#include "bytecode_optimizer/runtime_adapter.h"
-
-#include "libpandabase/mem/arena_allocator.h"
-#include "libpandabase/mem/pool_manager.h"
-
-#include "libpandafile/class_data_accessor.h"
-#include "libpandafile/class_data_accessor-inl.h"
-#include "libpandafile/method_data_accessor.h"
-
-#include "libpandafile/file.h"
-#include "libpandafile/util/collect_util.h"
-
-#include "compiler/optimizer/ir/graph.h"
-
-
-#include "optimizer/ir/inst.h"
-#include "optimizer/ir/runtime_interface.h"
-#include "optimizer/ir_builder/ir_builder.h"
-#include "optimize_bytecode.h"
-
 #include "astgen.h"
-
-#include "assembly-parser.h"
-#include "assembler/assembly-parser.h"
-#include "compiler/optimizer/ir/basicblock.h"
-
-#include "mem/pool_manager.h"
-
-#include "disassembler/disassembler.h"
-
-#include "bytecodeopt_options.h"
-#include "bytecode_analysis_results.h"
-
-#include "compiler/optimizer/ir_builder/ir_builder.h"
-#include "compiler/optimizer/optimizations/branch_elimination.h"
-#include "compiler/optimizer/optimizations/cleanup.h"
-#include "compiler/optimizer/optimizations/lowering.h"
-#include "compiler/optimizer/optimizations/move_constants.h"
-#include "compiler/optimizer/optimizations/regalloc/reg_alloc.h"
-#include "compiler/optimizer/optimizations/vn.h"
-#include "constant_propagation/constant_propagation.h"
-
-#include "libpandabase/mem/pool_manager.h"
-#include "libpandafile/class_data_accessor-inl.h"
-#include "libpandafile/module_data_accessor-inl.h"
-#include "reg_acc_alloc.h"
-#include "reg_encoder.h"
-#include "runtime_adapter.h"
-
-#include <string>
-#include <typeinfo>
 #include "codegen.h"
 #include "common.h"
-
-
 #include "arkts.h"
 #include "ast.h"
-
 #include "lexicalenv.h"
-
+#include "libpandabaseheaders.h"
 #include "modulevar.h"
 
 using namespace std;
