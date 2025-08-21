@@ -1,8 +1,6 @@
 #include "astgen.h"
-#include "common.h"
 
 #include "astgen_ecma.inl"
-#include "tagged_value.h"
 
 namespace panda::bytecodeopt {
 

@@ -1,3 +1,6 @@
+#ifndef DECOMPILER_INTRINSIC2NAME
+#define DECOMPILER_INTRINSIC2NAME
+
 namespace panda::compiler {
 std::string GetIntrinsicOpcodeName(compiler::RuntimeInterface::IntrinsicId id) {
     switch(id) {
@@ -847,3 +850,5 @@ std::string GetIntrinsicOpcodeName(compiler::RuntimeInterface::IntrinsicId id) {
     }
 }
 }
+
+#endif

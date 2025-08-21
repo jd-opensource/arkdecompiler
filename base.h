@@ -1,3 +1,6 @@
+#ifndef DECOMPILER_BASE
+#define DECOMPILER_BASE
+
 #include "libpandabase/mem/arena_allocator.h"
 #include "libpandabase/mem/pool_manager.h"
 
@@ -60,3 +63,5 @@
 
 
 void handleError(const std::string& errorMessage);
+
+#endif

@@ -1,11 +1,9 @@
-#ifndef BYTECODE_OPTIMIZER_CODEGEN_H
-#define BYTECODE_OPTIMIZER_CODEGEN_H
+#ifndef DECOMPILER_ASTGEN
+#define DECOMPILER_ASTGEN
 
 #include "base.h"
-#include "ins_create_api.h"
 #include "lexicalenv.h"
 #include "lca.h"
-
 
 namespace panda::bytecodeopt {
 

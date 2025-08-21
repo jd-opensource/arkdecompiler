@@ -1,3 +1,5 @@
+#ifndef DECOMPILER_MODULEVAR
+#define DECOMPILER_MODULEVAR
 #include "base.h"
 
 using namespace panda;
@@ -18,3 +20,5 @@ void GetModuleLiteralArray(std::unique_ptr<const panda_file::File>& file_, panda
             panda::es2panda::parser::Program *parser_program);
 
 void parseModuleVars(std::unique_ptr<const panda_file::File>& file_, panda::disasm::Disassembler& disasm, panda::es2panda::parser::Program *parser_program);
+
+#endif

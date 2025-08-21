@@ -1,5 +1,5 @@
-#ifndef ES2PANDA_IR_ASTDUMP_H
-#define ES2PANDA_IR_ASTDUMP_H
+#ifndef DECOMPILER_ARKTS
+#define DECOMPILER_ARKTS
 
 #include "base.h"
 

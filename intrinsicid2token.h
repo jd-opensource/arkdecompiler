@@ -1,3 +1,6 @@
+#ifndef DECOMPILER_INTRINSIC2TOKEN
+#define DECOMPILER_INTRINSIC2TOKEN
+
 #include "base.h"
 
 #include "intrinsicid2name.h"
@@ -103,3 +106,4 @@ panda::es2panda::lexer::TokenType IncDecIntrinsicIdToToken(panda::compiler::Runt
 
     }
 }
+#endif

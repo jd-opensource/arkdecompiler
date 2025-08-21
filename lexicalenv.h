@@ -1,5 +1,5 @@
-#ifndef LEXICAL_ENV_STACK_H
-#define LEXICAL_ENV_STACK_H
+#ifndef DECOMPILER_LEXICAL_ENV_STACK
+#define DECOMPILER_LEXICAL_ENV_STACK
 
 #include <vector>
 #include <memory>

@@ -1,5 +1,5 @@
-#ifndef DECOMPILER_H
-#define DECOMPILER_H
+#ifndef DECOMPILER_AST
+#define DECOMPILER_AST
 
 #include "../ets_frontend/es2panda/es2panda.h"
 #include "../ets_frontend/es2panda/parser/program/program.h"
