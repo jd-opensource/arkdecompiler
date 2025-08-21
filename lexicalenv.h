@@ -1,11 +1,7 @@
 #ifndef DECOMPILER_LEXICAL_ENV_STACK
 #define DECOMPILER_LEXICAL_ENV_STACK
 
-#include <vector>
-#include <memory>
-#include <stdexcept>
 #include "base.h"
-
 
 class LexicalEnv {
 private:

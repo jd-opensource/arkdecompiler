@@ -1,7 +1,6 @@
 #ifndef DECOMPILER_LCA
 #define DECOMPILER_LCA
 
-
 #include "base.h"
 
 class LCAFinder {

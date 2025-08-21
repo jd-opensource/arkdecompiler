@@ -86,17 +86,15 @@
 #include "../ets_frontend/es2panda/ir/ts/tsSignatureDeclaration.h"
 #include "../ets_frontend/es2panda/ir/ts/tsTypeParameterDeclaration.h"
 
-
-#include "../ets_frontend/es2panda/parser/parserImpl.h"
-
 #include "../ets_frontend/es2panda/ir/module/importSpecifier.h"
 #include "../ets_frontend/es2panda/ir/module/importDeclaration.h"
-
 #include "../ets_frontend/es2panda/ir/module/exportAllDeclaration.h"
 #include "../ets_frontend/es2panda/ir/module/exportNamedDeclaration.h"
 #include "../ets_frontend/es2panda/ir/module/exportSpecifier.h"
 
 #include "../ets_frontend/es2panda/ir/astNode.h"
+
+#include "../ets_frontend/es2panda/parser/parserImpl.h"
 
 #include "../ets_frontend/es2panda/lexer/token/sourceLocation.h"
 #include "../ets_frontend/es2panda/lexer/token/tokenType.h"

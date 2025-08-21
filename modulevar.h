@@ -1,5 +1,6 @@
 #ifndef DECOMPILER_MODULEVAR
 #define DECOMPILER_MODULEVAR
+
 #include "base.h"
 
 using namespace panda;

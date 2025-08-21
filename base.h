@@ -61,6 +61,9 @@
 #include <sstream>
 #include <variant>
 
+#include <vector>
+#include <memory>
+#include <stdexcept>
 
 void handleError(const std::string& errorMessage);
 
