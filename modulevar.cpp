@@ -170,6 +170,7 @@ void GetModuleLiteralArray(std::unique_ptr<const panda_file::File>& file_, panda
             }else{
                 addimportast(parser_program, "*", curmaps["local_name"], curmaps["module_request"]);
             }
+            index2namespaces[importmodule2index[curmaps["module_request"]]].push_back(curmaps["local_name"]);
         }else{
             ss << ", EXPORT ";
             exportmaps_arrays.push_back(curmaps);
@@ -177,12 +178,15 @@ void GetModuleLiteralArray(std::unique_ptr<const panda_file::File>& file_, panda
             if(curmaps.count("export_name") == 0 && curmaps.count("local_name") == 0){
                 // ExportAllDeclaration
                 addexportast_all(parser_program, curmaps["module_request"]);
+
             }else if(curmaps.count("module_request") == 0){
                 // ExportSpecifier
                 addexportast(parser_program, curmaps["local_name"], curmaps["export_name"]);
+                localnamespaces.push_back(curmaps["local_name"]);
             }else{
                 // ExportNamedDeclaration
                 addexportast_named(parser_program, curmaps["import_name"], curmaps["export_name"], curmaps["module_request"]);
+                localnamespaces.push_back(curmaps["import_name"]);
             }
         }
 
