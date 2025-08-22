@@ -226,7 +226,7 @@ public:
         // @@@###@@@TODO temp test suport for phi
         //return this->get_identifier_byname(new std::string(std::to_string(index))); 
         
-        handleError("can't find expression in reg2expression: " + std::to_string(id));
+        //handleError("can't find expression in reg2expression: " + std::to_string(id));
         return std::nullopt;
     }
 
