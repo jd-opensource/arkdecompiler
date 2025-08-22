@@ -18,9 +18,11 @@ class AstGen : public compiler::Optimization, public compiler::GraphVisitor {
 public:
     explicit AstGen(compiler::Graph *graph, pandasm::Function *function,
         const BytecodeOptIrInterface *iface, pandasm::Program *prog,  es2panda::parser::Program* parser_program, 
-        uint32_t methodoffset, std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack, std::string fun_name)
+        uint32_t methodoffset, std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack,
+        std::map<size_t, std::vector<std::string>> index2namespaces, std::vector<std::string> localnamespaces,
+        std::string fun_name)
         : compiler::Optimization(graph), function_(function), ir_interface_(iface), program_(prog), methodoffset(methodoffset),
-        method2lexicalenvstack(method2lexicalenvstack), parser_program_(parser_program)
+        method2lexicalenvstack(method2lexicalenvstack), parser_program_(parser_program), index2namespaces(index2namespaces), localnamespaces(localnamespaces)
     {
 
         this->closure_count = 0;
@@ -464,8 +466,13 @@ public:
 
     std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack;
 
-    std::stack<uint32_t> waitmethods;
+    es2panda::parser::Program* parser_program_;
 
+    std::map<size_t, std::vector<std::string>> index2namespaces;
+    std::vector<std::string> localnamespaces;
+   
+    ///////////////////////////////////////////////////////////////////////////////////////
+    std::stack<uint32_t> waitmethods;
 
     std::unique_ptr<LCAFinder> lcaFinder;
 
@@ -477,8 +484,6 @@ public:
     panda::es2panda::ir::Expression* acc = NULL;
 
     panda::es2panda::ir::Expression* thisptr= NULL;
-
-    es2panda::parser::Program* parser_program_;
 
     std::map<compiler::Loop *, uint32_t> loop2type; // 0-while, 1-dowhile
     std::map<compiler::Loop *, BasicBlock*> loop2exit; 

@@ -136,7 +136,9 @@ std::string extractTrueFunName(const std::string& input) {
 bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program *parser_program, 
                         const pandasm::AsmEmitter::PandaFileToPandaAsmMaps *maps,
                         const panda_file::MethodDataAccessor &mda, bool is_dynamic,
-                        std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack)
+                        std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack, 
+                        std::map<size_t, std::vector<std::string>>& index2namespaces, 
+                        std::vector<std::string>& localnamespaces)
 {
 
     ArenaAllocator allocator {SpaceType::SPACE_TYPE_COMPILER};
@@ -194,8 +196,8 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
     graph->Dump(&dump_out);
 
     
-
-    if (!graph->RunPass<AstGen>(&function, &ir_interface, prog, parser_program, mda.GetMethodId().GetOffset(), method2lexicalenvstack, extractTrueFunName(func_name))) {
+    std::string turefunname = extractTrueFunName(func_name);
+    if (!graph->RunPass<AstGen>(&function, &ir_interface, prog, parser_program, mda.GetMethodId().GetOffset(), method2lexicalenvstack, std::ref(index2namespaces), std::ref(localnamespaces), turefunname)) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Code generation failed!";
 
         std::cout << "Decompiling " << func_name << ": Code generation failed!" << std::endl;
@@ -272,11 +274,11 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
 
         int count = 0;
 
-        cda.EnumerateMethods([&count, prog, parser_program, maps, is_dynamic, &result, &method2lexicalenvstack](panda_file::MethodDataAccessor &mda){
+        cda.EnumerateMethods([&count, prog, parser_program, maps, is_dynamic, &result, &method2lexicalenvstack, &index2importnamespaces, &localnamespaces](panda_file::MethodDataAccessor &mda){
             count = count + 1;
             std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "enumerate method index: " << count << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
             if (!mda.IsExternal()) {
-                result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic, &method2lexicalenvstack) && result;
+                result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic, &method2lexicalenvstack, index2importnamespaces, localnamespaces) && result;
                 if(result){
                     LogAst(parser_program, outputAstFileName);
                     LogArkTS2File(parser_program, outputFileName);
