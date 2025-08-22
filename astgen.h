@@ -28,18 +28,15 @@ public:
         ArenaVector<es2panda::ir::Expression*> arguments(parser_program->Allocator()->Adapter());
 
         if(method2lexicalenvstack->find(methodoffset) != method2lexicalenvstack->end()){
-            //std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX found lexicalenvstack " << std::endl;
-            //auto x = (*this->method2lexicalenvstack)[methodoffset];
-           // std::cout << "lexicalenvstack size: " << x->size() << std::endl;
+            // std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX found lexicalenvstack " << std::endl;
+            // auto x = (*this->method2lexicalenvstack)[methodoffset];
+            // std::cout << "lexicalenvstack size: " << x->size() << std::endl;
         }else{
-            //std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX not found lexicalenvstack " << std::endl;
+            // std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX not found lexicalenvstack " << std::endl;
             (*this->method2lexicalenvstack)[methodoffset] = new LexicalEnvStack();
         }
         this->bb2lexicalenvstack[graph->GetStartBlock()] = (*this->method2lexicalenvstack)[methodoffset];
-
-        std::cout << "start id: " << graph->GetStartBlock()->GetId() << " , size: " << (*this->bb2lexicalenvstack[graph->GetStartBlock()]).size() << std::endl;
         
-
         for (size_t i = 0; i < function->GetParamsNum(); ++i) {
             panda::es2panda::util::StringView tmp_name_view = panda::es2panda::util::StringView(*new std::string("arg"+std::to_string(i)));
             arguments.push_back(parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(tmp_name_view));

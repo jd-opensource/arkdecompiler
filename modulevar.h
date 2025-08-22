@@ -18,8 +18,9 @@ void addexportast_named(panda::es2panda::parser::Program *parser_program, std::s
 void addexportast(panda::es2panda::parser::Program *parser_program,  std::string local_name, std::string export_name);
 
 void GetModuleLiteralArray(std::unique_ptr<const panda_file::File>& file_, panda_file::File::EntityId &module_id, panda::disasm::Disassembler& disasm,
-            panda::es2panda::parser::Program *parser_program);
+            panda::es2panda::parser::Program *parser_program, std::map<size_t, std::vector<std::string>>& index2namespaces, std::vector<std::string>& localnamespaces);
 
-void parseModuleVars(std::unique_ptr<const panda_file::File>& file_, panda::disasm::Disassembler& disasm, panda::es2panda::parser::Program *parser_program);
+void parseModuleVars(std::unique_ptr<const panda_file::File>& file_, panda::disasm::Disassembler& disasm, 
+            panda::es2panda::parser::Program *parser_program, std::map<size_t, std::vector<std::string>>& index2namespaces, std::vector<std::string>& localnamespaces);
 
 #endif

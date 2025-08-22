@@ -87,7 +87,6 @@ static bool SkipFunction(const pandasm::Function &function, const std::string &f
 
 bool DecompileRunOptimizations(compiler::Graph *graph, BytecodeOptIrInterface *iface)
 {
-    std::cout <<  "@@@ 111111111111111111111111111111111111111111"  << std::endl;
     constexpr int OPT_LEVEL_0 = 0;
     if (panda::bytecodeopt::options.GetOptLevel() == OPT_LEVEL_0) {
         return false;
@@ -95,14 +94,12 @@ bool DecompileRunOptimizations(compiler::Graph *graph, BytecodeOptIrInterface *i
 
     graph->RunPass<compiler::Cleanup>();
     ASSERT(graph->IsDynamicMethod());
-    std::cout <<  "@@@ 22222222222222222222222222222222222222222"  << std::endl;
     if (compiler::options.IsCompilerBranchElimination()) {
        graph->RunPass<ConstantPropagation>(iface);
        RunOpts<compiler::BranchElimination>(graph);
     }
     
     RunOpts<compiler::ValNum, compiler::Lowering, compiler::MoveConstants>(graph);
-    std::cout <<  "@@@ 33333333333333333333333333333333333333333"  << std::endl;
 
     graph->RunPass<compiler::Cleanup>();
     graph->RunPass<RegAccAlloc>();
@@ -112,13 +109,13 @@ bool DecompileRunOptimizations(compiler::Graph *graph, BytecodeOptIrInterface *i
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Failed compiler::RegAlloc";
         return false;
     }
-    std::cout <<  "@@@ 444444444444444444444444444444444444444444"  << std::endl;
+
     graph->RunPass<compiler::Cleanup>();
     if (!graph->RunPass<RegEncoder>()) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Failed RegEncoder";
         return false;
     }
-    std::cout <<  "@@@ 55555555555555555555555555555555555555555"  << std::endl;
+
     return true;
 }
 
@@ -230,7 +227,6 @@ void LogArkTS2File(panda::es2panda::parser::Program *parser_program, std::string
     std::cout << "[+] log arkTS  start >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
     auto astsgen = panda::es2panda::ir::ArkTSGen(parser_program->Ast());
     
-
     std::cout << astsgen.Str() << std::endl;
     std::cout << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
     std::ofstream outputFile(outputFileName);
@@ -258,9 +254,12 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
     auto program_ast = parser_program->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(program_statements));
     parser_program->SetAst(program_ast);
 
-    parseModuleVars(pfile, disasm, parser_program);
-
     std::map<uint32_t, LexicalEnvStack*> method2lexicalenvstack;
+
+    std::map<size_t, std::vector<std::string>> index2importnamespaces; 
+    std::vector<std::string> localnamespaces; 
+
+    parseModuleVars(pfile, disasm, parser_program, index2importnamespaces, localnamespaces);
 
     for (uint32_t id : pfile->GetClasses()) {
         panda_file::File::EntityId record_id {id};
@@ -325,19 +324,14 @@ void startDecompile(std::string &abc_file_name, panda::pandasm::Program &program
 
 void construct_PandaFileToPandaAsmMaps(panda::disasm::Disassembler& disas, pandasm::AsmEmitter::PandaFileToPandaAsmMaps* maps){
     for (const auto &[offset, name_value] : disas.string_offset_to_name_) {
-        std::cout << "1 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: " <<  offset.GetOffset()  << " % " << std::string(name_value)  << std::endl;
         maps->strings[offset.GetOffset()] = std::string(name_value);
     }
 
-    //////////////////////////////////////////////////////////////////////////
     for (const auto &[name_value, offset] : disas.method_name_to_id_) {
-        std::cout << "2 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: " << std::string(name_value)  << std::endl;
         maps->methods[offset.GetOffset()] = std::string(name_value);
     }
     
-    //////////////////////////////////////////////////////////////////////////
     for (const auto &[name_value, offset] : disas.record_name_to_id_) {
-        std::cout << "3 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: " << std::string(name_value)  << std::endl;
         maps->classes[offset.GetOffset()] = std::string(name_value);
     }
 }
