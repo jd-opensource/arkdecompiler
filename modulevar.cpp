@@ -171,6 +171,8 @@ void GetModuleLiteralArray(std::unique_ptr<const panda_file::File>& file_, panda
                 addimportast(parser_program, "*", curmaps["local_name"], curmaps["module_request"]);
             }
             index2namespaces[importmodule2index[curmaps["module_request"]]].push_back(curmaps["local_name"]);
+
+            localnamespaces.push_back(curmaps["import_name"]);
         }else{
             ss << ", EXPORT ";
             exportmaps_arrays.push_back(curmaps);

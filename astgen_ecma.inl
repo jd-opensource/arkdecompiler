@@ -109,7 +109,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                             source_expression,
                                                             BinIntrinsicIdToToken(inst->GetIntrinsicId())
             );
-            enc->set_expression_by_register(inst, inst->GetDstReg(), binexpression);
+
+            if(inst->HasUsers()){
+                enc->set_expression_by_register(inst, inst->GetDstReg(), binexpression);
+            }else{
+                auto binexpressionstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, binexpression);
+                enc->add_insAst_to_blockstatemnt_by_inst(inst, binexpressionstatement);
+            }
+
             break;
         }
 
@@ -1238,20 +1245,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-
-       /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-
        case compiler::RuntimeInterface::IntrinsicId::GETMODULENAMESPACE_IMM8:{
            // nothing todo
             break;
         }
 
        case compiler::RuntimeInterface::IntrinsicId::STMODULEVAR_IMM8:
+       case compiler::RuntimeInterface::IntrinsicId::WIDE_STMODULEVAR_PREF_IMM16:
        {
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
 
@@ -1271,6 +1271,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         }
 
        case compiler::RuntimeInterface::IntrinsicId::LDLOCALMODULEVAR_IMM8:
+       case compiler::RuntimeInterface::IntrinsicId::LDEXTERNALMODULEVAR_IMM8:
+       case compiler::RuntimeInterface::IntrinsicId::WIDE_LDLOCALMODULEVAR_PREF_IMM16:
+       case compiler::RuntimeInterface::IntrinsicId::WIDE_LDEXTERNALMODULEVAR_PREF_IMM16:
        {
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
             auto moudlevar_rawname = enc->localnamespaces[imm0];
@@ -1280,18 +1283,12 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-       case compiler::RuntimeInterface::IntrinsicId::LDEXTERNALMODULEVAR_IMM8:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_LDEXTERNALMODULEVAR(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-
+       /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
 
        case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM8:
        case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM16:
@@ -2549,17 +2546,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-       case compiler::RuntimeInterface::IntrinsicId::WIDE_STMODULEVAR_PREF_IMM16:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_WIDE_STMODULEVAR(imm0));
-            break;
-        }
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_LDSENDABLEVAR_PREF_IMM4_IMM4:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -2574,17 +2560,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-       case compiler::RuntimeInterface::IntrinsicId::WIDE_LDLOCALMODULEVAR_PREF_IMM16:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_WIDE_LDLOCALMODULEVAR(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_LDSENDABLEVAR_PREF_IMM8_IMM8:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -2599,17 +2574,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-       case compiler::RuntimeInterface::IntrinsicId::WIDE_LDEXTERNALMODULEVAR_PREF_IMM16:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_WIDE_LDEXTERNALMODULEVAR(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_WIDELDSENDABLEVAR_PREF_IMM16_IMM16:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
