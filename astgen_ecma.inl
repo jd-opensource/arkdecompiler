@@ -10,6 +10,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
     inst->DumpOpcode(&oss);
     std::cout << "VisitIntrinsicInst: " << oss.str() << std::endl;
 
+    // inst->GetIntrinsicId()
     switch (inst->GetIntrinsicId()) {
        case compiler::RuntimeInterface::IntrinsicId::RETURNUNDEFINED:
        {
@@ -1245,12 +1246,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-       case compiler::RuntimeInterface::IntrinsicId::GETMODULENAMESPACE_IMM8:
-       case compiler::RuntimeInterface::IntrinsicId::WIDE_GETMODULENAMESPACE_PREF_IMM16:{
-           // nothing todo
-            break;
-        }
-
        case compiler::RuntimeInterface::IntrinsicId::STMODULEVAR_IMM8:
        case compiler::RuntimeInterface::IntrinsicId::WIDE_STMODULEVAR_PREF_IMM16:
        {
@@ -1284,12 +1279,49 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-       /////////////////////////////////////////////////////////////////////////////////////
+       case compiler::RuntimeInterface::IntrinsicId::TESTIN_IMM8_IMM16_IMM16: // hard to trigger
+       {
+            std::cout << enc->methodoffset << std::endl;
+            auto tier = static_cast<uint32_t>(inst->GetImms()[0]);
+            auto index = static_cast<uint32_t>(inst->GetImms()[1]);
+
+            std::cout << "tier: " << std::to_string(tier) << ", index: " << std::to_string(index) << std::endl;
+            auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
+            std::cout << "size: " << lexicalenvstack->size() << std::endl;
+
+            if(lexicalenvstack->getLexicalEnv(tier)[index] == nullptr){
+                std::cout << "lexicalenv null" << std::endl;
+            }else{
+                std::cout << "lexicalenv not null" << std::endl;
+            }
+
+            auto identifier_name = lexicalenvstack->get(tier, index);
+            auto identifier_name_expression =  enc->get_identifier_byname(new std::string(*identifier_name));
+            
+            panda::es2panda::ir::Expression* source_expression = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            auto binexpression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
+                                                            identifier_name_expression,
+                                                            source_expression,
+                                                            BinIntrinsicIdToToken(compiler::RuntimeInterface::IntrinsicId::ISIN_IMM8_V8)
+            );
+
+            enc->set_expression_by_register(inst, inst->GetDstReg(), binexpression);
+            break;
+            
+        }
+
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+       case compiler::RuntimeInterface::IntrinsicId::THROW_UNDEFINEDIFHOLEWITHNAME_PREF_ID16:
+       case compiler::RuntimeInterface::IntrinsicId::GETMODULENAMESPACE_IMM8:
+       case compiler::RuntimeInterface::IntrinsicId::WIDE_GETMODULENAMESPACE_PREF_IMM16:{
+           // nothing todo
+            break;
+        }
 
        case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM8:
        case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM16:
@@ -2168,25 +2200,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->result_.emplace_back(pandasm::Create_STPRIVATEPROPERTY(imm0, imm1, imm2, v0));
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::TESTIN_IMM8_IMM16_IMM16:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 2); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm2 = static_cast<uint32_t>(inst->GetImms()[2]);
-            enc->result_.emplace_back(pandasm::Create_TESTIN(imm0, imm1, imm2));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::DEFINEFIELDBYNAME_IMM8_ID16_V8:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -2449,12 +2463,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         }
 
 
-        // nothing todo
-       case compiler::RuntimeInterface::IntrinsicId::THROW_UNDEFINEDIFHOLEWITHNAME_PREF_ID16:
-       {
-            break;
-        }
-
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_WIDELDSENDABLEEXTERNALMODULEVAR_PREF_IMM16:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -2662,7 +2670,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-
+        //////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////
         // hard trigger to be tested
         case compiler::RuntimeInterface::IntrinsicId::LDOBJBYINDEX_IMM8_IMM16:
