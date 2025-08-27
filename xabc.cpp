@@ -8,6 +8,7 @@
 #include "lexicalenv.h"
 #include "modulevar.h"
 #include "fundepscan.h"
+#include "algos.h"
 
 using namespace std;
 using namespace panda;
@@ -361,7 +362,7 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
         });
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+        [[maybe_unused]] auto xx = topologicalSort(depedges);
 
         int count = 0;
         cda.EnumerateMethods([&count, prog, parser_program, maps, is_dynamic, &result, &method2lexicalenvstack, &index2importnamespaces, &localnamespaces](panda_file::MethodDataAccessor &mda){
