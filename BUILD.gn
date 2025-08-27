@@ -48,7 +48,8 @@ ohos_executable("xabc") {
     "lexicalenv.cpp",
     "lca.cpp",
     "modulevar.cpp",
-    "base.cpp"
+    "base.cpp",
+    "fundepscan.cpp"
   ]
   
   configs =  [
