@@ -11,8 +11,9 @@ using compiler::Opcode;
 
 class FunDepScan : public compiler::Optimization, public compiler::GraphVisitor {
 public:
-    explicit FunDepScan(compiler::Graph *graph,  const BytecodeOptIrInterface *iface, uint32_t methodoffset, std::string fun_name)
-        : compiler::Optimization(graph), ir_interface_(iface), methodoffset(methodoffset), fun_name(fun_name)
+    explicit FunDepScan(compiler::Graph *graph,  const BytecodeOptIrInterface *iface,  uint32_t methodoffset, std::string fun_name, 
+        std::vector<std::pair<uint32_t, uint32_t>>* depedges)
+        : compiler::Optimization(graph), ir_interface_(iface), methodoffset(methodoffset), fun_name(fun_name), depedges(depedges)
     {
 
     }
@@ -32,7 +33,8 @@ public:
     const BytecodeOptIrInterface *ir_interface_;
     uint32_t methodoffset;
     std::string fun_name;
-    
+
+    std::vector<std::pair<uint32_t, uint32_t>>* depedges;
 };
 
 }
