@@ -7,6 +7,7 @@
 #include "arkts.h"
 #include "lexicalenv.h"
 #include "modulevar.h"
+#include "fundepscan.h"
 
 using namespace std;
 using namespace panda;
@@ -241,6 +242,75 @@ void LogArkTS2File(panda::es2panda::parser::Program *parser_program, std::string
     std::cout << "[-] log arkTS  end >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
 }
 
+
+bool ScanFunDep(pandasm::Program *prog, const pandasm::AsmEmitter::PandaFileToPandaAsmMaps *maps,
+                std::vector<std::pair<uint32_t, uint32_t>>* depedges,
+                const panda_file::MethodDataAccessor &mda, bool is_dynamic)
+{
+
+    ArenaAllocator allocator {SpaceType::SPACE_TYPE_COMPILER};
+    ArenaAllocator local_allocator {SpaceType::SPACE_TYPE_COMPILER, nullptr, true};
+
+    SetCompilerOptions();
+
+    auto ir_interface = BytecodeOptIrInterface(maps, prog);
+
+    auto func_name = ir_interface.GetMethodIdByOffset(mda.GetMethodId().GetOffset() );
+    std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>> "  << func_name << " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+    [[maybe_unused]] auto it = prog->function_table.find(func_name);
+    if (it == prog->function_table.end()) {
+        LOG(ERROR, BYTECODE_OPTIMIZER) << "Cannot find function: " << func_name;
+        return false;
+    }
+
+    LOG(INFO, BYTECODE_OPTIMIZER) << "Optimizing function: " << func_name;
+
+    auto method_ptr = reinterpret_cast<compiler::RuntimeInterface::MethodPtr>(mda.GetMethodId().GetOffset());
+    
+    panda::BytecodeOptimizerRuntimeAdapter adapter(mda.GetPandaFile());
+    auto graph = allocator.New<compiler::Graph>(&allocator, &local_allocator, Arch::NONE, method_ptr, &adapter, false,
+                                                nullptr, is_dynamic, true);
+    
+
+    panda::pandasm::Function &function = it->second;
+
+    if (SkipFunction(function, func_name)) {
+        return false;
+    }
+
+    BuildMapFromPcToIns(function, ir_interface, graph, method_ptr);
+    
+    if ((graph == nullptr) || !graph->RunPass<panda::compiler::IrBuilder>()) {
+        LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": IR builder failed!";
+        std::cout << "Optimizing " << func_name << ": IR builder failed!" << std::endl;
+        return false;
+    }
+
+    if (graph->HasIrreducibleLoop()) {
+        LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Graph has irreducible loop!";
+        std::cout << "Optimizing " << func_name << ": Graph has irreducible loop!" << std::endl;
+        return false;
+    }
+
+    if (!DecompileRunOptimizations(graph, &ir_interface)) {
+        LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Running optimizations failed!";
+        std::cout << "Optimizing " << func_name << ": Running optimizations failed!" << std::endl;
+        return false;
+    }
+    
+    std::string turefunname = extractTrueFunName(func_name);
+    if (!graph->RunPass<FunDepScan>(&ir_interface, mda.GetMethodId().GetOffset(), turefunname, depedges)) {
+        LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": FuncDep scanning failed!";
+
+        std::cout << "FuncDep Scanning " << func_name << ": failed!" << std::endl;
+
+        return false;
+    }
+
+    return true;
+}
+
+
 bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::PandaFileToPandaAsmMaps *maps,
                        const std::string &pfile_name, panda::disasm::Disassembler& disasm, bool is_dynamic)
 {
@@ -272,8 +342,28 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
 
         panda_file::ClassDataAccessor cda {*pfile, record_id};
 
-        int count = 0;
+         std::vector<std::pair<uint32_t, uint32_t>> depedges;
+        // bool ScanFunDep(pandasm::Program *prog, const pandasm::AsmEmitter::PandaFileToPandaAsmMaps *maps,
+        //        std::vector<std::pair<uint32_t, uint32_t>>* depedges,
+        //        const panda_file::MethodDataAccessor &mda, bool is_dynamic)
 
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        cda.EnumerateMethods([prog, maps, is_dynamic, &result, &depedges](panda_file::MethodDataAccessor &mda){
+            if (!mda.IsExternal()) {
+                result = ScanFunDep(prog, maps, &depedges, mda, is_dynamic) && result;;
+                if(result){
+                    std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "fun dep scan success! " << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
+                    /////// TODO
+                }else{
+                    std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "fun dep scan failed! " << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
+                }
+            }
+        });
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+        int count = 0;
         cda.EnumerateMethods([&count, prog, parser_program, maps, is_dynamic, &result, &method2lexicalenvstack, &index2importnamespaces, &localnamespaces](panda_file::MethodDataAccessor &mda){
             count = count + 1;
             std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "enumerate method index: " << count << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;

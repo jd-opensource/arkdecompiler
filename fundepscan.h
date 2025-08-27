@@ -26,15 +26,22 @@ public:
         return "FunDepScan";
     }
 
-#include "compiler/optimizer/ir/visitor.inc"
+    const ArenaVector<BasicBlock *> &GetBlocksToVisit() const override
+    {
+        return GetGraph()->GetBlocksRPO();
+    }
+
+
     static void VisitIntrinsic(GraphVisitor *visitor, Inst *inst_base);
-    void VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_base);
+    static void VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_base);
+
+#include "compiler/optimizer/ir/visitor.inc"
 
     const BytecodeOptIrInterface *ir_interface_;
-    uint32_t methodoffset;
-    std::string fun_name;
+    [[maybe_unused]]uint32_t methodoffset;
+    [[maybe_unused]]std::string fun_name;
 
-    std::vector<std::pair<uint32_t, uint32_t>>* depedges;
+    [[maybe_unused]]std::vector<std::pair<uint32_t, uint32_t>>* depedges;
 };
 
 }
