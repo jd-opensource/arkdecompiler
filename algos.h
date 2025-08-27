@@ -15,4 +15,5 @@ private:
     void initialize();
 };
 
+std::vector<uint32_t> topologicalSort(const std::vector<std::pair<uint32_t, uint32_t>>& edges);
 #endif

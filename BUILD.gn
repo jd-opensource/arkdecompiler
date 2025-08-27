@@ -46,7 +46,7 @@ ohos_executable("xabc") {
     "astgen.cpp",
     "arkts.cpp",
     "lexicalenv.cpp",
-    "lca.cpp",
+    "algos.cpp",
     "modulevar.cpp",
     "base.cpp",
     "fundepscan.cpp"

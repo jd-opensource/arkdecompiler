@@ -3,7 +3,7 @@
 
 #include "base.h"
 #include "lexicalenv.h"
-#include "lca.h"
+#include "algos.h"
 
 namespace panda::bytecodeopt {
 
