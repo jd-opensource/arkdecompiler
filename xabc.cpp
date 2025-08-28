@@ -376,18 +376,18 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
             }
         }
 
-        // int count = 0;
-        // cda.EnumerateMethods([&count, prog, parser_program, maps, is_dynamic, &result, &method2lexicalenvstack, &index2importnamespaces, &localnamespaces](panda_file::MethodDataAccessor &mda){
-        //     count = count + 1;
-        //     std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "enumerate method index: " << count << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
-        //     if (!mda.IsExternal()) {
-        //         result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic, &method2lexicalenvstack, index2importnamespaces, localnamespaces) && result;
-        //         if(result){
-        //             LogAst(parser_program, outputAstFileName);
-        //             LogArkTS2File(parser_program, outputFileName);
-        //         }
-        //     }
-        // });
+        int count = 0;
+        cda.EnumerateMethods([&count, prog, parser_program, maps, is_dynamic, &result, &method2lexicalenvstack,  &patchvarspace, &index2importnamespaces, &localnamespaces, sorted_methodoffsets](panda_file::MethodDataAccessor &mda){
+            count = count + 1;
+            std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "enumerate method index: " << count << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
+            if (!mda.IsExternal() && std::find(sorted_methodoffsets.begin(), sorted_methodoffsets.end(), mda.GetMethodId().GetOffset()) == sorted_methodoffsets.end() ){
+                result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic, &method2lexicalenvstack,  &patchvarspace, index2importnamespaces, localnamespaces) && result;
+                if(result){
+                    LogAst(parser_program, outputAstFileName);
+                    LogArkTS2File(parser_program, outputFileName);
+                }
+            }
+        });
 
     }
 

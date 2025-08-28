@@ -9,7 +9,7 @@ if [ $1 = "module" ]; then
 elif [ $1 = "hot" ]; then
     ./hot.sh
 else
-    ./genlogs.sh $logdir $1
+    ./genlogs.sh $logdir
 fi
 
 ninja -w dupbuild=warn xabc -C out
