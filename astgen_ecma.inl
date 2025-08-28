@@ -1323,6 +1323,30 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
+       case compiler::RuntimeInterface::IntrinsicId::WIDE_LDPATCHVAR_PREF_IMM16:
+       {
+           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
+            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
+            enc->result_.emplace_back(pandasm::Create_WIDE_LDPATCHVAR(imm0));
+            auto acc_dst = inst->GetDstReg();
+            if (acc_dst != compiler::ACC_REG_ID) {
+                DoSta(inst->GetDstReg(), enc->result_);
+            }
+            break;
+        }
+
+       case compiler::RuntimeInterface::IntrinsicId::WIDE_STPATCHVAR_PREF_IMM16:
+       {
+            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
+            if (acc_src != compiler::ACC_REG_ID) {
+                DoLda(acc_src, enc->result_);
+            }
+           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
+            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
+            enc->result_.emplace_back(pandasm::Create_WIDE_STPATCHVAR(imm0));
+            break;
+        }
+        
        case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM8:
        case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM16:
        {
@@ -2583,31 +2607,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             if (acc_dst != compiler::ACC_REG_ID) {
                 DoSta(inst->GetDstReg(), enc->result_);
             }
-            break;
-        }
-
-       case compiler::RuntimeInterface::IntrinsicId::WIDE_LDPATCHVAR_PREF_IMM16:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_WIDE_LDPATCHVAR(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-
-
-       case compiler::RuntimeInterface::IntrinsicId::WIDE_STPATCHVAR_PREF_IMM16:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_WIDE_STPATCHVAR(imm0));
             break;
         }
 
