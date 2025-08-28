@@ -1310,6 +1310,40 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             
         }
 
+       case compiler::RuntimeInterface::IntrinsicId::WIDE_LDPATCHVAR_PREF_IMM16:
+       {
+            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
+            if (enc->patchvarspace->find(imm0) != enc->patchvarspace->end()) {
+                std::string *identifier_name =  (*enc->patchvarspace)[imm0];
+                enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(*identifier_name)));
+
+            } else {
+                handleError("load patchvar Index does not exist in the map");
+            }
+            
+            break;
+        }
+
+       case compiler::RuntimeInterface::IntrinsicId::WIDE_STPATCHVAR_PREF_IMM16:
+       {
+            auto raw_expression  = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
+            std::string closure_name =  "closure_" + std::to_string(enc->methodoffset) + "_" + std::to_string(enc->closure_count);
+            enc->closure_count++;
+
+            panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                            enc->get_identifier_byname(new std::string(closure_name)),
+                                                                            raw_expression,
+                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                        ); 
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
+                                                                                assignexpression);
+            enc->add_insAst_to_blockstatemnt_by_inst(inst, assignstatement);
+
+            (*enc->patchvarspace)[imm0] = new std::string(closure_name);
+            break;
+        }
+
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
@@ -1323,30 +1357,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-       case compiler::RuntimeInterface::IntrinsicId::WIDE_LDPATCHVAR_PREF_IMM16:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_WIDE_LDPATCHVAR(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
 
-       case compiler::RuntimeInterface::IntrinsicId::WIDE_STPATCHVAR_PREF_IMM16:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_WIDE_STPATCHVAR(imm0));
-            break;
-        }
-        
        case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM8:
        case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM16:
        {

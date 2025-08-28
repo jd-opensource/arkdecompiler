@@ -139,6 +139,7 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
                         const pandasm::AsmEmitter::PandaFileToPandaAsmMaps *maps,
                         const panda_file::MethodDataAccessor &mda, bool is_dynamic,
                         std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack, 
+                        std::map<uint32_t, std::string*>* patchvarspace,
                         std::map<size_t, std::vector<std::string>>& index2namespaces, 
                         std::vector<std::string>& localnamespaces)
 {
@@ -199,7 +200,7 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
 
     
     std::string turefunname = extractTrueFunName(func_name);
-    if (!graph->RunPass<AstGen>(&function, &ir_interface, prog, parser_program, mda.GetMethodId().GetOffset(), method2lexicalenvstack, std::ref(index2namespaces), std::ref(localnamespaces), turefunname)) {
+    if (!graph->RunPass<AstGen>(&function, &ir_interface, prog, parser_program, mda.GetMethodId().GetOffset(), method2lexicalenvstack, patchvarspace, std::ref(index2namespaces), std::ref(localnamespaces), turefunname)) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Code generation failed!";
 
         std::cout << "Decompiling " << func_name << ": Code generation failed!" << std::endl;
@@ -363,10 +364,12 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         auto sorted_methodoffsets = topologicalSort(depedges);
+        std::map<uint32_t, std::string*> patchvarspace;
+
         for(const auto & methodoffset : sorted_methodoffsets ){
             std::cout << "@@: "  << methodoffset << std::endl;
             panda_file::MethodDataAccessor mda(*pfile, panda_file::File::EntityId(methodoffset));
-            result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic, &method2lexicalenvstack, index2importnamespaces, localnamespaces) && result;
+            result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic, &method2lexicalenvstack, &patchvarspace, index2importnamespaces, localnamespaces) && result;
             if(result){
                 LogAst(parser_program, outputAstFileName);
                 LogArkTS2File(parser_program, outputFileName);
