@@ -18,11 +18,12 @@ class AstGen : public compiler::Optimization, public compiler::GraphVisitor {
 public:
     explicit AstGen(compiler::Graph *graph, pandasm::Function *function,
         const BytecodeOptIrInterface *iface, pandasm::Program *prog,  es2panda::parser::Program* parser_program, 
-        uint32_t methodoffset, std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack,
+        uint32_t methodoffset, std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack, std::map<uint32_t, std::string*> *patchvarspace,
         std::map<size_t, std::vector<std::string>> index2namespaces, std::vector<std::string> localnamespaces,
         std::string fun_name)
         : compiler::Optimization(graph), function_(function), ir_interface_(iface), program_(prog), methodoffset(methodoffset),
-        method2lexicalenvstack(method2lexicalenvstack), parser_program_(parser_program), index2namespaces(index2namespaces), localnamespaces(localnamespaces)
+        method2lexicalenvstack(method2lexicalenvstack), patchvarspace(patchvarspace), parser_program_(parser_program), 
+        index2namespaces(index2namespaces), localnamespaces(localnamespaces)
     {
 
         this->closure_count = 0;
@@ -465,6 +466,7 @@ public:
     std::vector<pandasm::Function::CatchBlock> catch_blocks_;
 
     std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack;
+    std::map<uint32_t, std::string*> *patchvarspace;
 
     es2panda::parser::Program* parser_program_;
 
