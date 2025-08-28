@@ -362,20 +362,29 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
         });
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        [[maybe_unused]] auto xx = topologicalSort(depedges);
-
-        int count = 0;
-        cda.EnumerateMethods([&count, prog, parser_program, maps, is_dynamic, &result, &method2lexicalenvstack, &index2importnamespaces, &localnamespaces](panda_file::MethodDataAccessor &mda){
-            count = count + 1;
-            std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "enumerate method index: " << count << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
-            if (!mda.IsExternal()) {
-                result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic, &method2lexicalenvstack, index2importnamespaces, localnamespaces) && result;
-                if(result){
-                    LogAst(parser_program, outputAstFileName);
-                    LogArkTS2File(parser_program, outputFileName);
-                }
+        auto sorted_methodoffsets = topologicalSort(depedges);
+        for(const auto & methodoffset : sorted_methodoffsets ){
+            std::cout << "@@: "  << methodoffset << std::endl;
+            panda_file::MethodDataAccessor mda(*pfile, panda_file::File::EntityId(methodoffset));
+            result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic, &method2lexicalenvstack, index2importnamespaces, localnamespaces) && result;
+            if(result){
+                LogAst(parser_program, outputAstFileName);
+                LogArkTS2File(parser_program, outputFileName);
             }
-        });
+        }
+
+        // int count = 0;
+        // cda.EnumerateMethods([&count, prog, parser_program, maps, is_dynamic, &result, &method2lexicalenvstack, &index2importnamespaces, &localnamespaces](panda_file::MethodDataAccessor &mda){
+        //     count = count + 1;
+        //     std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "enumerate method index: " << count << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
+        //     if (!mda.IsExternal()) {
+        //         result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic, &method2lexicalenvstack, index2importnamespaces, localnamespaces) && result;
+        //         if(result){
+        //             LogAst(parser_program, outputAstFileName);
+        //             LogArkTS2File(parser_program, outputFileName);
+        //         }
+        //     }
+        // });
 
     }
 
