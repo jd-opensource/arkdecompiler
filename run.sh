@@ -3,10 +3,9 @@ rm demo.abc
 
 logdir=logs 
 
-
-if [ $1 = "module" ]; then
+if [ "$1" = "module" ]; then
     ./genlogs.sh $logdir $1
-elif [ $1 = "hot" ]; then
+elif [ "$1" = "hot" ]; then
     ./hot.sh
 else
     ./genlogs.sh $logdir
