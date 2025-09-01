@@ -202,12 +202,8 @@ void parseModuleVars(std::unique_ptr<const panda_file::File>& file_, panda::disa
             std::vector<std::string>& localnamespaces){
     
     std::cout << "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH" << std::endl;
-    panda::libpandafile::CollectUtil collect_util;
-
-    std::unordered_set<uint32_t> literal_array_ids;
-    collect_util.CollectLiteralArray(*file_, literal_array_ids);
     size_t index = 0;
-
+    
     if (panda_file::ContainsLiteralArrayInHeader(file_->GetHeader()->version)) {
         const auto lit_arrays_id = file_->GetLiteralArraysId();
 
@@ -225,6 +221,10 @@ void parseModuleVars(std::unique_ptr<const panda_file::File>& file_, panda::disa
             }
         }
     }else{
+        panda::libpandafile::CollectUtil collect_util;
+        std::unordered_set<uint32_t> literal_array_ids;
+        collect_util.CollectLiteralArray(*file_, literal_array_ids);
+
         for (uint32_t literal_array_id : literal_array_ids) {
             panda_file::File::EntityId id {literal_array_id};
 
