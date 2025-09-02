@@ -1,4 +1,5 @@
 *.abc
+base.map
 a
 repos/*
 logs/*
