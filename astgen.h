@@ -21,24 +21,24 @@ public:
         uint32_t methodoffset, std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack, std::map<uint32_t, std::string*> *patchvarspace,
         std::map<size_t, std::vector<std::string>> index2namespaces, std::vector<std::string> localnamespaces,
         std::string fun_name)
-        : compiler::Optimization(graph), function_(function), ir_interface_(iface), program_(prog), methodoffset(methodoffset),
-        method2lexicalenvstack(method2lexicalenvstack), patchvarspace(patchvarspace), parser_program_(parser_program), 
-        index2namespaces(index2namespaces), localnamespaces(localnamespaces)
+        : compiler::Optimization(graph), function_(function), ir_interface_(iface), program_(prog), methodoffset_(methodoffset),
+        method2lexicalenvstack_(method2lexicalenvstack), patchvarspace_(patchvarspace), parser_program_(parser_program), 
+        index2namespaces_(index2namespaces), localnamespaces_(localnamespaces)
     {
 
         this->closure_count = 0;
 
         ArenaVector<es2panda::ir::Expression*> arguments(parser_program->Allocator()->Adapter());
 
-        if(method2lexicalenvstack->find(methodoffset) != method2lexicalenvstack->end()){
+        if(this->method2lexicalenvstack_->find(methodoffset) != this->method2lexicalenvstack_->end()){
             // std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX found lexicalenvstack " << std::endl;
             // auto x = (*this->method2lexicalenvstack)[methodoffset];
             // std::cout << "lexicalenvstack size: " << x->size() << std::endl;
         }else{
             // std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX not found lexicalenvstack " << std::endl;
-            (*this->method2lexicalenvstack)[methodoffset] = new LexicalEnvStack();
+            (*this->method2lexicalenvstack_)[methodoffset] = new LexicalEnvStack();
         }
-        this->bb2lexicalenvstack[graph->GetStartBlock()] = (*this->method2lexicalenvstack)[methodoffset];
+        this->bb2lexicalenvstack[graph->GetStartBlock()] = (*this->method2lexicalenvstack_)[methodoffset];
         
         for (size_t i = 0; i < function->GetParamsNum(); ++i) {
             panda::es2panda::util::StringView tmp_name_view = panda::es2panda::util::StringView(*new std::string("arg"+std::to_string(i)));
@@ -459,19 +459,19 @@ public:
     const BytecodeOptIrInterface *ir_interface_;
     pandasm::Program *program_;
 
-    uint32_t methodoffset;
+    uint32_t methodoffset_;
     uint32_t closure_count;
 
     std::vector<pandasm::Ins> res_;
     std::vector<pandasm::Function::CatchBlock> catch_blocks_;
 
-    std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack;
-    std::map<uint32_t, std::string*> *patchvarspace;
+    std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack_;
+    std::map<uint32_t, std::string*> *patchvarspace_;
 
     es2panda::parser::Program* parser_program_;
 
-    std::map<size_t, std::vector<std::string>> index2namespaces;
-    std::vector<std::string> localnamespaces;
+    std::map<size_t, std::vector<std::string>> index2namespaces_;
+    std::vector<std::string> localnamespaces_;
    
     ///////////////////////////////////////////////////////////////////////////////////////
     std::stack<uint32_t> waitmethods;
