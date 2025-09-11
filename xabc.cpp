@@ -200,13 +200,14 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
 
     
     std::string turefunname = extractTrueFunName(func_name);
-    if (!graph->RunPass<AstGen>(&function, &ir_interface, prog, parser_program, mda.GetMethodId().GetOffset(), method2lexicalenvstack, patchvarspace, std::ref(index2namespaces), std::ref(localnamespaces), turefunname)) {
-        LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Code generation failed!";
 
-        std::cout << "Decompiling " << func_name << ": Code generation failed!" << std::endl;
+    // if (!graph->RunPass<AstGen>(&function, &ir_interface, prog, parser_program, mda.GetMethodId().GetOffset(), method2lexicalenvstack, patchvarspace, std::ref(index2namespaces), std::ref(localnamespaces), turefunname)) {
+    //     LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Code generation failed!";
 
-        return false;
-    }
+    //     std::cout << "Decompiling " << func_name << ": Code generation failed!" << std::endl;
+
+    //     return false;
+    // }
 
     std::cout << "Decompiled: " << func_name << std::endl;
 
@@ -343,11 +344,7 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
         }
 
         panda_file::ClassDataAccessor cda {*pfile, record_id};
-
-         std::vector<std::pair<uint32_t, uint32_t>> depedges;
-        // bool ScanFunDep(pandasm::Program *prog, const pandasm::AsmEmitter::PandaFileToPandaAsmMaps *maps,
-        //        std::vector<std::pair<uint32_t, uint32_t>>* depedges,
-        //        const panda_file::MethodDataAccessor &mda, bool is_dynamic)
+        std::vector<std::pair<uint32_t, uint32_t>> depedges;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         cda.EnumerateMethods([prog, maps, is_dynamic, &result, &depedges](panda_file::MethodDataAccessor &mda){

@@ -1125,19 +1125,19 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM16_ID16_IMM8:
         {
             std::cout << "define function >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-            auto methodoffset = static_cast<uint32_t>(inst->GetImms()[1]);
-            std::cout << "new func offset: " << methodoffset << std::endl;
+            auto methodoffset_ = static_cast<uint32_t>(inst->GetImms()[1]);
+            std::cout << "new func offset: " << methodoffset_ << std::endl;
 
             
-            std::cout << "before size: " << enc->method2lexicalenvstack->size() <<  std::endl;
+            std::cout << "before size: " << enc->method2lexicalenvstack_->size() <<  std::endl;
 
             if(!enc->bb2lexicalenvstack[inst->GetBasicBlock()]->empty()){
                 if(enc->bb2lexicalenvstack[inst->GetBasicBlock()]->top().IsFull() ){
-                    (*enc->method2lexicalenvstack)[methodoffset] = new LexicalEnvStack(*(enc->bb2lexicalenvstack[inst->GetBasicBlock()]));
-                    std::cout << "after  size: " << enc->method2lexicalenvstack->size() << ", envsize: " << (*enc->method2lexicalenvstack)[methodoffset]->size()  << std::endl;
+                    (*enc->method2lexicalenvstack_)[methodoffset_] = new LexicalEnvStack(*(enc->bb2lexicalenvstack[inst->GetBasicBlock()]));
+                    std::cout << "after  size: " << enc->method2lexicalenvstack_->size() << ", envsize: " << (*enc->method2lexicalenvstack_)[methodoffset_]->size()  << std::endl;
 
                 }else{
-                    enc->waitmethods.push(methodoffset);
+                    enc->waitmethods.push(methodoffset_);
                 }
             }
 
@@ -1172,7 +1172,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::WIDE_STLEXVAR_PREF_IMM16_IMM16:
        {
             std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
-            std::cout << enc->methodoffset << std::endl;
+            std::cout << enc->methodoffset_ << std::endl;
 
             auto tier = static_cast<uint32_t>(inst->GetImms()[0]);
             auto index = static_cast<uint32_t>(inst->GetImms()[1]);
@@ -1184,7 +1184,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "env size: " << lexicalenvstack->getLexicalEnv(0).size() << std::endl;
 
             auto raw_expression  = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
-            std::string closure_name =  "closure_" + std::to_string(enc->methodoffset) + "_" + std::to_string(enc->closure_count);
+            std::string closure_name =  "closure_" + std::to_string(enc->methodoffset_) + "_" + std::to_string(enc->closure_count);
             enc->closure_count++;
 
             panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
@@ -1207,7 +1207,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 std::cout << "@@@@@@ start deal forward reference stack >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
                 while(!enc->waitmethods.empty()){
                     auto curmethodoffset = enc->waitmethods.top();
-                    (*enc->method2lexicalenvstack)[curmethodoffset] = new LexicalEnvStack(*(enc->bb2lexicalenvstack[inst->GetBasicBlock()]));
+                    (*enc->method2lexicalenvstack_)[curmethodoffset] = new LexicalEnvStack(*(enc->bb2lexicalenvstack[inst->GetBasicBlock()]));
                      enc->waitmethods.pop();
                 }
             }
@@ -1219,7 +1219,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         case compiler::RuntimeInterface::IntrinsicId::WIDE_LDLEXVAR_PREF_IMM16_IMM16:
        {
             std::cout << "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC" << std::endl;
-            std::cout << enc->methodoffset << std::endl;
+            std::cout << enc->methodoffset_ << std::endl;
             auto tier = static_cast<uint32_t>(inst->GetImms()[0]);
             auto index = static_cast<uint32_t>(inst->GetImms()[1]);
 
@@ -1251,7 +1251,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        {
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
 
-            auto moudlevar_rawname = enc->localnamespaces[imm0];
+            auto moudlevar_rawname = enc->localnamespaces_[imm0];
             auto source_expression = enc->get_expression_by_id(inst, inst->GetInputsCount() - 2); 
             if(source_expression){
                 panda::es2panda::ir::Identifier* moudlevar = enc->get_identifier_byname(new std::string(moudlevar_rawname));
@@ -1272,7 +1272,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::WIDE_LDEXTERNALMODULEVAR_PREF_IMM16:
        {
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto moudlevar_rawname = enc->localnamespaces[imm0];
+            auto moudlevar_rawname = enc->localnamespaces_[imm0];
             panda::es2panda::ir::Identifier* moudlevar = enc->get_identifier_byname(new std::string(moudlevar_rawname));
 
             enc->set_expression_by_register(inst, inst->GetDstReg(), moudlevar);
@@ -1281,7 +1281,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
        case compiler::RuntimeInterface::IntrinsicId::TESTIN_IMM8_IMM16_IMM16: // hard to trigger
        {
-            std::cout << enc->methodoffset << std::endl;
+            std::cout << enc->methodoffset_ << std::endl;
             auto tier = static_cast<uint32_t>(inst->GetImms()[0]);
             auto index = static_cast<uint32_t>(inst->GetImms()[1]);
 
@@ -1313,8 +1313,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::WIDE_LDPATCHVAR_PREF_IMM16:
        {
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            if (enc->patchvarspace->find(imm0) != enc->patchvarspace->end()) {
-                std::string *identifier_name =  (*enc->patchvarspace)[imm0];
+            if (enc->patchvarspace_->find(imm0) != enc->patchvarspace_->end()) {
+                std::string *identifier_name =  (*enc->patchvarspace_)[imm0];
                 enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(*identifier_name)));
 
             } else {
@@ -1328,7 +1328,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        {
             auto raw_expression  = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            std::string closure_name =  "closure_" + std::to_string(enc->methodoffset) + "_" + std::to_string(enc->closure_count);
+            std::string closure_name =  "closure_" + std::to_string(enc->methodoffset_) + "_" + std::to_string(enc->closure_count);
             enc->closure_count++;
 
             panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
@@ -1340,7 +1340,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 assignexpression);
             enc->add_insAst_to_blockstatemnt_by_inst(inst, assignstatement);
 
-            (*enc->patchvarspace)[imm0] = new std::string(closure_name);
+            (*enc->patchvarspace_)[imm0] = new std::string(closure_name);
             break;
         }
 
@@ -1377,7 +1377,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-        
+
        case compiler::RuntimeInterface::IntrinsicId::DEFINECLASSWITHBUFFER_IMM16_ID16_ID16_IMM16_V8:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
