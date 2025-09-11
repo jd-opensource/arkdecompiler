@@ -13,7 +13,7 @@ class FunDepScan : public compiler::Optimization, public compiler::GraphVisitor 
 public:
     explicit FunDepScan(compiler::Graph *graph,  const BytecodeOptIrInterface *iface,  uint32_t methodoffset, std::string fun_name, 
         std::vector<std::pair<uint32_t, uint32_t>>* depedges)
-        : compiler::Optimization(graph), ir_interface_(iface), methodoffset(methodoffset), fun_name(fun_name), depedges(depedges)
+        : compiler::Optimization(graph), ir_interface_(iface), methodoffset_(methodoffset), fun_name_(fun_name), depedges_(depedges)
     {
 
     }
@@ -38,10 +38,10 @@ public:
 #include "compiler/optimizer/ir/visitor.inc"
 
     const BytecodeOptIrInterface *ir_interface_;
-    [[maybe_unused]]uint32_t methodoffset;
-    [[maybe_unused]]std::string fun_name;
+    [[maybe_unused]]uint32_t methodoffset_;
+    [[maybe_unused]]std::string fun_name_;
 
-    [[maybe_unused]]std::vector<std::pair<uint32_t, uint32_t>>* depedges;
+    [[maybe_unused]]std::vector<std::pair<uint32_t, uint32_t>>* depedges_;
 };
 
 }

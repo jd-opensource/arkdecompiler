@@ -25,11 +25,11 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
         inst->GetIntrinsicId() ==  compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM16_ID16_IMM8
     ){
         std::cout << "call fundep scan success @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
-        [[maybe_unused]] auto methodoffset = static_cast<uint32_t>(inst->GetImms()[1]);
+        [[maybe_unused]] auto methodoffset_ = static_cast<uint32_t>(inst->GetImms()[1]);
         auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
         [[maybe_unused]] auto bc_id0 = enc->ir_interface_->GetMethodIdByOffset(ir_id0);
 
-        enc->depedges->push_back(std::make_pair(enc->methodoffset, methodoffset));
+        enc->depedges_->push_back(std::make_pair(enc->methodoffset_, methodoffset_));
     }
 }
 
