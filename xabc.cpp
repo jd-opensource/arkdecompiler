@@ -302,7 +302,7 @@ bool ScanFunDep(pandasm::Program *prog, const pandasm::AsmEmitter::PandaFileToPa
     }
     
     std::string turefunname = extractTrueFunName(func_name);
-    if (!graph->RunPass<FunDepScan>(&ir_interface, mda.GetMethodId().GetOffset(), turefunname, depedges)) {
+    if (!graph->RunPass<FunDepScan>(&ir_interface, prog, mda.GetMethodId().GetOffset(), turefunname, depedges)) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": FuncDep scanning failed!";
 
         std::cout << "FuncDep Scanning " << func_name << ": failed!" << std::endl;
@@ -338,10 +338,25 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
 
     for (uint32_t id : pfile->GetClasses()) {
         panda_file::File::EntityId record_id {id};
+        if (pfile->IsExternal(record_id)) {
+            continue;
+        }
+
+        panda_file::ClassDataAccessor cda {*pfile, record_id};
+        std::cout << "classname: " << std::left << std::setw(40) <<   cda.GetName().data  << " , fileds: " << cda.GetFieldsNumber() << " , method: " << cda.GetMethodsNumber() << " interface: " << cda.GetIfacesNumber() << " superclass: " <<  cda.GetSuperClassId()   << std::endl;
+
+    }
+
+
+    for (uint32_t id : pfile->GetClasses()) {
+        
+        panda_file::File::EntityId record_id {id};
 
         if (pfile->IsExternal(record_id)) {
             continue;
         }
+
+        std::cout << id << " XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << std::endl;
 
         panda_file::ClassDataAccessor cda {*pfile, record_id};
         std::vector<std::pair<uint32_t, uint32_t>> depedges;
@@ -352,20 +367,29 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
                 result = ScanFunDep(prog, maps, &depedges, mda, is_dynamic) && result;;
                 if(result){
                     std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "fun dep scan success! " << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
-                    /////// TODO
                 }else{
                     std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "fun dep scan failed! " << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
                 }
             }
         });
-
+        
+        /* 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         auto sorted_methodoffsets = topologicalSort(depedges);
         std::map<uint32_t, std::string*> patchvarspace;
 
         for(const auto & methodoffset : sorted_methodoffsets ){
-            std::cout << "@@: "  << methodoffset << std::endl;
             panda_file::MethodDataAccessor mda(*pfile, panda_file::File::EntityId(methodoffset));
+
+            std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+            std::cout << mda.GetClassId() << std::endl;
+            std::cout << mda.GetClassIdx() << std::endl;
+            std::cout << mda.GetNameId() << std::endl;
+            std::cout << mda.GetProtoId() << std::endl;
+            std::cout << mda.GetProtoIdx() << std::endl;
+            std::cout << mda.GetAccessFlags() << std::endl;
+            std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
+
             result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic, &method2lexicalenvstack, &patchvarspace, index2importnamespaces, localnamespaces) && result;
             if(result){
                 LogAst(parser_program, outputAstFileName);
@@ -374,19 +398,33 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
         }
 
         int count = 0;
+        std::cout <<  "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY" << std::endl;
         cda.EnumerateMethods([&count, prog, parser_program, maps, is_dynamic, &result, &method2lexicalenvstack,  &patchvarspace, &index2importnamespaces, &localnamespaces, sorted_methodoffsets](panda_file::MethodDataAccessor &mda){
             count = count + 1;
             std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "enumerate method index: " << count << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
             if (!mda.IsExternal() && std::find(sorted_methodoffsets.begin(), sorted_methodoffsets.end(), mda.GetMethodId().GetOffset()) == sorted_methodoffsets.end() ){
+                std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+                std::cout << mda.GetClassId() << std::endl;
+                std::cout << mda.GetClassIdx() << std::endl;
+                std::cout << mda.GetNameId() << std::endl;
+                std::cout << mda.GetProtoId() << std::endl;
+                std::cout << mda.GetProtoIdx() << std::endl;
+                std::cout << mda.GetAccessFlags() << std::endl;
+                std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
+                
                 result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic, &method2lexicalenvstack,  &patchvarspace, index2importnamespaces, localnamespaces) && result;
                 if(result){
                     LogAst(parser_program, outputAstFileName);
                     LogArkTS2File(parser_program, outputFileName);
                 }
+            }else{
+
+
             }
         });
-
-    }
+        std::cout <<  "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" << std::endl;
+       */
+    } 
 
     // LogAst(parser_program);
     // LogArkTS2File(parser_program, pfile_name);
@@ -436,8 +474,9 @@ void construct_PandaFileToPandaAsmMaps(panda::disasm::Disassembler& disas, panda
     for (const auto &[name_value, offset] : disas.record_name_to_id_) {
         maps->classes[offset.GetOffset()] = std::string(name_value);
     }
-}
 
+
+}
 
 int main(int argc, char* argv[]) {
     if (argc > 1) {
@@ -476,7 +515,6 @@ int main(int argc, char* argv[]) {
 
     panda::pandasm::Program* program = &disasm.prog_;
     pandasm::AsmEmitter::PandaFileToPandaAsmMaps maps_;
-
 
     /////////////////////////////////////////////////////////
     construct_PandaFileToPandaAsmMaps(disasm, &maps_);
