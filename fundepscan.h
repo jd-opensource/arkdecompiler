@@ -33,9 +33,18 @@ using compiler::Opcode;
 class FunDepScan : public compiler::Optimization, public compiler::GraphVisitor {
 public:
     explicit FunDepScan(compiler::Graph *graph,  const BytecodeOptIrInterface *iface, panda::pandasm::Program* program, 
-        uint32_t methodoffset, std::string fun_name, std::vector<std::pair<uint32_t, uint32_t>>* depedges)
-        : compiler::Optimization(graph), ir_interface_(iface), program_(program), methodoffset_(methodoffset), fun_name_(fun_name), depedges_(depedges)
+        panda::disasm::Disassembler& disasm, uint32_t methodoffset, std::string fun_name, std::vector<std::pair<uint32_t, uint32_t>>* depedges)
+        : compiler::Optimization(graph), ir_interface_(iface), program_(program), disasm_(disasm), methodoffset_(methodoffset), fun_name_(fun_name), depedges_(depedges)
     {
+        for (const auto& pair : this->disasm_.method_name_to_id_) {
+            std::size_t pos = pair.first.find(':');
+            if (pos != std::string::npos) {
+                
+                std::string result = pair.first.substr(0, pos);
+                std::cout << result << std::endl;
+                this->methodname2offset_[result] = pair.second.GetOffset();
+            }
+        }
 
     }
 
@@ -73,7 +82,7 @@ public:
         }
     }
 
-    std::optional<std::vector<std::string>> GetLiteralArrayByOffset(uint32_t offset){
+    std::optional<std::vector<std::string>> getLiteralArrayByOffset(uint32_t offset){
         std::vector<std::string> res;
         std::stringstream hexStream;
         hexStream << "0x" << std::hex << offset;
@@ -107,10 +116,12 @@ public:
 
     const BytecodeOptIrInterface *ir_interface_;
     [[maybe_unused]] panda::pandasm::Program* program_;
+    [[maybe_unused]] panda::disasm::Disassembler& disasm_;
     [[maybe_unused]] uint32_t methodoffset_;
     [[maybe_unused]] std::string fun_name_;
 
     [[maybe_unused]] std::vector<std::pair<uint32_t, uint32_t>>* depedges_;
+    [[maybe_unused]] std::map<std::string, uint32_t> methodname2offset_;
 };
 
 }

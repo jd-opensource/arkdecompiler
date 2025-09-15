@@ -246,7 +246,8 @@ void LogArkTS2File(panda::es2panda::parser::Program *parser_program, std::string
 }
 
 
-bool ScanFunDep(pandasm::Program *prog, const pandasm::AsmEmitter::PandaFileToPandaAsmMaps *maps,
+bool ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
+                const pandasm::AsmEmitter::PandaFileToPandaAsmMaps *maps,
                 std::vector<std::pair<uint32_t, uint32_t>>* depedges,
                 const panda_file::MethodDataAccessor &mda, bool is_dynamic)
 {
@@ -302,7 +303,7 @@ bool ScanFunDep(pandasm::Program *prog, const pandasm::AsmEmitter::PandaFileToPa
     }
     
     std::string turefunname = extractTrueFunName(func_name);
-    if (!graph->RunPass<FunDepScan>(&ir_interface, prog, mda.GetMethodId().GetOffset(), turefunname, depedges)) {
+    if (!graph->RunPass<FunDepScan>(&ir_interface, prog, std::ref(disasm), mda.GetMethodId().GetOffset(), turefunname, depedges)) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": FuncDep scanning failed!";
 
         std::cout << "FuncDep Scanning " << func_name << ": failed!" << std::endl;
@@ -362,9 +363,9 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
         std::vector<std::pair<uint32_t, uint32_t>> depedges;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        cda.EnumerateMethods([prog, maps, is_dynamic, &result, &depedges](panda_file::MethodDataAccessor &mda){
+        cda.EnumerateMethods([prog, &disasm, maps, is_dynamic, &result, &depedges](panda_file::MethodDataAccessor &mda){
             if (!mda.IsExternal()) {
-                result = ScanFunDep(prog, maps, &depedges, mda, is_dynamic) && result;;
+                result = ScanFunDep(prog, disasm, maps, &depedges, mda, is_dynamic) && result;
                 if(result){
                     std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "fun dep scan success! " << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
                 }else{

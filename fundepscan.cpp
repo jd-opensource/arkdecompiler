@@ -47,10 +47,21 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
         std::cout << "44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444" << std::endl;
         auto ir_id1 = static_cast<uint32_t>(inst->GetImms()[2]);
         std::cout << "55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555" << std::endl;
-        auto member_functions = enc->GetLiteralArrayByOffset(ir_id1);
+
+
+        std::cout << "-------------------------------------------------------------------------------------------------" << std::endl;
+        auto member_functions = enc->getLiteralArrayByOffset(ir_id1);
         if(member_functions){
-            std::for_each((*member_functions).begin(), (*member_functions).end(), [](const std::string& word) {
+            std::for_each((*member_functions).begin(), (*member_functions).end(), [&enc](const std::string& word) {
                 std::cout << word << std::endl;
+                
+                if (enc->methodname2offset_.find(word) != enc->methodname2offset_.end()) {
+                    std::cout << "offset: " << enc->methodname2offset_[word] << std::endl;
+                }else{
+                    std::cout << "not found " << std::endl;
+                }
+
+                
             });
         }
         std::cout << "66666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666" << std::endl;
