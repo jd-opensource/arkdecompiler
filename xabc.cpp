@@ -374,23 +374,13 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
             }
         });
         
-        /* 
+       
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         auto sorted_methodoffsets = topologicalSort(depedges);
         std::map<uint32_t, std::string*> patchvarspace;
 
         for(const auto & methodoffset : sorted_methodoffsets ){
             panda_file::MethodDataAccessor mda(*pfile, panda_file::File::EntityId(methodoffset));
-
-            std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
-            std::cout << mda.GetClassId() << std::endl;
-            std::cout << mda.GetClassIdx() << std::endl;
-            std::cout << mda.GetNameId() << std::endl;
-            std::cout << mda.GetProtoId() << std::endl;
-            std::cout << mda.GetProtoIdx() << std::endl;
-            std::cout << mda.GetAccessFlags() << std::endl;
-            std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
-
             result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic, &method2lexicalenvstack, &patchvarspace, index2importnamespaces, localnamespaces) && result;
             if(result){
                 LogAst(parser_program, outputAstFileName);
@@ -404,27 +394,15 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
             count = count + 1;
             std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "enumerate method index: " << count << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
             if (!mda.IsExternal() && std::find(sorted_methodoffsets.begin(), sorted_methodoffsets.end(), mda.GetMethodId().GetOffset()) == sorted_methodoffsets.end() ){
-                std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
-                std::cout << mda.GetClassId() << std::endl;
-                std::cout << mda.GetClassIdx() << std::endl;
-                std::cout << mda.GetNameId() << std::endl;
-                std::cout << mda.GetProtoId() << std::endl;
-                std::cout << mda.GetProtoIdx() << std::endl;
-                std::cout << mda.GetAccessFlags() << std::endl;
-                std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
-                
                 result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic, &method2lexicalenvstack,  &patchvarspace, index2importnamespaces, localnamespaces) && result;
                 if(result){
                     LogAst(parser_program, outputAstFileName);
                     LogArkTS2File(parser_program, outputFileName);
                 }
-            }else{
-
-
             }
         });
         std::cout <<  "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" << std::endl;
-       */
+       
     } 
 
     // LogAst(parser_program);
