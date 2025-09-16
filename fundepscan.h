@@ -9,27 +9,6 @@ using compiler::BasicBlock;
 using compiler::Inst;
 using compiler::Opcode;
 
-// bool IsArray(const panda_file::LiteralTag &tag)
-// {
-//     switch (tag) {
-//         case panda_file::LiteralTag::ARRAY_U1:
-//         case panda_file::LiteralTag::ARRAY_U8:
-//         case panda_file::LiteralTag::ARRAY_I8:
-//         case panda_file::LiteralTag::ARRAY_U16:
-//         case panda_file::LiteralTag::ARRAY_I16:
-//         case panda_file::LiteralTag::ARRAY_U32:
-//         case panda_file::LiteralTag::ARRAY_I32:
-//         case panda_file::LiteralTag::ARRAY_U64:
-//         case panda_file::LiteralTag::ARRAY_I64:
-//         case panda_file::LiteralTag::ARRAY_F32:
-//         case panda_file::LiteralTag::ARRAY_F64:
-//         case panda_file::LiteralTag::ARRAY_STRING:
-//             return true;
-//         default:
-//             return false;
-//     }
-// }
-
 class FunDepScan : public compiler::Optimization, public compiler::GraphVisitor {
 public:
     explicit FunDepScan(compiler::Graph *graph,  const BytecodeOptIrInterface *iface, panda::pandasm::Program* program, 
@@ -114,7 +93,7 @@ public:
 
 #include "compiler/optimizer/ir/visitor.inc"
 
-    const BytecodeOptIrInterface *ir_interface_;
+    [[maybe_unused]] const BytecodeOptIrInterface *ir_interface_;
     [[maybe_unused]] panda::pandasm::Program* program_;
     [[maybe_unused]] panda::disasm::Disassembler& disasm_;
     [[maybe_unused]] uint32_t methodoffset_;
