@@ -40,6 +40,7 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
                 if (enc->methodname2offset_.find(word) != enc->methodname2offset_.end()) {
                     auto memeber_offset = enc->methodname2offset_[word];
                     enc->depedges_->push_back(std::make_pair(enc->methodoffset_, memeber_offset));
+                    (*enc->class2memberfuns_)[enc->methodoffset_].push_back(memeber_offset);
                 }else{
                     handleError("#function dep scan: not handle this case");
                 }

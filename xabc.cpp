@@ -249,6 +249,7 @@ void LogArkTS2File(panda::es2panda::parser::Program *parser_program, std::string
 bool ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
                 const pandasm::AsmEmitter::PandaFileToPandaAsmMaps *maps,
                 std::vector<std::pair<uint32_t, uint32_t>>* depedges,
+                std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns,
                 const panda_file::MethodDataAccessor &mda, bool is_dynamic)
 {
 
@@ -303,7 +304,7 @@ bool ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
     }
     
     std::string turefunname = extractTrueFunName(func_name);
-    if (!graph->RunPass<FunDepScan>(&ir_interface, prog, std::ref(disasm), mda.GetMethodId().GetOffset(), turefunname, depedges)) {
+    if (!graph->RunPass<FunDepScan>(&ir_interface, prog, std::ref(disasm), mda.GetMethodId().GetOffset(), turefunname, depedges, class2memberfuns)) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": FuncDep scanning failed!";
 
         std::cout << "FuncDep Scanning " << func_name << ": failed!" << std::endl;
@@ -333,6 +334,9 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
     std::map<uint32_t, LexicalEnvStack*> method2lexicalenvstack;
 
     std::map<size_t, std::vector<std::string>> index2importnamespaces; 
+
+    std::map<uint32_t, std::vector<uint32_t>> class2memberfuns;
+
     std::vector<std::string> localnamespaces; 
 
     parseModuleVars(pfile, disasm, parser_program, index2importnamespaces, localnamespaces);
@@ -348,7 +352,6 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
 
     }
 
-
     for (uint32_t id : pfile->GetClasses()) {
         
         panda_file::File::EntityId record_id {id};
@@ -363,9 +366,9 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
         std::vector<std::pair<uint32_t, uint32_t>> depedges;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        cda.EnumerateMethods([prog, &disasm, maps, is_dynamic, &result, &depedges](panda_file::MethodDataAccessor &mda){
+        cda.EnumerateMethods([prog, &disasm, maps, is_dynamic, &result, &depedges, &class2memberfuns](panda_file::MethodDataAccessor &mda){
             if (!mda.IsExternal()) {
-                result = ScanFunDep(prog, disasm, maps, &depedges, mda, is_dynamic) && result;
+                result = ScanFunDep(prog, disasm, maps, &depedges, &class2memberfuns, mda, is_dynamic) && result;
                 if(result){
                     std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "fun dep scan success! " << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
                 }else{
