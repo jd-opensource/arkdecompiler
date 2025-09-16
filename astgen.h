@@ -20,10 +20,10 @@ public:
         const BytecodeOptIrInterface *iface, pandasm::Program *prog,  es2panda::parser::Program* parser_program, 
         uint32_t methodoffset, std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack, std::map<uint32_t, std::string*> *patchvarspace,
         std::map<size_t, std::vector<std::string>> index2namespaces, std::vector<std::string> localnamespaces,
-        std::string fun_name)
+        std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns, std::string fun_name)
         : compiler::Optimization(graph), function_(function), ir_interface_(iface), program_(prog), methodoffset_(methodoffset),
         method2lexicalenvstack_(method2lexicalenvstack), patchvarspace_(patchvarspace), parser_program_(parser_program), 
-        index2namespaces_(index2namespaces), localnamespaces_(localnamespaces)
+        index2namespaces_(index2namespaces), localnamespaces_(localnamespaces), class2memberfuns_(class2memberfuns)
     {
 
         this->closure_count = 0;
@@ -472,6 +472,7 @@ public:
 
     std::map<size_t, std::vector<std::string>> index2namespaces_;
     std::vector<std::string> localnamespaces_;
+    std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns_;
    
     ///////////////////////////////////////////////////////////////////////////////////////
     std::stack<uint32_t> waitmethods;
