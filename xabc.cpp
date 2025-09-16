@@ -202,13 +202,13 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
     
     std::string turefunname = extractTrueFunName(func_name);
 
-    // if (!graph->RunPass<AstGen>(&function, &ir_interface, prog, parser_program, mda.GetMethodId().GetOffset(), method2lexicalenvstack, patchvarspace, std::ref(index2namespaces), std::ref(localnamespaces), std::ref(class2memberfuns), turefunname)) {
-    //     LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Code generation failed!";
+    if (!graph->RunPass<AstGen>(&function, &ir_interface, prog, parser_program, mda.GetMethodId().GetOffset(), method2lexicalenvstack, patchvarspace, std::ref(index2namespaces), std::ref(localnamespaces), std::ref(class2memberfuns), turefunname)) {
+        LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Code generation failed!";
 
-    //     std::cout << "Decompiling " << func_name << ": Code generation failed!" << std::endl;
+        std::cout << "Decompiling " << func_name << ": Code generation failed!" << std::endl;
 
-    //     return false;
-    // }
+        return false;
+    }
 
     std::cout << "Decompiled: " << func_name << std::endl;
 

@@ -35,12 +35,12 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
         auto ir_id1 = static_cast<uint32_t>(inst->GetImms()[2]);
         auto member_functions = enc->getLiteralArrayByOffset(ir_id1);
         if(member_functions){
-            std::for_each((*member_functions).begin(), (*member_functions).end(), [&enc](const std::string& word) {
+            std::for_each((*member_functions).begin(), (*member_functions).end(), [&enc, constructor_offset](const std::string& word) {
                 std::cout << word << std::endl;
                 if (enc->methodname2offset_.find(word) != enc->methodname2offset_.end()) {
                     auto memeber_offset = enc->methodname2offset_[word];
                     enc->depedges_->push_back(std::make_pair(enc->methodoffset_, memeber_offset));
-                    (*enc->class2memberfuns_)[enc->methodoffset_].push_back(memeber_offset);
+                    (*enc->class2memberfuns_)[constructor_offset].push_back(memeber_offset);
                 }else{
                     handleError("#function dep scan: not handle this case");
                 }

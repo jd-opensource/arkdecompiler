@@ -21,9 +21,7 @@ public:
         for (const auto& pair : this->disasm_.method_name_to_id_) {
             std::size_t pos = pair.first.find(':');
             if (pos != std::string::npos) {
-                
                 std::string result = pair.first.substr(0, pos);
-                std::cout << result << std::endl;
                 this->methodname2offset_[result] = pair.second.GetOffset();
             }
         }

@@ -1359,22 +1359,44 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
        case compiler::RuntimeInterface::IntrinsicId::DEFINECLASSWITHBUFFER_IMM8_ID16_ID16_IMM16_V8:
        {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto bc_id0 = enc->ir_interface_->GetMethodIdByOffset(ir_id0);
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 2); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id1 = static_cast<uint32_t>(inst->GetImms()[2]);
-            auto bc_id1 = enc->ir_interface_->GetLiteralArrayByOffset(ir_id1);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 3); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm3 = static_cast<uint32_t>(inst->GetImms()[3]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_DEFINECLASSWITHBUFFER(imm0, bc_id0, bc_id1, imm3, v0));
+            std::cout << "11111111111111111111111111111111111111111111111111111111111" << std::endl;
+            auto constructor_offset = static_cast<uint32_t>(inst->GetImms()[1]);
+            std::cout << "22222222222222222222222222222222222222222222222222222222222" << std::endl;
+            auto constructor_offset_name = enc->ir_interface_->GetMethodIdByOffset(constructor_offset);
+
+            std::cout << "@@: " << constructor_offset_name << std::endl;
+            std::cout << "33333333333333333333333333333333333333333333333333333333333" << std::endl;
+ 
+            if (enc->class2memberfuns_->find(constructor_offset) != enc->class2memberfuns_->end()) {
+                auto& member_funcs = (*enc->class2memberfuns_)[constructor_offset];
+                for (const auto& member_func_offset : member_funcs) {
+                    std::cout << "H: " << member_func_offset << std::endl;
+                }
+            } else {
+                ///////////////////////////////////////////////////////////////////////
+                for (const auto& pair : *enc->class2memberfuns_) {
+                    std::cout << std::hex <<"Key: " << pair.first << " -> Values: ";
+                    for (const auto& value : pair.second) {
+                        std::cout << value << " ";
+                    }
+                    std::cout << std::endl;
+                }
+                ///////////////////////////////////////////////////////////////////////
+                std::stringstream ss;
+                ss << "#defineclasswithbuffer: not handle this offset:";
+                ss << std::hex << constructor_offset;
+                handleError(ss.str());
+            }
+            std::cout << "44444444444444444444444444444444444444444444444444444444444" << std::endl;
+
+
+            [[maybe_unused]] auto father = inst->GetSrcReg(0);
             auto acc_dst = inst->GetDstReg();
+
             if (acc_dst != compiler::ACC_REG_ID) {
                 DoSta(inst->GetDstReg(), enc->result_);
             }
+
             break;
         }
 
