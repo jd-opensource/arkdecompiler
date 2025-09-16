@@ -141,7 +141,8 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
                         std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack, 
                         std::map<uint32_t, std::string*>* patchvarspace,
                         std::map<size_t, std::vector<std::string>>& index2namespaces, 
-                        std::vector<std::string>& localnamespaces)
+                        std::vector<std::string>& localnamespaces,
+                        std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns)
 {
 
     ArenaAllocator allocator {SpaceType::SPACE_TYPE_COMPILER};
@@ -201,7 +202,7 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
     
     std::string turefunname = extractTrueFunName(func_name);
 
-    // if (!graph->RunPass<AstGen>(&function, &ir_interface, prog, parser_program, mda.GetMethodId().GetOffset(), method2lexicalenvstack, patchvarspace, std::ref(index2namespaces), std::ref(localnamespaces), turefunname)) {
+    // if (!graph->RunPass<AstGen>(&function, &ir_interface, prog, parser_program, mda.GetMethodId().GetOffset(), method2lexicalenvstack, patchvarspace, std::ref(index2namespaces), std::ref(localnamespaces), std::ref(class2memberfuns), turefunname)) {
     //     LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Code generation failed!";
 
     //     std::cout << "Decompiling " << func_name << ": Code generation failed!" << std::endl;
@@ -384,7 +385,7 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
 
         for(const auto & methodoffset : sorted_methodoffsets ){
             panda_file::MethodDataAccessor mda(*pfile, panda_file::File::EntityId(methodoffset));
-            result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic, &method2lexicalenvstack, &patchvarspace, index2importnamespaces, localnamespaces) && result;
+            result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic, &method2lexicalenvstack, &patchvarspace, index2importnamespaces, localnamespaces, &class2memberfuns) && result;
             if(result){
                 LogAst(parser_program, outputAstFileName);
                 LogArkTS2File(parser_program, outputFileName);
@@ -393,11 +394,11 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
 
         int count = 0;
         std::cout <<  "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY" << std::endl;
-        cda.EnumerateMethods([&count, prog, parser_program, maps, is_dynamic, &result, &method2lexicalenvstack,  &patchvarspace, &index2importnamespaces, &localnamespaces, sorted_methodoffsets](panda_file::MethodDataAccessor &mda){
+        cda.EnumerateMethods([&count, prog, parser_program, maps, is_dynamic, &result, &method2lexicalenvstack,  &patchvarspace, &index2importnamespaces, &localnamespaces, &class2memberfuns, sorted_methodoffsets](panda_file::MethodDataAccessor &mda){
             count = count + 1;
             std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "enumerate method index: " << count << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
             if (!mda.IsExternal() && std::find(sorted_methodoffsets.begin(), sorted_methodoffsets.end(), mda.GetMethodId().GetOffset()) == sorted_methodoffsets.end() ){
-                result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic, &method2lexicalenvstack,  &patchvarspace, index2importnamespaces, localnamespaces) && result;
+                result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic, &method2lexicalenvstack,  &patchvarspace, index2importnamespaces, localnamespaces, &class2memberfuns) && result;
                 if(result){
                     LogAst(parser_program, outputAstFileName);
                     LogArkTS2File(parser_program, outputFileName);
