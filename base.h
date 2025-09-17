@@ -67,5 +67,6 @@
 #include <stdexcept>
 
 void handleError(const std::string& errorMessage);
+std::string extractTrueFunName(const std::string& input);
 
 #endif

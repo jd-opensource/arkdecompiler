@@ -1402,6 +1402,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 std::cout << "father is object" << std::endl;
             }
 
+            // auto identNode = 
+
+
+            // auto *classDefinition = AllocNode<es2panda::ir::ClassDefinition>(
+            //     nullptr, identNode, typeParamDecl, superTypeParams, std::move(implements), ctor, staticInitializer,
+            //     instanceInitializer, superClass, std::move(properties), std::move(indexSignatures), isDeclare, isAbstract);
+
             auto acc_dst = inst->GetDstReg();
             if (acc_dst != compiler::ACC_REG_ID) {
                 DoSta(inst->GetDstReg(), enc->result_);

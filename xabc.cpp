@@ -121,20 +121,6 @@ bool DecompileRunOptimizations(compiler::Graph *graph, BytecodeOptIrInterface *i
     return true;
 }
 
-std::string extractTrueFunName(const std::string& input) {
-    size_t start = input.find("#*#");
-    if (start == std::string::npos) {
-        return input; 
-    }
-
-    size_t colon = input.find(":", start);
-    if (colon == std::string::npos) {
-        return input; 
-    }
-
-    return input.substr(start + 3, colon - (start + 3));
-}
-
 bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program *parser_program, 
                         const pandasm::AsmEmitter::PandaFileToPandaAsmMaps *maps,
                         const panda_file::MethodDataAccessor &mda, bool is_dynamic,
