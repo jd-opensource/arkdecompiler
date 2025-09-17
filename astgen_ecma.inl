@@ -1389,10 +1389,20 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             std::cout << "44444444444444444444444444444444444444444444444444444444444" << std::endl;
 
+            [[maybe_unused]] auto father = *enc->get_expression_by_id(inst, 0);
+            
+            if(father != enc->constant_hole){
+                if(father->Type() == es2panda::ir::AstNodeType::IDENTIFIER){
+                    auto fathername = father->AsIdentifier()->Name().Mutf8();
+                    std::cout << "father is " << fathername << std::endl;
+                }else{
+                    handleError("#defineclasswithbuffer: not handle this father class");
+                }
+            }else{
+                std::cout << "father is object" << std::endl;
+            }
 
-            [[maybe_unused]] auto father = inst->GetSrcReg(0);
             auto acc_dst = inst->GetDstReg();
-
             if (acc_dst != compiler::ACC_REG_ID) {
                 DoSta(inst->GetDstReg(), enc->result_);
             }
