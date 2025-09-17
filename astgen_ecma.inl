@@ -1366,29 +1366,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             std::cout << "@@: " << constructor_offset_name << std::endl;
             std::cout << "33333333333333333333333333333333333333333333333333333333333" << std::endl;
- 
-            if (enc->class2memberfuns_->find(constructor_offset) != enc->class2memberfuns_->end()) {
-                auto& member_funcs = (*enc->class2memberfuns_)[constructor_offset];
-                for (const auto& member_func_offset : member_funcs) {
-                    std::cout << "H: " << member_func_offset << std::endl;
-                }
-            } else {
-                ///////////////////////////////////////////////////////////////////////
-                for (const auto& pair : *enc->class2memberfuns_) {
-                    std::cout << std::hex <<"Key: " << pair.first << " -> Values: ";
-                    for (const auto& value : pair.second) {
-                        std::cout << value << " ";
-                    }
-                    std::cout << std::endl;
-                }
-                ///////////////////////////////////////////////////////////////////////
-                std::stringstream ss;
-                ss << "#defineclasswithbuffer: not handle this offset:";
-                ss << std::hex << constructor_offset;
-                handleError(ss.str());
-            }
-            std::cout << "44444444444444444444444444444444444444444444444444444444444" << std::endl;
-
+            
             [[maybe_unused]] auto father = *enc->get_expression_by_id(inst, 0);
             
             if(father != enc->constant_hole){
@@ -1401,13 +1379,57 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }else{
                 std::cout << "father is object" << std::endl;
             }
+            
+            [[maybe_unused]] auto identNode = enc->get_identifier_byname(new std::string(extractTrueFunName(constructor_offset_name)));
 
-            // auto identNode = 
+            ArenaVector<es2panda::ir::TSClassImplements *> implements(enc->parser_program_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::TSIndexSignature *> indexSignatures(enc->parser_program_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Statement *> properties(enc->parser_program_->Allocator()->Adapter());
+           
+            es2panda::ir::MethodDefinition *ctor = nullptr;
+
+            [[maybe_unused]] auto *classDefinition = AllocNode<es2panda::ir::ClassDefinition>(enc,
+                 nullptr, identNode, nullptr, nullptr, std::move(implements), ctor, nullptr,
+                 nullptr, father, std::move(properties), std::move(indexSignatures), false, false);
 
 
-            // auto *classDefinition = AllocNode<es2panda::ir::ClassDefinition>(
-            //     nullptr, identNode, typeParamDecl, superTypeParams, std::move(implements), ctor, staticInitializer,
-            //     instanceInitializer, superClass, std::move(properties), std::move(indexSignatures), isDeclare, isAbstract);
+            if (enc->class2memberfuns_->find(constructor_offset) != enc->class2memberfuns_->end()) {
+                auto& member_funcs = (*enc->class2memberfuns_)[constructor_offset];
+                for (const auto& member_func_offset : member_funcs) {
+                    std::cout << "H: " << member_func_offset << std::endl;
+
+                    // auto *func = AllocNode<ir::ScriptFunction>(scope, std::move(params), nullptr, body, nullptr,
+                    //                                 ir::ScriptFunctionFlags::METHOD, false, false);
+                    // auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
+
+                    // ArenaVector<ir::Decorator *> decorators(enc->parser_program_->Allocator()->Adapter());
+                    // ArenaVector<ir::Annotation *> annotations(enc->parser_program_->Allocator()->Adapter());
+                    // ArenaVector<ir::ParamDecorators> paramDecorators(enc->parser_program_->Allocator()->Adapter());
+                    // auto *method = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, keyNode, funcExpr,
+                    //                                             methodInfo.modifiers, enc->parser_program_->Allocator()->Adapter(), 
+                    //                                             std::move(decorators), std::move(annotations), 
+                    //                                             std::move(paramDecorators), false);
+                    // classDefinition->AddToBody(method);
+
+                }
+            } else {
+                ///////////////////////////////////////////////////////////////////////
+                for (const auto& pair : *enc->class2memberfuns_) {
+                    std::cout << std::hex <<"Key: " << pair.first << " -> Values: ";
+                    for (const auto& value : pair.second) {
+                        std::cout << value << " ";                    
+                    }
+                    std::cout << std::endl;
+                }
+                ///////////////////////////////////////////////////////////////////////
+                std::stringstream ss;
+                ss << "#defineclasswithbuffer: not handle this offset:";
+                ss << std::hex << constructor_offset;
+                handleError(ss.str());
+            }
+            std::cout << "44444444444444444444444444444444444444444444444444444444444" << std::endl;
+
+
 
             auto acc_dst = inst->GetDstReg();
             if (acc_dst != compiler::ACC_REG_ID) {
