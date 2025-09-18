@@ -1146,7 +1146,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
             auto bc_id0 = enc->ir_interface_->GetMethodIdByOffset(ir_id0);
  
-            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(bc_id0)));
+            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(extractTrueFunName(bc_id0))));
             break;
         }
 
@@ -1389,7 +1389,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             ArenaVector<es2panda::ir::Annotation *> annotations(enc->parser_program_->Allocator()->Adapter());
             ArenaVector<es2panda::ir::ParamDecorators> paramDecorators(enc->parser_program_->Allocator()->Adapter());
 
-            auto keyNode = enc->get_identifier_byname(new std::string("constructor"));;
+            auto keyNode = enc->get_identifier_byname(new std::string("constructor"));
             auto func = (*enc->method2scriptfunast_)[constructor_offset];
             auto funcExpr = AllocNode<es2panda::ir::FunctionExpression>(enc, func);
             auto ctor = AllocNode<es2panda::ir::MethodDefinition>(enc, es2panda::ir::MethodDefinitionKind::CONSTRUCTOR, keyNode, funcExpr,
@@ -1441,12 +1441,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             [[maybe_unused]] auto *classDecl = AllocNode<es2panda::ir::ClassDeclaration>(enc, classDefinition, 
                                                     std::move(decorators1), std::move(annotations1), false);
 
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
+            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(extractTrueFunName(constructor_offset_name))));
 
-            enc->add_insAst_to_blockstatemnt_by_inst(inst, classDecl);
+           // enc->add_insAst_to_blockstatemnt_by_inst(inst, classDecl);
 
             break;
         }
