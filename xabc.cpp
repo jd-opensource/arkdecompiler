@@ -403,8 +403,10 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
             program_ast->AddStatementAtPos(program_statements.size(), it->second);
         }
         
+        LogAst(parser_program, outputAstFileName);
+        LogArkTS2File(parser_program, outputFileName);
+
         std::cout <<  "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" << std::endl;
-       
     } 
 
     // LogAst(parser_program);
