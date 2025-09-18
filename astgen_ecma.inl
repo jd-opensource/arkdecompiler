@@ -1443,7 +1443,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(extractTrueFunName(constructor_offset_name))));
 
-           // enc->add_insAst_to_blockstatemnt_by_inst(inst, classDecl);
+            (*enc->ctor2classdeclast_)[constructor_offset] = classDecl;
+
+            // enc->add_insAst_to_blockstatemnt_by_inst(inst, classDecl);
 
             break;
         }
