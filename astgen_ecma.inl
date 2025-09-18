@@ -1398,16 +1398,16 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 for (const auto& member_func_offset : member_funcs) {
                     std::cout << "H: " << member_func_offset << std::endl;
                     auto func = (*enc->method2scriptfunast_)[member_func_offset];
-                    [[maybe_unused]] auto *funcExpr = AllocNode<es2panda::ir::FunctionExpression>(enc, func);
-
-                    // ArenaVector<ir::Decorator *> decorators(enc->parser_program_->Allocator()->Adapter());
-                    // ArenaVector<ir::Annotation *> annotations(enc->parser_program_->Allocator()->Adapter());
-                    // ArenaVector<ir::ParamDecorators> paramDecorators(enc->parser_program_->Allocator()->Adapter());
-                    // auto *method = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, keyNode, funcExpr,
-                    //                                             methodInfo.modifiers, enc->parser_program_->Allocator()->Adapter(), 
-                    //                                             std::move(decorators), std::move(annotations), 
-                    //                                             std::move(paramDecorators), false);
-                    // classDefinition->AddToBody(method);
+                    [[maybe_unused]] auto funcExpr = AllocNode<es2panda::ir::FunctionExpression>(enc, func);
+                    [[maybe_unused]] auto keyNode = enc->get_identifier_byname(new std::string(enc->ir_interface_->GetMethodIdByOffset(member_func_offset)));;
+                    ArenaVector<es2panda::ir::Decorator *> decorators(enc->parser_program_->Allocator()->Adapter());
+                    ArenaVector<es2panda::ir::Annotation *> annotations(enc->parser_program_->Allocator()->Adapter());
+                    ArenaVector<es2panda::ir::ParamDecorators> paramDecorators(enc->parser_program_->Allocator()->Adapter());
+                    auto *method = AllocNode<es2panda::ir::MethodDefinition>(enc, es2panda::ir::MethodDefinitionKind::METHOD, keyNode, funcExpr,
+                                                                 es2panda::ir::ModifierFlags::PUBLIC, enc->parser_program_->Allocator(), 
+                                                                std::move(decorators), std::move(annotations), 
+                                                                std::move(paramDecorators), false);
+                    classDefinition->AddToBody(method);
 
                 }
             } else {
