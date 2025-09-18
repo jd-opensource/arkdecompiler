@@ -1359,13 +1359,11 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
        case compiler::RuntimeInterface::IntrinsicId::DEFINECLASSWITHBUFFER_IMM8_ID16_ID16_IMM16_V8:
        {
-            std::cout << "11111111111111111111111111111111111111111111111111111111111" << std::endl;
+            
             auto constructor_offset = static_cast<uint32_t>(inst->GetImms()[1]);
-            std::cout << "22222222222222222222222222222222222222222222222222222222222" << std::endl;
             auto constructor_offset_name = enc->ir_interface_->GetMethodIdByOffset(constructor_offset);
 
             std::cout << "@@: " << constructor_offset_name << std::endl;
-            std::cout << "33333333333333333333333333333333333333333333333333333333333" << std::endl;
             
             [[maybe_unused]] auto father = *enc->get_expression_by_id(inst, 0);
             
@@ -1380,35 +1378,45 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 std::cout << "father is object" << std::endl;
             }
 
-            [[maybe_unused]] auto identNode = enc->get_identifier_byname(new std::string(extractTrueFunName(constructor_offset_name)));
+            auto identNode = enc->get_identifier_byname(new std::string(extractTrueFunName(constructor_offset_name)));
 
             ArenaVector<es2panda::ir::TSClassImplements *> implements(enc->parser_program_->Allocator()->Adapter());
             ArenaVector<es2panda::ir::TSIndexSignature *> indexSignatures(enc->parser_program_->Allocator()->Adapter());
             ArenaVector<es2panda::ir::Statement *> properties(enc->parser_program_->Allocator()->Adapter());
            
-            es2panda::ir::MethodDefinition *ctor = nullptr;
+            //////////////////////////////////////////////////////////////////////////////////////////////
+            ArenaVector<es2panda::ir::Decorator *> decorators(enc->parser_program_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Annotation *> annotations(enc->parser_program_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::ParamDecorators> paramDecorators(enc->parser_program_->Allocator()->Adapter());
 
-            [[maybe_unused]] auto *classDefinition = AllocNode<es2panda::ir::ClassDefinition>(enc,
-                 nullptr, identNode, nullptr, nullptr, std::move(implements), ctor, nullptr,
-                 nullptr, father, std::move(properties), std::move(indexSignatures), false, false);
+            auto keyNode = enc->get_identifier_byname(new std::string("constructor"));;
+            auto func = (*enc->method2scriptfunast_)[constructor_offset];
+            auto funcExpr = AllocNode<es2panda::ir::FunctionExpression>(enc, func);
+            auto ctor = AllocNode<es2panda::ir::MethodDefinition>(enc, es2panda::ir::MethodDefinitionKind::CONSTRUCTOR, keyNode, funcExpr,
+                                                            es2panda::ir::ModifierFlags::PUBLIC, enc->parser_program_->Allocator(), 
+                                                        std::move(decorators), std::move(annotations), 
+                                                        std::move(paramDecorators), false);
+            ///////////////////////////////////////////////////////////////////////////////////////////////
+            auto classDefinition = AllocNode<es2panda::ir::ClassDefinition>(enc,
+                                nullptr, identNode, nullptr, nullptr, std::move(implements), ctor, nullptr,
+                                nullptr, father, std::move(properties), std::move(indexSignatures), false, false);
 
 
             if (enc->class2memberfuns_->find(constructor_offset) != enc->class2memberfuns_->end()) {
                 auto& member_funcs = (*enc->class2memberfuns_)[constructor_offset];
                 for (const auto& member_func_offset : member_funcs) {
-                    std::cout << "H: " << member_func_offset << std::endl;
                     auto func = (*enc->method2scriptfunast_)[member_func_offset];
-                    [[maybe_unused]] auto funcExpr = AllocNode<es2panda::ir::FunctionExpression>(enc, func);
-                    [[maybe_unused]] auto keyNode = enc->get_identifier_byname(new std::string(enc->ir_interface_->GetMethodIdByOffset(member_func_offset)));;
+                    auto funcExpr = AllocNode<es2panda::ir::FunctionExpression>(enc, func);
+                    auto keyNode = enc->get_identifier_byname(new std::string(enc->ir_interface_->GetMethodIdByOffset(member_func_offset)));;
                     ArenaVector<es2panda::ir::Decorator *> decorators(enc->parser_program_->Allocator()->Adapter());
                     ArenaVector<es2panda::ir::Annotation *> annotations(enc->parser_program_->Allocator()->Adapter());
                     ArenaVector<es2panda::ir::ParamDecorators> paramDecorators(enc->parser_program_->Allocator()->Adapter());
-                    auto *method = AllocNode<es2panda::ir::MethodDefinition>(enc, es2panda::ir::MethodDefinitionKind::METHOD, keyNode, funcExpr,
+
+                    auto method = AllocNode<es2panda::ir::MethodDefinition>(enc, es2panda::ir::MethodDefinitionKind::METHOD, keyNode, funcExpr,
                                                                  es2panda::ir::ModifierFlags::PUBLIC, enc->parser_program_->Allocator(), 
                                                                 std::move(decorators), std::move(annotations), 
                                                                 std::move(paramDecorators), false);
                     classDefinition->AddToBody(method);
-
                 }
             } else {
                 ///////////////////////////////////////////////////////////////////////
@@ -1425,14 +1433,20 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 ss << std::hex << constructor_offset;
                 handleError(ss.str());
             }
-            std::cout << "44444444444444444444444444444444444444444444444444444444444" << std::endl;
+            
+            ArenaVector<es2panda::ir::Decorator *> decorators1(enc->parser_program_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Annotation *> annotations1(enc->parser_program_->Allocator()->Adapter());
 
-
+            
+            [[maybe_unused]] auto *classDecl = AllocNode<es2panda::ir::ClassDeclaration>(enc, classDefinition, 
+                                                    std::move(decorators1), std::move(annotations1), false);
 
             auto acc_dst = inst->GetDstReg();
             if (acc_dst != compiler::ACC_REG_ID) {
                 DoSta(inst->GetDstReg(), enc->result_);
             }
+
+            enc->add_insAst_to_blockstatemnt_by_inst(inst, classDecl);
 
             break;
         }
