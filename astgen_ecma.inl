@@ -1379,7 +1379,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }else{
                 std::cout << "father is object" << std::endl;
             }
-            
+
             [[maybe_unused]] auto identNode = enc->get_identifier_byname(new std::string(extractTrueFunName(constructor_offset_name)));
 
             ArenaVector<es2panda::ir::TSClassImplements *> implements(enc->parser_program_->Allocator()->Adapter());
@@ -1397,10 +1397,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 auto& member_funcs = (*enc->class2memberfuns_)[constructor_offset];
                 for (const auto& member_func_offset : member_funcs) {
                     std::cout << "H: " << member_func_offset << std::endl;
-
-                    // auto *func = AllocNode<ir::ScriptFunction>(scope, std::move(params), nullptr, body, nullptr,
-                    //                                 ir::ScriptFunctionFlags::METHOD, false, false);
-                    // auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
+                    auto func = (*enc->method2scriptfunast_)[member_func_offset];
+                    [[maybe_unused]] auto *funcExpr = AllocNode<es2panda::ir::FunctionExpression>(enc, func);
 
                     // ArenaVector<ir::Decorator *> decorators(enc->parser_program_->Allocator()->Adapter());
                     // ArenaVector<ir::Annotation *> annotations(enc->parser_program_->Allocator()->Adapter());

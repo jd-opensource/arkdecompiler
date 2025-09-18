@@ -20,10 +20,12 @@ public:
         const BytecodeOptIrInterface *iface, pandasm::Program *prog,  es2panda::parser::Program* parser_program, 
         uint32_t methodoffset, std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack, std::map<uint32_t, std::string*> *patchvarspace,
         std::map<size_t, std::vector<std::string>> index2namespaces, std::vector<std::string> localnamespaces,
-        std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns, std::string fun_name)
+        std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns, 
+        std::map<uint32_t, panda::es2panda::ir::ScriptFunction *> *method2scriptfunast, std::string fun_name)
         : compiler::Optimization(graph), function_(function), ir_interface_(iface), program_(prog), methodoffset_(methodoffset),
         method2lexicalenvstack_(method2lexicalenvstack), patchvarspace_(patchvarspace), parser_program_(parser_program), 
-        index2namespaces_(index2namespaces), localnamespaces_(localnamespaces), class2memberfuns_(class2memberfuns)
+        index2namespaces_(index2namespaces), localnamespaces_(localnamespaces), class2memberfuns_(class2memberfuns),
+        method2scriptfunast_(method2scriptfunast)
     {
 
         this->closure_count = 0;
@@ -50,6 +52,7 @@ public:
         panda::es2panda::ir::ScriptFunctionFlags flags_ {panda::es2panda::ir::ScriptFunctionFlags::NONE};
         auto funcNode = parser_program->Allocator()->New<panda::es2panda::ir::ScriptFunction>(nullptr, std::move(arguments), nullptr, body, nullptr, flags_, true, false);
         
+        (*this->method2scriptfunast_)[methodoffset] = funcNode;
 
         panda::es2panda::util::StringView name_view = panda::es2panda::util::StringView(*new std::string(fun_name));
         auto funname_id = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(name_view);
@@ -473,6 +476,7 @@ public:
     std::map<size_t, std::vector<std::string>> index2namespaces_;
     std::vector<std::string> localnamespaces_;
     std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns_;
+    std::map<uint32_t, panda::es2panda::ir::ScriptFunction *> *method2scriptfunast_;
    
     ///////////////////////////////////////////////////////////////////////////////////////
     std::stack<uint32_t> waitmethods;
