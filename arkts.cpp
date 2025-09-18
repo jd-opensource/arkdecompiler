@@ -626,6 +626,18 @@ void ArkTSGen::EmitExportNamedDeclaration(const ir::AstNode *node){
     this->writeTrailingSemicolon();
 }
 
+void ArkTSGen::EmitClassDeclaration(const ir::AstNode *node){
+    std::cout << "[+] start emit class declaration statement"  << std::endl;
+    [[maybe_unused]] auto classdeclaration = static_cast<const panda::es2panda::ir::ClassDeclaration*>(node);
+    
+    this->writeKeyWords("class");
+    this->writeSpace();
+
+    // TODO
+
+    this->writeTrailingSemicolon();
+}
+
 void ArkTSGen::EmitStatement(const ir::AstNode *node)
 {
     if(node == nullptr){
@@ -730,6 +742,12 @@ void ArkTSGen::EmitStatement(const ir::AstNode *node)
         case AstNodeType::EXPORT_NAMED_DECLARATION:{
             std::cout << "enter EXPORT_NAMED_DECLARATION STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
             this->EmitExportNamedDeclaration(node);
+            break;
+        }
+
+        case AstNodeType::CLASS_DECLARATION: {
+            std::cout << "enter CLASS_DECLARATION STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+            this->EmitClassDeclaration(node);
             break;
         }
 

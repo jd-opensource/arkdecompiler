@@ -1375,6 +1375,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     handleError("#defineclasswithbuffer: not handle this father class");
                 }
             }else{
+                father = nullptr;
                 std::cout << "father is object" << std::endl;
             }
 
@@ -1391,6 +1392,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto keyNode = enc->get_identifier_byname(new std::string("constructor"));
             auto func = (*enc->method2scriptfunast_)[constructor_offset];
+            if(func == nullptr){
+                handleError("#defineclasswithbuffer: find constructor function fail!");
+            }
             auto funcExpr = AllocNode<es2panda::ir::FunctionExpression>(enc, func);
             auto ctor = AllocNode<es2panda::ir::MethodDefinition>(enc, es2panda::ir::MethodDefinitionKind::CONSTRUCTOR, keyNode, funcExpr,
                                                             es2panda::ir::ModifierFlags::PUBLIC, enc->parser_program_->Allocator(), 
@@ -1406,6 +1410,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 auto& member_funcs = (*enc->class2memberfuns_)[constructor_offset];
                 for (const auto& member_func_offset : member_funcs) {
                     auto func = (*enc->method2scriptfunast_)[member_func_offset];
+                    if(func == nullptr){
+                        handleError("#defineclasswithbuffer: find member function fail!");
+                    }
                     auto funcExpr = AllocNode<es2panda::ir::FunctionExpression>(enc, func);
                     auto keyNode = enc->get_identifier_byname(new std::string(enc->ir_interface_->GetMethodIdByOffset(member_func_offset)));;
                     ArenaVector<es2panda::ir::Decorator *> decorators(enc->parser_program_->Allocator()->Adapter());
