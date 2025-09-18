@@ -398,6 +398,11 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
                 }
             }
         });
+
+        for (auto it = ctor2classdeclast.begin(); it != ctor2classdeclast.end(); ++it) {
+            program_ast->AddStatementAtPos(program_statements.size(), it->second);
+        }
+        
         std::cout <<  "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" << std::endl;
        
     } 
