@@ -22,13 +22,16 @@ public:
         std::map<size_t, std::vector<std::string>> index2namespaces, std::vector<std::string> localnamespaces,
         std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns, 
         std::map<uint32_t, panda::es2panda::ir::ScriptFunction *> *method2scriptfunast, 
-        std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *>* ctor2classdeclast, std::string fun_name)
+        std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *>* ctor2classdeclast, std::vector<uint32_t> *thisfuns, std::string fun_name)
         : compiler::Optimization(graph), function_(function), ir_interface_(iface), program_(prog), methodoffset_(methodoffset),
         method2lexicalenvstack_(method2lexicalenvstack), patchvarspace_(patchvarspace), parser_program_(parser_program), 
         index2namespaces_(index2namespaces), localnamespaces_(localnamespaces), class2memberfuns_(class2memberfuns),
-        method2scriptfunast_(method2scriptfunast), ctor2classdeclast_(ctor2classdeclast)
+        method2scriptfunast_(method2scriptfunast), ctor2classdeclast_(ctor2classdeclast), thisfuns_(thisfuns)
     {
-
+        std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+        auto x= function->GetFunctionKind();
+        std::cout << static_cast<int>(x) << std::endl;
+        std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
         this->closure_count = 0;
 
         ArenaVector<es2panda::ir::Expression*> arguments(parser_program->Allocator()->Adapter());
@@ -44,7 +47,16 @@ public:
         this->bb2lexicalenvstack[graph->GetStartBlock()] = (*this->method2lexicalenvstack_)[methodoffset];
         
         for (size_t i = 0; i < function->GetParamsNum(); ++i) {
-            panda::es2panda::util::StringView tmp_name_view = panda::es2panda::util::StringView(*new std::string("arg"+std::to_string(i)));
+            if(i <= 2){
+                continue;
+            }
+            std::string* argname = nullptr;
+            if(std::find(this->thisfuns_->begin(), this->thisfuns_->end(), methodoffset) != this->thisfuns_->end() && i == 2 ){
+                argname = new std::string("this");
+            }else{
+                argname = new std::string("arg"+std::to_string(i-3));
+            }
+            panda::es2panda::util::StringView tmp_name_view = panda::es2panda::util::StringView(*argname);
             arguments.push_back(parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(tmp_name_view));
         }
 
@@ -479,6 +491,8 @@ public:
     std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns_;
     std::map<uint32_t, panda::es2panda::ir::ScriptFunction *> *method2scriptfunast_;
     std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *>* ctor2classdeclast_;
+
+    std::vector<uint32_t> *thisfuns_;
    
     ///////////////////////////////////////////////////////////////////////////////////////
     std::stack<uint32_t> waitmethods;
