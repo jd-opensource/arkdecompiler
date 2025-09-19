@@ -382,6 +382,12 @@ void  ArkTSGen::EmitFunctionDeclaration(const ir::AstNode *node){
     int count = 1;
     int argumentsize = scriptfunction->Params().size();
     for (const auto *param : scriptfunction->Params()) {
+        // if(count > 3){
+        //     this->EmitExpression(param);
+        // }else{
+        //     count++;
+        //     continue;
+        // }
         this->EmitExpression(param);
         if(count ++ < argumentsize){
             this->writeComma();
@@ -677,6 +683,12 @@ void ArkTSGen::EmitMethodDefinition(const ir::AstNode *node){
     int count = 1;
     int argumentsize = scriptfunction->Params().size();
     for (const auto *param : scriptfunction->Params()) {
+        // if(count > 3){
+        //     this->EmitExpression(param);
+        // }else{
+        //     count++;
+        //     continue;
+        // }
         this->EmitExpression(param);
         if(count ++ < argumentsize){
             this->writeComma();
