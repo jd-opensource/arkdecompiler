@@ -383,10 +383,10 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
         for(const auto & methodoffset : sorted_methodoffsets ){
             panda_file::MethodDataAccessor mda(*pfile, panda_file::File::EntityId(methodoffset));
             result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic, &method2lexicalenvstack, &patchvarspace, index2importnamespaces, localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &thisfuns) && result;
-            if(result){
-                LogAst(parser_program, outputAstFileName);
-                LogArkTS2File(parser_program, outputFileName);
-            }
+            // if(result){
+            //     LogAst(parser_program, outputAstFileName);
+            //     LogArkTS2File(parser_program, outputFileName);
+            // }
         }
 
         int count = 0;
@@ -396,15 +396,15 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
             std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "enumerate method index: " << count << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
             if (!mda.IsExternal() && std::find(sorted_methodoffsets.begin(), sorted_methodoffsets.end(), mda.GetMethodId().GetOffset()) == sorted_methodoffsets.end() ){
                 result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic, &method2lexicalenvstack,  &patchvarspace, index2importnamespaces, localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &thisfuns) && result;
-                if(result){
-                    LogAst(parser_program, outputAstFileName);
-                    LogArkTS2File(parser_program, outputFileName);
-                }
+                // if(result){
+                //     LogAst(parser_program, outputAstFileName);
+                //     LogArkTS2File(parser_program, outputFileName);
+                // }
             }
         });
 
 
-        for (auto it = method2scriptfunast.begin(); it != method2scriptfunast.end(); ++it) {
+        for (auto it = method2scriptfunast.rbegin(); it != method2scriptfunast.rend(); ++it) {
             auto funcDecl = parser_program->Allocator()->New<panda::es2panda::ir::FunctionDeclaration>(it->second);
             program_ast->AddStatementAtPos(program_statements.size(), funcDecl);
         }

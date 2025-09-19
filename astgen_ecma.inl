@@ -2832,8 +2832,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
 
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
-            for (uint32_t i = 0; i <= argsum; ++i) {
-                arguments.push_back(*enc->get_expression_by_id(inst, i));
+            for (uint32_t i = 1; i <= argsum; ++i) {
+                arguments.push_back(*enc->get_expression_by_id(inst, i-1));
             }
 
             
