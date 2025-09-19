@@ -38,7 +38,6 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
         auto member_functions = enc->getLiteralArrayByOffset(ir_id1);
         if(member_functions){
             std::for_each((*member_functions).begin(), (*member_functions).end(), [&enc, constructor_offset](const std::string& word) {
-                std::cout << word << std::endl;
                 if (enc->methodname2offset_.find(word) != enc->methodname2offset_.end()) {
                     auto memeber_offset = enc->methodname2offset_[word];
                     enc->depedges_->push_back(std::make_pair(memeber_offset, enc->methodoffset_));
