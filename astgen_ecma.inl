@@ -1392,6 +1392,11 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto keyNode = enc->get_identifier_byname(new std::string("constructor"));
             auto func = (*enc->method2scriptfunast_)[constructor_offset];
+            
+            es2panda::ir::Identifier * x = func->Id();
+            x= nullptr;
+
+
             if(func == nullptr){
                 handleError("#defineclasswithbuffer: find constructor function fail!");
             }
@@ -1413,8 +1418,12 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     if(func == nullptr){
                         handleError("#defineclasswithbuffer: find member function fail!");
                     }
+
+                    es2panda::ir::Identifier * x = func->Id();
+                    x= nullptr;
+
                     auto funcExpr = AllocNode<es2panda::ir::FunctionExpression>(enc, func);
-                    auto keyNode = enc->get_identifier_byname(new std::string(enc->ir_interface_->GetMethodIdByOffset(member_func_offset)));;
+                    auto keyNode = enc->get_identifier_byname(new std::string(extractTrueFunName(enc->ir_interface_->GetMethodIdByOffset(member_func_offset))));;
                     ArenaVector<es2panda::ir::Decorator *> decorators(enc->parser_program_->Allocator()->Adapter());
                     ArenaVector<es2panda::ir::Annotation *> annotations(enc->parser_program_->Allocator()->Adapter());
                     ArenaVector<es2panda::ir::ParamDecorators> paramDecorators(enc->parser_program_->Allocator()->Adapter());
