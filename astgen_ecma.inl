@@ -1392,6 +1392,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto keyNode = enc->get_identifier_byname(new std::string("constructor"));
             auto func = (*enc->method2scriptfunast_)[constructor_offset];
+            enc->method2scriptfunast_->erase(constructor_offset);
             
             es2panda::ir::Identifier * x = func->Id();
             x= nullptr;
@@ -1415,6 +1416,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 auto& member_funcs = (*enc->class2memberfuns_)[constructor_offset];
                 for (const auto& member_func_offset : member_funcs) {
                     auto func = (*enc->method2scriptfunast_)[member_func_offset];
+                    enc->method2scriptfunast_->erase(member_func_offset);
+
                     if(func == nullptr){
                         handleError("#defineclasswithbuffer: find member function fail!");
                     }
