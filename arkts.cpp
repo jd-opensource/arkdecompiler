@@ -629,14 +629,70 @@ void ArkTSGen::EmitExportNamedDeclaration(const ir::AstNode *node){
 void ArkTSGen::EmitClassDeclaration(const ir::AstNode *node){
     std::cout << "[+] start emit class declaration statement"  << std::endl;
     [[maybe_unused]] auto classdeclaration = static_cast<const panda::es2panda::ir::ClassDeclaration*>(node);
-    
+    [[maybe_unused]] auto classdefinition = const_cast<ir::ClassDefinition*>(classdeclaration->Definition());
+
     this->writeKeyWords("class");
     this->writeSpace();
+    std::cout << classdefinition->Ident()->Name().Mutf8()  << std::endl;
+    this->EmitExpression(classdefinition->Ident());
+    this->writeSpace();
 
-    // TODO
+    if(classdefinition->Super()){
+        this->writeKeyWords("extends");
+        this->writeSpace();
+        this->EmitExpression(classdefinition->Super());
+        this->writeSpace();
+    }
 
+    this->writeLeftBrace();
+    this->writeNewLine();
+
+    // constructor
+    this->indent_ = this->indent_ + this->singleindent_;
+    this->EmitStatement(classdefinition->Ctor());
+
+    
+    // member function
+    const ArenaVector<es2panda::ir::Statement *> &statements = classdefinition->Body();
+    for (es2panda::ir::Statement *stmt : statements) {
+        this->EmitStatement(stmt);
+    }
+
+    this->indent_ = this->indent_ - this->singleindent_;
+
+    this->writeNewLine();
+    this->writeRightBrace();
     this->writeTrailingSemicolon();
 }
+
+void ArkTSGen::EmitMethodDefinition(const ir::AstNode *node){
+    std::cout << "[+] start emit method definition statement"  << std::endl;
+    auto methoddefinition = static_cast<const panda::es2panda::ir::MethodDefinition*>(node);
+    
+    this->EmitExpression(methoddefinition->Key());
+    this->writeLeftParentheses();
+
+    auto scriptfunction = static_cast<const panda::es2panda::ir::ScriptFunction*>(methoddefinition->Value()->Function());
+
+    int count = 1;
+    int argumentsize = scriptfunction->Params().size();
+    for (const auto *param : scriptfunction->Params()) {
+        this->EmitExpression(param);
+        if(count ++ < argumentsize){
+            this->writeComma();
+        }
+    }
+    this->writeRightParentheses();
+    this->writeLeftBrace();
+    this->writeNewLine();
+    this->indent_ = this->indent_ + this->singleindent_;
+    this->EmitStatement(scriptfunction->Body());
+    this->indent_ = this->indent_ - this->singleindent_;
+    this->writeIndent();
+    this->writeRightBrace();
+    this->writeNewLine();
+}
+
 
 void ArkTSGen::EmitStatement(const ir::AstNode *node)
 {
@@ -647,7 +703,6 @@ void ArkTSGen::EmitStatement(const ir::AstNode *node)
     if(node->Type() != AstNodeType::BLOCK_STATEMENT && node->Type() != AstNodeType::VARIABLE_DECLARATOR ){
         this->writeIndent();
     }
-
 
     std::cout << "emit statement start " << std::endl;
     switch(node->Type()){
@@ -751,8 +806,20 @@ void ArkTSGen::EmitStatement(const ir::AstNode *node)
             break;
         }
 
+        case AstNodeType::METHOD_DEFINITION:{
+            std::cout << "enter METHOD_DEFINITION STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+            this->EmitMethodDefinition(node);
+            break;
+        }
+
+        case AstNodeType::FUNCTION_EXPRESSION:{
+            std::cout << "enter FUNCTION_EXPRESSION STATEMENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+            break;
+        }
+
         default:
-            handleError("#EmitStatement : unsupport statement");;
+            std::cout << "--------------------------------------------------------------------" << std::endl;
+            handleError("#EmitStatement : unsupport statement");
     }
 
 

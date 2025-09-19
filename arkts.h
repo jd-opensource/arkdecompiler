@@ -206,6 +206,7 @@ private:
     void EmitExportNamedDeclaration(const ir::AstNode *node);
 
     void EmitClassDeclaration(const ir::AstNode *node);
+    void EmitMethodDefinition(const ir::AstNode *node);
 
     void EmitFunctionDeclaration(const ir::AstNode *node);
 
