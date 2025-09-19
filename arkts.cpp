@@ -666,9 +666,9 @@ void ArkTSGen::EmitClassDeclaration(const ir::AstNode *node){
 
     this->indent_ = this->indent_ - this->singleindent_;
 
-    this->writeNewLine();
     this->writeRightBrace();
     this->writeTrailingSemicolon();
+    this->writeNewLine();
 }
 
 void ArkTSGen::EmitMethodDefinition(const ir::AstNode *node){
