@@ -399,6 +399,12 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
             }
         });
 
+
+        for (auto it = method2scriptfunast.begin(); it != method2scriptfunast.end(); ++it) {
+            auto funcDecl = parser_program->Allocator()->New<panda::es2panda::ir::FunctionDeclaration>(it->second);
+            program_ast->AddStatementAtPos(program_statements.size(), funcDecl);
+        }
+
         for (auto it = ctor2classdeclast.begin(); it != ctor2classdeclast.end(); ++it) {
             program_ast->AddStatementAtPos(program_statements.size(), it->second);
         }
