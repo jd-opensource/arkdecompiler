@@ -60,13 +60,13 @@ public:
                 
 
         funcNode->SetIdent(funname_id);
-        auto funcDecl = parser_program->Allocator()->New<panda::es2panda::ir::FunctionDeclaration>(funcNode);
+        //auto funcDecl = parser_program->Allocator()->New<panda::es2panda::ir::FunctionDeclaration>(funcNode);
 
-        auto program_block = parser_program->Ast();
-        auto program_statements = program_block->Statements();
+        //auto program_block = parser_program->Ast();
+        //auto program_statements = program_block->Statements();
 
         // add 0 block statement
-        program_block->AddStatementAtPos(program_statements.size(), funcDecl);
+        //program_block->AddStatementAtPos(program_statements.size(), funcDecl);
 
         
         this->id2block[0] = body;
