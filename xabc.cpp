@@ -101,7 +101,7 @@ bool DecompileRunOptimizations(compiler::Graph *graph, BytecodeOptIrInterface *i
 }
 
 bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program *parser_program, 
-                        const pandasm::AsmEmitter::PandaFileToPandaAsmMaps *maps,
+                        BytecodeOptIrInterface *ir_interface,
                         const panda_file::MethodDataAccessor &mda, bool is_dynamic,
                         std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack, 
                         std::map<uint32_t, std::string*>* patchvarspace,
@@ -119,9 +119,9 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
 
     SetCompilerOptions();
 
-    auto ir_interface = BytecodeOptIrInterface(maps, prog);
+    
 
-    auto func_name = ir_interface.GetMethodIdByOffset(mda.GetMethodId().GetOffset() );
+    auto func_name = ir_interface->GetMethodIdByOffset(mda.GetMethodId().GetOffset() );
     std::cout << std::endl << "[+] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Decompile "  << func_name << " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< [+]" << std::endl << std::endl;
     [[maybe_unused]] auto it = prog->function_table.find(func_name);
     if (it == prog->function_table.end()) {
@@ -157,7 +157,7 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
         return false;
     }
 
-    if (!DecompileRunOptimizations(graph, &ir_interface)) {
+    if (!DecompileRunOptimizations(graph, ir_interface)) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Running optimizations failed!";
         std::cout << "Optimizing " << func_name << ": Running optimizations failed!" << std::endl;
         return false;
@@ -169,7 +169,7 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
     
     std::string turefunname = extractTrueFunName(func_name);
 
-    if (!graph->RunPass<AstGen>(&function, &ir_interface, prog, parser_program, mda.GetMethodId().GetOffset(), method2lexicalenvstack, patchvarspace, std::ref(index2namespaces), std::ref(localnamespaces), std::ref(class2memberfuns), std::ref(method2scriptfunast), std::ref(ctor2classdeclast), std::ref(thisfuns), turefunname)) {
+    if (!graph->RunPass<AstGen>(&function, ir_interface, prog, parser_program, mda.GetMethodId().GetOffset(), method2lexicalenvstack, patchvarspace, std::ref(index2namespaces), std::ref(localnamespaces), std::ref(class2memberfuns), std::ref(method2scriptfunast), std::ref(ctor2classdeclast), std::ref(thisfuns), turefunname)) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Code generation failed!";
 
         std::cout << "Decompiling " << func_name << ": Code generation failed!" << std::endl;
@@ -215,7 +215,7 @@ void LogArkTS2File(panda::es2panda::parser::Program *parser_program, std::string
 
 
 bool ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
-                const pandasm::AsmEmitter::PandaFileToPandaAsmMaps *maps,
+                BytecodeOptIrInterface *ir_interface,
                 std::vector<std::pair<uint32_t, uint32_t>>* depedges,
                 std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns,
                 std::vector<uint32_t>* thisfuns,
@@ -227,9 +227,7 @@ bool ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
 
     SetCompilerOptions();
 
-    auto ir_interface = BytecodeOptIrInterface(maps, prog);
-
-    auto func_name = ir_interface.GetMethodIdByOffset(mda.GetMethodId().GetOffset() );
+    auto func_name = ir_interface->GetMethodIdByOffset(mda.GetMethodId().GetOffset() );
     std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>> "  << func_name << " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
     [[maybe_unused]] auto it = prog->function_table.find(func_name);
     if (it == prog->function_table.end()) {
@@ -264,14 +262,14 @@ bool ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
         return false;
     }
 
-    if (!DecompileRunOptimizations(graph, &ir_interface)) {
+    if (!DecompileRunOptimizations(graph, ir_interface)) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Running optimizations failed!";
         std::cout << "Optimizing " << func_name << ": Running optimizations failed!" << std::endl;
         return false;
     }
     
     std::string turefunname = extractTrueFunName(func_name);
-    if (!graph->RunPass<FunDepScan>(&ir_interface, prog, std::ref(disasm), mda.GetMethodId().GetOffset(), turefunname, depedges, class2memberfuns, thisfuns)) {
+    if (!graph->RunPass<FunDepScan>(ir_interface, prog, std::ref(disasm), mda.GetMethodId().GetOffset(), turefunname, depedges, class2memberfuns, thisfuns)) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": FuncDep scanning failed!";
 
         std::cout << "FuncDep Scanning " << func_name << ": failed!" << std::endl;
@@ -283,7 +281,7 @@ bool ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
 }
 
 
-bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::PandaFileToPandaAsmMaps *maps,
+bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_interface,
                        const std::string &pfile_name, panda::disasm::Disassembler& disasm, bool is_dynamic)
 {
     auto pfile = panda_file::OpenPandaFile(pfile_name);
@@ -324,6 +322,7 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
         std::cout << "classname: " << std::left << std::setw(40) <<   cda.GetName().data  << " , fileds: " << cda.GetFieldsNumber() << " , method: " << cda.GetMethodsNumber() << " interface: " << cda.GetIfacesNumber() << " superclass: " <<  cda.GetSuperClassId()   << std::endl;
 
     }
+    
 
     for (uint32_t id : pfile->GetClasses()) {
         
@@ -339,9 +338,9 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
         std::vector<std::pair<uint32_t, uint32_t>> depedges;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        cda.EnumerateMethods([prog, &disasm, maps, is_dynamic, &result, &depedges, &class2memberfuns, &thisfuns](panda_file::MethodDataAccessor &mda){
+        cda.EnumerateMethods([prog, &disasm, ir_interface, is_dynamic, &result, &depedges, &class2memberfuns, &thisfuns](panda_file::MethodDataAccessor &mda){
             if (!mda.IsExternal()) {
-                result = ScanFunDep(prog, disasm, maps, &depedges, &class2memberfuns, &thisfuns, mda, is_dynamic) && result;
+                result = ScanFunDep(prog, disasm, ir_interface, &depedges, &class2memberfuns, &thisfuns, mda, is_dynamic) && result;
                 if(result){
                     std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "fun dep scan success! " << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
                 }else{
@@ -355,9 +354,11 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
         auto sorted_methodoffsets = topologicalSort(depedges);
         std::map<uint32_t, std::string*> patchvarspace;
 
+        
+
         for(const auto & methodoffset : sorted_methodoffsets ){
             panda_file::MethodDataAccessor mda(*pfile, panda_file::File::EntityId(methodoffset));
-            result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic, &method2lexicalenvstack, &patchvarspace, index2importnamespaces, localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &thisfuns) && result;
+            result = DecompileFunction(prog, parser_program, ir_interface, mda, is_dynamic, &method2lexicalenvstack, &patchvarspace, index2importnamespaces, localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &thisfuns) && result;
             // if(result){
             //     LogAst(parser_program, outputAstFileName);
             //     LogArkTS2File(parser_program, outputFileName);
@@ -366,11 +367,11 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
 
         int count = 0;
         std::cout <<  "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
-        cda.EnumerateMethods([&count, prog, parser_program, maps, is_dynamic, &result, &method2lexicalenvstack,  &patchvarspace, &index2importnamespaces, &localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &thisfuns, sorted_methodoffsets](panda_file::MethodDataAccessor &mda){
+        cda.EnumerateMethods([&count, prog, parser_program, ir_interface, is_dynamic, &result, &method2lexicalenvstack,  &patchvarspace, &index2importnamespaces, &localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &thisfuns, sorted_methodoffsets](panda_file::MethodDataAccessor &mda){
             count = count + 1;
             std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "enumerate method index: " << count << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
             if (!mda.IsExternal() && std::find(sorted_methodoffsets.begin(), sorted_methodoffsets.end(), mda.GetMethodId().GetOffset()) == sorted_methodoffsets.end() ){
-                result = DecompileFunction(prog, parser_program, maps, mda, is_dynamic, &method2lexicalenvstack,  &patchvarspace, index2importnamespaces, localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &thisfuns) && result;
+                result = DecompileFunction(prog, parser_program, ir_interface, mda, is_dynamic, &method2lexicalenvstack,  &patchvarspace, index2importnamespaces, localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &thisfuns) && result;
                 // if(result){
                 //     LogAst(parser_program, outputAstFileName);
                 //     LogArkTS2File(parser_program, outputFileName);
@@ -492,7 +493,9 @@ bool DecompileBytecode(pandasm::Program *prog, const pandasm::AsmEmitter::PandaF
         PoolManager::Initialize(PoolType::MALLOC);
     }
     
-    auto res = DecompilePandaFile(prog, maps, pandafile_name, disasm, is_dynamic);
+    auto ir_interface = BytecodeOptIrInterface(maps, prog);
+
+    auto res = DecompilePandaFile(prog, &ir_interface, pandafile_name, disasm, is_dynamic);
     
     if (!has_memory_pool) {
         PoolManager::Finalize();
