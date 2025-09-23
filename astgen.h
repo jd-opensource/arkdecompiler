@@ -22,11 +22,12 @@ public:
         std::map<size_t, std::vector<std::string>> index2namespaces, std::vector<std::string> localnamespaces,
         std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns, 
         std::map<uint32_t, panda::es2panda::ir::ScriptFunction *> *method2scriptfunast, 
-        std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *>* ctor2classdeclast, std::vector<uint32_t> *thisfuns, std::string fun_name)
+        std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *>* ctor2classdeclast, std::vector<uint32_t> *thisfuns, 
+        std::map<uint32_t, panda::es2panda::ir::Expression*> *class2father, std::string fun_name)
         : compiler::Optimization(graph), function_(function), ir_interface_(iface), program_(prog), methodoffset_(methodoffset),
         method2lexicalenvstack_(method2lexicalenvstack), patchvarspace_(patchvarspace), parser_program_(parser_program), 
         index2namespaces_(index2namespaces), localnamespaces_(localnamespaces), class2memberfuns_(class2memberfuns),
-        method2scriptfunast_(method2scriptfunast), ctor2classdeclast_(ctor2classdeclast), thisfuns_(thisfuns)
+        method2scriptfunast_(method2scriptfunast), ctor2classdeclast_(ctor2classdeclast), thisfuns_(thisfuns), class2father_(class2father)
     {
 
         this->closure_count = 0;
@@ -490,6 +491,8 @@ public:
     std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *>* ctor2classdeclast_;
 
     std::vector<uint32_t> *thisfuns_;
+
+    std::map<uint32_t, panda::es2panda::ir::Expression*> *class2father_;
    
     ///////////////////////////////////////////////////////////////////////////////////////
     std::stack<uint32_t> waitmethods;
