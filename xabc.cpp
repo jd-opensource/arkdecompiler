@@ -358,7 +358,7 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
             continue;
         }
 
-        std::cout << id << " XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << std::endl;
+        std::cout << id << " AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
 
         panda_file::ClassDataAccessor cda {*pfile, record_id};
         std::vector<std::pair<uint32_t, uint32_t>> depedges;
@@ -390,7 +390,7 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
         }
 
         int count = 0;
-        std::cout <<  "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY" << std::endl;
+        std::cout <<  "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
         cda.EnumerateMethods([&count, prog, parser_program, maps, is_dynamic, &result, &method2lexicalenvstack,  &patchvarspace, &index2importnamespaces, &localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &thisfuns, sorted_methodoffsets](panda_file::MethodDataAccessor &mda){
             count = count + 1;
             std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "enumerate method index: " << count << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
@@ -402,6 +402,82 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
                 // }
             }
         });
+
+        std::cout <<  "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC" << std::endl;
+        for(const auto & pair : class2memberfuns){
+            auto constructor_offset = pair.first;
+            auto member_funcs = pair.second;
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            auto constructor_offset_name = ir_interface_->GetMethodIdByOffset(constructor_offset);
+            panda::es2panda::util::StringView name_view1 = panda::es2panda::util::StringView(std::string(extractTrueFunName(constructor_offset_name)));
+            auto identNode = AllocNode<panda::es2panda::ir::Identifier>(this, name_view);
+
+            ArenaVector<es2panda::ir::TSClassImplements *> implements(parser_program_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::TSIndexSignature *> indexSignatures(parser_program_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Statement *> properties(parser_program_->Allocator()->Adapter());
+           
+            //////////////////////////////////////////////////////////////////////////////////////////////
+            ArenaVector<es2panda::ir::Decorator *> decorators(parser_program_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Annotation *> annotations(parser_program_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::ParamDecorators> paramDecorators(parser_program_->Allocator()->Adapter());
+
+            panda::es2panda::util::StringView name_view2 = panda::es2panda::util::StringView(std::string("constructor"));
+            auto keyNode = AllocNode<panda::es2panda::ir::Identifier>(this, name_view);
+
+            auto func = method2scriptfunast[constructor_offset];
+            method2scriptfunast->erase(constructor_offset);
+            
+            if(func == nullptr){
+                handleError("#defineclasswithbuffer: find constructor function fail!");
+            }
+            auto funcExpr = AllocNode<es2panda::ir::FunctionExpression>(func);
+            auto ctor = AllocNode<es2panda::ir::MethodDefinition>(es2panda::ir::MethodDefinitionKind::CONSTRUCTOR, keyNode, funcExpr,
+                                                            es2panda::ir::ModifierFlags::PUBLIC, enc->parser_program_->Allocator(), 
+                                                        std::move(decorators), std::move(annotations), 
+                                                        std::move(paramDecorators), false);
+            ///////////////////////////////////////////////////////////////////////////////////////////////
+            auto classDefinition = AllocNode<es2panda::ir::ClassDefinition>(enc,
+                                nullptr, identNode, nullptr, nullptr, std::move(implements), ctor, nullptr,
+                                nullptr, father, std::move(properties), std::move(indexSignatures), false, false);
+
+
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+            for (const auto& member_func_offset : member_funcs) {
+                auto func = method2scriptfunast[member_func_offset];
+                method2scriptfunast_->erase(member_func_offset);
+
+                if(func == nullptr){
+                    handleError("#defineclasswithbuffer: find member function fail!");
+                }
+
+                auto funcExpr = AllocNode<es2panda::ir::FunctionExpression>(enc, func);
+                auto keyNode = enc->get_identifier_byname(new std::string(extractTrueFunName(ir_interface_->GetMethodIdByOffset(member_func_offset))));;
+                ArenaVector<es2panda::ir::Decorator *> decorators(enc->parser_program_->Allocator()->Adapter());
+                ArenaVector<es2panda::ir::Annotation *> annotations(enc->parser_program_->Allocator()->Adapter());
+                ArenaVector<es2panda::ir::ParamDecorators> paramDecorators(enc->parser_program_->Allocator()->Adapter());
+
+                auto method = AllocNode<es2panda::ir::MethodDefinition>(es2panda::ir::MethodDefinitionKind::METHOD, keyNode, funcExpr,
+                                                                es2panda::ir::ModifierFlags::PUBLIC, enc->parser_program_->Allocator(), 
+                                                            std::move(decorators), std::move(annotations), 
+                                                            std::move(paramDecorators), false);
+                classDefinition->AddToBody(method);
+            }
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ArenaVector<es2panda::ir::Decorator *> decorators1(enc->parser_program_->Allocator()->Adapter());
+            ArenaVector<es2panda::ir::Annotation *> annotations1(enc->parser_program_->Allocator()->Adapter());
+
+            
+            [[maybe_unused]] auto *classDecl = AllocNode<es2panda::ir::ClassDeclaration>(enc, classDefinition, 
+                                                    std::move(decorators1), std::move(annotations1), false);
+
+            ctor2classdeclast[constructor_offset] = classDecl;
+
+        }
+
+        std::cout <<  "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD" << std::endl;
 
 
         for (auto it = method2scriptfunast.rbegin(); it != method2scriptfunast.rend(); ++it) {
@@ -416,7 +492,7 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
         LogAst(parser_program, outputAstFileName);
         LogArkTS2File(parser_program, outputFileName);
 
-        std::cout <<  "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" << std::endl;
+        std::cout << "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE" << std::endl;
     } 
 
     // LogAst(parser_program);
