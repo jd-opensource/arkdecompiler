@@ -481,30 +481,6 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
     return result;
 }
 
-
-bool DecompileBytecode(pandasm::Program *prog, const pandasm::AsmEmitter::PandaFileToPandaAsmMaps *maps,
-                      const std::string &pandafile_name, panda::disasm::Disassembler& disasm, 
-                       bool is_dynamic, bool has_memory_pool)
-{
-    ASSERT(prog != nullptr);
-    ASSERT(maps != nullptr);
-    
-    if (!has_memory_pool) {
-        PoolManager::Initialize(PoolType::MALLOC);
-    }
-    
-    auto ir_interface = BytecodeOptIrInterface(maps, prog);
-
-    auto res = DecompilePandaFile(prog, &ir_interface, pandafile_name, disasm, is_dynamic);
-    
-    if (!has_memory_pool) {
-        PoolManager::Finalize();
-    }
-
-    return res;
-}
-
-
 void construct_PandaFileToPandaAsmMaps(panda::disasm::Disassembler& disas, pandasm::AsmEmitter::PandaFileToPandaAsmMaps* maps){
     for (const auto &[offset, name_value] : disas.string_offset_to_name_) {
         maps->strings[offset.GetOffset()] = std::string(name_value);
@@ -521,6 +497,31 @@ void construct_PandaFileToPandaAsmMaps(panda::disasm::Disassembler& disas, panda
 
 }
 
+bool DecompileBytecode(const std::string &pandafile_name, panda::disasm::Disassembler& disasm, 
+                       bool is_dynamic, bool has_memory_pool)
+{
+
+    if (!has_memory_pool) {
+        PoolManager::Initialize(PoolType::MALLOC);
+    }
+    
+    panda::pandasm::Program* prog = &disasm.prog_;
+    pandasm::AsmEmitter::PandaFileToPandaAsmMaps maps;
+
+    construct_PandaFileToPandaAsmMaps(disasm, &maps);
+
+    auto ir_interface = BytecodeOptIrInterface(&maps, prog);
+
+    auto res = DecompilePandaFile(prog, &ir_interface, pandafile_name, disasm, is_dynamic);
+    
+    if (!has_memory_pool) {
+        PoolManager::Finalize();
+    }
+
+    return res;
+}
+
+
 int main(int argc, char* argv[]) {
     if (argc > 1) {
         inputFileName = argv[1]; 
@@ -533,36 +534,7 @@ int main(int argc, char* argv[]) {
     disasm.Disassemble(inputFileName, false, false);
     disasm.CollectInfo();
 
-    // const auto source = R"(
-    //     .language ECMAScript
-    //     .function any foo(any a0, any a1, any a2) {
-    //         mov v0, a0
-    //         mov v1, a1
-    //         mov v2, a2
-    //     try_begin:
-    //         ldai 0x1
-    //         trystglobalbyname 0x0, "a"
-    //     try_end:
-    //         jmp catch_end
-    //     catch_begin:
-    //         sta v4
-    //         tryldglobalbyname 0x1, "a"
-    //     catch_end:
-    //         returnundefined
-    //     }
-    // )";
-
-    // panda::pandasm::Parser parser;
-    // auto res = parser.Parse(source);
-    // auto &prog = res.Value();
-
-    panda::pandasm::Program* program = &disasm.prog_;
-    pandasm::AsmEmitter::PandaFileToPandaAsmMaps maps_;
-
-    /////////////////////////////////////////////////////////
-    construct_PandaFileToPandaAsmMaps(disasm, &maps_);
-
-    DecompileBytecode(program, &maps_, inputFileName, disasm, true, false);
+    DecompileBytecode(inputFileName, disasm, true, false);
 
     return 0;
 }
