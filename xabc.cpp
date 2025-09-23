@@ -143,7 +143,7 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
     auto ir_interface = BytecodeOptIrInterface(maps, prog);
 
     auto func_name = ir_interface.GetMethodIdByOffset(mda.GetMethodId().GetOffset() );
-    std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>> "  << func_name << " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+    std::cout << std::endl << "[+] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Decompile "  << func_name << " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< [+]" << std::endl << std::endl;
     [[maybe_unused]] auto it = prog->function_table.find(func_name);
     if (it == prog->function_table.end()) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Cannot find function: " << func_name;
@@ -333,7 +333,7 @@ bool DecompilePandaFile(pandasm::Program *prog, const pandasm::AsmEmitter::Panda
 
     std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *> ctor2classdeclast;
 
-    std::vector<uint32_t> thisfuns;
+    std::vector<uint32_t> thisfuns; // all member functions(all classes)
     
     std::vector<std::string> localnamespaces; 
 

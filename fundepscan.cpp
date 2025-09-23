@@ -42,12 +42,24 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
                     auto memeber_offset = enc->methodname2offset_[word];
                     enc->depedges_->push_back(std::make_pair(memeber_offset, enc->methodoffset_));
                     (*enc->class2memberfuns_)[constructor_offset].push_back(memeber_offset);
-
                     enc->thisfuns_->push_back(memeber_offset);
                 }else{
-                    handleError("#function dep scan: not handle this case");
+                    handleError("#function dep scan: DEFINECLASSWITHBUFFER");
                 }
             });
+        }
+    }else if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_CREATEPRIVATEPROPERTY_PREF_IMM16_ID16  ){
+        auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
+        [[maybe_unused]] auto member_functions = enc->getLiteralArrayByOffset(ir_id0);
+        if(member_functions){
+            for(const auto& member_function : *member_functions){
+                auto memeber_offset = enc->methodname2offset_[member_function];
+                enc->depedges_->push_back(std::make_pair(memeber_offset, enc->methodoffset_));
+                enc->thisfuns_->push_back(memeber_offset);
+                std::cout << member_function << std::endl;
+            }
+        }else{
+            handleError("#function dep scan: CALLRUNTIME_CREATEPRIVATEPROPERTY");
         }
     }
 }
