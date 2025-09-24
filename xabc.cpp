@@ -472,14 +472,11 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
     for (auto it = ctor2classdeclast.begin(); it != ctor2classdeclast.end(); ++it) {
         program_ast->AddStatementAtPos(program_statements.size(), it->second);
     }
+
     LogAst(parser_program, outputAstFileName);
     LogArkTS2File(parser_program, outputFileName);
 
     std::cout << "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE" << std::endl;
-
-    // LogAst(parser_program);
-    // LogArkTS2File(parser_program, pfile_name);
-
 
     return result;
 }
