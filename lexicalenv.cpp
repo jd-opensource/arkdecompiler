@@ -20,20 +20,19 @@ LexicalEnv::LexicalEnv(const LexicalEnv& other)
     : expressions_(other.capacity_), capacity_(other.capacity_), full_size_(other.full_size_){
     
     for (size_t i = 0; i < capacity_; ++i) {
-        std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << std::endl;
+        //std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << std::endl;
         if(other.expressions_[i] == nullptr){
-            std::cout << "null" << std::endl;
+            //std::cout << "null" << std::endl;
         }else{
-            std::cout << "not null" << std::endl;
+            //std::cout << "not null" << std::endl;
             expressions_[i] = new std::string(*(other.expressions_[i]));
         }
         
-        std::cout << "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" << std::endl;
+        //std::cout << "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" << std::endl;
     }
 }
 
 LexicalEnv& LexicalEnv::operator=(const LexicalEnv& other) {
-    std::cout << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
     if (this != &other) {
         expressions_.clear();
         capacity_ = other.capacity_;
