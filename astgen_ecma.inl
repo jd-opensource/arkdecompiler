@@ -1468,6 +1468,28 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
+       case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_CREATEPRIVATEPROPERTY_PREF_IMM16_ID16:
+       {
+            //    ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
+            //     auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
+            //     ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
+            //     auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
+            //     auto bc_id0 = enc->ir_interface_->GetLiteralArrayByOffset(ir_id0);
+            //     enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_CREATEPRIVATEPROPERTY(imm0, bc_id0));
+            
+            [[maybe_unused]] auto constructor_offset = static_cast<uint32_t>(inst->GetImms()[1]);
+            auto member_functions = getLiteralArrayByOffset(enc->program_, constructor_offset);
+            if(member_functions){
+                for(const auto &member_function: *member_functions){
+                    std::cout << "### : " << member_function << std::endl;
+
+                }
+            }
+
+            break;
+        }
+
+
        case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM8:
        case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM16:
        {
@@ -2382,17 +2404,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->result_.emplace_back(pandasm::Create_THROW_DELETESUPERPROPERTY());
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_CREATEPRIVATEPROPERTY_PREF_IMM16_ID16:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto bc_id0 = enc->ir_interface_->GetLiteralArrayByOffset(ir_id0);
-            enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_CREATEPRIVATEPROPERTY(imm0, bc_id0));
-            break;
-        }
-
 
        case compiler::RuntimeInterface::IntrinsicId::THROW_CONSTASSIGNMENT_PREF_V8:
        {

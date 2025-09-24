@@ -35,7 +35,7 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
         enc->thisfuns_->push_back(constructor_offset);
         
         auto ir_id1 = static_cast<uint32_t>(inst->GetImms()[2]);
-        auto member_functions = enc->getLiteralArrayByOffset(ir_id1);
+        auto member_functions = getLiteralArrayByOffset(enc->program_, ir_id1);
         if(member_functions){
             std::for_each((*member_functions).begin(), (*member_functions).end(), [&enc, constructor_offset](const std::string& word) {
                 if (enc->methodname2offset_.find(word) != enc->methodname2offset_.end()) {
@@ -50,7 +50,7 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
         }
     }else if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_CREATEPRIVATEPROPERTY_PREF_IMM16_ID16  ){
         auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-        auto member_functions = enc->getLiteralArrayByOffset(ir_id0);
+        auto member_functions = getLiteralArrayByOffset(enc->program_, ir_id0);
         if(member_functions){
             for(const auto& member_function : *member_functions){
                 auto memeber_offset = enc->methodname2offset_[member_function];
