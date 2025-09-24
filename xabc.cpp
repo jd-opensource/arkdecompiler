@@ -387,7 +387,8 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
             auto member_funcs = pair.second;
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             auto constructor_offset_name = ir_interface->GetMethodIdByOffset(constructor_offset);
-            panda::es2panda::util::StringView name_view1 = panda::es2panda::util::StringView(std::string(extractTrueFunName(constructor_offset_name)));
+            std::cout << "@@@@@@@@:  " << constructor_offset_name << std::endl;
+            panda::es2panda::util::StringView name_view1 = panda::es2panda::util::StringView(*(new std::string(extractTrueFunName(constructor_offset_name))));
 
            
             auto identNode =  parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(name_view1);
@@ -440,7 +441,7 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
 
                 auto funcExpr = parser_program->Allocator()->New<es2panda::ir::FunctionExpression>(func);
 
-                panda::es2panda::util::StringView name_view3 = panda::es2panda::util::StringView(std::string(extractTrueFunName(ir_interface->GetMethodIdByOffset(member_func_offset))));
+                panda::es2panda::util::StringView name_view3 = panda::es2panda::util::StringView(*(new std::string(extractTrueFunName(ir_interface->GetMethodIdByOffset(member_func_offset)))));
                 auto keyNode = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(name_view3);
 
                 ArenaVector<es2panda::ir::Decorator *> decorators(parser_program->Allocator()->Adapter());
@@ -458,7 +459,7 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
             ArenaVector<es2panda::ir::Annotation *> annotations1(parser_program->Allocator()->Adapter());
 
             
-            [[maybe_unused]] auto *classDecl = parser_program->Allocator()->New<es2panda::ir::ClassDeclaration>(classDefinition, 
+            auto *classDecl = parser_program->Allocator()->New<es2panda::ir::ClassDeclaration>(classDefinition, 
                                                     std::move(decorators1), std::move(annotations1), false);
 
             ctor2classdeclast[constructor_offset] = classDecl;
