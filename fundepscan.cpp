@@ -30,7 +30,7 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
         inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINECLASSWITHBUFFER_IMM16_ID16_ID16_IMM16_V8
     ){
         auto constructor_offset = static_cast<uint32_t>(inst->GetImms()[1]);
-        enc->depedges_->push_back(std::make_pair(constructor_offset, enc->methodoffset_));
+        //enc->depedges_->push_back(std::make_pair(constructor_offset, enc->methodoffset_));
 
         enc->thisfuns_->push_back(constructor_offset);
         
@@ -40,7 +40,7 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
             std::for_each((*member_functions).begin(), (*member_functions).end(), [&enc, constructor_offset](const std::string& word) {
                 if (enc->methodname2offset_.find(word) != enc->methodname2offset_.end()) {
                     auto memeber_offset = enc->methodname2offset_[word];
-                    enc->depedges_->push_back(std::make_pair(enc->methodoffset_, memeber_offset));
+                    //enc->depedges_->push_back(std::make_pair(enc->methodoffset_, memeber_offset));
                     (*enc->class2memberfuns_)[constructor_offset].push_back(memeber_offset);
                     enc->thisfuns_->push_back(memeber_offset);
                 }else{
@@ -50,7 +50,7 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
         }
     }else if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_CREATEPRIVATEPROPERTY_PREF_IMM16_ID16  ){
         auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-        [[maybe_unused]] auto member_functions = enc->getLiteralArrayByOffset(ir_id0);
+        auto member_functions = enc->getLiteralArrayByOffset(ir_id0);
         if(member_functions){
             for(const auto& member_function : *member_functions){
                 auto memeber_offset = enc->methodname2offset_[member_function];

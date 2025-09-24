@@ -334,7 +334,7 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
             continue;
         }
 
-        std::cout << id << " AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+        std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
 
         panda_file::ClassDataAccessor cda {*pfile, record_id};
         std::vector<std::pair<uint32_t, uint32_t>> depedges;
@@ -343,10 +343,8 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
         cda.EnumerateMethods([prog, &disasm, ir_interface, is_dynamic, &result, &depedges, &class2memberfuns, &thisfuns](panda_file::MethodDataAccessor &mda){
             if (!mda.IsExternal()) {
                 result = ScanFunDep(prog, disasm, ir_interface, &depedges, &class2memberfuns, &thisfuns, mda, is_dynamic) && result;
-                if(result){
-                    std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "fun dep scan success! " << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
-                }else{
-                    std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "fun dep scan failed! " << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
+                if(!result){
+                    handleError("#DecompilePandaFile: fun dep scan failed!");
                 }
             }
         });
@@ -361,10 +359,9 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
         for(const auto & methodoffset : sorted_methodoffsets ){
             panda_file::MethodDataAccessor mda(*pfile, panda_file::File::EntityId(methodoffset));
             result = DecompileFunction(prog, parser_program, ir_interface, mda, is_dynamic, &method2lexicalenvstack, &patchvarspace, index2importnamespaces, localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &thisfuns, &class2father) && result;
-            // if(result){
-            //     LogAst(parser_program, outputAstFileName);
-            //     LogArkTS2File(parser_program, outputFileName);
-            // }
+            if(!result){
+                handleError("#DecompilePandaFile: decomiple case 1 failed!");
+            }
         }
 
         int count = 0;
@@ -374,10 +371,10 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
             std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "enumerate method index: " << count << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
             if (!mda.IsExternal() && std::find(sorted_methodoffsets.begin(), sorted_methodoffsets.end(), mda.GetMethodId().GetOffset()) == sorted_methodoffsets.end() ){
                 result = DecompileFunction(prog, parser_program, ir_interface, mda, is_dynamic, &method2lexicalenvstack,  &patchvarspace, index2importnamespaces, localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &thisfuns, &class2father) && result;
-                // if(result){
-                //     LogAst(parser_program, outputAstFileName);
-                //     LogArkTS2File(parser_program, outputFileName);
-                // }
+                if(!result){
+                    handleError("#DecompilePandaFile: decomiple case 2 failed!");
+                    LogArkTS2File(parser_program, outputFileName);
+                }
             }
         });
 
@@ -387,10 +384,8 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
             auto member_funcs = pair.second;
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             auto constructor_offset_name = ir_interface->GetMethodIdByOffset(constructor_offset);
-            std::cout << "@@@@@@@@:  " << constructor_offset_name << std::endl;
             panda::es2panda::util::StringView name_view1 = panda::es2panda::util::StringView(*(new std::string(extractTrueFunName(constructor_offset_name))));
 
-           
             auto identNode =  parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(name_view1);
 
             ArenaVector<es2panda::ir::TSClassImplements *> implements(parser_program->Allocator()->Adapter());
@@ -409,7 +404,7 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
             method2scriptfunast.erase(constructor_offset);
             
             if(func == nullptr){
-                handleError("#defineclasswithbuffer: find constructor function fail!");
+                handleError("#DecompilePandaFile: find constructor function fail!");
             }
 
             auto funcExpr = parser_program->Allocator()->New<panda::es2panda::ir::FunctionExpression>(func);
@@ -436,7 +431,7 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
                 method2scriptfunast.erase(member_func_offset);
 
                 if(func == nullptr){
-                    handleError("#defineclasswithbuffer: find member function fail!");
+                    handleError("#DecompilePandaFile: find member function fail!");
                 }
 
                 auto funcExpr = parser_program->Allocator()->New<es2panda::ir::FunctionExpression>(func);
@@ -466,23 +461,23 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
 
         }
 
-        std::cout <<  "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD" << std::endl;
-
-
-        for (auto it = method2scriptfunast.rbegin(); it != method2scriptfunast.rend(); ++it) {
-            auto funcDecl = parser_program->Allocator()->New<panda::es2panda::ir::FunctionDeclaration>(it->second);
-            program_ast->AddStatementAtPos(program_statements.size(), funcDecl);
-        }
-
-        for (auto it = ctor2classdeclast.begin(); it != ctor2classdeclast.end(); ++it) {
-            program_ast->AddStatementAtPos(program_statements.size(), it->second);
-        }
-        
-        LogAst(parser_program, outputAstFileName);
-        LogArkTS2File(parser_program, outputFileName);
-
-        std::cout << "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE" << std::endl;
     } 
+
+    std::cout <<  "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD" << std::endl;
+
+
+    for (auto it = method2scriptfunast.rbegin(); it != method2scriptfunast.rend(); ++it) {
+        auto funcDecl = parser_program->Allocator()->New<panda::es2panda::ir::FunctionDeclaration>(it->second);
+        program_ast->AddStatementAtPos(program_statements.size(), funcDecl);
+    }
+
+    for (auto it = ctor2classdeclast.begin(); it != ctor2classdeclast.end(); ++it) {
+        program_ast->AddStatementAtPos(program_statements.size(), it->second);
+    }
+    LogAst(parser_program, outputAstFileName);
+    LogArkTS2File(parser_program, outputFileName);
+
+    std::cout << "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE" << std::endl;
 
     // LogAst(parser_program);
     // LogArkTS2File(parser_program, pfile_name);
