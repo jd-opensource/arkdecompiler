@@ -402,7 +402,7 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
             ArenaVector<es2panda::ir::Annotation *> annotations(parser_program->Allocator()->Adapter());
             ArenaVector<es2panda::ir::ParamDecorators> paramDecorators(parser_program->Allocator()->Adapter());
 
-            panda::es2panda::util::StringView name_view2 = panda::es2panda::util::StringView(*(new std::string("constructor")));
+            panda::es2panda::util::StringView name_view2 = panda::es2panda::util::StringView("constructor");
             auto keyNode = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(name_view2);
 
             auto func = method2scriptfunast[constructor_offset];
