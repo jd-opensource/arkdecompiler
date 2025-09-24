@@ -4,9 +4,10 @@
 #include "base.h"
 
 class LexicalEnv {
-private:
+public:
     std::vector<std::string*> expressions_;
     size_t capacity_;
+    mutable size_t full_size_;
 
 public:
     explicit LexicalEnv(size_t capacity = 256);

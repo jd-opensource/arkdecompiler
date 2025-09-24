@@ -120,11 +120,10 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
 
     SetCompilerOptions();
 
-    
-
     auto func_name = ir_interface->GetMethodIdByOffset(mda.GetMethodId().GetOffset() );
     std::cout << std::endl << "[+] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Decompile "  << func_name << " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< [+]" << std::endl << std::endl;
-    [[maybe_unused]] auto it = prog->function_table.find(func_name);
+
+    auto it = prog->function_table.find(func_name);
     if (it == prog->function_table.end()) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Cannot find function: " << func_name;
         return false;
@@ -178,7 +177,7 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
         return false;
     }
 
-    std::cout << "Decompiled: " << func_name << std::endl;
+    std::cout << std::endl << "[-] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Decompile "  << func_name << " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< [-]" << std::endl << std::endl;
 
     return true;
 }
@@ -439,20 +438,18 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
         for(const auto & methodoffset : sorted_methodoffsets ){
             panda_file::MethodDataAccessor mda(*pfile, panda_file::File::EntityId(methodoffset));
             result = DecompileFunction(prog, parser_program, ir_interface, mda, is_dynamic, &method2lexicalenvstack, &patchvarspace, index2importnamespaces, localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &thisfuns, &class2father) && result;
+            
             if(!result){
                 handleError("#DecompilePandaFile: decomiple case 1 failed!");
             }
         }
 
-        int count = 0;
-        cda.EnumerateMethods([&count, prog, parser_program, ir_interface, is_dynamic, &result, &method2lexicalenvstack,  &patchvarspace, &index2importnamespaces, &localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &thisfuns, &class2father, sorted_methodoffsets](panda_file::MethodDataAccessor &mda){
-            count = count + 1;
-            std::cout << "<<<<<<<<<<<<<<<<<<<<   "<< "enumerate method index: " << count << "  >>>>>>>>>>>>>>>>>>>>" << std::endl;
+        
+        cda.EnumerateMethods([prog, parser_program, ir_interface, is_dynamic, &result, &method2lexicalenvstack,  &patchvarspace, &index2importnamespaces, &localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &thisfuns, &class2father, sorted_methodoffsets](panda_file::MethodDataAccessor &mda){           
             if (!mda.IsExternal() && std::find(sorted_methodoffsets.begin(), sorted_methodoffsets.end(), mda.GetMethodId().GetOffset()) == sorted_methodoffsets.end() ){
                 result = DecompileFunction(prog, parser_program, ir_interface, mda, is_dynamic, &method2lexicalenvstack,  &patchvarspace, index2importnamespaces, localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &thisfuns, &class2father) && result;
                 if(!result){
                     handleError("#DecompilePandaFile: decomiple case 2 failed!");
-                    LogArkTS2File(parser_program, outputFileName);
                 }
             }
         });
