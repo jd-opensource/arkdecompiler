@@ -1470,22 +1470,34 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         /////////////////////////////////////////////////////////////////////////////////////
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_CREATEPRIVATEPROPERTY_PREF_IMM16_ID16:
        {
-            //    ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            //     auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            //     ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            //     auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-            //     auto bc_id0 = enc->ir_interface_->GetLiteralArrayByOffset(ir_id0);
-            //     enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_CREATEPRIVATEPROPERTY(imm0, bc_id0));
-            
-            [[maybe_unused]] auto constructor_offset = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto member_functions = getLiteralArrayByOffset(enc->program_, constructor_offset);
-            if(member_functions){
-                for(const auto &member_function: *member_functions){
-                    std::cout << "### : " << member_function << std::endl;
+            // auto constructor_offset = static_cast<uint32_t>(inst->GetImms()[1]);
+            // auto member_functions = getLiteralArrayByOffset(enc->program_, constructor_offset);
+            // if(member_functions){
+            //     for(const auto &member_function: *member_functions){
+            //         std::cout << "### : " << member_function << std::endl;
+ 
+            //         auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
+            //         auto lexicalenv = lexicalenvstack->top();
+                    
+            //         std::cout << "[+] size: " << lexicalenvstack->size() << std::endl;
+            //         std::cout << "[+] env size: " << lexicalenvstack->getLexicalEnv(0).size() << std::endl;
+            //         std::cout << "[+] capacity_: " << lexicalenv.capacity_ << std::endl;
 
-                }
-            }
+            //         auto memfun_str = new std::string(extractTrueFunName(member_function));
+            //         lexicalenv.expressions_.push_back(memfun_str);
+            //         lexicalenv.capacity_++;
 
+            //         //lexicalenvstack->top().capacity_++;
+            //         //lexicalenvstack->set(0, lexicalenvstack->top().capacity_-1, new std::string(extractTrueFunName(member_function)));
+
+            //         std::cout << "-----------------------------------------------------------------------------" << std::endl;
+
+            //         std::cout << "[-] size: " << lexicalenvstack->size() << std::endl;
+            //         std::cout << "[-] env size: " << lexicalenvstack->getLexicalEnv(0).size() << std::endl;
+            //         std::cout << "[-] capacity_: " << lexicalenv.capacity_ << std::endl;
+
+            //     }
+            // }
             break;
         }
 

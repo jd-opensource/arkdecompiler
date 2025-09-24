@@ -4,7 +4,7 @@
 
 
 LexicalEnv::LexicalEnv(size_t capacity) 
-    : expressions_(capacity, nullptr), capacity_(capacity) {
+    : expressions_(capacity, nullptr), capacity_(capacity), full_size_(0) {
 }
 
 bool LexicalEnv::IsFull() {
@@ -17,7 +17,7 @@ bool LexicalEnv::IsFull() {
 }
 
 LexicalEnv::LexicalEnv(const LexicalEnv& other) 
-    : expressions_(other.capacity_), capacity_(other.capacity_) {
+    : expressions_(other.capacity_), capacity_(other.capacity_), full_size_(other.full_size_){
     
     for (size_t i = 0; i < capacity_; ++i) {
         std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << std::endl;
@@ -38,6 +38,7 @@ LexicalEnv& LexicalEnv::operator=(const LexicalEnv& other) {
         expressions_.clear();
         capacity_ = other.capacity_;
         expressions_.resize(capacity_);
+        full_size_ = other.full_size_;
         
         for (size_t i = 0; i < capacity_; ++i) {
             expressions_[i] = new std::string(*other.expressions_[i]);
@@ -80,6 +81,7 @@ std::string* LexicalEnv::get(size_t index) const {
 void LexicalEnv::set(size_t index, std::string* expr) {
     checkIndex(index);
     expressions_[index] = expr;
+    
 }
 
 size_t LexicalEnv::capacity() const {
@@ -87,7 +89,13 @@ size_t LexicalEnv::capacity() const {
 }
 
 size_t LexicalEnv::size() const {
-    return capacity_;
+    for (size_t i = 0; i < capacity_; ++i) {
+        if(expressions_[i] != nullptr){
+            full_size_ = i;
+        }
+    }
+
+    return full_size_;
 }
 
 
