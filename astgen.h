@@ -294,19 +294,14 @@ public:
     }
 
     void copy_lexicalenvstack(uint32_t methodoffset_, Inst* inst){
-        if(this->bb2lexicalenvstack[inst->GetBasicBlock()]->top().IsFull() ){
-            (*this->method2lexicalenvstack_)[methodoffset_] = new LexicalEnvStack(*(this->bb2lexicalenvstack[inst->GetBasicBlock()]));
-            std::cout << "after  size: " << this->method2lexicalenvstack_->size() << ", envsize: " << (*this->method2lexicalenvstack_)[methodoffset_]->size()  << std::endl;
-
-        }else{
-            this->waitmethods.push(methodoffset_);
-            std::cout << "add waitmethods" << std::endl;
+        if(this->bb2lexicalenvstack[inst->GetBasicBlock()]->empty()){
+            handleError("#copy_lexicalenvstack: source bb2lexicalenvstack is empty");
         }
+        auto wait_method = new LexicalEnvStack(*(this->bb2lexicalenvstack[inst->GetBasicBlock()]));
+        (*this->method2lexicalenvstack_)[methodoffset_] = wait_method;
+        this->waitmethods.push_back(wait_method);
     }
 
-    void deal_waitmethods(){
-        
-    }
 
     void print_inner_method2lexicalmap(){
         auto outerIt = this->method2lexicalmap_->find(this->methodoffset_);
@@ -586,7 +581,7 @@ public:
     std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap_;
    
     ///////////////////////////////////////////////////////////////////////////////////////
-    std::stack<uint32_t> waitmethods;
+    std::vector<LexicalEnvStack*> waitmethods;
 
     std::unique_ptr<LCAFinder> lcaFinder;
 
