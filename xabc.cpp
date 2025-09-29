@@ -111,7 +111,8 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
                         std::map<uint32_t, panda::es2panda::ir::ScriptFunction *> *method2scriptfunast,
                         std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *>* ctor2classdeclast,
                         std::vector<uint32_t>* thisfuns,
-                        std::map<uint32_t, panda::es2panda::ir::Expression*> *class2father
+                        std::map<uint32_t, panda::es2panda::ir::Expression*> *class2father,
+                        std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>> *method2lexicalmap
                         )
 {
 
@@ -169,7 +170,7 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
     
     std::string turefunname = extractTrueFunName(func_name);
 
-    if (!graph->RunPass<AstGen>(&function, ir_interface, prog, parser_program, mda.GetMethodId().GetOffset(), method2lexicalenvstack, patchvarspace, std::ref(index2namespaces), std::ref(localnamespaces), std::ref(class2memberfuns), std::ref(method2scriptfunast), std::ref(ctor2classdeclast), std::ref(thisfuns), std::ref(class2father), turefunname)) {
+    if (!graph->RunPass<AstGen>(&function, ir_interface, prog, parser_program, mda.GetMethodId().GetOffset(), method2lexicalenvstack, patchvarspace, std::ref(index2namespaces), std::ref(localnamespaces), std::ref(class2memberfuns), std::ref(method2scriptfunast), std::ref(ctor2classdeclast), std::ref(thisfuns), std::ref(class2father), std::ref(method2lexicalmap), turefunname)) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Code generation failed!";
 
         std::cout << "Decompiling " << func_name << ": Code generation failed!" << std::endl;
@@ -218,6 +219,7 @@ bool ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
                 BytecodeOptIrInterface *ir_interface,
                 std::vector<std::pair<uint32_t, uint32_t>>* depedges,
                 std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns,
+                std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap,
                 std::vector<uint32_t>* thisfuns,
                 const panda_file::MethodDataAccessor &mda, bool is_dynamic)
 {
@@ -269,7 +271,7 @@ bool ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
     }
     
     std::string turefunname = extractTrueFunName(func_name);
-    if (!graph->RunPass<FunDepScan>(ir_interface, prog, std::ref(disasm), mda.GetMethodId().GetOffset(), turefunname, depedges, class2memberfuns, thisfuns)) {
+    if (!graph->RunPass<FunDepScan>(ir_interface, prog, std::ref(disasm), mda.GetMethodId().GetOffset(), turefunname, depedges, class2memberfuns, method2lexicalmap, thisfuns)) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": FuncDep scanning failed!";
 
         std::cout << "FuncDep Scanning " << func_name << ": failed!" << std::endl;
@@ -397,6 +399,8 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
     
     std::vector<std::string> localnamespaces; 
 
+    std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>> method2lexicalmap;
+
     parseModuleVars(pfile, disasm, parser_program, index2importnamespaces, localnamespaces);
 
     for (uint32_t id : pfile->GetClasses()) {
@@ -404,9 +408,9 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
         if (pfile->IsExternal(record_id)) {
             continue;
         }
+
         panda_file::ClassDataAccessor cda {*pfile, record_id};
         std::cout << "classname: " << std::left << std::setw(40) <<   cda.GetName().data  << " , fileds: " << cda.GetFieldsNumber() << " , method: " << cda.GetMethodsNumber() << " interface: " << cda.GetIfacesNumber() << " superclass: " <<  cda.GetSuperClassId()   << std::endl;
-
     }
     
     std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
@@ -422,9 +426,9 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
         std::vector<std::pair<uint32_t, uint32_t>> depedges;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        cda.EnumerateMethods([prog, &disasm, ir_interface, is_dynamic, &result, &depedges, &class2memberfuns, &thisfuns](panda_file::MethodDataAccessor &mda){
+        cda.EnumerateMethods([prog, &disasm, ir_interface, is_dynamic, &result, &depedges, &class2memberfuns, &method2lexicalmap, &thisfuns](panda_file::MethodDataAccessor &mda){
             if (!mda.IsExternal()) {
-                result = ScanFunDep(prog, disasm, ir_interface, &depedges, &class2memberfuns, &thisfuns, mda, is_dynamic) && result;
+                result = ScanFunDep(prog, disasm, ir_interface, &depedges, &class2memberfuns, &method2lexicalmap, &thisfuns, mda, is_dynamic) && result;
                 if(!result){
                     handleError("#DecompilePandaFile: fun dep scan failed!");
                 }
@@ -437,7 +441,7 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
 
         for(const auto & methodoffset : sorted_methodoffsets ){
             panda_file::MethodDataAccessor mda(*pfile, panda_file::File::EntityId(methodoffset));
-            result = DecompileFunction(prog, parser_program, ir_interface, mda, is_dynamic, &method2lexicalenvstack, &patchvarspace, index2importnamespaces, localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &thisfuns, &class2father) && result;
+            result = DecompileFunction(prog, parser_program, ir_interface, mda, is_dynamic, &method2lexicalenvstack, &patchvarspace, index2importnamespaces, localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &thisfuns, &class2father, &method2lexicalmap) && result;
             
             if(!result){
                 handleError("#DecompilePandaFile: decomiple case 1 failed!");
@@ -445,9 +449,9 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
         }
 
         
-        cda.EnumerateMethods([prog, parser_program, ir_interface, is_dynamic, &result, &method2lexicalenvstack,  &patchvarspace, &index2importnamespaces, &localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &thisfuns, &class2father, sorted_methodoffsets](panda_file::MethodDataAccessor &mda){           
+        cda.EnumerateMethods([prog, parser_program, ir_interface, is_dynamic, &result, &method2lexicalenvstack,  &patchvarspace, &index2importnamespaces, &localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &thisfuns, &class2father, &method2lexicalmap, sorted_methodoffsets](panda_file::MethodDataAccessor &mda){           
             if (!mda.IsExternal() && std::find(sorted_methodoffsets.begin(), sorted_methodoffsets.end(), mda.GetMethodId().GetOffset()) == sorted_methodoffsets.end() ){
-                result = DecompileFunction(prog, parser_program, ir_interface, mda, is_dynamic, &method2lexicalenvstack,  &patchvarspace, index2importnamespaces, localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &thisfuns, &class2father) && result;
+                result = DecompileFunction(prog, parser_program, ir_interface, mda, is_dynamic, &method2lexicalenvstack,  &patchvarspace, index2importnamespaces, localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &thisfuns, &class2father, &method2lexicalmap) && result;
                 if(!result){
                     handleError("#DecompilePandaFile: decomiple case 2 failed!");
                 }

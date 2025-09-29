@@ -15,9 +15,11 @@ public:
         panda::disasm::Disassembler& disasm, uint32_t methodoffset, std::string fun_name, 
         std::vector<std::pair<uint32_t, uint32_t>>* depedges,
         std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns,
+        std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap,
         std::vector<uint32_t>* thisfuns)
         : compiler::Optimization(graph), ir_interface_(iface), program_(program), disasm_(disasm), methodoffset_(methodoffset), 
-        fun_name_(fun_name), depedges_(depedges), class2memberfuns_(class2memberfuns), thisfuns_(thisfuns)
+        fun_name_(fun_name), depedges_(depedges), class2memberfuns_(class2memberfuns), method2lexicalmap_(method2lexicalmap),
+        thisfuns_(thisfuns)
     {
         for (const auto& pair : this->disasm_.method_name_to_id_) {
             std::size_t pos = pair.first.find(':');
@@ -58,9 +60,11 @@ public:
     [[maybe_unused]] std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns_;
 
     [[maybe_unused]] std::map<std::string, uint32_t> methodname2offset_;
-    [[maybe_unused]] std::vector<uint32_t>* thisfuns_;
 
-    [[maybe_unused]] std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>> method2lexicalmap_;
+
+    [[maybe_unused]] std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>> *method2lexicalmap_;
+
+    [[maybe_unused]] std::vector<uint32_t>* thisfuns_;
 };
 
 }
