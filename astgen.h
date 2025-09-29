@@ -38,11 +38,11 @@ public:
         ArenaVector<es2panda::ir::Expression*> arguments(parser_program->Allocator()->Adapter());
 
         if(this->method2lexicalenvstack_->find(methodoffset) != this->method2lexicalenvstack_->end()){
-            // std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX found lexicalenvstack " << std::endl;
-            // auto x = (*this->method2lexicalenvstack)[methodoffset];
-            // std::cout << "lexicalenvstack size: " << x->size() << std::endl;
+            std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX found lexicalenvstack " << std::endl;
+            auto x = (*this->method2lexicalenvstack_)[methodoffset];
+            std::cout << "lexicalenvstack size: " << x->size() << std::endl;
         }else{
-            // std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX not found lexicalenvstack " << std::endl;
+            std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX not found lexicalenvstack " << std::endl;
             (*this->method2lexicalenvstack_)[methodoffset] = new LexicalEnvStack();
         }
         this->bb2lexicalenvstack[graph->GetStartBlock()] = (*this->method2lexicalenvstack_)[methodoffset];
@@ -293,6 +293,21 @@ public:
         }
     }
 
+    void copy_lexicalenvstack(uint32_t methodoffset_, Inst* inst){
+        if(this->bb2lexicalenvstack[inst->GetBasicBlock()]->top().IsFull() ){
+            (*this->method2lexicalenvstack_)[methodoffset_] = new LexicalEnvStack(*(this->bb2lexicalenvstack[inst->GetBasicBlock()]));
+            std::cout << "after  size: " << this->method2lexicalenvstack_->size() << ", envsize: " << (*this->method2lexicalenvstack_)[methodoffset_]->size()  << std::endl;
+
+        }else{
+            this->waitmethods.push(methodoffset_);
+            std::cout << "add waitmethods" << std::endl;
+        }
+    }
+
+    void deal_waitmethods(){
+        
+    }
+
     void print_inner_method2lexicalmap(){
         auto outerIt = this->method2lexicalmap_->find(this->methodoffset_);
         if (outerIt == this->method2lexicalmap_->end()) {
@@ -342,18 +357,7 @@ public:
             handleError("#search_startpos_for_createprivateproperty: not found !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         }
 
-
-
-        handleError("#search_startpos_for_createprivateproperty: testing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        
-
-
-        // for(size_t index = 0; index < lexicalenv.capacity_; index++){
-        //     if(lexicalenv.expressions_[index] == nullptr){
-        //         return index;
-        //         handleError("#search_startpos_for_createprivateproperty: can't appropriate startpos");
-        //     }
-        // }
+        handleError("#search_startpos_for_createprivateproperty: not found !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
         return -1;
     }
