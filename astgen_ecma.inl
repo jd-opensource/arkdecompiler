@@ -16,6 +16,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        {
             auto returnstatement = AllocNode<es2panda::ir::ReturnStatement>(enc,  enc->constant_undefined);
             enc->add_insAst_to_blockstatemnt_by_inst(inst, returnstatement);
+
+            std::cout << "@@@@@@ start deal forward reference stack >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+            while(!enc->waitmethods.empty()){
+                auto curmethodoffset = enc->waitmethods.top();
+                (*enc->method2lexicalenvstack_)[curmethodoffset] = new LexicalEnvStack(*(enc->bb2lexicalenvstack[inst->GetBasicBlock()]));
+                enc->waitmethods.pop();
+            }
             break;
         }
 
@@ -1253,8 +1260,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
         case compiler::RuntimeInterface::IntrinsicId::POPLEXENV:
         {
-            auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
-            lexicalenvstack->pop();
+            // auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
+            // lexicalenvstack->pop();
             break;
         }
 
@@ -1368,12 +1375,15 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::DEFINECLASSWITHBUFFER_IMM8_ID16_ID16_IMM16_V8:
        case compiler::RuntimeInterface::IntrinsicId::DEFINECLASSWITHBUFFER_IMM16_ID16_ID16_IMM16_V8:
        {
+            //////////////////////////////////////////////////////////////////////////////////////////////////////
             auto constructor_offset = static_cast<uint32_t>(inst->GetImms()[1]);
             auto constructor_offset_name = enc->ir_interface_->GetMethodIdByOffset(constructor_offset);
 
-            std::cout << "@@: " << constructor_offset_name << std::endl;
+            enc->copy_lexicalenvstack(constructor_offset, inst);
+
+            std::cout << ">>>>>>>> @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: "  << constructor_offset << " = "<< constructor_offset_name << std::endl;
             
-            [[maybe_unused]] auto father = *enc->get_expression_by_id(inst, 0);
+            auto father = *enc->get_expression_by_id(inst, 0);
             
             if(father != enc->constant_hole){
                 if(father->Type() == es2panda::ir::AstNodeType::IDENTIFIER){

@@ -10,6 +10,7 @@ LexicalEnv::LexicalEnv(size_t capacity)
 bool LexicalEnv::IsFull() {
     for (size_t i = 0; i < capacity_; ++i) {
         if(expressions_[i] == nullptr){
+            //handleError("#LexicalEnv::IsFull : " + std::to_string(i));
             return false;
         }
     }
