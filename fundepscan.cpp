@@ -69,36 +69,10 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
         }
 
         case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_DEFINEPRIVATEPROPERTY_PREF_IMM8_IMM16_IMM16_V8:{
-            /*
-                auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-                if (acc_src != compiler::ACC_REG_ID) {
-                    DoLda(acc_src, enc->result_);
-                }
-                 ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-                auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-                ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-                auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-                ASSERT(inst->HasImms() && inst->GetImms().size() > 2); // NOLINTNEXTLINE(readability-container-size-empty)
-                auto imm2 = static_cast<uint32_t>(inst->GetImms()[2]);
-                auto v0 = inst->GetSrcReg(0);
-                enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_DEFINEPRIVATEPROPERTY(imm0, imm1, imm2, v0));
-                break;
-            */
-
-            std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
-            std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
-            std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
-            std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
-            std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
-
             auto tier = static_cast<uint32_t>(inst->GetImms()[1]);
             auto index = static_cast<uint32_t>(inst->GetImms()[2]);
-
-            enc->method2lexicalmap_[enc->methodoffset_][tier].push_back(index);
-
-
-            std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
-
+            (*enc->method2lexicalmap_)[enc->methodoffset_][tier].push_back(index);
+            
             break;
         }
 

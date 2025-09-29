@@ -1148,6 +1148,16 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto bc_id0 = enc->ir_interface_->GetMethodIdByOffset(ir_id0);
  
             enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(extractTrueFunName(bc_id0))));
+
+            if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM8_ID16_IMM8 ||
+                inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM16_ID16_IMM8){
+                if(extractTrueFunName(bc_id0) == "instance_initializer"){
+                    //enc->method2lexicalmap_[ir_id0];
+
+                    enc->merge_method2lexicalmap(ir_id0, enc->methodoffset_);
+                }
+            }
+
             break;
         }
 
@@ -1156,7 +1166,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         case compiler::RuntimeInterface::IntrinsicId::WIDE_NEWLEXENV_PREF_IMM16:
         case compiler::RuntimeInterface::IntrinsicId::NEWLEXENV_IMM8:
         {
-            std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
             auto lexenv_size = static_cast<uint32_t>(inst->GetImms()[0]);
             std::cout << "lexenv_size: " << lexenv_size << std::endl;
             auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
@@ -1188,7 +1197,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::string closure_name =  "closure_" + std::to_string(enc->methodoffset_) + "_" + std::to_string(enc->closure_count);
             enc->closure_count++;
 
-            panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+            panda::es2panda::ir::Expression* assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
                                                                             enc->get_identifier_byname(new std::string(closure_name)),
                                                                             raw_expression,
                                                                             es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
@@ -1212,6 +1221,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                      enc->waitmethods.pop();
                 }
             }
+
+            (*enc->method2lexicalmap_)[enc->methodoffset_][tier].push_back(index);
             break;
         }
 
@@ -1469,6 +1480,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         /////////////////////////////////////////////////////////////////////////////////////
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_CREATEPRIVATEPROPERTY_PREF_IMM16_ID16:
        {
+            auto startpos = enc->search_startpos_for_createprivateproperty(inst);
             auto constructor_offset = static_cast<uint32_t>(inst->GetImms()[1]);
             auto member_functions = getLiteralArrayByOffset(enc->program_, constructor_offset);
             if(member_functions){
@@ -1483,12 +1495,11 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     std::cout << "[+] env size: " << lexicalenvstack->getLexicalEnv(0).size() << std::endl;
                     std::cout << "[+] capacity_: " << lexicalenv.capacity_ << std::endl;
 
+                    (*enc->method2lexicalmap_)[enc->methodoffset_][0].push_back(startpos);
                     auto memfun_str = new std::string(extractTrueFunName(member_function));
-                    lexicalenv.expressions_.push_back(memfun_str);
-                    lexicalenv.capacity_++;
+                    lexicalenv.set(startpos, memfun_str);
 
-                    //lexicalenvstack->top().capacity_++;
-                    //lexicalenvstack->set(0, lexicalenvstack->top().capacity_-1, new std::string(extractTrueFunName(member_function)));
+                    startpos++;
 
                     std::cout << "-----------------------------------------------------------------------------" << std::endl;
 
@@ -1498,6 +1509,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
                 }
             }
+
+            enc->print_inner_method2lexicalmap();
             break;
         }
 

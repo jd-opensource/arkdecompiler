@@ -23,11 +23,14 @@ public:
         std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns, 
         std::map<uint32_t, panda::es2panda::ir::ScriptFunction *> *method2scriptfunast, 
         std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *>* ctor2classdeclast, std::vector<uint32_t> *thisfuns, 
-        std::map<uint32_t, panda::es2panda::ir::Expression*> *class2father, std::string fun_name)
+        std::map<uint32_t, panda::es2panda::ir::Expression*> *class2father, 
+        std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap,
+        std::string fun_name)
         : compiler::Optimization(graph), function_(function), ir_interface_(iface), program_(prog), methodoffset_(methodoffset),
         method2lexicalenvstack_(method2lexicalenvstack), patchvarspace_(patchvarspace), parser_program_(parser_program), 
         index2namespaces_(index2namespaces), localnamespaces_(localnamespaces), class2memberfuns_(class2memberfuns),
-        method2scriptfunast_(method2scriptfunast), ctor2classdeclast_(ctor2classdeclast), thisfuns_(thisfuns), class2father_(class2father)
+        method2scriptfunast_(method2scriptfunast), ctor2classdeclast_(ctor2classdeclast), thisfuns_(thisfuns), class2father_(class2father),
+        method2lexicalmap_(method2lexicalmap)
     {
 
         this->closure_count = 0;
@@ -273,6 +276,88 @@ public:
         return std::nullopt;
     }
 
+    void merge_method2lexicalmap(uint32_t sourceKey, uint32_t targetKey) {
+        auto& mapRef = *(this->method2lexicalmap_);
+
+        auto sourceIter = mapRef.find(sourceKey);
+        if (sourceIter == mapRef.end()) {
+            handleError("#merge_method2lexicalmap: source key not found");
+            return;
+        }
+
+        auto& targetMap = mapRef[targetKey];
+
+        for (const auto& [innerKey, sourceVector] : sourceIter->second) {
+            auto& targetVector = targetMap[innerKey];
+            targetVector.insert(targetVector.end(), sourceVector.begin(), sourceVector.end());
+        }
+    }
+
+    void print_inner_method2lexicalmap(){
+        auto outerIt = this->method2lexicalmap_->find(this->methodoffset_);
+        if (outerIt == this->method2lexicalmap_->end()) {
+            std::cerr << "Method offset not found in the map." << std::endl;
+        }
+
+        const std::map<uint32_t, std::vector<uint32_t>>& innerMap = outerIt->second;
+
+        for (const auto& pair : innerMap) {
+            uint32_t key = pair.first;
+            const std::vector<uint32_t>& vec = pair.second;
+
+            std::cout << "Key: " << key << " Values: ";
+            for (const auto& value : vec) {
+                std::cout << value << " ";
+            }
+            std::cout << std::endl;
+        }
+    }
+
+    uint32_t search_startpos_for_createprivateproperty(Inst *inst){
+        if(this->method2lexicalmap_->find(this->methodoffset_) != this->method2lexicalmap_->end() ){
+            auto outerIt = this->method2lexicalmap_->find(this->methodoffset_);
+            if (outerIt == this->method2lexicalmap_->end()) {
+                handleError("#print_inner_method2lexicalmap: Method offset not found in the map1.");
+            }
+
+            const std::map<uint32_t, std::vector<uint32_t>>& innerMap = outerIt->second;
+
+            auto innerIt = innerMap.find(0);
+            if (innerIt == innerMap.end()) {
+                handleError("#print_inner_method2lexicalmap: Method offset not found in the map2.");
+            }
+
+            const std::vector<uint32_t>& vec = innerIt->second;
+
+            std::vector<uint32_t> sorted = vec;
+            std::sort(sorted.begin(), sorted.end());
+
+
+            for (size_t i = 0; i < sorted.size(); ++i) {
+                if (i != sorted[i]) {
+                    return i;
+                }
+            }           
+        }else{
+            handleError("#search_startpos_for_createprivateproperty: not found !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        }
+
+
+
+        handleError("#search_startpos_for_createprivateproperty: testing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        
+
+
+        // for(size_t index = 0; index < lexicalenv.capacity_; index++){
+        //     if(lexicalenv.expressions_[index] == nullptr){
+        //         return index;
+        //         handleError("#search_startpos_for_createprivateproperty: can't appropriate startpos");
+        //     }
+        // }
+
+        return -1;
+    }
+
     void set_expression_by_register(Inst* inst, compiler::Register key, panda::es2panda::ir::Expression* value){
         /**
             std::map<compiler::Register, panda::es2panda::ir::Expression*> reg2expression;
@@ -493,6 +578,8 @@ public:
     std::vector<uint32_t> *thisfuns_;
 
     std::map<uint32_t, panda::es2panda::ir::Expression*> *class2father_;
+
+    std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap_;
    
     ///////////////////////////////////////////////////////////////////////////////////////
     std::stack<uint32_t> waitmethods;
