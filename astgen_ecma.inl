@@ -18,11 +18,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->add_insAst_to_blockstatemnt_by_inst(inst, returnstatement);
 
             std::cout << "@@@@@@ start deal forward reference stack >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-            while(!enc->waitmethods.empty()){
-                auto curmethodoffset = enc->waitmethods.top();
-                (*enc->method2lexicalenvstack_)[curmethodoffset] = new LexicalEnvStack(*(enc->bb2lexicalenvstack[inst->GetBasicBlock()]));
-                enc->waitmethods.pop();
-            }
             break;
         }
 
@@ -1139,15 +1134,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             
             std::cout << "before size: " << enc->method2lexicalenvstack_->size() <<  std::endl;
 
-            if(!enc->bb2lexicalenvstack[inst->GetBasicBlock()]->empty()){
-                if(enc->bb2lexicalenvstack[inst->GetBasicBlock()]->top().IsFull() ){
-                    (*enc->method2lexicalenvstack_)[methodoffset_] = new LexicalEnvStack(*(enc->bb2lexicalenvstack[inst->GetBasicBlock()]));
-                    std::cout << "after  size: " << enc->method2lexicalenvstack_->size() << ", envsize: " << (*enc->method2lexicalenvstack_)[methodoffset_]->size()  << std::endl;
-
-                }else{
-                    enc->waitmethods.push(methodoffset_);
-                }
-            }
+            enc->copy_lexicalenvstack(methodoffset_, inst);
 
             // enc->set_expression_by_register(inst, inst->GetDstReg(), enc->DEFINEFUNC);
 
@@ -1156,11 +1143,10 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
  
             enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(extractTrueFunName(bc_id0))));
 
+            // support callruntime.createprivateproperty
             if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM8_ID16_IMM8 ||
                 inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM16_ID16_IMM8){
                 if(extractTrueFunName(bc_id0) == "instance_initializer"){
-                    //enc->method2lexicalmap_[ir_id0];
-
                     enc->merge_method2lexicalmap(ir_id0, enc->methodoffset_);
                 }
             }
@@ -1218,17 +1204,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "env size: " << lexicalenvstack->getLexicalEnv(0).size() << std::endl;
 
             ////////////////////////////////////////////////////////////////////////////////
-            /// deal forward reference stack
-            
-            if(enc->bb2lexicalenvstack[inst->GetBasicBlock()]->top().IsFull() ){
-                std::cout << "@@@@@@ start deal forward reference stack >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-                while(!enc->waitmethods.empty()){
-                    auto curmethodoffset = enc->waitmethods.top();
-                    (*enc->method2lexicalenvstack_)[curmethodoffset] = new LexicalEnvStack(*(enc->bb2lexicalenvstack[inst->GetBasicBlock()]));
-                     enc->waitmethods.pop();
-                }
+            /// support forward reference stack
+            for(auto &waitmethod : enc->waitmethods){
+                waitmethod->set(tier, index, new std::string(closure_name));
             }
 
+            ///////////////////////////////////////////////////////////////////////////////
+            /// support callruntime.createprivateproperty
             (*enc->method2lexicalmap_)[enc->methodoffset_][tier].push_back(index);
             break;
         }
@@ -1260,8 +1242,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
         case compiler::RuntimeInterface::IntrinsicId::POPLEXENV:
         {
-            // auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
-            // lexicalenvstack->pop();
+            auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
+            lexicalenvstack->pop();
             break;
         }
 
