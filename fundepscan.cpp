@@ -21,46 +21,88 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
     ASSERT(inst_base->IsIntrinsic());
     auto inst = inst_base->CastToIntrinsic();
     auto enc = static_cast<FunDepScan *>(visitor);
-    if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM8_ID16_IMM8 ||
-        inst->GetIntrinsicId() ==  compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM16_ID16_IMM8
-    ){
-        auto methodoffset = static_cast<uint32_t>(inst->GetImms()[1]);
-        enc->depedges_->push_back(std::make_pair(enc->methodoffset_, methodoffset));
-    }else if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINECLASSWITHBUFFER_IMM8_ID16_ID16_IMM16_V8 ||
-        inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINECLASSWITHBUFFER_IMM16_ID16_ID16_IMM16_V8
-    ){
-        auto constructor_offset = static_cast<uint32_t>(inst->GetImms()[1]);
-        //enc->depedges_->push_back(std::make_pair(constructor_offset, enc->methodoffset_));
+    switch(inst->GetIntrinsicId()){
+        case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM8_ID16_IMM8:
+        case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM16_ID16_IMM8:{
+            auto methodoffset = static_cast<uint32_t>(inst->GetImms()[1]);
+            enc->depedges_->push_back(std::make_pair(enc->methodoffset_, methodoffset));
+            break;
+        }
 
-        enc->thisfuns_->push_back(constructor_offset);
-        
-        auto ir_id1 = static_cast<uint32_t>(inst->GetImms()[2]);
-        auto member_functions = getLiteralArrayByOffset(enc->program_, ir_id1);
-        if(member_functions){
-            std::for_each((*member_functions).begin(), (*member_functions).end(), [&enc, constructor_offset](const std::string& word) {
-                if (enc->methodname2offset_.find(word) != enc->methodname2offset_.end()) {
-                    auto memeber_offset = enc->methodname2offset_[word];
-                    //enc->depedges_->push_back(std::make_pair(enc->methodoffset_, memeber_offset));
-                    (*enc->class2memberfuns_)[constructor_offset].push_back(memeber_offset);
-                    enc->thisfuns_->push_back(memeber_offset);
-                }else{
-                    handleError("#function dep scan: DEFINECLASSWITHBUFFER");
-                }
-            });
-        }
-    }else if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_CREATEPRIVATEPROPERTY_PREF_IMM16_ID16  ){
-        auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-        auto member_functions = getLiteralArrayByOffset(enc->program_, ir_id0);
-        if(member_functions){
-            for(const auto& member_function : *member_functions){
-                auto memeber_offset = enc->methodname2offset_[member_function];
-                enc->depedges_->push_back(std::make_pair(enc->methodoffset_, memeber_offset));
-                enc->thisfuns_->push_back(memeber_offset);
-                std::cout << member_function << std::endl;
+        case compiler::RuntimeInterface::IntrinsicId::DEFINECLASSWITHBUFFER_IMM8_ID16_ID16_IMM16_V8:
+        case compiler::RuntimeInterface::IntrinsicId::DEFINECLASSWITHBUFFER_IMM16_ID16_ID16_IMM16_V8:{
+            auto constructor_offset = static_cast<uint32_t>(inst->GetImms()[1]);
+            //enc->depedges_->push_back(std::make_pair(constructor_offset, enc->methodoffset_));
+
+            enc->thisfuns_->push_back(constructor_offset);
+            auto ir_id1 = static_cast<uint32_t>(inst->GetImms()[2]);
+            auto member_functions = getLiteralArrayByOffset(enc->program_, ir_id1);
+            if(member_functions){
+                std::for_each((*member_functions).begin(), (*member_functions).end(), [&enc, constructor_offset](const std::string& word) {
+                    if (enc->methodname2offset_.find(word) != enc->methodname2offset_.end()) {
+                        auto memeber_offset = enc->methodname2offset_[word];
+                        //enc->depedges_->push_back(std::make_pair(enc->methodoffset_, memeber_offset));
+                        (*enc->class2memberfuns_)[constructor_offset].push_back(memeber_offset);
+                        enc->thisfuns_->push_back(memeber_offset);
+                    }else{
+                        handleError("#function dep scan: DEFINECLASSWITHBUFFER");
+                    }
+                });
             }
-        }else{
-            handleError("#function dep scan: CALLRUNTIME_CREATEPRIVATEPROPERTY");
+            break;
         }
+
+        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_CREATEPRIVATEPROPERTY_PREF_IMM16_ID16:{
+            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
+            auto member_functions = getLiteralArrayByOffset(enc->program_, ir_id0);
+            if(member_functions){
+                for(const auto& member_function : *member_functions){
+                    auto memeber_offset = enc->methodname2offset_[member_function];
+                    enc->depedges_->push_back(std::make_pair(enc->methodoffset_, memeber_offset));
+                    enc->thisfuns_->push_back(memeber_offset);
+                    std::cout << member_function << std::endl;
+                }
+            }else{
+                handleError("#function dep scan: CALLRUNTIME_CREATEPRIVATEPROPERTY");
+            }
+            break;
+        }
+
+        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_DEFINEPRIVATEPROPERTY_PREF_IMM8_IMM16_IMM16_V8:{
+            /*
+                auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
+                if (acc_src != compiler::ACC_REG_ID) {
+                    DoLda(acc_src, enc->result_);
+                }
+                 ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
+                auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
+                ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
+                auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
+                ASSERT(inst->HasImms() && inst->GetImms().size() > 2); // NOLINTNEXTLINE(readability-container-size-empty)
+                auto imm2 = static_cast<uint32_t>(inst->GetImms()[2]);
+                auto v0 = inst->GetSrcReg(0);
+                enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_DEFINEPRIVATEPROPERTY(imm0, imm1, imm2, v0));
+                break;
+            */
+
+            std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+            std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+            std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+            std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+            std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+
+            auto tier = static_cast<uint32_t>(inst->GetImms()[1]);
+            auto index = static_cast<uint32_t>(inst->GetImms()[2]);
+
+            enc->method2lexicalmap_[enc->methodoffset_][tier].push_back(index);
+
+
+            std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
+
+            break;
+        }
+
+        default:;
     }
 }
 
