@@ -16,10 +16,10 @@ public:
         std::vector<std::pair<uint32_t, uint32_t>>* depedges,
         std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns,
         std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap,
-        std::vector<uint32_t>* thisfuns)
+        std::vector<uint32_t>* memfuncs)
         : compiler::Optimization(graph), ir_interface_(iface), program_(program), disasm_(disasm), methodoffset_(methodoffset), 
         fun_name_(fun_name), depedges_(depedges), class2memberfuns_(class2memberfuns), method2lexicalmap_(method2lexicalmap),
-        thisfuns_(thisfuns)
+        memfuncs_(memfuncs)
     {
         for (const auto& pair : this->disasm_.method_name_to_id_) {
             std::size_t pos = pair.first.find(':');
@@ -44,6 +44,14 @@ public:
         return GetGraph()->GetBlocksRPO();
     }
 
+    void update_member_dep_constructor(){
+        // Member functions are initialized after the constructor.
+        for(auto const constructor_func: this->constructor_funcs_){
+            for(auto const memfunc: *this->memfuncs_){
+                this->depedges_->push_back(std::make_pair(constructor_func, memfunc));
+            }
+        }
+    }
 
     static void VisitIntrinsic(GraphVisitor *visitor, Inst *inst_base);
     static void VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_base);
@@ -63,7 +71,10 @@ public:
 
     [[maybe_unused]] std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>> *method2lexicalmap_;
 
-    [[maybe_unused]] std::vector<uint32_t>* thisfuns_;
+    [[maybe_unused]] std::vector<uint32_t> constructor_funcs_;
+
+    [[maybe_unused]] std::vector<uint32_t>* memfuncs_;
+
 };
 
 }

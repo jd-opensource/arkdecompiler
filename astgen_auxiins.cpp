@@ -38,7 +38,7 @@ void AstGen::VisitParameter(GraphVisitor* v, Inst* inst_base) {
 
     panda::es2panda::ir::Expression* arg = nullptr;
 
-    if(std::find(enc->thisfuns_->begin(), enc->thisfuns_->end(), enc->methodoffset_) != enc->thisfuns_->end() && inst->GetArgNumber() == 2 ){
+    if(std::find(enc->memfuncs_->begin(), enc->memfuncs_->end(), enc->methodoffset_) != enc->memfuncs_->end() && inst->GetArgNumber() == 2 ){
         arg = enc->get_identifier_byname(new std::string("this"));
     }else{
         arg = enc->get_identifier_byname(new std::string("arg" + std::to_string(inst->GetArgNumber()-3)));
