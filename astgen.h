@@ -597,8 +597,7 @@ public:
 
    
     ///////////////////////////////////////////////////////////////////////////////////////
-    std::vector<LexicalEnvStack*> waitmethods;
-
+  
     std::unique_ptr<LCAFinder> lcaFinder;
 
     bool success_ {true};

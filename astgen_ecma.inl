@@ -1207,10 +1207,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             /// support forward reference stack
             enc->dealwith_globallexical_waitlist(tier, index, closure_name);
 
-            // for(auto &waitmethod : enc->globallexical_waitlist_){
-            //     waitmethod->set(tier, index, new std::string(closure_name));
-            // }
-
             ///////////////////////////////////////////////////////////////////////////////
             /// support callruntime.createprivateproperty
             (*enc->method2lexicalmap_)[enc->methodoffset_][tier].push_back(index);
