@@ -66,6 +66,8 @@
 #include <memory>
 #include <stdexcept>
 
+static int count = 0;
+
 void handleError(const std::string& errorMessage);
 std::string extractTrueFunName(const std::string& input);
 std::optional<std::vector<std::string>> getLiteralArrayByOffset(panda::pandasm::Program* program, uint32_t offset);

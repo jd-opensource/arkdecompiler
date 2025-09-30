@@ -22,12 +22,22 @@ public:
         memfuncs_(memfuncs)
     {
         for (const auto& pair : this->disasm_.method_name_to_id_) {
+            std::cout << "##########################################################" << std::endl;
+            std::cout << "first: " << pair.first << std::endl;
+            std::cout << "second: " << pair.second << std::endl;
+            
+
             std::size_t pos = pair.first.find(':');
             if (pos != std::string::npos) {
                 std::string result = pair.first.substr(0, pos);
+                
+                std::cout << "result: " << result << std::endl;
+
                 this->methodname2offset_[result] = pair.second.GetOffset();
             }
         }
+
+        //handleError("-----------------------------------------------------------------------");
 
     }
 

@@ -1167,7 +1167,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
             auto bc_id0 = enc->ir_interface_->GetMethodIdByOffset(ir_id0);
- 
             enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(extractTrueFunName(bc_id0))));
 
             // support callruntime.createprivateproperty
@@ -1353,7 +1352,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::string closure_name =  "closure_" + std::to_string(enc->methodoffset_) + "_" + std::to_string(enc->closure_count);
             enc->closure_count++;
 
-            panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+            panda::es2panda::ir::Expression* assignexpression =  AllocNode<es2panda::ir::AssignmentExpression>(enc, 
                                                                             enc->get_identifier_byname(new std::string(closure_name)),
                                                                             raw_expression,
                                                                             es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
@@ -1390,8 +1389,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     enc->copy_lexicalenvstack(member_func_offset, inst);
                 }
             }
-
-            std::cout << ">>>>>>>> @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: "  << constructor_offset << " = "<< constructor_offset_name << std::endl;
             
             auto father = *enc->get_expression_by_id(inst, 0);
             
@@ -1439,6 +1436,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
                     (*enc->method2lexicalmap_)[enc->methodoffset_][0].push_back(startpos);
                     auto memfun_str = new std::string(extractTrueFunName(member_function));
+
+                    //handleError(std::string("PPPPPPPPPPPPPPPPPPPPPPPP: ") + *memfun_str);
                     lexicalenv.set(startpos, memfun_str);
                     
                     enc->dealwith_globallexical_waitlist(0, startpos, *memfun_str);
