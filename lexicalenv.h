@@ -23,7 +23,7 @@ public:
     std::string *& operator[](size_t index);
     const std::string* operator[](size_t index) const;
     
-    bool IsFull();
+    bool IsFull() const;
     std::string* get(size_t index) const;
     void set(size_t index, std::string* expr);
     
@@ -44,6 +44,8 @@ private:
 public:
     LexicalEnvStack();
     LexicalEnvStack(const LexicalEnvStack& other);
+    
+    bool IsFull() const;
     
     LexicalEnvStack& operator=(const LexicalEnvStack& other);
     

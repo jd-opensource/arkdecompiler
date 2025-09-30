@@ -7,7 +7,7 @@ LexicalEnv::LexicalEnv(size_t capacity)
     : expressions_(capacity, nullptr), capacity_(capacity), full_size_(0) {
 }
 
-bool LexicalEnv::IsFull() {
+bool LexicalEnv::IsFull() const {
     for (size_t i = 0; i < capacity_; ++i) {
         if(expressions_[i] == nullptr){
             //handleError("#LexicalEnv::IsFull : " + std::to_string(i));
@@ -114,6 +114,15 @@ LexicalEnvStack::LexicalEnvStack() {
 
 LexicalEnvStack::LexicalEnvStack(const LexicalEnvStack& other) 
     : stack_(other.stack_) {
+}
+
+bool LexicalEnvStack::IsFull() const {
+    for(auto const &lexicalenv : stack_){
+        if(!lexicalenv.IsFull()){
+            return false;
+        }
+    }
+    return true;
 }
 
 LexicalEnvStack& LexicalEnvStack::operator=(const LexicalEnvStack& other) {

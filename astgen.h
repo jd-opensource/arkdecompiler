@@ -25,12 +25,13 @@ public:
         std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *>* ctor2classdeclast, std::vector<uint32_t> *thisfuns, 
         std::map<uint32_t, panda::es2panda::ir::Expression*> *class2father, 
         std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap,
+        std::vector<LexicalEnvStack*> *globallexical_waitlist,
         std::string fun_name)
         : compiler::Optimization(graph), function_(function), ir_interface_(iface), program_(prog), methodoffset_(methodoffset),
         method2lexicalenvstack_(method2lexicalenvstack), patchvarspace_(patchvarspace), parser_program_(parser_program), 
         index2namespaces_(index2namespaces), localnamespaces_(localnamespaces), class2memberfuns_(class2memberfuns),
         method2scriptfunast_(method2scriptfunast), ctor2classdeclast_(ctor2classdeclast), thisfuns_(thisfuns), class2father_(class2father),
-        method2lexicalmap_(method2lexicalmap)
+        method2lexicalmap_(method2lexicalmap), globallexical_waitlist_(globallexical_waitlist)
     {
 
         this->closure_count = 0;
@@ -299,9 +300,21 @@ public:
         }
         auto wait_method = new LexicalEnvStack(*(this->bb2lexicalenvstack[inst->GetBasicBlock()]));
         (*this->method2lexicalenvstack_)[methodoffset_] = wait_method;
-        this->waitmethods.push_back(wait_method);
+        this->globallexical_waitlist_->push_back(wait_method);
     }
 
+    void dealwith_globallexical_waitlist(uint32_t tier, uint32_t index, std::string closure_name){
+        for (auto it = this->globallexical_waitlist_->begin(); it != this->globallexical_waitlist_->end(); ) {
+            auto* waitelement = *it;
+            waitelement->set(tier, index, new std::string(closure_name));
+
+            if(waitelement->IsFull()){
+                it = this->globallexical_waitlist_->erase(it);
+            }else{
+                ++it;
+            }
+        }
+    }
 
     void print_inner_method2lexicalmap(){
         auto outerIt = this->method2lexicalmap_->find(this->methodoffset_);
@@ -579,6 +592,9 @@ public:
     std::map<uint32_t, panda::es2panda::ir::Expression*> *class2father_;
 
     std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap_;
+
+    std::vector<LexicalEnvStack*> *globallexical_waitlist_;
+
    
     ///////////////////////////////////////////////////////////////////////////////////////
     std::vector<LexicalEnvStack*> waitmethods;
