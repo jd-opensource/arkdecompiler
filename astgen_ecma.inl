@@ -896,6 +896,37 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
+       case compiler::RuntimeInterface::IntrinsicId::SUPERCALLTHISRANGE_IMM8_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::WIDE_SUPERCALLTHISRANGE_PREF_IMM16_V8:
+       {
+            panda::es2panda::ir::Expression* funname = enc->get_identifier_byname(new std::string("super"));
+            enc->thisptr =  *enc->get_expression_by_id(inst, 0);
+
+            uint32_t argsum;
+
+            if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::WIDE_SUPERCALLTHISRANGE_PREF_IMM16_V8){
+                argsum = static_cast<uint32_t>(inst->GetImms()[0]);
+            }else{
+                argsum = static_cast<uint32_t>(inst->GetImms()[1]);
+            }
+
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+            for (uint32_t i = 1; i <= argsum; ++i) {
+                arguments.push_back(*enc->get_expression_by_id(inst, i-1));
+            }
+
+            
+            es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
+                                                                                funname,
+                                                                                std::move(arguments),
+                                                                                nullptr,
+                                                                                false
+                                                                            );
+
+            enc->set_expression_by_register(inst, inst->GetDstReg(), callarg0expression);
+            break;
+        }
+
        case compiler::RuntimeInterface::IntrinsicId::DELOBJPROP_V8:
        {
             panda::es2panda::ir::Expression* obj_expression = *enc->get_expression_by_id(inst, 0);
@@ -1227,9 +1258,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "size: " << lexicalenvstack->size() << std::endl;
 
             if(lexicalenvstack->getLexicalEnv(tier)[index] == nullptr){
-                std::cout << "lexicalenv null" << std::endl;
-            }else{
-                std::cout << "lexicalenv not null" << std::endl;
+                handleError("#LDLEXVAR: lexicalenv is null");
             }
 
             auto identifier_name = lexicalenvstack->get(tier, index);
@@ -1289,9 +1318,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "size: " << lexicalenvstack->size() << std::endl;
 
             if(lexicalenvstack->getLexicalEnv(tier)[index] == nullptr){
-                std::cout << "lexicalenv null" << std::endl;
-            }else{
-                std::cout << "lexicalenv not null" << std::endl;
+                handleError("#TESTIN: lexicalenv is null");
             }
 
             auto identifier_name = lexicalenvstack->get(tier, index);
@@ -2658,6 +2685,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         case compiler::RuntimeInterface::IntrinsicId::LDOBJBYINDEX_IMM8_IMM16:
         case compiler::RuntimeInterface::IntrinsicId::LDOBJBYINDEX_IMM16_IMM16:
         {
+            handleError("LDOBJBYINDEX testing");
             panda::es2panda::ir::Expression* obj_expression = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
             
             uint32_t imm;
@@ -2686,8 +2714,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::STOBJBYINDEX_IMM16_V8_IMM16:
        case compiler::RuntimeInterface::IntrinsicId::WIDE_STOBJBYINDEX_PREF_V8_IMM32:
        {
-            uint32_t imm;
+            handleError("STOBJBYINDEX testing");
 
+            uint32_t imm;
             if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::WIDE_STOBJBYINDEX_PREF_V8_IMM32){
                 imm = static_cast<uint32_t>(inst->GetImms()[0]);
             }else{
@@ -2714,37 +2743,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         
         }
        
-       case compiler::RuntimeInterface::IntrinsicId::SUPERCALLTHISRANGE_IMM8_IMM8_V8:
-       case compiler::RuntimeInterface::IntrinsicId::WIDE_SUPERCALLTHISRANGE_PREF_IMM16_V8:
-       {
-            panda::es2panda::ir::Expression* funname = enc->get_identifier_byname(new std::string("super"));
-            enc->thisptr =  *enc->get_expression_by_id(inst, 0);
-
-            uint32_t argsum;
-
-            if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::WIDE_SUPERCALLTHISRANGE_PREF_IMM16_V8){
-                argsum = static_cast<uint32_t>(inst->GetImms()[0]);
-            }else{
-                argsum = static_cast<uint32_t>(inst->GetImms()[1]);
-            }
-
-            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
-            for (uint32_t i = 1; i <= argsum; ++i) {
-                arguments.push_back(*enc->get_expression_by_id(inst, i-1));
-            }
-
-            
-            es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
-                                                                                funname,
-                                                                                std::move(arguments),
-                                                                                nullptr,
-                                                                                false
-                                                                            );
-
-            enc->set_expression_by_register(inst, inst->GetDstReg(), callarg0expression);
-            break;
-        }
-
         default:
             std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
             enc->success_ = false;
