@@ -21,10 +21,27 @@ std::string extractTrueFunName(const std::string& input) {
         } else {
             result = beforeParen;
         }
+        
+        if(result == "" || result.rfind("^", 0) == 0){
+            return "func_" + std::to_string(count++);
+        }
         return result;
-    }else{
-        return input;
     }
+    
+    if (input.rfind("#~@0>#", 0) == 0){
+        result = input.substr(6);
+        if(result == "" || result.rfind("^", 0) == 0){
+            return "func_" + std::to_string(count++);
+        }
+    }
+
+
+    //else if (){
+    //callruntime.createprivateproperty 0x2, { 5 [ method:#~@0>#, method_affiliate:0, method:#~@0>#^1, method_affiliate:0, i32:2, ]}
+
+
+    return input;
+    
 }
 
 bool IsArray(const panda::panda_file::LiteralTag &tag)

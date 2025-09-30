@@ -403,6 +403,8 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
     
     std::vector<std::string> localnamespaces; 
 
+    std::map<uint32_t, std::string> offset2name;
+
     std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>> method2lexicalmap;
 
     [[maybe_unused]] std::vector<LexicalEnvStack*> globallexical_waitlist;

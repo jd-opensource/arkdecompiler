@@ -49,19 +49,18 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
             //enc->depedges_->push_back(std::make_pair(constructor_offset, enc->methodoffset_));
 
             enc->memfuncs_->push_back(constructor_offset);
-            auto ir_id1 = static_cast<uint32_t>(inst->GetImms()[2]);
-            auto member_functions = getLiteralArrayByOffset(enc->program_, ir_id1);
+            auto literalarray_offset = static_cast<uint32_t>(inst->GetImms()[2]);
+            auto member_functions = getLiteralArrayByOffset(enc->program_, literalarray_offset);
             if(member_functions){
-                std::for_each((*member_functions).begin(), (*member_functions).end(), [&enc, constructor_offset](const std::string& word) {
-                    if (enc->methodname2offset_.find(word) != enc->methodname2offset_.end()) {
-                        auto memeber_offset = enc->methodname2offset_[word];
-                        //enc->depedges_->push_back(std::make_pair(enc->methodoffset_, memeber_offset));
+                for(auto const& member_function : *member_functions ){
+                    if (enc->methodname2offset_.find(member_function) != enc->methodname2offset_.end()) {
+                        auto memeber_offset = enc->methodname2offset_[member_function];
                         (*enc->class2memberfuns_)[constructor_offset].push_back(memeber_offset);
                         enc->memfuncs_->push_back(memeber_offset);
                     }else{
                         handleError("#function dep scan: DEFINECLASSWITHBUFFER");
                     }
-                });
+                }
                 enc->update_member_dep_constructor();
             }
             break;
