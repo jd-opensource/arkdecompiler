@@ -61,7 +61,6 @@ public:
 
     [[maybe_unused]] std::map<std::string, uint32_t> methodname2offset_;
 
-
     [[maybe_unused]] std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>> *method2lexicalmap_;
 
     [[maybe_unused]] std::vector<uint32_t>* thisfuns_;
