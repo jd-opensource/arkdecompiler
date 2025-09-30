@@ -70,7 +70,9 @@ public:
         
         (*this->method2scriptfunast_)[methodoffset] = funcNode;
 
-        panda::es2panda::util::StringView name_view = panda::es2panda::util::StringView(*new std::string(fun_name));
+        auto newfunname = this->ExtractTrueFunName(fun_name);
+        (*this->raw2newname_)[fun_name] = newfunname;
+        panda::es2panda::util::StringView name_view = panda::es2panda::util::StringView(*new std::string(newfunname));
         auto funname_id = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(name_view);
                 
 
@@ -183,42 +185,35 @@ public:
         return hexNumber;
     }
 
-    std::string extractTrueFunName(const std::string& input) {
+    std::string ExtractTrueFunName(const std::string& input) {
+        if(this->raw2newname_->find(input) != this->raw2newname_->end()){
+            return (*this->raw2newname_)[input];
+        }
+
+        auto coarsename = RemoveArgumentsOfFunc(input);
+
+        size_t hashPos = coarsename.find_last_of('#');
         std::string result;
-        size_t endPos = input.find('(');
-        if (endPos != std::string::npos) {
-            std::string beforeParen = input.substr(0, endPos);
-            size_t colonPos = beforeParen.find_last_not_of(':');
-            if (colonPos != std::string::npos) {
-                beforeParen = beforeParen.substr(0, colonPos+1);
-            }
-            size_t hashPos = beforeParen.find_last_of('#');
-            std::string result;
-            if (hashPos != std::string::npos) {
-                result = beforeParen.substr(hashPos + 1);
-            } else {
-                result = beforeParen;
-            }
-            
-            if(result == "" || result.rfind("^", 0) == 0){
-                return "func_" + std::to_string(count++);
-            }
-            return result;
+        if (hashPos != std::string::npos) {
+            result = coarsename.substr(hashPos + 1);
+        } else {
+            result = coarsename;
         }
         
-        if (input.rfind("#~@0>#", 0) == 0){
+        if(result == "" || result.rfind("^", 0) == 0){
+            result =  "func_" + std::to_string(count++);
+        }
+
+        if (result.rfind("#~@0>#", 0) == 0){
             result = input.substr(6);
             if(result == "" || result.rfind("^", 0) == 0){
-                return "func_" + std::to_string(count++);
+                result = "func_" + std::to_string(count++);
             }
         }
 
+        (*this->raw2newname_)[input] = result;
 
-        //else if (){
-        //callruntime.createprivateproperty 0x2, { 5 [ method:#~@0>#, method_affiliate:0, method:#~@0>#^1, method_affiliate:0, i32:2, ]}
-
-
-        return input;
+        return result;
         
     }
 

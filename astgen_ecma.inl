@@ -1167,7 +1167,10 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto method_offset = static_cast<uint32_t>(inst->GetImms()[1]);
             auto method_name = enc->ir_interface_->GetMethodIdByOffset(method_offset);
-            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(enc->extractTrueFunName(method_name))));
+
+            auto newname = enc->ExtractTrueFunName(method_name);
+            
+            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(newname)));
 
             // support callruntime.createprivateproperty
             if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM8_ID16_IMM8 ||
@@ -1405,8 +1408,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
 
             (*enc->class2father_)[constructor_offset] = father;
-
-            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(enc->extractTrueFunName(constructor_offset_name))));
+       
+            auto newname = enc->ExtractTrueFunName(constructor_offset_name);
+            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(newname)));
             
             break;
         }
@@ -1435,7 +1439,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     std::cout << "[+] capacity_: " << lexicalenv.capacity_ << std::endl;
 
                     (*enc->method2lexicalmap_)[enc->methodoffset_][0].push_back(startpos);
-                    auto memfun_str = new std::string(enc->extractTrueFunName(member_function));
+                    auto newname = enc->ExtractTrueFunName(member_function);
+                    auto memfun_str = new std::string(newname);
 
                     std::cout << "@@@: " << member_function << std::endl;
                     std::cout << *memfun_str << std::endl;
