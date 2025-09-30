@@ -16,8 +16,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        {
             auto returnstatement = AllocNode<es2panda::ir::ReturnStatement>(enc,  enc->constant_undefined);
             enc->add_insAst_to_blockstatemnt_by_inst(inst, returnstatement);
-
-            std::cout << "@@@@@@ start deal forward reference stack >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
             break;
         }
 
@@ -364,8 +362,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             );
 
             ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->parser_program_->Allocator()->Adapter());
-
-
             enc->set_expression_by_register(inst, inst->GetDstReg(), objectexpression);
             break;
         }
@@ -1444,6 +1440,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     (*enc->method2lexicalmap_)[enc->methodoffset_][0].push_back(startpos);
                     auto memfun_str = new std::string(extractTrueFunName(member_function));
                     lexicalenv.set(startpos, memfun_str);
+                    
+                    enc->dealwith_globallexical_waitlist(0, startpos, *memfun_str);
 
                     startpos++;
 
