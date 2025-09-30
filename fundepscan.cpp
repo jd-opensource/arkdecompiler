@@ -35,7 +35,8 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
 
             if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM8_ID16_IMM8 ||
                 inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM16_ID16_IMM8){
-                if(extractTrueFunName(method_name) == "instance_initializer"){
+
+                if(method_name.find("instance_initializer") != std::string::npos){
                     enc->constructor_funcs_.push_back(methodoffset);
                     enc->update_member_dep_constructor();
                 }

@@ -12,14 +12,16 @@ using compiler::Opcode;
 class FunDepScan : public compiler::Optimization, public compiler::GraphVisitor {
 public:
     explicit FunDepScan(compiler::Graph *graph,  const BytecodeOptIrInterface *iface, panda::pandasm::Program* program, 
-        panda::disasm::Disassembler& disasm, uint32_t methodoffset, std::string fun_name, 
+        panda::disasm::Disassembler& disasm, uint32_t methodoffset,
         std::vector<std::pair<uint32_t, uint32_t>>* depedges,
         std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns,
         std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap,
-        std::vector<uint32_t>* memfuncs)
+        std::vector<uint32_t>* memfuncs,
+        std::map<std::string, std::string> *raw2newname
+        )
         : compiler::Optimization(graph), ir_interface_(iface), program_(program), disasm_(disasm), methodoffset_(methodoffset), 
-        fun_name_(fun_name), depedges_(depedges), class2memberfuns_(class2memberfuns), method2lexicalmap_(method2lexicalmap),
-        memfuncs_(memfuncs)
+        depedges_(depedges), class2memberfuns_(class2memberfuns), method2lexicalmap_(method2lexicalmap),
+        memfuncs_(memfuncs), raw2newname_(raw2newname)
     {
         for (const auto& pair : this->disasm_.method_name_to_id_) {
             std::cout << "##########################################################" << std::endl;
@@ -72,7 +74,6 @@ public:
     [[maybe_unused]] panda::pandasm::Program* program_;
     [[maybe_unused]] panda::disasm::Disassembler& disasm_;
     [[maybe_unused]] uint32_t methodoffset_;
-    [[maybe_unused]] std::string fun_name_;
 
     [[maybe_unused]] std::vector<std::pair<uint32_t, uint32_t>>* depedges_;
     [[maybe_unused]] std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns_;
@@ -84,6 +85,8 @@ public:
     [[maybe_unused]] std::vector<uint32_t> constructor_funcs_;
 
     [[maybe_unused]] std::vector<uint32_t>* memfuncs_;
+
+    [[maybe_unused]] std::map<std::string, std::string> *raw2newname_;
 
 };
 

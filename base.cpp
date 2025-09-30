@@ -5,7 +5,7 @@ void handleError(const std::string& errorMessage) {
     std::exit(EXIT_FAILURE); 
 }
 
-std::string extractTrueFunName(const std::string& input) {
+std::string RemoveArgumentsOfFunc(const std::string& input) {
     std::string result;
     size_t endPos = input.find('(');
     if (endPos != std::string::npos) {
@@ -21,24 +21,8 @@ std::string extractTrueFunName(const std::string& input) {
         } else {
             result = beforeParen;
         }
-        
-        if(result == "" || result.rfind("^", 0) == 0){
-            return "func_" + std::to_string(count++);
-        }
         return result;
     }
-    
-    if (input.rfind("#~@0>#", 0) == 0){
-        result = input.substr(6);
-        if(result == "" || result.rfind("^", 0) == 0){
-            return "func_" + std::to_string(count++);
-        }
-    }
-
-
-    //else if (){
-    //callruntime.createprivateproperty 0x2, { 5 [ method:#~@0>#, method_affiliate:0, method:#~@0>#^1, method_affiliate:0, i32:2, ]}
-
 
     return input;
     
@@ -81,7 +65,8 @@ std::optional<std::vector<std::string>> getLiteralArrayByOffset(panda::pandasm::
         for (size_t i = 0; i < lit_array.literals_.size(); i++) {
             const auto &tag = lit_array.literals_[i].tag_;
             const auto &val = lit_array.literals_[i].value_;
-            if(tag == panda::panda_file::LiteralTag::METHOD || tag == panda::panda_file::LiteralTag::GETTER || tag == panda::panda_file::LiteralTag::SETTER || tag == panda::panda_file::LiteralTag::GENERATORMETHOD){
+            if(tag == panda::panda_file::LiteralTag::METHOD || tag == panda::panda_file::LiteralTag::GETTER || 
+                tag == panda::panda_file::LiteralTag::SETTER || tag == panda::panda_file::LiteralTag::GENERATORMETHOD){
                 res.push_back(std::get<std::string>(val));
             }
         }
