@@ -8,6 +8,7 @@ bool FunDepScan::RunImpl(){
             VisitInstruction(inst);
         }
     }
+
     return true;
 }
 void FunDepScan::VisitIntrinsic(GraphVisitor *visitor, Inst *inst_base)
@@ -22,10 +23,23 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
     auto inst = inst_base->CastToIntrinsic();
     auto enc = static_cast<FunDepScan *>(visitor);
     switch(inst->GetIntrinsicId()){
+        case compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM8_ID16_IMM8:
+        case compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM16_ID16_IMM8:
         case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM8_ID16_IMM8:
         case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM16_ID16_IMM8:{
             auto methodoffset = static_cast<uint32_t>(inst->GetImms()[1]);
             enc->depedges_->push_back(std::make_pair(enc->methodoffset_, methodoffset));
+
+            auto method_offset = static_cast<uint32_t>(inst->GetImms()[1]);
+            auto method_name = enc->ir_interface_->GetMethodIdByOffset(method_offset);
+
+            if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM8_ID16_IMM8 ||
+                inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM16_ID16_IMM8){
+                if(extractTrueFunName(method_name) == "instance_initializer"){
+                    enc->constructor_funcs_.push_back(methodoffset);
+                    enc->update_member_dep_constructor();
+                }
+            }
             break;
         }
 
@@ -34,7 +48,7 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
             auto constructor_offset = static_cast<uint32_t>(inst->GetImms()[1]);
             //enc->depedges_->push_back(std::make_pair(constructor_offset, enc->methodoffset_));
 
-            enc->thisfuns_->push_back(constructor_offset);
+            enc->memfuncs_->push_back(constructor_offset);
             auto ir_id1 = static_cast<uint32_t>(inst->GetImms()[2]);
             auto member_functions = getLiteralArrayByOffset(enc->program_, ir_id1);
             if(member_functions){
@@ -43,11 +57,12 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
                         auto memeber_offset = enc->methodname2offset_[word];
                         //enc->depedges_->push_back(std::make_pair(enc->methodoffset_, memeber_offset));
                         (*enc->class2memberfuns_)[constructor_offset].push_back(memeber_offset);
-                        enc->thisfuns_->push_back(memeber_offset);
+                        enc->memfuncs_->push_back(memeber_offset);
                     }else{
                         handleError("#function dep scan: DEFINECLASSWITHBUFFER");
                     }
                 });
+                enc->update_member_dep_constructor();
             }
             break;
         }
@@ -59,7 +74,7 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
                 for(const auto& member_function : *member_functions){
                     auto memeber_offset = enc->methodname2offset_[member_function];
                     enc->depedges_->push_back(std::make_pair(enc->methodoffset_, memeber_offset));
-                    enc->thisfuns_->push_back(memeber_offset);
+                    enc->memfuncs_->push_back(memeber_offset);
                     std::cout << member_function << std::endl;
                 }
             }else{
