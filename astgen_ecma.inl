@@ -1165,15 +1165,15 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             // enc->set_expression_by_register(inst, inst->GetDstReg(), enc->DEFINEFUNC);
 
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto bc_id0 = enc->ir_interface_->GetMethodIdByOffset(ir_id0);
-            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(extractTrueFunName(bc_id0))));
+            auto method_offset = static_cast<uint32_t>(inst->GetImms()[1]);
+            auto method_name = enc->ir_interface_->GetMethodIdByOffset(method_offset);
+            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(enc->extractTrueFunName(method_name))));
 
             // support callruntime.createprivateproperty
             if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM8_ID16_IMM8 ||
                 inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM16_ID16_IMM8){
-                if(extractTrueFunName(bc_id0) == "instance_initializer"){
-                    enc->merge_method2lexicalmap(ir_id0, enc->methodoffset_);
+                if(method_name.find("instance_initializer") != std::string::npos){
+                    enc->merge_method2lexicalmap(method_offset, enc->methodoffset_);
                 }
             }
 
@@ -1406,7 +1406,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             (*enc->class2father_)[constructor_offset] = father;
 
-            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(extractTrueFunName(constructor_offset_name))));
+            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(enc->extractTrueFunName(constructor_offset_name))));
             
             break;
         }
@@ -1435,15 +1435,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     std::cout << "[+] capacity_: " << lexicalenv.capacity_ << std::endl;
 
                     (*enc->method2lexicalmap_)[enc->methodoffset_][0].push_back(startpos);
-                    auto memfun_str = new std::string(extractTrueFunName(member_function));
+                    auto memfun_str = new std::string(enc->extractTrueFunName(member_function));
 
+                    std::cout << "@@@: " << member_function << std::endl;
+                    std::cout << *memfun_str << std::endl;
                     //handleError(std::string("PPPPPPPPPPPPPPPPPPPPPPPP: ") + *memfun_str);
-                    lexicalenv.set(startpos, memfun_str);
                     
-                    enc->dealwith_globallexical_waitlist(0, startpos, *memfun_str);
-
-                    startpos++;
-
+                    lexicalenv.set(startpos, memfun_str);
+                    enc->dealwith_globallexical_waitlist(0, startpos++, *memfun_str);
                     std::cout << "-----------------------------------------------------------------------------" << std::endl;
 
                     std::cout << "[-] size: " << lexicalenvstack->size() << std::endl;

@@ -26,12 +26,13 @@ public:
         std::map<uint32_t, panda::es2panda::ir::Expression*> *class2father, 
         std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap,
         std::vector<LexicalEnvStack*> *globallexical_waitlist,
+        std::map<std::string, std::string> *raw2newname,
         std::string fun_name)
         : compiler::Optimization(graph), function_(function), ir_interface_(iface), program_(prog), methodoffset_(methodoffset),
         method2lexicalenvstack_(method2lexicalenvstack), patchvarspace_(patchvarspace), parser_program_(parser_program), 
         index2namespaces_(index2namespaces), localnamespaces_(localnamespaces), class2memberfuns_(class2memberfuns),
         method2scriptfunast_(method2scriptfunast), ctor2classdeclast_(ctor2classdeclast), memfuncs_(memfuncs), class2father_(class2father),
-        method2lexicalmap_(method2lexicalmap), globallexical_waitlist_(globallexical_waitlist)
+        method2lexicalmap_(method2lexicalmap), globallexical_waitlist_(globallexical_waitlist), raw2newname_(raw2newname)
     {
 
         this->closure_count = 0;
@@ -180,6 +181,45 @@ public:
         }
 
         return hexNumber;
+    }
+
+    std::string extractTrueFunName(const std::string& input) {
+        std::string result;
+        size_t endPos = input.find('(');
+        if (endPos != std::string::npos) {
+            std::string beforeParen = input.substr(0, endPos);
+            size_t colonPos = beforeParen.find_last_not_of(':');
+            if (colonPos != std::string::npos) {
+                beforeParen = beforeParen.substr(0, colonPos+1);
+            }
+            size_t hashPos = beforeParen.find_last_of('#');
+            std::string result;
+            if (hashPos != std::string::npos) {
+                result = beforeParen.substr(hashPos + 1);
+            } else {
+                result = beforeParen;
+            }
+            
+            if(result == "" || result.rfind("^", 0) == 0){
+                return "func_" + std::to_string(count++);
+            }
+            return result;
+        }
+        
+        if (input.rfind("#~@0>#", 0) == 0){
+            result = input.substr(6);
+            if(result == "" || result.rfind("^", 0) == 0){
+                return "func_" + std::to_string(count++);
+            }
+        }
+
+
+        //else if (){
+        //callruntime.createprivateproperty 0x2, { 5 [ method:#~@0>#, method_affiliate:0, method:#~@0>#^1, method_affiliate:0, i32:2, ]}
+
+
+        return input;
+        
     }
 
     std::optional<panda::pandasm::LiteralArray> findLiteralArrayByOffset(uint32_t offset) {
@@ -595,6 +635,8 @@ public:
     std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap_;
 
     std::vector<LexicalEnvStack*> *globallexical_waitlist_;
+
+    std::map<std::string, std::string> *raw2newname_;
 
    
     ///////////////////////////////////////////////////////////////////////////////////////
