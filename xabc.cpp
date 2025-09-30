@@ -172,7 +172,7 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
     
     if (!graph->RunPass<AstGen>(&function, ir_interface, prog, parser_program, mda.GetMethodId().GetOffset(), method2lexicalenvstack, patchvarspace, std::ref(index2namespaces),
             std::ref(localnamespaces), std::ref(class2memberfuns), std::ref(method2scriptfunast), std::ref(ctor2classdeclast), std::ref(memfuncs), 
-            std::ref(class2father), std::ref(method2lexicalmap), std::ref(globallexical_waitlist), std::ref(raw2newname), func_name)) {
+            std::ref(class2father), std::ref(method2lexicalmap), std::ref(globallexical_waitlist), std::ref(raw2newname), RemoveArgumentsOfFunc(func_name))) {
 
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": Code generation failed!";
 
@@ -287,15 +287,25 @@ bool ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
 
 bool ConstructClasses(std::map<uint32_t, std::vector<uint32_t>> &class2memberfuns, panda::es2panda::parser::Program *parser_program,  BytecodeOptIrInterface *ir_interface,
         std::map<uint32_t, panda::es2panda::ir::Expression*> &class2father, std::map<uint32_t, panda::es2panda::ir::ScriptFunction *> &method2scriptfunast,
-        std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *> &ctor2classdeclast
+        std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *> &ctor2classdeclast, std::map<std::string, std::string>& raw2newname
         ){
 
     for(const auto & pair : class2memberfuns){
         auto constructor_offset = pair.first;
         auto member_funcs = pair.second;
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        auto constructor_offset_name = ir_interface->GetMethodIdByOffset(constructor_offset);
-        panda::es2panda::util::StringView name_view1 = panda::es2panda::util::StringView(*(new std::string(RemoveArgumentsOfFunc(constructor_offset_name))));
+        auto constructor_offset_name = RemoveArgumentsOfFunc(ir_interface->GetMethodIdByOffset(constructor_offset));
+
+        std::string newname_constructor_offset_name;
+
+        if(raw2newname.find(constructor_offset_name) != raw2newname.end()){
+            newname_constructor_offset_name =  raw2newname[constructor_offset_name];
+        }else{
+            handleError("#ConstructClasses: find constructor_offset_name newname error");
+        }
+
+
+        panda::es2panda::util::StringView name_view1 = panda::es2panda::util::StringView(*(new std::string(RemoveArgumentsOfFunc(newname_constructor_offset_name))));
 
         auto identNode =  parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(name_view1);
 
@@ -338,12 +348,19 @@ bool ConstructClasses(std::map<uint32_t, std::vector<uint32_t>> &class2memberfun
             method2scriptfunast.erase(member_func_offset);
 
             if(func == nullptr){
-                handleError("#DecompilePandaFile: find member function fail!");
+                handleError("#ConstructClasses: find member function fail!");
             }
 
             auto funcExpr = parser_program->Allocator()->New<es2panda::ir::FunctionExpression>(func);
+            auto raw_member_name  = RemoveArgumentsOfFunc(ir_interface->GetMethodIdByOffset(member_func_offset));
+            std::string new_member_name;
+            if(raw2newname.find(raw_member_name) != raw2newname.end()){
+                new_member_name =  raw2newname[raw_member_name];
+            }else{
+                handleError("#ConstructClasses: find new_member_name newname error");
+            }
 
-            panda::es2panda::util::StringView name_view3 = panda::es2panda::util::StringView(*(new std::string(RemoveArgumentsOfFunc(ir_interface->GetMethodIdByOffset(member_func_offset)))));
+            panda::es2panda::util::StringView name_view3 = panda::es2panda::util::StringView(*(new std::string(new_member_name)));
             auto keyNode = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(name_view3);
 
             ArenaVector<es2panda::ir::Decorator *> decorators(parser_program->Allocator()->Adapter());
@@ -468,7 +485,7 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
 
     std::cout <<  "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
 
-    ConstructClasses(class2memberfuns, parser_program, ir_interface, class2father, method2scriptfunast, ctor2classdeclast);
+    ConstructClasses(class2memberfuns, parser_program, ir_interface, class2father, method2scriptfunast, ctor2classdeclast, raw2newname);
 
     std::cout <<  "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD" << std::endl;
 

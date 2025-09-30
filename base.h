@@ -71,4 +71,5 @@ static int count = 0;
 void handleError(const std::string& errorMessage);
 std::string RemoveArgumentsOfFunc(const std::string& input);
 std::optional<std::vector<std::string>> getLiteralArrayByOffset(panda::pandasm::Program* program, uint32_t offset);
+
 #endif

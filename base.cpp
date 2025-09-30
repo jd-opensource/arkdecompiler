@@ -13,15 +13,8 @@ std::string RemoveArgumentsOfFunc(const std::string& input) {
         size_t colonPos = beforeParen.find_last_not_of(':');
         if (colonPos != std::string::npos) {
             beforeParen = beforeParen.substr(0, colonPos+1);
+            return beforeParen;
         }
-        size_t hashPos = beforeParen.find_last_of('#');
-        std::string result;
-        if (hashPos != std::string::npos) {
-            result = beforeParen.substr(hashPos + 1);
-        } else {
-            result = beforeParen;
-        }
-        return result;
     }
 
     return input;
