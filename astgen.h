@@ -296,7 +296,8 @@ public:
 
     void copy_lexicalenvstack(uint32_t methodoffset_, Inst* inst){
         if(this->bb2lexicalenvstack[inst->GetBasicBlock()]->empty()){
-            handleError("#copy_lexicalenvstack: source bb2lexicalenvstack is empty");
+            return;
+            //handleError("#copy_lexicalenvstack: source bb2lexicalenvstack is empty");
         }
         auto wait_method = new LexicalEnvStack(*(this->bb2lexicalenvstack[inst->GetBasicBlock()]));
         (*this->method2lexicalenvstack_)[methodoffset_] = wait_method;
