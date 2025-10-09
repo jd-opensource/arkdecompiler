@@ -36,6 +36,7 @@ public:
     {
 
         this->closure_count = 0;
+        this->privatevar_count = 0;
 
         ArenaVector<es2panda::ir::Expression*> arguments(parser_program->Allocator()->Adapter());
 
@@ -259,8 +260,6 @@ public:
             identifier = this->str2identifers[*raw_name];
         } else {
             panda::es2panda::util::StringView name_view = panda::es2panda::util::StringView(*raw_name);
-            //std::cout << "@@@ name_view: " << name_view << std::endl;
-
             identifier = AllocNode<panda::es2panda::ir::Identifier>(this, name_view);
             this->str2identifers[*raw_name] = identifier;
         }
@@ -608,6 +607,8 @@ public:
 
     uint32_t methodoffset_;
     uint32_t closure_count;
+
+    uint32_t privatevar_count;
 
     std::vector<pandasm::Ins> res_;
     std::vector<pandasm::Function::CatchBlock> catch_blocks_;
