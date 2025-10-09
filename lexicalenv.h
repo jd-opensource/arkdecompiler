@@ -59,7 +59,7 @@ public:
     
     size_t size() const;
     
-    bool empty() const;
+    bool Empty() const;
     
     std::string* Get(size_t A, size_t B) const;
     void Set(size_t A, size_t B, std::string* expr);
