@@ -1189,10 +1189,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto lexenv_size = static_cast<uint32_t>(inst->GetImms()[0]);
             std::cout << "lexenv_size: " << lexenv_size << std::endl;
             auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
-            std::cout << "size: " << lexicalenvstack->size() << std::endl; 
-            lexicalenvstack->push(lexenv_size);
-            //enc->acc_lexicalenv = lexicalenvstack->push(lexenv_size);
-            //std::cout << "size: " << lexicalenvstack->size() << " ,enc->acc_lexicalenv: " << enc->acc_lexicalenv->size() << std::endl; 
+            std::cout << "size: " << lexicalenvstack->Size() << std::endl; 
+            lexicalenvstack->Push(lexenv_size);
 
             break;
         }
@@ -1210,8 +1208,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "tier: " << std::to_string(tier) << ", index: " << std::to_string(index) << std::endl;
 
             auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
-            std::cout << "size: " << lexicalenvstack->size() << std::endl; 
-            std::cout << "env size: " << lexicalenvstack->GetLexicalEnv(0).size() << std::endl;
+            std::cout << "size: " << lexicalenvstack->Size() << std::endl; 
+            std::cout << "env size: " << lexicalenvstack->GetLexicalEnv(0).Size() << std::endl;
 
             auto raw_expression  = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
             std::string closure_name =  "closure_" + std::to_string(enc->methodoffset_) + "_" + std::to_string(enc->closure_count);
@@ -1227,8 +1225,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
             lexicalenvstack->Set(tier, index, new std::string(closure_name));
 
-            std::cout << "size: " << lexicalenvstack->size() << std::endl;
-            std::cout << "env size: " << lexicalenvstack->GetLexicalEnv(0).size() << std::endl;
+            std::cout << "size: " << lexicalenvstack->Size() << std::endl;
+            std::cout << "env size: " << lexicalenvstack->GetLexicalEnv(0).Size() << std::endl;
 
             ////////////////////////////////////////////////////////////////////////////////
             /// support forward reference stack
@@ -1251,7 +1249,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             std::cout << "tier: " << std::to_string(tier) << ", index: " << std::to_string(index) << std::endl;
             auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
-            std::cout << "size: " << lexicalenvstack->size() << std::endl;
+            std::cout << "size: " << lexicalenvstack->Size() << std::endl;
 
             if(lexicalenvstack->GetLexicalEnv(tier)[index] == nullptr){
                 HandleError("#LDLEXVAR: lexicalenv is null");
@@ -1266,7 +1264,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         case compiler::RuntimeInterface::IntrinsicId::POPLEXENV:
         {
             auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
-            lexicalenvstack->pop();
+            lexicalenvstack->Pop();
             break;
         }
 
@@ -1311,7 +1309,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             std::cout << "tier: " << std::to_string(tier) << ", index: " << std::to_string(index) << std::endl;
             auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
-            std::cout << "size: " << lexicalenvstack->size() << std::endl;
+            std::cout << "size: " << lexicalenvstack->Size() << std::endl;
 
             if(lexicalenvstack->GetLexicalEnv(tier)[index] == nullptr){
                 HandleError("#TESTIN: lexicalenv is null");
@@ -1432,8 +1430,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
                     auto &lexicalenv = lexicalenvstack->Top();
                     
-                    std::cout << "[+] size: " << lexicalenvstack->size() << std::endl;
-                    std::cout << "[+] env size: " << lexicalenvstack->GetLexicalEnv(0).size() << std::endl;
+                    std::cout << "[+] size: " << lexicalenvstack->Size() << std::endl;
+                    std::cout << "[+] env size: " << lexicalenvstack->GetLexicalEnv(0).Size() << std::endl;
                     std::cout << "[+] capacity_: " << lexicalenv.capacity_ << std::endl;
 
                     (*enc->method2lexicalmap_)[enc->methodoffset_][0].push_back(startpos);
@@ -1448,8 +1446,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     enc->DealWithGlobalLexicalWaitlist(0, startpos++, *memfun_str);
                     std::cout << "-----------------------------------------------------------------------------" << std::endl;
 
-                    std::cout << "[-] size: " << lexicalenvstack->size() << std::endl;
-                    std::cout << "[-] env size: " << lexicalenvstack->GetLexicalEnv(0).size() << std::endl;
+                    std::cout << "[-] size: " << lexicalenvstack->Size() << std::endl;
+                    std::cout << "[-] env size: " << lexicalenvstack->GetLexicalEnv(0).Size() << std::endl;
                     std::cout << "[-] capacity_: " << lexicalenv.capacity_ << std::endl;
 
                 }
