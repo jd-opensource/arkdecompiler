@@ -39,7 +39,7 @@ public:
             }
         }
 
-        //handleError("-----------------------------------------------------------------------");
+        //HandleError("-----------------------------------------------------------------------");
 
     }
 
@@ -56,7 +56,7 @@ public:
         return GetGraph()->GetBlocksRPO();
     }
 
-    void update_member_dep_constructor(){
+    void UpdateMemberDepConstructor(){
         // Member functions are initialized after the constructor.
         for(auto const constructor_func: this->constructor_funcs_){
             for(auto const memfunc: *this->memfuncs_){

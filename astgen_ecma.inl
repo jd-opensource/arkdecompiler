@@ -15,19 +15,19 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::RETURNUNDEFINED:
        {
             auto returnstatement = AllocNode<es2panda::ir::ReturnStatement>(enc,  enc->constant_undefined);
-            enc->add_insAst_to_blockstatemnt_by_inst(inst, returnstatement);
+            enc->AddInstAst2BlockStatemntByInst(inst, returnstatement);
             break;
         }
 
        case compiler::RuntimeInterface::IntrinsicId::LDINFINITY:
        {
-            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->constant_infinity);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->constant_infinity);
             break;
         }
 
        case compiler::RuntimeInterface::IntrinsicId::LDBIGINT_ID16:
        {
-            panda::es2panda::ir::Identifier* funname = enc->get_identifier_byname(new std::string("BigInt"));
+            panda::es2panda::ir::Identifier* funname = enc->GetIdentifierByName(new std::string("BigInt"));
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
 
             auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[0]);
@@ -45,40 +45,40 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             false
                                                                             );
 
-            enc->set_expression_by_register(inst, inst->GetDstReg(), callexpression); 
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression); 
             break;
         }
 
        case compiler::RuntimeInterface::IntrinsicId::LDHOLE:
        {
-            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->constant_hole);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->constant_hole);
             break;
         }
 
        case compiler::RuntimeInterface::IntrinsicId::LDUNDEFINED:
        {
-            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->constant_undefined);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->constant_undefined);
             break;
         }
 
        case compiler::RuntimeInterface::IntrinsicId::LDNULL:
        {
-            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->constant_null);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->constant_null);
             break;
         }
        case compiler::RuntimeInterface::IntrinsicId::LDTRUE:
        {
-            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->constant_true);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->constant_true);
             break;
         }
        case compiler::RuntimeInterface::IntrinsicId::LDFALSE:
        {
-            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->constant_false);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->constant_false);
             break;
         }
        case compiler::RuntimeInterface::IntrinsicId::LDNAN:
        {
-            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->constant_nan);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->constant_nan);
             break;
         }
 
@@ -104,18 +104,18 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::STRICTNOTEQ_IMM8_V8:
        case compiler::RuntimeInterface::IntrinsicId::STRICTEQ_IMM8_V8:
        case compiler::RuntimeInterface::IntrinsicId::EXP_IMM8_V8:{
-            panda::es2panda::ir::Expression* source_expression = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);  
+            panda::es2panda::ir::Expression* source_expression = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);  
             auto binexpression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
-                                                            *enc->get_expression_by_id(inst, 0),
+                                                            *enc->GetExpressionById(inst, 0),
                                                             source_expression,
                                                             BinIntrinsicIdToToken(inst->GetIntrinsicId())
             );
 
             if(inst->HasUsers()){
-                enc->set_expression_by_register(inst, inst->GetDstReg(), binexpression);
+                enc->SetExpressionByRegister(inst, inst->GetDstReg(), binexpression);
             }else{
                 auto binexpressionstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, binexpression);
-                enc->add_insAst_to_blockstatemnt_by_inst(inst, binexpressionstatement);
+                enc->AddInstAst2BlockStatemntByInst(inst, binexpressionstatement);
             }
 
             break;
@@ -124,37 +124,37 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::INC_IMM8:
        case compiler::RuntimeInterface::IntrinsicId::DEC_IMM8:
        {
-            panda::es2panda::ir::Expression* source_expression = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            panda::es2panda::ir::Expression* source_expression = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
             auto binexpression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
                                                             source_expression,
                                                             enc->constant_one,
                                                             IncDecIntrinsicIdToToken(inst->GetIntrinsicId())
             );
 
-            enc->set_expression_by_register(inst, inst->GetDstReg(), binexpression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), binexpression);
             break;
         }
 
        case compiler::RuntimeInterface::IntrinsicId::ISTRUE:{
-            panda::es2panda::ir::Expression* source_expression = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            panda::es2panda::ir::Expression* source_expression = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
             auto binexpression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
                                                             source_expression,
                                                             enc->constant_true,
                                                             BinIntrinsicIdToToken(inst->GetIntrinsicId())
             );
 
-            enc->set_expression_by_register(inst, inst->GetDstReg(), binexpression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), binexpression);
             break;
         }
        case compiler::RuntimeInterface::IntrinsicId::ISFALSE:{
-            panda::es2panda::ir::Expression* source_expression = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            panda::es2panda::ir::Expression* source_expression = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
             auto binexpression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
                                                             source_expression,
                                                             enc->constant_false,
                                                             BinIntrinsicIdToToken(inst->GetIntrinsicId())
             );
 
-            enc->set_expression_by_register(inst, inst->GetDstReg(), binexpression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), binexpression);
             break;
 
         }
@@ -163,22 +163,22 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::NEG_IMM8:
        case compiler::RuntimeInterface::IntrinsicId::TYPEOF_IMM8:
        case compiler::RuntimeInterface::IntrinsicId::TYPEOF_IMM16: {
-            panda::es2panda::ir::Expression* source_expression = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);        
+            panda::es2panda::ir::Expression* source_expression = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);        
 
             auto unaryexpression = AllocNode<es2panda::ir::UnaryExpression>(enc, 
                                                             source_expression,
                                                             UnaryPrefixIntrinsicIdToToken(inst->GetIntrinsicId())
             );
 
-            enc->set_expression_by_register(inst, inst->GetDstReg(), unaryexpression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), unaryexpression);
             break;
         }
 
        case compiler::RuntimeInterface::IntrinsicId::TONUMBER_IMM8:
        case compiler::RuntimeInterface::IntrinsicId::TONUMERIC_IMM8:
        {
-            panda::es2panda::ir::Expression* source_expression = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
-            panda::es2panda::ir::Identifier* funname = enc->get_identifier_byname(new std::string("Number"));
+            panda::es2panda::ir::Expression* source_expression = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
+            panda::es2panda::ir::Identifier* funname = enc->GetIdentifierByName(new std::string("Number"));
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
             arguments.push_back(source_expression);
 
@@ -189,7 +189,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             false
                                                                             );
 
-            enc->set_expression_by_register(inst, inst->GetDstReg(), callexpression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
             break;
         }
 
@@ -197,14 +197,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::TRYSTGLOBALBYNAME_IMM8_ID16:
        case compiler::RuntimeInterface::IntrinsicId::TRYSTGLOBALBYNAME_IMM16_ID16:
        {
-            panda::es2panda::ir::Expression* src_reg_identifier = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);  
+            panda::es2panda::ir::Expression* src_reg_identifier = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);  
 
             if(src_reg_identifier != enc->DEFINEFUNC){
                 auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
                 auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
                 std::string* global_name = new std::string(bc_id0);
 
-                auto globalvar = enc->get_identifier_byname(global_name);
+                auto globalvar = enc->GetIdentifierByName(global_name);
 
                 auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
                                                                                     globalvar,
@@ -212,7 +212,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                     es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
                                                                                 );
                 auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
-                enc->add_insAst_to_blockstatemnt_by_inst(inst, assignstatement);
+                enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
             }
             break;
            
@@ -228,7 +228,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             );
 
             ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->parser_program_->Allocator()->Adapter());
-            enc->set_expression_by_register(inst, inst->GetDstReg(), objectexpression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), objectexpression);
             break;
         }
 
@@ -244,7 +244,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->parser_program_->Allocator()->Adapter());
 
 
-            enc->set_expression_by_register(inst, inst->GetDstReg(), arrayexpression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), arrayexpression);
             break;
         }
 
@@ -259,9 +259,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             ASSERT(inst->HasImms() && inst->GetImms().size() > 1);
             auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
 
-            auto literalarray = enc->findLiteralArrayByOffset(ir_id0);
+            auto literalarray = enc->FindLiteralArrayByOffset(ir_id0);
             if(!literalarray){
-                handleError("get literalarray error");
+                HandleError("get literalarray error");
             }
 
             /*
@@ -288,7 +288,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
                     elements.push_back(AllocNode<es2panda::ir::StringLiteral>(enc, literal_strview));
                 }else{
-                    handleError("unsupport literal type error");
+                    HandleError("unsupport literal type error");
                 }
 
                 // std::visit([](const auto& value) {
@@ -302,7 +302,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             false
                                                                             );
 
-            enc->set_expression_by_register(inst, inst->GetDstReg(), arrayexpression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), arrayexpression);
             break;
         }
 
@@ -313,7 +313,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             ArenaVector<es2panda::ir::Expression *> properties(enc->parser_program_->Allocator()->Adapter());
             
             auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]); 
-            auto literalarray = enc->findLiteralArrayByOffset(ir_id0);
+            auto literalarray = enc->FindLiteralArrayByOffset(ir_id0);
 
             int count = 0;
             es2panda::ir::Expression* key;
@@ -338,7 +338,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     es2panda::util::StringView literal_strview(std::get<std::string>(literal.value_));
                     tmp = AllocNode<es2panda::ir::StringLiteral>(enc, literal_strview);
                 }else{
-                    handleError("unsupport literal type error");
+                    HandleError("unsupport literal type error");
                 }
 
                 if(count++ % 2==0){
@@ -362,7 +362,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             );
 
             ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->parser_program_->Allocator()->Adapter());
-            enc->set_expression_by_register(inst, inst->GetDstReg(), objectexpression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), objectexpression);
             break;
         }
 
@@ -376,8 +376,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
             auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
 
-            es2panda::ir::Expression* sourceexpression = enc->get_identifier_byname(new std::string(bc_id0));
-            enc->set_expression_by_register(inst, inst->GetDstReg(), sourceexpression);
+            es2panda::ir::Expression* sourceexpression = enc->GetIdentifierByName(new std::string(bc_id0));
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), sourceexpression);
 
             break;
         }
@@ -385,14 +385,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::LDOBJBYNAME_IMM8_ID16:
        case compiler::RuntimeInterface::IntrinsicId::LDOBJBYNAME_IMM16_ID16:
        {
-            panda::es2panda::ir::Expression* obj_expression = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            panda::es2panda::ir::Expression* obj_expression = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
             
             auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
             auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
 
             std::string* name_ptr= new std::string(bc_id0);
 
-            panda::es2panda::ir::Expression* attr_expression = enc->get_identifier_byname(name_ptr);
+            panda::es2panda::ir::Expression* attr_expression = enc->GetIdentifierByName(name_ptr);
 
             auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
                                                         obj_expression,
@@ -402,15 +402,15 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                         false);
 
 
-            enc->set_expression_by_register(inst, inst->GetDstReg(), objattrexpression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), objattrexpression);
             break;
        }
 
        case compiler::RuntimeInterface::IntrinsicId::LDOBJBYVALUE_IMM16_V8:
        case compiler::RuntimeInterface::IntrinsicId::LDOBJBYVALUE_IMM8_V8:
        {
-            panda::es2panda::ir::Expression* attr_expression = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
-            panda::es2panda::ir::Expression* obj_expression = *enc->get_expression_by_id(inst, 0);
+            panda::es2panda::ir::Expression* attr_expression = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
+            panda::es2panda::ir::Expression* obj_expression = *enc->GetExpressionById(inst, 0);
             auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
                                                         obj_expression,
                                                         attr_expression, 
@@ -418,21 +418,21 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                         true, 
                                                         false);
 
-            enc->set_expression_by_register(inst, inst->GetDstReg(), objattrexpression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), objattrexpression);
             break;
         }
 
         case compiler::RuntimeInterface::IntrinsicId::STTOGLOBALRECORD_IMM16_ID16:
         case compiler::RuntimeInterface::IntrinsicId::STCONSTTOGLOBALRECORD_IMM16_ID16:
         {
-            panda::es2panda::ir::Expression* src_expression = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            panda::es2panda::ir::Expression* src_expression = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
             
             auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
             auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
 
             std::string* global_name = new std::string(bc_id0);
             
-            auto dst_identifier = enc->get_identifier_byname(global_name);
+            auto dst_identifier = enc->GetIdentifierByName(global_name);
 
             ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->parser_program_->Allocator()->Adapter());
             auto *declarator = AllocNode<es2panda::ir::VariableDeclarator>(enc,
@@ -446,24 +446,22 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                     std::move(declarators),
                                                                                     true
                                                                                 );
-                enc->add_insAst_to_blockstatemnt_by_inst(inst, variadeclaration);
+                enc->AddInstAst2BlockStatemntByInst(inst, variadeclaration);
             }else{
                 auto variadeclaration = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
                                                                                     es2panda::ir::VariableDeclaration::VariableDeclarationKind::LET,
                                                                                     std::move(declarators),
                                                                                     true
                                                                                 );
-                enc->add_insAst_to_blockstatemnt_by_inst(inst, variadeclaration);
+                enc->AddInstAst2BlockStatemntByInst(inst, variadeclaration);
             }
-
-            
 
             break;
         }
 
         case compiler::RuntimeInterface::IntrinsicId::CALLARG0_IMM8:
         {
-            panda::es2panda::ir::Expression* funname = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            panda::es2panda::ir::Expression* funname = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
 
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
             es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
@@ -474,10 +472,10 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             );
 
             if(inst->HasUsers()){
-                enc->set_expression_by_register(inst, inst->GetDstReg(), callarg0expression);
+                enc->SetExpressionByRegister(inst, inst->GetDstReg(), callarg0expression);
             }else{
                 auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc, callarg0expression);
-                enc->add_insAst_to_blockstatemnt_by_inst(inst, callarg0statement);
+                enc->AddInstAst2BlockStatemntByInst(inst, callarg0statement);
             }
 
             break;
@@ -485,11 +483,11 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
         case compiler::RuntimeInterface::IntrinsicId::CALLARG1_IMM8_V8:
         {
-            panda::es2panda::ir::Expression* funname = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            panda::es2panda::ir::Expression* funname = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
 
 
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
-            auto v0 = *enc->get_expression_by_id(inst, 0);
+            auto v0 = *enc->GetExpressionById(inst, 0);
             
             arguments.push_back(v0);
             es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
@@ -499,18 +497,18 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 false
                                                                             );
 
-            enc->set_expression_by_register(inst, inst->GetDstReg(), callarg0expression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), callarg0expression);
             break;
         }
 
        case compiler::RuntimeInterface::IntrinsicId::CALLARGS2_IMM8_V8_V8:
        {
 
-            panda::es2panda::ir::Expression* funname = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            panda::es2panda::ir::Expression* funname = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
 
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
-            arguments.push_back(*enc->get_expression_by_id(inst, 0));
-            arguments.push_back(*enc->get_expression_by_id(inst, 1));
+            arguments.push_back(*enc->GetExpressionById(inst, 0));
+            arguments.push_back(*enc->GetExpressionById(inst, 1));
 
 
             es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
@@ -521,10 +519,10 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             );
 
             if(inst->HasUsers()){
-                enc->set_expression_by_register(inst, inst->GetDstReg(), callarg0expression);
+                enc->SetExpressionByRegister(inst, inst->GetDstReg(), callarg0expression);
             }else{
                 auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc, callarg0expression);
-                enc->add_insAst_to_blockstatemnt_by_inst(inst, callarg0statement);
+                enc->AddInstAst2BlockStatemntByInst(inst, callarg0statement);
             }
 
             break;
@@ -532,14 +530,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         }
        case compiler::RuntimeInterface::IntrinsicId::CALLARGS3_IMM8_V8_V8_V8:
        {
-            panda::es2panda::ir::Expression* funname = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            panda::es2panda::ir::Expression* funname = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
 
 
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
 
-            arguments.push_back(*enc->get_expression_by_id(inst, 0));
-            arguments.push_back(*enc->get_expression_by_id(inst, 1));
-            arguments.push_back(*enc->get_expression_by_id(inst, 2));
+            arguments.push_back(*enc->GetExpressionById(inst, 0));
+            arguments.push_back(*enc->GetExpressionById(inst, 1));
+            arguments.push_back(*enc->GetExpressionById(inst, 2));
 
             es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                                 funname,
@@ -549,10 +547,10 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             );
 
             if(inst->HasUsers()){
-                enc->set_expression_by_register(inst, inst->GetDstReg(), callarg0expression);
+                enc->SetExpressionByRegister(inst, inst->GetDstReg(), callarg0expression);
             }else{
                 auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc, callarg0expression);
-                enc->add_insAst_to_blockstatemnt_by_inst(inst, callarg0statement);
+                enc->AddInstAst2BlockStatemntByInst(inst, callarg0statement);
             }
 
             break;
@@ -561,8 +559,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::CALLTHIS0_IMM8_V8:
        {
             
-            panda::es2panda::ir::Expression* funname = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
-            enc->thisptr = *enc->get_expression_by_id(inst, 0);
+            panda::es2panda::ir::Expression* funname = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
+            enc->thisptr = *enc->GetExpressionById(inst, 0);
 
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
             es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
@@ -574,21 +572,21 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             
             if(inst->HasUsers()){
-                enc->set_expression_by_register(inst, inst->GetDstReg(), callarg0expression);
+                enc->SetExpressionByRegister(inst, inst->GetDstReg(), callarg0expression);
             }else{
                 auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc, callarg0expression);
-                enc->add_insAst_to_blockstatemnt_by_inst(inst, callarg0statement);
+                enc->AddInstAst2BlockStatemntByInst(inst, callarg0statement);
             }
             break;
         }
 
        case compiler::RuntimeInterface::IntrinsicId::CALLTHIS1_IMM8_V8_V8:
        {
-            panda::es2panda::ir::Expression* funname = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            panda::es2panda::ir::Expression* funname = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
 
-            enc->thisptr = *enc->get_expression_by_id(inst, 0);
-            arguments.push_back(*enc->get_expression_by_id(inst, 1));
+            enc->thisptr = *enc->GetExpressionById(inst, 0);
+            arguments.push_back(*enc->GetExpressionById(inst, 1));
 
             es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                                 funname,
@@ -597,10 +595,10 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 false
                                                                             );
             if(inst->HasUsers()){
-                enc->set_expression_by_register(inst, inst->GetDstReg(), callarg0expression);
+                enc->SetExpressionByRegister(inst, inst->GetDstReg(), callarg0expression);
             }else{
                 auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc, callarg0expression);
-                enc->add_insAst_to_blockstatemnt_by_inst(inst, callarg0statement);
+                enc->AddInstAst2BlockStatemntByInst(inst, callarg0statement);
             }
 
             break;
@@ -608,12 +606,12 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::CALLTHIS2_IMM8_V8_V8_V8:
        {
 
-            panda::es2panda::ir::Expression* funname = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            panda::es2panda::ir::Expression* funname = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
 
-            enc->thisptr = *enc->get_expression_by_id(inst, 0);
-            arguments.push_back(*enc->get_expression_by_id(inst, 1));
-            arguments.push_back(*enc->get_expression_by_id(inst, 2));
+            enc->thisptr = *enc->GetExpressionById(inst, 0);
+            arguments.push_back(*enc->GetExpressionById(inst, 1));
+            arguments.push_back(*enc->GetExpressionById(inst, 2));
 
             es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                                 funname,
@@ -623,10 +621,10 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             );
 
             if(inst->HasUsers()){
-                enc->set_expression_by_register(inst, inst->GetDstReg(), callarg0expression);
+                enc->SetExpressionByRegister(inst, inst->GetDstReg(), callarg0expression);
             }else{
                 auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc, callarg0expression);
-                enc->add_insAst_to_blockstatemnt_by_inst(inst, callarg0statement);
+                enc->AddInstAst2BlockStatemntByInst(inst, callarg0statement);
             }
 
             break;
@@ -635,13 +633,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::CALLTHIS3_IMM8_V8_V8_V8_V8:
        {
 
-            panda::es2panda::ir::Expression* funname = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            panda::es2panda::ir::Expression* funname = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
 
-            enc->thisptr = *enc->get_expression_by_id(inst, 0);
-            arguments.push_back(*enc->get_expression_by_id(inst, 1));
-            arguments.push_back(*enc->get_expression_by_id(inst, 2));
-            arguments.push_back(*enc->get_expression_by_id(inst, 3));
+            enc->thisptr = *enc->GetExpressionById(inst, 0);
+            arguments.push_back(*enc->GetExpressionById(inst, 1));
+            arguments.push_back(*enc->GetExpressionById(inst, 2));
+            arguments.push_back(*enc->GetExpressionById(inst, 3));
 
             es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                                 funname,
@@ -651,10 +649,10 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             );
 
             if(inst->HasUsers()){
-                enc->set_expression_by_register(inst, inst->GetDstReg(), callarg0expression);
+                enc->SetExpressionByRegister(inst, inst->GetDstReg(), callarg0expression);
             }else{
                 auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc, callarg0expression);
-                enc->add_insAst_to_blockstatemnt_by_inst(inst, callarg0statement);
+                enc->AddInstAst2BlockStatemntByInst(inst, callarg0statement);
             }
 
             break;
@@ -664,19 +662,19 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::STOBJBYVALUE_IMM16_V8_V8:
        {
             auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
-                                                        *enc->get_expression_by_id(inst, 0),
-                                                        *enc->get_expression_by_id(inst, 1), 
+                                                        *enc->GetExpressionById(inst, 0),
+                                                        *enc->GetExpressionById(inst, 1), 
                                                         es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
                                                         true, 
                                                         false);
             panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
                                                                             objattrexpression,
-                                                                            *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2),
+                                                                            *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
                                                                             es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
                                                                         ); 
             auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
                                                                                 assignexpression);
-            enc->add_insAst_to_blockstatemnt_by_inst(inst, assignstatement);
+            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
             break;
 
         }
@@ -693,8 +691,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::string* global_name = new std::string(bc_id0);
             
             auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
-                                                        *enc->get_expression_by_id(inst, 0),
-                                                        enc->get_identifier_byname(global_name),
+                                                        *enc->GetExpressionById(inst, 0),
+                                                        enc->GetIdentifierByName(global_name),
                                                         es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
                                                         false, 
                                                         false);
@@ -702,13 +700,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             panda::es2panda::ir::Expression* assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
                                                                             objattrexpression,
-                                                                            *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2),
+                                                                            *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
                                                                             es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
                                                                         ); 
                                                                         
             auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
                                                                                 assignexpression);
-            enc->add_insAst_to_blockstatemnt_by_inst(inst, assignstatement);
+            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
             break;
         }
 
@@ -718,7 +716,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::WIDE_NEWOBJRANGE_PREF_IMM16_V8:
        {
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
-            es2panda::ir::Expression *callee = *enc->get_expression_by_id(inst, 0);
+            es2panda::ir::Expression *callee = *enc->GetExpressionById(inst, 0);
 
             uint32_t argsum;
 
@@ -729,22 +727,22 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
 
             for (uint32_t i = 1; i < argsum; ++i) {
-                arguments.push_back(*enc->get_expression_by_id(inst, i));
+                arguments.push_back(*enc->GetExpressionById(inst, i));
             }
 
             es2panda::ir::Expression *newExprNode = AllocNode<es2panda::ir::NewExpression>(enc, callee, nullptr, std::move(arguments));
-            enc->set_expression_by_register(inst, inst->GetDstReg(), newExprNode);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), newExprNode);
             break;
 
         }
 
        case compiler::RuntimeInterface::IntrinsicId::COPYDATAPROPERTIES_V8:
        {
-            auto src_obj = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            auto src_obj = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
             ArenaVector<es2panda::ir::Expression *> elements(enc->parser_program_->Allocator()->Adapter());
             auto v0 = inst->GetSrcReg(0);
 
-            auto target_obj = *enc->get_expression_by_id(inst, 0);
+            auto target_obj = *enc->GetExpressionById(inst, 0);
 
             auto target_objexpression = static_cast<panda::es2panda::ir::ObjectExpression*>(target_obj);
             auto target_properties = target_objexpression->Properties();
@@ -759,8 +757,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 false
                                                                             );
 
-            enc->set_expression_by_register(inst, inst->GetDstReg(), objectexpression);
-            enc->set_expression_by_register(inst->GetInput(0).GetInst(), v0, objectexpression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), objectexpression);
+            enc->SetExpressionByRegister(inst->GetInput(0).GetInst(), v0, objectexpression);
             break;
         }
 
@@ -768,8 +766,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
        case compiler::RuntimeInterface::IntrinsicId::APPLY_IMM8_V8_V8:
        {
-            auto fun = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
-            auto raw_expression = *enc->get_expression_by_id(inst, 1);
+            auto fun = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
+            auto raw_expression = *enc->GetExpressionById(inst, 1);
 
             auto raw_array_expression = static_cast<const panda::es2panda::ir::ArrayExpression*>(raw_expression);
 
@@ -779,7 +777,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 elements.push_back(it);
             }
 
-            auto this_expression = *enc->get_expression_by_id(inst, 0);
+            auto this_expression = *enc->GetExpressionById(inst, 0);
             enc->thisptr = this_expression;
             
             auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
@@ -789,21 +787,21 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             false
                                                                             );
 
-            enc->set_expression_by_register(inst, inst->GetDstReg(), callexpression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
 
             break;
         }
 
        case compiler::RuntimeInterface::IntrinsicId::STARRAYSPREAD_V8_V8:
        {
-            auto element = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            auto element = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
             es2panda::ir::Expression* spreadelement = AllocNode<es2panda::ir::SpreadElement>(enc, es2panda::ir::AstNodeType::SPREAD_ELEMENT, element);
 
-            auto raw_obj = *enc->get_expression_by_id(inst, 0);
+            auto raw_obj = *enc->GetExpressionById(inst, 0);
             auto raw_arrayexpression = static_cast<panda::es2panda::ir::ArrayExpression*>(raw_obj);
 
             ArenaVector<es2panda::ir::Expression *> elements(enc->parser_program_->Allocator()->Adapter());
-            auto index_expression = *enc->get_expression_by_id(inst, 1);
+            auto index_expression = *enc->GetExpressionById(inst, 1);
 
             auto index_literal = static_cast<panda::es2panda::ir::NumberLiteral*>(index_expression);
             uint32_t index = index_literal->Number();
@@ -818,10 +816,10 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             std::move(elements),
                                                                             false
                                                                             );
-            enc->set_expression_by_register(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), arrayexpression);
+            enc->SetExpressionByRegister(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), arrayexpression);
 
             uint32_t size = elements.size();
-            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_literal_bynum(size));
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->GetLiteralByNum(size));
             break;
         }
 
@@ -829,7 +827,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::DEBUGGER:
        {
             auto debuggerstatement = AllocNode<es2panda::ir::DebuggerStatement>(enc );
-            enc->add_insAst_to_blockstatemnt_by_inst(inst, debuggerstatement);
+            enc->AddInstAst2BlockStatemntByInst(inst, debuggerstatement);
             break;
        }
 
@@ -837,7 +835,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::WIDE_CALLRANGE_PREF_IMM16_V8:
        {
 
-            panda::es2panda::ir::Expression* funname = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            panda::es2panda::ir::Expression* funname = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
             uint32_t argsum;
 
             if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::WIDE_CALLRANGE_PREF_IMM16_V8){
@@ -848,7 +846,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
             for (uint32_t i = 0; i < argsum; ++i) {
-                arguments.push_back(*enc->get_expression_by_id(inst, i));
+                arguments.push_back(*enc->GetExpressionById(inst, i));
             }
 
             
@@ -858,15 +856,15 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 nullptr,
                                                                                 false
                                                                             );
-            enc->set_expression_by_register(inst, inst->GetDstReg(), callarg0expression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), callarg0expression);
             break;
         }
 
         case compiler::RuntimeInterface::IntrinsicId::WIDE_CALLTHISRANGE_PREF_IMM16_V8:
         case compiler::RuntimeInterface::IntrinsicId::CALLTHISRANGE_IMM8_IMM8_V8:
         {
-            panda::es2panda::ir::Expression* funname = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
-            enc->thisptr =  *enc->get_expression_by_id(inst, 0);
+            panda::es2panda::ir::Expression* funname = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
+            enc->thisptr =  *enc->GetExpressionById(inst, 0);
 
             uint32_t argsum;
 
@@ -878,7 +876,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
             for (uint32_t i = 1; i <= argsum; ++i) {
-                arguments.push_back(*enc->get_expression_by_id(inst, i));
+                arguments.push_back(*enc->GetExpressionById(inst, i));
             }
 
             
@@ -888,15 +886,15 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 nullptr,
                                                                                 false
                                                                             );
-            enc->set_expression_by_register(inst, inst->GetDstReg(), callarg0expression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), callarg0expression);
             break;
         }
 
        case compiler::RuntimeInterface::IntrinsicId::SUPERCALLTHISRANGE_IMM8_IMM8_V8:
        case compiler::RuntimeInterface::IntrinsicId::WIDE_SUPERCALLTHISRANGE_PREF_IMM16_V8:
        {
-            panda::es2panda::ir::Expression* funname = enc->get_identifier_byname(new std::string("super"));
-            enc->thisptr =  *enc->get_expression_by_id(inst, 0);
+            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName(new std::string("super"));
+            enc->thisptr =  *enc->GetExpressionById(inst, 0);
 
             uint32_t argsum;
 
@@ -908,7 +906,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
             for (uint32_t i = 1; i <= argsum; ++i) {
-                arguments.push_back(*enc->get_expression_by_id(inst, i-1));
+                arguments.push_back(*enc->GetExpressionById(inst, i-1));
             }
 
             
@@ -919,14 +917,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 false
                                                                             );
 
-            enc->set_expression_by_register(inst, inst->GetDstReg(), callarg0expression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), callarg0expression);
             break;
         }
 
        case compiler::RuntimeInterface::IntrinsicId::DELOBJPROP_V8:
        {
-            panda::es2panda::ir::Expression* obj_expression = *enc->get_expression_by_id(inst, 0);
-            panda::es2panda::ir::Expression* attr_expression = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            panda::es2panda::ir::Expression* obj_expression = *enc->GetExpressionById(inst, 0);
+            panda::es2panda::ir::Expression* attr_expression = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
 
             auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
                                                         obj_expression,
@@ -942,17 +940,17 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                             UnaryPrefixIntrinsicIdToToken(inst->GetIntrinsicId())
             );
 
-            enc->set_expression_by_register(inst, inst->GetDstReg(), unaryexpression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), unaryexpression);
             break;
         }
 
 
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_ISFALSE_PREF_IMM8:
        {
-            panda::es2panda::ir::Expression* funname = enc->get_identifier_byname(new std::string("runtime.isfalse"));
+            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName(new std::string("runtime.isfalse"));
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
 
-            arguments.push_back(*enc->get_expression_by_id(inst, inst->GetInputsCount() - 2));
+            arguments.push_back(*enc->GetExpressionById(inst, inst->GetInputsCount() - 2));
 
             auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                 funname,
@@ -961,15 +959,15 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                 false
                                                                 );
 
-            enc->set_expression_by_register(inst, inst->GetDstReg(), callexpression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
             break;
         }
 
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_ISTRUE_PREF_IMM8:
        {
-            panda::es2panda::ir::Expression* funname = enc->get_identifier_byname(new std::string("runtime.istrue"));
+            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName(new std::string("runtime.istrue"));
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
-            arguments.push_back(*enc->get_expression_by_id(inst, inst->GetInputsCount() - 2));
+            arguments.push_back(*enc->GetExpressionById(inst, inst->GetInputsCount() - 2));
 
             auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                 funname,
@@ -978,25 +976,25 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                 false
                                                                 );
 
-            enc->set_expression_by_register(inst, inst->GetDstReg(), callexpression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
             break;
         }
 
 
         case compiler::RuntimeInterface::IntrinsicId::RETURN:
         {
-            auto returnexpression = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2); 
+            auto returnexpression = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2); 
             auto returnstatement = AllocNode<es2panda::ir::ReturnStatement>(enc,  returnexpression);
-            enc->add_insAst_to_blockstatemnt_by_inst(inst, returnstatement);
+            enc->AddInstAst2BlockStatemntByInst(inst, returnstatement);
             break;
         }
 
        case compiler::RuntimeInterface::IntrinsicId::THROW_PREF_NONE:
        {
-            auto argument = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            auto argument = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
 
             auto throwStatement = AllocNode<es2panda::ir::ThrowStatement>(enc, argument);
-            enc->add_insAst_to_blockstatemnt_by_inst(inst, throwStatement);
+            enc->AddInstAst2BlockStatemntByInst(inst, throwStatement);
             break;
         }
 
@@ -1005,10 +1003,10 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::STOWNBYVALUE_IMM16_V8_V8:
        case compiler::RuntimeInterface::IntrinsicId::STOWNBYVALUE_IMM8_V8_V8:
        {
-            panda::es2panda::ir::Identifier* obj_reg_identifier = enc->get_identifier_byreg(inst->GetSrcReg(0));
-            auto expression1 = *enc->get_expression_by_id(inst, 0);
+            panda::es2panda::ir::Identifier* obj_reg_identifier = enc->GetIdentifierByReg(inst->GetSrcReg(0));
+            auto expression1 = *enc->GetExpressionById(inst, 0);
 
-            enc->set_expression_by_register(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), obj_reg_identifier);
+            enc->SetExpressionByRegister(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), obj_reg_identifier);
             ArenaVector<es2panda::ir::VariableDeclarator *> declarators1(enc->parser_program_->Allocator()->Adapter());
             auto *declarator1 = AllocNode<es2panda::ir::VariableDeclarator>(enc,
                                                                                 obj_reg_identifier, 
@@ -1019,14 +1017,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                     std::move(declarators1),
                                                                                     true
                                                                                 );
-            enc->add_insAst_to_blockstatemnt_by_inst(inst, variadeclaration1);
+            enc->AddInstAst2BlockStatemntByInst(inst, variadeclaration1);
             
             
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            panda::es2panda::ir::Identifier* index_reg_identifier = enc->get_identifier_byreg(inst->GetSrcReg(1));
-            auto expression2 = *enc->get_expression_by_id(inst, 1);
+            panda::es2panda::ir::Identifier* index_reg_identifier = enc->GetIdentifierByReg(inst->GetSrcReg(1));
+            auto expression2 = *enc->GetExpressionById(inst, 1);
 
-            enc->set_expression_by_register(inst->GetInput(1).GetInst(), inst->GetSrcReg(0), index_reg_identifier);
+            enc->SetExpressionByRegister(inst->GetInput(1).GetInst(), inst->GetSrcReg(0), index_reg_identifier);
 
             ArenaVector<es2panda::ir::VariableDeclarator *> declarators2(enc->parser_program_->Allocator()->Adapter());
             auto *declarator2 = AllocNode<es2panda::ir::VariableDeclarator>(enc,
@@ -1038,7 +1036,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                     std::move(declarators2),
                                                                                     true
                                                                                 );
-            enc->add_insAst_to_blockstatemnt_by_inst(inst, variadeclaration2);
+            enc->AddInstAst2BlockStatemntByInst(inst, variadeclaration2);
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
             auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
@@ -1049,12 +1047,12 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                         false);   
             panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
                                                                             objattrexpression,
-                                                                            *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2),
+                                                                            *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
                                                                             es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
                                                                         ); 
             auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
                                                                                 assignexpression);
-            enc->add_insAst_to_blockstatemnt_by_inst(inst, assignstatement);
+            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
 
             break;
         }
@@ -1070,10 +1068,10 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 imm = static_cast<uint32_t>(inst->GetImms()[1]);
             }
 
-            panda::es2panda::ir::Identifier* obj_reg_identifier = enc->get_identifier_byreg(inst->GetSrcReg(0));
-            auto expression1 = *enc->get_expression_by_id(inst, 0);
+            panda::es2panda::ir::Identifier* obj_reg_identifier = enc->GetIdentifierByReg(inst->GetSrcReg(0));
+            auto expression1 = *enc->GetExpressionById(inst, 0);
 
-            enc->set_expression_by_register(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), obj_reg_identifier);
+            enc->SetExpressionByRegister(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), obj_reg_identifier);
             ArenaVector<es2panda::ir::VariableDeclarator *> declarators1(enc->parser_program_->Allocator()->Adapter());
             auto *declarator1 = AllocNode<es2panda::ir::VariableDeclarator>(enc,
                                                                                 obj_reg_identifier, 
@@ -1084,23 +1082,23 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                     std::move(declarators1),
                                                                                     true
                                                                                 );
-            enc->add_insAst_to_blockstatemnt_by_inst(inst, variadeclaration1);
+            enc->AddInstAst2BlockStatemntByInst(inst, variadeclaration1);
             
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
             auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
                                                         obj_reg_identifier,
-                                                        enc->get_literal_bynum(imm),  
+                                                        enc->GetLiteralByNum(imm),  
                                                         es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
                                                         true, 
                                                         false);   
             panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
                                                                             objattrexpression,
-                                                                            *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2),
+                                                                            *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
                                                                             es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
                                                                         ); 
             auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
                                                                                 assignexpression);
-            enc->add_insAst_to_blockstatemnt_by_inst(inst, assignstatement);
+            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
 
             break;
         }
@@ -1110,10 +1108,10 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::STOWNBYNAMEWITHNAMESET_IMM8_ID16_V8:
        case compiler::RuntimeInterface::IntrinsicId::STOWNBYNAMEWITHNAMESET_IMM16_ID16_V8:
        {
-            panda::es2panda::ir::Identifier* obj_reg_identifier = enc->get_identifier_byreg(inst->GetSrcReg(0));
-            auto expression1 = *enc->get_expression_by_id(inst, 0);
+            panda::es2panda::ir::Identifier* obj_reg_identifier = enc->GetIdentifierByReg(inst->GetSrcReg(0));
+            auto expression1 = *enc->GetExpressionById(inst, 0);
 
-            enc->set_expression_by_register(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), obj_reg_identifier);
+            enc->SetExpressionByRegister(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), obj_reg_identifier);
             ArenaVector<es2panda::ir::VariableDeclarator *> declarators1(enc->parser_program_->Allocator()->Adapter());
             auto *declarator1 = AllocNode<es2panda::ir::VariableDeclarator>(enc,
                                                                                 obj_reg_identifier, 
@@ -1124,7 +1122,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                     std::move(declarators1),
                                                                                     true
                                                                                 );
-            enc->add_insAst_to_blockstatemnt_by_inst(inst, variadeclaration1);
+            enc->AddInstAst2BlockStatemntByInst(inst, variadeclaration1);
             
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
             auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
@@ -1133,18 +1131,18 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::string* global_name = new std::string(bc_id0);
             auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
                                                         obj_reg_identifier,
-                                                        enc->get_identifier_byname(global_name),
+                                                        enc->GetIdentifierByName(global_name),
                                                         es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
                                                         false, 
                                                         false);   
             panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
                                                                             objattrexpression,
-                                                                            *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2),
+                                                                            *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
                                                                             es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
                                                                         ); 
             auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
                                                                                 assignexpression);
-            enc->add_insAst_to_blockstatemnt_by_inst(inst, assignstatement);
+            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
 
             break;
         }
@@ -1161,22 +1159,22 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             
             std::cout << "before size: " << enc->method2lexicalenvstack_->size() <<  std::endl;
 
-            enc->copy_lexicalenvstack(methodoffset_, inst);
+            enc->CopyLexicalenvStack(methodoffset_, inst);
 
-            // enc->set_expression_by_register(inst, inst->GetDstReg(), enc->DEFINEFUNC);
+            // enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->DEFINEFUNC);
 
             auto method_offset = static_cast<uint32_t>(inst->GetImms()[1]);
             auto method_name = enc->ir_interface_->GetMethodIdByOffset(method_offset);
 
             auto newname = enc->ExtractTrueFunName(method_name);
             
-            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(newname)));
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->GetIdentifierByName(new std::string(newname)));
 
             // support callruntime.createprivateproperty
             if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM8_ID16_IMM8 ||
                 inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM16_ID16_IMM8){
                 if(method_name.find("instance_initializer") != std::string::npos){
-                    enc->merge_method2lexicalmap(method_offset, enc->methodoffset_);
+                    enc->MergeMethod2LexicalMap(method_offset, enc->methodoffset_);
                 }
             }
 
@@ -1213,28 +1211,28 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
             std::cout << "size: " << lexicalenvstack->size() << std::endl; 
-            std::cout << "env size: " << lexicalenvstack->getLexicalEnv(0).size() << std::endl;
+            std::cout << "env size: " << lexicalenvstack->GetLexicalEnv(0).size() << std::endl;
 
-            auto raw_expression  = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            auto raw_expression  = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
             std::string closure_name =  "closure_" + std::to_string(enc->methodoffset_) + "_" + std::to_string(enc->closure_count);
             enc->closure_count++;
 
             panda::es2panda::ir::Expression* assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                            enc->get_identifier_byname(new std::string(closure_name)),
+                                                                            enc->GetIdentifierByName(new std::string(closure_name)),
                                                                             raw_expression,
                                                                             es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
                                                                         ); 
             auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
                                                                                 assignexpression);
-            enc->add_insAst_to_blockstatemnt_by_inst(inst, assignstatement);
-            lexicalenvstack->set(tier, index, new std::string(closure_name));
+            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+            lexicalenvstack->Set(tier, index, new std::string(closure_name));
 
             std::cout << "size: " << lexicalenvstack->size() << std::endl;
-            std::cout << "env size: " << lexicalenvstack->getLexicalEnv(0).size() << std::endl;
+            std::cout << "env size: " << lexicalenvstack->GetLexicalEnv(0).size() << std::endl;
 
             ////////////////////////////////////////////////////////////////////////////////
             /// support forward reference stack
-            enc->dealwith_globallexical_waitlist(tier, index, closure_name);
+            enc->DealWithGlobalLexicalWaitlist(tier, index, closure_name);
 
             ///////////////////////////////////////////////////////////////////////////////
             /// support callruntime.createprivateproperty
@@ -1255,12 +1253,12 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
             std::cout << "size: " << lexicalenvstack->size() << std::endl;
 
-            if(lexicalenvstack->getLexicalEnv(tier)[index] == nullptr){
-                handleError("#LDLEXVAR: lexicalenv is null");
+            if(lexicalenvstack->GetLexicalEnv(tier)[index] == nullptr){
+                HandleError("#LDLEXVAR: lexicalenv is null");
             }
 
-            auto identifier_name = lexicalenvstack->get(tier, index);
-            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(*identifier_name)));
+            auto identifier_name = lexicalenvstack->Get(tier, index);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->GetIdentifierByName(new std::string(*identifier_name)));
 
             break;
         }
@@ -1278,16 +1276,16 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
 
             auto moudlevar_rawname = enc->localnamespaces_[imm0];
-            auto source_expression = enc->get_expression_by_id(inst, inst->GetInputsCount() - 2); 
+            auto source_expression = enc->GetExpressionById(inst, inst->GetInputsCount() - 2); 
             if(source_expression){
-                panda::es2panda::ir::Identifier* moudlevar = enc->get_identifier_byname(new std::string(moudlevar_rawname));
+                panda::es2panda::ir::Identifier* moudlevar = enc->GetIdentifierByName(new std::string(moudlevar_rawname));
                 auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
                                                                                     moudlevar,
                                                                                     *source_expression,
                                                                                     es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
                                                                                 );
                 auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
-                enc->add_insAst_to_blockstatemnt_by_inst(inst, assignstatement);
+                enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
             }
             break;
         }
@@ -1299,9 +1297,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        {
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
             auto moudlevar_rawname = enc->localnamespaces_[imm0];
-            panda::es2panda::ir::Identifier* moudlevar = enc->get_identifier_byname(new std::string(moudlevar_rawname));
+            panda::es2panda::ir::Identifier* moudlevar = enc->GetIdentifierByName(new std::string(moudlevar_rawname));
 
-            enc->set_expression_by_register(inst, inst->GetDstReg(), moudlevar);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), moudlevar);
             break;
         }
 
@@ -1315,21 +1313,21 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
             std::cout << "size: " << lexicalenvstack->size() << std::endl;
 
-            if(lexicalenvstack->getLexicalEnv(tier)[index] == nullptr){
-                handleError("#TESTIN: lexicalenv is null");
+            if(lexicalenvstack->GetLexicalEnv(tier)[index] == nullptr){
+                HandleError("#TESTIN: lexicalenv is null");
             }
 
-            auto identifier_name = lexicalenvstack->get(tier, index);
-            auto identifier_name_expression =  enc->get_identifier_byname(new std::string(*identifier_name));
+            auto identifier_name = lexicalenvstack->Get(tier, index);
+            auto identifier_name_expression =  enc->GetIdentifierByName(new std::string(*identifier_name));
             
-            panda::es2panda::ir::Expression* source_expression = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            panda::es2panda::ir::Expression* source_expression = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
             auto binexpression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
                                                             identifier_name_expression,
                                                             source_expression,
                                                             BinIntrinsicIdToToken(compiler::RuntimeInterface::IntrinsicId::ISIN_IMM8_V8)
             );
 
-            enc->set_expression_by_register(inst, inst->GetDstReg(), binexpression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), binexpression);
             break;
             
         }
@@ -1339,10 +1337,10 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
             if (enc->patchvarspace_->find(imm0) != enc->patchvarspace_->end()) {
                 std::string *identifier_name =  (*enc->patchvarspace_)[imm0];
-                enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(*identifier_name)));
+                enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->GetIdentifierByName(new std::string(*identifier_name)));
 
             } else {
-                handleError("load patchvar Index does not exist in the map");
+                HandleError("load patchvar Index does not exist in the map");
             }
             
             break;
@@ -1350,19 +1348,19 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
        case compiler::RuntimeInterface::IntrinsicId::WIDE_STPATCHVAR_PREF_IMM16:
        {
-            auto raw_expression  = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            auto raw_expression  = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
             std::string closure_name =  "closure_" + std::to_string(enc->methodoffset_) + "_" + std::to_string(enc->closure_count);
             enc->closure_count++;
 
             panda::es2panda::ir::Expression* assignexpression =  AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                            enc->get_identifier_byname(new std::string(closure_name)),
+                                                                            enc->GetIdentifierByName(new std::string(closure_name)),
                                                                             raw_expression,
                                                                             es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
                                                                         ); 
             auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
                                                                                 assignexpression);
-            enc->add_insAst_to_blockstatemnt_by_inst(inst, assignstatement);
+            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
 
             (*enc->patchvarspace_)[imm0] = new std::string(closure_name);
             break;
@@ -1384,23 +1382,23 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto constructor_offset = static_cast<uint32_t>(inst->GetImms()[1]);
             auto constructor_offset_name = enc->ir_interface_->GetMethodIdByOffset(constructor_offset);
 
-            enc->copy_lexicalenvstack(constructor_offset, inst);
+            enc->CopyLexicalenvStack(constructor_offset, inst);
 
             if (enc->class2memberfuns_->find(constructor_offset) != enc->class2memberfuns_->end()) {
                 auto& member_funcs = (*enc->class2memberfuns_)[constructor_offset];
                 for (const auto& member_func_offset : member_funcs) {
-                    enc->copy_lexicalenvstack(member_func_offset, inst);
+                    enc->CopyLexicalenvStack(member_func_offset, inst);
                 }
             }
             
-            auto father = *enc->get_expression_by_id(inst, 0);
+            auto father = *enc->GetExpressionById(inst, 0);
             
             if(father != enc->constant_hole){
                 if(father->Type() == es2panda::ir::AstNodeType::IDENTIFIER){
                     auto fathername = father->AsIdentifier()->Name().Mutf8();
                     std::cout << "father is " << fathername << std::endl;
                 }else{
-                    handleError("#defineclasswithbuffer: not handle this father class");
+                    HandleError("#defineclasswithbuffer: not handle this father class");
                 }
             }else{
                 father = nullptr;
@@ -1410,7 +1408,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             (*enc->class2father_)[constructor_offset] = father;
        
             auto newname = enc->ExtractTrueFunName(constructor_offset_name);
-            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->get_identifier_byname(new std::string(newname)));
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->GetIdentifierByName(new std::string(newname)));
             
             break;
         }
@@ -1423,19 +1421,19 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         /////////////////////////////////////////////////////////////////////////////////////
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_CREATEPRIVATEPROPERTY_PREF_IMM16_ID16:
        {
-            auto startpos = enc->search_startpos_for_createprivateproperty(inst);
+            auto startpos = enc->SearchStartposForCreatePrivateproperty(inst);
             auto constructor_offset = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto member_functions = getLiteralArrayByOffset(enc->program_, constructor_offset);
+            auto member_functions = GetLiteralArrayByOffset(enc->program_, constructor_offset);
             if(member_functions){
                 int cout = 0;
                 for(const auto &member_function: *member_functions){
                     std::cout << "count: " << cout++  << " ### : " << member_function << std::endl;
  
                     auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
-                    auto &lexicalenv = lexicalenvstack->top();
+                    auto &lexicalenv = lexicalenvstack->Top();
                     
                     std::cout << "[+] size: " << lexicalenvstack->size() << std::endl;
-                    std::cout << "[+] env size: " << lexicalenvstack->getLexicalEnv(0).size() << std::endl;
+                    std::cout << "[+] env size: " << lexicalenvstack->GetLexicalEnv(0).size() << std::endl;
                     std::cout << "[+] capacity_: " << lexicalenv.capacity_ << std::endl;
 
                     (*enc->method2lexicalmap_)[enc->methodoffset_][0].push_back(startpos);
@@ -1444,20 +1442,20 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
                     std::cout << "@@@: " << member_function << std::endl;
                     std::cout << *memfun_str << std::endl;
-                    //handleError(std::string("PPPPPPPPPPPPPPPPPPPPPPPP: ") + *memfun_str);
+                    //HandleError(std::string("PPPPPPPPPPPPPPPPPPPPPPPP: ") + *memfun_str);
                     
-                    lexicalenv.set(startpos, memfun_str);
-                    enc->dealwith_globallexical_waitlist(0, startpos++, *memfun_str);
+                    lexicalenv.Set(startpos, memfun_str);
+                    enc->DealWithGlobalLexicalWaitlist(0, startpos++, *memfun_str);
                     std::cout << "-----------------------------------------------------------------------------" << std::endl;
 
                     std::cout << "[-] size: " << lexicalenvstack->size() << std::endl;
-                    std::cout << "[-] env size: " << lexicalenvstack->getLexicalEnv(0).size() << std::endl;
+                    std::cout << "[-] env size: " << lexicalenvstack->GetLexicalEnv(0).size() << std::endl;
                     std::cout << "[-] capacity_: " << lexicalenv.capacity_ << std::endl;
 
                 }
             }
 
-            enc->print_inner_method2lexicalmap();
+            enc->PrintInnerMethod2LexicalMap();
             break;
         }
 
@@ -1466,12 +1464,12 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM16:
        {
             std::cout << "111111111111111111111111111111" << std::endl;
-            panda::es2panda::ir::Expression* funname = enc->get_identifier_byname(new std::string("GetIterator"));
+            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName(new std::string("GetIterator"));
             std::cout << "222222222222222222222222222222" << std::endl;
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
             std::cout << "333333333333333333333333333333" << std::endl;
 
-            arguments.push_back(*enc->get_expression_by_id(inst, inst->GetInputsCount() - 2));
+            arguments.push_back(*enc->GetExpressionById(inst, inst->GetInputsCount() - 2));
             std::cout << "555555555555555555555555555555" << std::endl;
             auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                 funname,
@@ -1481,7 +1479,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                 );
             std::cout << "666666666666666666666666666666" << std::endl;
             std::cout << "777777777777777777777777777777" << std::endl;
-            enc->set_expression_by_register(inst, inst->GetDstReg(), callexpression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
             std::cout << "888888888888888888888888888888" << std::endl;
             break;
         }
@@ -2686,8 +2684,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         case compiler::RuntimeInterface::IntrinsicId::LDOBJBYINDEX_IMM8_IMM16:
         case compiler::RuntimeInterface::IntrinsicId::LDOBJBYINDEX_IMM16_IMM16:
         {
-            handleError("LDOBJBYINDEX testing");
-            panda::es2panda::ir::Expression* obj_expression = *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2);
+            HandleError("LDOBJBYINDEX testing");
+            panda::es2panda::ir::Expression* obj_expression = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
             
             uint32_t imm;
 
@@ -2697,7 +2695,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 imm = static_cast<uint32_t>(inst->GetImms()[1]);
             }
 
-            panda::es2panda::ir::Expression* attr_expression = enc->get_literal_bynum(imm);
+            panda::es2panda::ir::Expression* attr_expression = enc->GetLiteralByNum(imm);
 
             auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
                                                         obj_expression,
@@ -2706,7 +2704,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                         true, 
                                                         false);
 
-            enc->set_expression_by_register(inst, inst->GetDstReg(), objattrexpression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), objattrexpression);
             break;
 
         }
@@ -2715,7 +2713,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::STOBJBYINDEX_IMM16_V8_IMM16:
        case compiler::RuntimeInterface::IntrinsicId::WIDE_STOBJBYINDEX_PREF_V8_IMM32:
        {
-            handleError("STOBJBYINDEX testing");
+            HandleError("STOBJBYINDEX testing");
 
             uint32_t imm;
             if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::WIDE_STOBJBYINDEX_PREF_V8_IMM32){
@@ -2725,21 +2723,21 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
 
             auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
-                                                        *enc->get_expression_by_id(inst, 0),
-                                                        enc->get_literal_bynum(imm), 
+                                                        *enc->GetExpressionById(inst, 0),
+                                                        enc->GetLiteralByNum(imm), 
                                                         es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
                                                         true, 
                                                         false);
 
              panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
                                                                             objattrexpression,
-                                                                            *enc->get_expression_by_id(inst, inst->GetInputsCount() - 2),
+                                                                            *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
                                                                             es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
                                                                         ); 
 
             auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
                                                                                 assignexpression);
-            enc->add_insAst_to_blockstatemnt_by_inst(inst, assignstatement);
+            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
             break;        
         
         }

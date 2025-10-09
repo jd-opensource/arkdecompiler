@@ -11,7 +11,7 @@ bool IsValidOffset(std::unique_ptr<const panda_file::File>& file_, uint32_t offs
     return panda_file::File::EntityId(offset).IsValid() && offset < file_->GetHeader()->file_size;
 }
 
-void addimportast(panda::es2panda::parser::Program *parser_program, std::string imported_name, std::string local_name, std::string module_name){
+void AddImportAst(panda::es2panda::parser::Program *parser_program, std::string imported_name, std::string local_name, std::string module_name){
     auto program_ast = parser_program->Ast();
     auto program_statements = program_ast->Statements();
 
@@ -35,7 +35,7 @@ void addimportast(panda::es2panda::parser::Program *parser_program, std::string 
     program_ast->AddStatementAtPos(program_statements.size(), importDeclaration);
 }
 
-void addexportast_all(panda::es2panda::parser::Program *parser_program,  std::string module_name){
+void AddExportAstAll(panda::es2panda::parser::Program *parser_program,  std::string module_name){
     auto program_ast = parser_program->Ast();
     auto program_statements = program_ast->Statements();
 
@@ -51,7 +51,7 @@ void addexportast_all(panda::es2panda::parser::Program *parser_program,  std::st
     program_ast->AddStatementAtPos(program_statements.size(), export_all);
 }
 
-void addexportast_named(panda::es2panda::parser::Program *parser_program, std::string import_name, std::string export_name, std::string module_name){
+void AddExportAstNamed(panda::es2panda::parser::Program *parser_program, std::string import_name, std::string export_name, std::string module_name){
     auto program_ast = parser_program->Ast();
     auto program_statements = program_ast->Statements();
 
@@ -75,7 +75,7 @@ void addexportast_named(panda::es2panda::parser::Program *parser_program, std::s
     program_ast->AddStatementAtPos(program_statements.size(), exportDeclaration);
 }
 
-void addexportast(panda::es2panda::parser::Program *parser_program,  std::string local_name, std::string export_name){
+void AddExportAst(panda::es2panda::parser::Program *parser_program,  std::string local_name, std::string export_name){
     auto program_ast = parser_program->Ast();
     auto program_statements = program_ast->Statements();
 
@@ -94,7 +94,7 @@ void GetModuleLiteralArray(std::unique_ptr<const panda_file::File>& file_, panda
             panda::es2panda::parser::Program *parser_program, std::map<size_t, std::vector<std::string>> &index2namespaces, 
             std::vector<std::string>& localnamespaces)
 {
-    // addimportast(parser_program, "a", "b", "./module_foo1"); // mock refs
+    // AddImportAst(parser_program, "a", "b", "./module_foo1"); // mock refs
 
     std::map<size_t, std::string> index2importmodule;
     std::map<std::string, size_t> importmodule2index;
@@ -166,9 +166,9 @@ void GetModuleLiteralArray(std::unique_ptr<const panda_file::File>& file_, panda
 
             index2importmaps[index] = curmaps;
             if(curmaps.count("import_name") > 0){
-                addimportast(parser_program, curmaps["import_name"], curmaps["local_name"], curmaps["module_request"]);
+                AddImportAst(parser_program, curmaps["import_name"], curmaps["local_name"], curmaps["module_request"]);
             }else{
-                addimportast(parser_program, "*", curmaps["local_name"], curmaps["module_request"]);
+                AddImportAst(parser_program, "*", curmaps["local_name"], curmaps["module_request"]);
             }
             index2namespaces[importmodule2index[curmaps["module_request"]]].push_back(curmaps["local_name"]);
 
@@ -179,15 +179,15 @@ void GetModuleLiteralArray(std::unique_ptr<const panda_file::File>& file_, panda
             // std::cout << curmaps.count("export_name") << " , " << curmaps.count("import_name") << " , " << curmaps.count("local_name") << " , " << curmaps.count("module_request") << std::endl;
             if(curmaps.count("export_name") == 0 && curmaps.count("local_name") == 0){
                 // ExportAllDeclaration
-                addexportast_all(parser_program, curmaps["module_request"]);
+                AddExportAstAll(parser_program, curmaps["module_request"]);
 
             }else if(curmaps.count("module_request") == 0){
                 // ExportSpecifier
-                addexportast(parser_program, curmaps["local_name"], curmaps["export_name"]);
+                AddExportAst(parser_program, curmaps["local_name"], curmaps["export_name"]);
                 localnamespaces.push_back(curmaps["local_name"]);
             }else{
                 // ExportNamedDeclaration
-                addexportast_named(parser_program, curmaps["import_name"], curmaps["export_name"], curmaps["module_request"]);
+                AddExportAstNamed(parser_program, curmaps["import_name"], curmaps["export_name"], curmaps["module_request"]);
                 localnamespaces.push_back(curmaps["import_name"]);
             }
         }
@@ -197,7 +197,7 @@ void GetModuleLiteralArray(std::unique_ptr<const panda_file::File>& file_, panda
 
 }
 
-void parseModuleVars(std::unique_ptr<const panda_file::File>& file_, panda::disasm::Disassembler& disasm, 
+void ParseModuleVars(std::unique_ptr<const panda_file::File>& file_, panda::disasm::Disassembler& disasm, 
             panda::es2panda::parser::Program *parser_program, std::map<size_t, std::vector<std::string>>& index2namespaces, 
             std::vector<std::string>& localnamespaces){
     

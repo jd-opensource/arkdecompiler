@@ -24,16 +24,15 @@ public:
     const std::string* operator[](size_t index) const;
     
     bool IsFull() const;
-    std::string* get(size_t index) const;
-    void set(size_t index, std::string* expr);
+    std::string* Get(size_t index) const;
+    void Set(size_t index, std::string* expr);
     
-    size_t capacity() const;
     size_t size() const;
     
-    bool isValidIndex(size_t index) const;
+    bool IsValidIndex(size_t index) const;
 
 private:
-    void checkIndex(size_t index) const;
+    void CheckIndex(size_t index) const;
 };
 
 
@@ -62,20 +61,20 @@ public:
     
     bool empty() const;
     
-    std::string* get(size_t A, size_t B) const;
-    void set(size_t A, size_t B, std::string* expr);
+    std::string* Get(size_t A, size_t B) const;
+    void Set(size_t A, size_t B, std::string* expr);
     
-    const LexicalEnv& getLexicalEnv(size_t A) const;
-    LexicalEnv& getLexicalEnv(size_t A);
+    const LexicalEnv& GetLexicalEnv(size_t A) const;
+    LexicalEnv& GetLexicalEnv(size_t A);
     
-    const LexicalEnv& top() const;
+    const LexicalEnv& Top() const;
     
-    LexicalEnv& top();
-    void clear();
+    LexicalEnv& Top();
+    void Clear();
 
 private:
-    void checkIndex(size_t A, size_t B) const;
-    void checkStackIndex(size_t A) const;
+    void CheckIndex(size_t A, size_t B) const;
+    void CheckStackIndex(size_t A) const;
 };
 
 #endif // LEXICAL_ENV_STACK_H

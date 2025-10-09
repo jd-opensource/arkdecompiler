@@ -2,10 +2,10 @@
 
 
 LCAFinder::LCAFinder(panda::compiler::Graph* graph) : graph(graph) {
-        initialize();
+        Initialize();
 }
 
-panda::compiler::BasicBlock* LCAFinder::findLCA(panda::compiler::BasicBlock* u, panda::compiler::BasicBlock* v) {
+panda::compiler::BasicBlock* LCAFinder::FindLCA(panda::compiler::BasicBlock* u, panda::compiler::BasicBlock* v) {
     std::unordered_set<panda::compiler::BasicBlock*> commonAncestors;
     const auto& ancestorsU = ancestors[u];
     const auto& ancestorsV = ancestors[v];
@@ -28,7 +28,7 @@ panda::compiler::BasicBlock* LCAFinder::findLCA(panda::compiler::BasicBlock* u, 
     return lca;
 }
 
-void LCAFinder::initialize() {
+void LCAFinder::Initialize() {
     for (auto node : graph->GetBlocksRPO()) {
         std::unordered_set<panda::compiler::BasicBlock*> nodeAncestors;
         for (auto parent : node->GetPredsBlocks()) {
@@ -40,7 +40,7 @@ void LCAFinder::initialize() {
 }
 
 
-std::vector<uint32_t> topologicalSort(const std::vector<std::pair<uint32_t, uint32_t>>& edges) {
+std::vector<uint32_t> TopologicalSort(const std::vector<std::pair<uint32_t, uint32_t>>& edges) {
     if (edges.empty()) {
         return {};
     }

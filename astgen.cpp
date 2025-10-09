@@ -29,7 +29,7 @@ void AstGen::VisitTryBegin(const compiler::BasicBlock *bb)
 }
 
 
-BasicBlock* AstGen::find_nearest_visited_pred(const std::vector<BasicBlock*>& visited, BasicBlock* block) {
+BasicBlock* AstGen::FindNearestVisitedPred(const std::vector<BasicBlock*>& visited, BasicBlock* block) {
     if (visited.empty()) return nullptr;
     
     ArenaVector<BasicBlock*> preds = block->GetPredsBlocks();
@@ -61,7 +61,7 @@ bool AstGen::RunImpl()
     for (auto *bb : GetGraph()->GetBlocksLinearOrder()) {
         
         if(bb->IsLoopValid() && bb->IsLoopHeader() ){
-            judge_looptype(bb);
+            JudgeLoopType(bb);
             /////////////////////////////////////////////////////////////////
             ArenaVector<panda::es2panda::ir::Statement *> statements(this->parser_program_->Allocator()->Adapter());
             auto new_block_statement = this->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
@@ -73,7 +73,7 @@ bool AstGen::RunImpl()
         ///////////////////////////////////////////////////////////////////////////////////////////////////
 
         
-        auto nearestpre = this->find_nearest_visited_pred(visited, bb);
+        auto nearestpre = this->FindNearestVisitedPred(visited, bb);
         if(nearestpre != nullptr && this->bb2acc2expression[nearestpre] != nullptr){
             std::cout << "!!!!!!!!!!!!!!!!!!!! found pre id for bb2acc2expression: " << nearestpre->GetId() << std::endl;
             this->bb2acc2expression[bb] = this->bb2acc2expression[nearestpre];
@@ -118,10 +118,10 @@ bool AstGen::RunImpl()
                         //std::cout << "truesucc: " << bb->GetTrueSuccessor()->GetId() << ", falsesucc: " <<  loop2exit[father->GetLoop()]->GetId() << std::endl;
                         if(bb->GetTrueSuccessor() == loop2exit[father->GetLoop()]){ 
 
-                            this->get_blockstatement_byid(bb);
+                            this->GetBlockStatementById(bb);
                             auto breakstatement = AllocNode<es2panda::ir::BreakStatement>(this);
 
-                            this->add_insAst_to_blockstatemnt_by_block(bb, breakstatement);
+                            this->AddInstAst2BlockStatemntByBlock(bb, breakstatement);
 
                         }
                     }
@@ -153,13 +153,13 @@ void AstGen::VisitSpillFill(GraphVisitor *visitor, Inst *inst_base)
 
     for (auto sf : inst->GetSpillFills()) {
         if(sf.SrcType() != compiler::LocationType::REGISTER || sf.DstType() != compiler::LocationType::REGISTER ){
-            handleError("VisitSpillFill # unsupoort SpillFill type");
+            HandleError("VisitSpillFill # unsupoort SpillFill type");
         }
         auto it = enc->reg2expression.find(sf.SrcValue());
         if (it == enc->reg2expression.end()) {
             std::cout << "VisitSpillFill # SpillFill none register"  << std::endl; 
         }else{
-            //enc->set_expression_by_register(inst, sf.DstValue(), *enc->get_expression_by_register(inst, sf.SrcValue()));
+            //enc->SetExpressionByRegister(inst, sf.DstValue(), *enc->GetExpressionByRegister(inst, sf.SrcValue()));
         }
     }
     std::cout << "[-] VisitSpillFill  >>>>>>>>>>>>>>>>>" << std::endl;
@@ -199,7 +199,7 @@ void AstGen::VisitConstant(GraphVisitor *visitor, Inst *inst_base)
             enc->success_ = false;
     }
 
-    enc->set_expression_by_register(inst, inst->GetDstReg(), number);
+    enc->SetExpressionByRegister(inst, inst->GetDstReg(), number);
     
     std::cout << "[-] VisitConstant  >>>>>>>>>>>>>>>>>" << std::endl;
 }
@@ -211,8 +211,8 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
     auto enc = static_cast<AstGen *>(v);
     auto inst = inst_base->CastToIf();
 
-    auto left_expression = *enc->get_expression_by_id(inst, 0);
-    auto right_expression = *enc->get_expression_by_id(inst, 1);
+    auto left_expression = *enc->GetExpressionById(inst, 0);
+    auto right_expression = *enc->GetExpressionById(inst, 1);
 
     panda::es2panda::ir::Expression* test_expression;
 
@@ -237,7 +237,7 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
     /////////////////////////////////////////////////////////////////////////////////////////////////
     /// deal with while/do-while
     auto block = inst->GetBasicBlock();
-    es2panda::ir::BlockStatement* block_statement = enc->get_blockstatement_byid(block);
+    es2panda::ir::BlockStatement* block_statement = enc->GetBlockStatementById(block);
 
     if(block->IsLoopValid() && block->IsLoopHeader()){
         std::cout << "1%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
@@ -248,8 +248,8 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
         }else{
             std::cout << "[+] while ===" << std::endl;
 
-            es2panda::ir::BlockStatement* true_statements =   enc->get_blockstatement_byid(inst->GetBasicBlock()->GetTrueSuccessor());
-            es2panda::ir::BlockStatement* false_statements =  enc->get_blockstatement_byid(inst->GetBasicBlock()->GetFalseSuccessor());
+            es2panda::ir::BlockStatement* true_statements =   enc->GetBlockStatementById(inst->GetBasicBlock()->GetTrueSuccessor());
+            es2panda::ir::BlockStatement* false_statements =  enc->GetBlockStatementById(inst->GetBasicBlock()->GetFalseSuccessor());
     
             if(enc->loop2exit[inst->GetBasicBlock()->GetLoop() ] == inst->GetBasicBlock()->GetTrueSuccessor() ){
                 std::swap(true_statements, false_statements);
@@ -260,21 +260,21 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
                                     test_expression, 
                                     true_statements);
 
-            enc->add_insAst_to_blockstatemnt_by_inst(inst, whilestatement);
-            enc->add_insAst_to_blockstatemnt_by_inst(inst, false_statements);
+            enc->AddInstAst2BlockStatemntByInst(inst, whilestatement);
+            enc->AddInstAst2BlockStatemntByInst(inst, false_statements);
 
             std::cout << "[-] while ===" << std::endl;
         }
     }else{
         std::cout << "2%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-        es2panda::ir::BlockStatement* true_statements =   enc->get_blockstatement_byid(inst->GetBasicBlock()->GetTrueSuccessor());
-        es2panda::ir::BlockStatement* false_statements =  enc->get_blockstatement_byid(inst->GetBasicBlock()->GetFalseSuccessor());
+        es2panda::ir::BlockStatement* true_statements =   enc->GetBlockStatementById(inst->GetBasicBlock()->GetTrueSuccessor());
+        es2panda::ir::BlockStatement* false_statements =  enc->GetBlockStatementById(inst->GetBasicBlock()->GetFalseSuccessor());
 
         auto ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, test_expression, true_statements, false_statements);
         true_statements->SetParent(block_statement);
         false_statements->SetParent(block_statement);
         
-        enc->add_insAst_to_blockstatemnt_by_inst(inst, ifStatement);
+        enc->AddInstAst2BlockStatemntByInst(inst, ifStatement);
 
     }
 
@@ -338,7 +338,7 @@ uint32_t onlyOneBranch(BasicBlock* father, AstGen * enc){
     }else if(true_branch->GetPredsBlocks().size() == 1 && false_branch->GetPredsBlocks().size() == 1){
         return 0;
     }else{
-        handleError("onlyOneBranch# not consider this case");
+        HandleError("onlyOneBranch# not consider this case");
     }
 
     BasicBlock* other_father = nullptr;
@@ -366,7 +366,7 @@ uint32_t onlyOneBranch(BasicBlock* father, AstGen * enc){
         return 0;
     }else{
         //std::cout << "end other_father: " << std::to_string(other_father->GetId()) << std::endl;
-        handleError("onlyOneBranch# found method is bad");
+        HandleError("onlyOneBranch# found method is bad");
     }
     return 0;
 }
@@ -378,7 +378,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
     auto inst = inst_base->CastToIfImm();
     auto imm = inst->GetImm();
     if (imm == 0) {
-        auto src_expression = *enc->get_expression_by_id(inst, 0);
+        auto src_expression = *enc->GetExpressionById(inst, 0);
 
         panda::es2panda::ir::Expression* test_expression;
 
@@ -391,14 +391,14 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
         if(ret == 0){
             enc->specialblockid.insert(inst->GetBasicBlock()->GetTrueSuccessor()->GetId());
             enc->specialblockid.insert(inst->GetBasicBlock()->GetFalseSuccessor()->GetId());
-            true_statements =   enc->get_blockstatement_byid(inst->GetBasicBlock()->GetTrueSuccessor());
-            false_statements =  enc->get_blockstatement_byid(inst->GetBasicBlock()->GetFalseSuccessor());
+            true_statements =   enc->GetBlockStatementById(inst->GetBasicBlock()->GetTrueSuccessor());
+            false_statements =  enc->GetBlockStatementById(inst->GetBasicBlock()->GetFalseSuccessor());
         }else if(ret == 1){
             enc->specialblockid.insert(inst->GetBasicBlock()->GetTrueSuccessor()->GetId());
-            true_statements =   enc->get_blockstatement_byid(inst->GetBasicBlock()->GetTrueSuccessor());
+            true_statements =   enc->GetBlockStatementById(inst->GetBasicBlock()->GetTrueSuccessor());
         }else{
             enc->specialblockid.insert(inst->GetBasicBlock()->GetFalseSuccessor()->GetId());
-            true_statements =   enc->get_blockstatement_byid(inst->GetBasicBlock()->GetFalseSuccessor());
+            true_statements =   enc->GetBlockStatementById(inst->GetBasicBlock()->GetFalseSuccessor());
         }
 
         panda::compiler::RuntimeInterface::IntrinsicId cmpid;
@@ -437,7 +437,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             std::cout << "[+] do-while =====" << std::endl;
             compiler::Loop* loop = block->GetLoop();
             auto back_edges = loop->GetBackEdges();
-            enc->logbackedgeid(back_edges);
+            enc->LogBackEdgeId(back_edges);
 
             es2panda::ir::DoWhileStatement* dowhilestatement;
             if(block->GetTrueSuccessor() == loop->GetHeader()){
@@ -453,20 +453,20 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                         test_expression
                         );
             }
-            enc->add_insAst_to_blockstatemnt_by_block(loop->GetPreHeader(), dowhilestatement);
-            enc->add_insAst_to_blockstatemnt_by_block(loop->GetPreHeader(), false_statements);
+            enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), dowhilestatement);
+            enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), false_statements);
             std::cout << "[-] do-while =====" << std::endl;
         }else if(block->IsLoopValid() && block->IsLoopHeader() && enc->loop2type[block->GetLoop()] == 0 ){
             std::cout << "[+] while ===" << std::endl;
             compiler::Loop* loop = block->GetLoop();
             auto back_edges = loop->GetBackEdges();
-            enc->logbackedgeid(back_edges);
+            enc->LogBackEdgeId(back_edges);
 
             es2panda::ir::WhileStatement* whilestatement;
             if( std::find(loop->GetBlocks().begin(), loop->GetBlocks().end(), block->GetFalseSuccessor()) != loop->GetBlocks().end() ){
                 if(enc->whileheader2redundant[block]->Statements().size() != 0){
                     // add redundant statement in while-header
-                    enc->add_insAst_to_blockstatemnt_by_block(block->GetFalseSuccessor(), enc->whileheader2redundant[block] );
+                    enc->AddInstAst2BlockStatemntByBlock(block->GetFalseSuccessor(), enc->whileheader2redundant[block] );
                 }
 
                 std::swap(true_statements, false_statements);
@@ -478,7 +478,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             }else{
                 if(enc->whileheader2redundant[block]->Statements().size() != 0){
                     // add redundant statement in while-header
-                    enc->add_insAst_to_blockstatemnt_by_block(block->GetTrueSuccessor(), enc->whileheader2redundant[block] );
+                    enc->AddInstAst2BlockStatemntByBlock(block->GetTrueSuccessor(), enc->whileheader2redundant[block] );
                 }
                 whilestatement = AllocNode<es2panda::ir::WhileStatement>(enc,
                         nullptr,
@@ -487,9 +487,9 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                         );
             }
 
-            enc->add_insAst_to_blockstatemnt_by_inst(inst, whilestatement);
-            enc->add_insAst_to_blockstatemnt_by_block(loop->GetPreHeader(), enc->get_blockstatement_byid(block));
-            enc->add_insAst_to_blockstatemnt_by_block(loop->GetPreHeader(), false_statements);
+            enc->AddInstAst2BlockStatemntByInst(inst, whilestatement);
+            enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), enc->GetBlockStatementById(block));
+            enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), false_statements);
 
             std::cout << "[-] while ===" << std::endl;
         }else{
@@ -506,7 +506,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
 
             }
 
-            enc->add_insAst_to_blockstatemnt_by_inst(inst, ifStatement);
+            enc->AddInstAst2BlockStatemntByInst(inst, ifStatement);
 
         }
         /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -530,7 +530,7 @@ void AstGen::VisitLoadString(GraphVisitor *v, Inst *inst_base)
     
     auto src_expression  = AllocNode<es2panda::ir::StringLiteral>(enc, name_view);
 
-    enc->set_expression_by_register(inst, inst->GetDstReg(), src_expression);
+    enc->SetExpressionByRegister(inst, inst->GetDstReg(), src_expression);
    
 
     std::cout << "[-] VisitLoadString  >>>>>>>>>>>>>>>>>" << std::endl;
@@ -609,7 +609,7 @@ void AstGen::VisitCastValueToAnyType([[maybe_unused]] GraphVisitor *visitor, [[m
         case compiler::AnyBaseType::ECMASCRIPT_STRING_TYPE: {
             auto ls = cvat->GetInput(0).GetInst()->CastToLoadString();
             // auto ls_dst_reg = ls->GetDstReg();
-            // source = *enc->get_expression_by_register(inst, ls_dst_reg);
+            // source = *enc->GetExpressionByRegister(inst, ls_dst_reg);
             source = enc->id2expression[ls->GetId()];           
             break;
         }
@@ -620,7 +620,7 @@ void AstGen::VisitCastValueToAnyType([[maybe_unused]] GraphVisitor *visitor, [[m
             enc->success_ = false;
     }
 
-    enc->set_expression_by_register(inst, cvat->GetDstReg(), source);
+    enc->SetExpressionByRegister(inst, cvat->GetDstReg(), source);
 
     std::cout << "[-] VisitCastValueToAnyType  >>>>>>>>>>>>>>>>>" << std::endl;
 }
@@ -643,7 +643,7 @@ void AstGen::VisitCatchPhi(GraphVisitor *visitor, Inst *inst)
     if (inst->CastToCatchPhi()->IsAcc()) {
         std::cout << "cast to catchphi" << std::endl;
         auto enc = static_cast<AstGen *>(visitor);
-        enc->set_expression_by_register(inst, inst->GetDstReg(), enc->constant_catcherror);
+        enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->constant_catcherror);
         bool hasRealUsers = false;
         for (auto &user : inst->GetUsers()) {
             if (!user.GetInst()->IsSaveState()) {
@@ -652,7 +652,7 @@ void AstGen::VisitCatchPhi(GraphVisitor *visitor, Inst *inst)
             }
         }
         if (hasRealUsers) {
-            enc->set_expression_by_register(inst, inst->GetDstReg(), enc->constant_catcherror);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->constant_catcherror);
         }
     }
     std::cout << "[-] VisitCatchPhi  >>>>>>>>>>>>>>>>>" << std::endl;

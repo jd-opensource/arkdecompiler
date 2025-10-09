@@ -10,7 +10,7 @@ LexicalEnv::LexicalEnv(size_t capacity)
 bool LexicalEnv::IsFull() const {
     for (size_t i = 0; i < capacity_; ++i) {
         if(expressions_[i] == nullptr){
-            //handleError("#LexicalEnv::IsFull : " + std::to_string(i));
+            //HandleError("#LexicalEnv::IsFull : " + std::to_string(i));
             return false;
         }
     }
@@ -64,29 +64,26 @@ LexicalEnv& LexicalEnv::operator=(LexicalEnv&& other) noexcept {
 }
 
 std::string*& LexicalEnv::operator[](size_t index) {
-    checkIndex(index);
+    CheckIndex(index);
     return expressions_[index];
 }
 
 const std::string* LexicalEnv::operator[](size_t index) const {
-    checkIndex(index);
+    CheckIndex(index);
     return expressions_[index];
 }
 
-std::string* LexicalEnv::get(size_t index) const {
-    checkIndex(index);
+std::string* LexicalEnv::Get(size_t index) const {
+    CheckIndex(index);
     return expressions_[index];
 }
 
-void LexicalEnv::set(size_t index, std::string* expr) {
-    checkIndex(index);
+void LexicalEnv::Set(size_t index, std::string* expr) {
+    CheckIndex(index);
     expressions_[index] = expr;
     
 }
 
-size_t LexicalEnv::capacity() const {
-    return capacity_;
-}
 
 size_t LexicalEnv::size() const {
     for (size_t i = 0; i < capacity_; ++i) {
@@ -99,11 +96,11 @@ size_t LexicalEnv::size() const {
 }
 
 
-bool LexicalEnv::isValidIndex(size_t index) const {
+bool LexicalEnv::IsValidIndex(size_t index) const {
     return index < capacity_;
 }
 
-void LexicalEnv::checkIndex(size_t index) const {
+void LexicalEnv::CheckIndex(size_t index) const {
     if (index >= capacity_) {
         throw std::out_of_range("LexicalEnv index out of range");
     }
@@ -166,62 +163,62 @@ bool LexicalEnvStack::empty() const {
     return stack_.empty();
 }
 
-std::string* LexicalEnvStack::get(size_t A, size_t B) const {
-    checkIndex(A, B);
+std::string* LexicalEnvStack::Get(size_t A, size_t B) const {
+    CheckIndex(A, B);
     
     size_t actualIndex = stack_.size() - 1 - A;
-    return stack_[actualIndex].get(B);
+    return stack_[actualIndex].Get(B);
 }
 
-void LexicalEnvStack::set(size_t A, size_t B, std::string* expr) {
-    checkIndex(A, B);
+void LexicalEnvStack::Set(size_t A, size_t B, std::string* expr) {
+    CheckIndex(A, B);
     
     size_t actualIndex = stack_.size() - 1 - A;
-    stack_[actualIndex].set(B, expr);
+    stack_[actualIndex].Set(B, expr);
 }
 
-const LexicalEnv& LexicalEnvStack::getLexicalEnv(size_t A) const {
-    checkStackIndex(A);
-    
-    size_t actualIndex = stack_.size() - 1 - A;
-    return stack_[actualIndex];
-}
-
-LexicalEnv& LexicalEnvStack::getLexicalEnv(size_t A) {
-    checkStackIndex(A);
+const LexicalEnv& LexicalEnvStack::GetLexicalEnv(size_t A) const {
+    CheckStackIndex(A);
     
     size_t actualIndex = stack_.size() - 1 - A;
     return stack_[actualIndex];
 }
 
-const LexicalEnv& LexicalEnvStack::top() const {
+LexicalEnv& LexicalEnvStack::GetLexicalEnv(size_t A) {
+    CheckStackIndex(A);
+    
+    size_t actualIndex = stack_.size() - 1 - A;
+    return stack_[actualIndex];
+}
+
+const LexicalEnv& LexicalEnvStack::Top() const {
     if (stack_.empty()) {
         throw std::runtime_error("Stack is empty");
     }
     return stack_.back();
 }
 
-LexicalEnv& LexicalEnvStack::top() {
+LexicalEnv& LexicalEnvStack::Top() {
     if (stack_.empty()) {
         throw std::runtime_error("Stack is empty");
     }
     return stack_.back();
 }
 
-void LexicalEnvStack::clear() {
+void LexicalEnvStack::Clear() {
     stack_.clear();
 }
 
-void LexicalEnvStack::checkIndex(size_t A, size_t B) const {
-    checkStackIndex(A);
+void LexicalEnvStack::CheckIndex(size_t A, size_t B) const {
+    CheckStackIndex(A);
     
     size_t actualIndex = stack_.size() - 1 - A;
-    if (!stack_[actualIndex].isValidIndex(B)) {
+    if (!stack_[actualIndex].IsValidIndex(B)) {
         throw std::out_of_range("LexicalEnv index B out of range");
     }
 }
 
-void LexicalEnvStack::checkStackIndex(size_t A) const {
+void LexicalEnvStack::CheckStackIndex(size_t A) const {
     if (stack_.empty()) {
         throw std::runtime_error("Stack is empty");
     }
