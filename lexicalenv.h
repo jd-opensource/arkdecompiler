@@ -27,7 +27,7 @@ public:
     std::string* Get(size_t index) const;
     void Set(size_t index, std::string* expr);
     
-    size_t size() const;
+    size_t Size() const;
     
     bool IsValidIndex(size_t index) const;
 
@@ -53,11 +53,11 @@ public:
     LexicalEnvStack& operator=(LexicalEnvStack&& other) noexcept;
     
     ~LexicalEnvStack();
-    LexicalEnv* push(size_t capacity);
+    LexicalEnv* Push(size_t capacity);
     
-    void pop();
+    void Pop();
     
-    size_t size() const;
+    size_t Size() const;
     
     bool Empty() const;
     

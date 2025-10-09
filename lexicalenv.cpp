@@ -85,7 +85,7 @@ void LexicalEnv::Set(size_t index, std::string* expr) {
 }
 
 
-size_t LexicalEnv::size() const {
+size_t LexicalEnv::Size() const {
     for (size_t i = 0; i < capacity_; ++i) {
         if(expressions_[i] != nullptr){
             full_size_ = i;
@@ -143,19 +143,19 @@ LexicalEnvStack& LexicalEnvStack::operator=(LexicalEnvStack&& other) noexcept {
 LexicalEnvStack::~LexicalEnvStack() {
 }
 
-LexicalEnv* LexicalEnvStack::push(size_t capacity) {
+LexicalEnv* LexicalEnvStack::Push(size_t capacity) {
     stack_.emplace_back(capacity);
     return &stack_.back();
 }
 
-void LexicalEnvStack::pop() {
+void LexicalEnvStack::Pop() {
     if (stack_.empty()) {
         throw std::runtime_error("Cannot pop from empty stack");
     }
     stack_.pop_back();
 }
 
-size_t LexicalEnvStack::size() const {
+size_t LexicalEnvStack::Size() const {
     return stack_.size();
 }
 

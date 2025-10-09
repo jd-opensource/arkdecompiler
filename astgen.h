@@ -42,7 +42,7 @@ public:
         if(this->method2lexicalenvstack_->find(methodoffset) != this->method2lexicalenvstack_->end()){
             std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX found lexicalenvstack " << std::endl;
             auto x = (*this->method2lexicalenvstack_)[methodoffset];
-            std::cout << "lexicalenvstack size: " << x->size() << std::endl;
+            std::cout << "lexicalenvstack size: " << x->Size() << std::endl;
         }else{
             std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX not found lexicalenvstack " << std::endl;
             (*this->method2lexicalenvstack_)[methodoffset] = new LexicalEnvStack();
