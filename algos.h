@@ -6,14 +6,14 @@
 class LCAFinder {
 public:
     LCAFinder(panda::compiler::Graph* graph);
-    panda::compiler::BasicBlock* findLCA(panda::compiler::BasicBlock* u, panda::compiler::BasicBlock* v);
+    panda::compiler::BasicBlock* FindLCA(panda::compiler::BasicBlock* u, panda::compiler::BasicBlock* v);
 
 private:
     panda::compiler::Graph* graph;
     std::unordered_map<panda::compiler::BasicBlock*, std::unordered_set<panda::compiler::BasicBlock*>> ancestors;
 
-    void initialize();
+    void Initialize();
 };
 
-std::vector<uint32_t> topologicalSort(const std::vector<std::pair<uint32_t, uint32_t>>& edges);
+std::vector<uint32_t> TopologicalSort(const std::vector<std::pair<uint32_t, uint32_t>>& edges);
 #endif

@@ -145,7 +145,7 @@ public:
     static void VisitSaveState(GraphVisitor* v, Inst* inst_base);
     static void VisitParameter(GraphVisitor* v, Inst* inst_base);
     
-    BasicBlock* find_nearest_visited_pred(const std::vector<BasicBlock*>& visited, BasicBlock* block);
+    BasicBlock* FindNearestVisitedPred(const std::vector<BasicBlock*>& visited, BasicBlock* block);
 
     template <typename T, typename... Args>
     static T *AllocNode(AstGen * xx, Args &&... args)
@@ -165,7 +165,7 @@ public:
         success_ = false;
     }
 
-    uint32_t parseHexFromKey(const std::string& key) {
+    uint32_t ParseHexFromKey(const std::string& key) {
         std::istringstream iss(key);
         std::string temp;
         std::string hexString;
@@ -217,9 +217,9 @@ public:
         
     }
 
-    std::optional<panda::pandasm::LiteralArray> findLiteralArrayByOffset(uint32_t offset) {
+    std::optional<panda::pandasm::LiteralArray> FindLiteralArrayByOffset(uint32_t offset) {
         for (const auto& [key, value] : this->program_->literalarray_table) {
-            if (parseHexFromKey(key) == offset) {
+            if (ParseHexFromKey(key) == offset) {
                 return value;
             }
         }
@@ -227,7 +227,7 @@ public:
     }
 
 
-    panda::es2panda::ir::NumberLiteral* get_literal_bynum(uint32_t index){
+    panda::es2panda::ir::NumberLiteral* GetLiteralByNum(uint32_t index){
         panda::es2panda::ir::NumberLiteral* literal;
         if (this->num2literals.find(index)  != this->num2literals.end()) {
             literal = this->num2literals[index];
@@ -238,7 +238,7 @@ public:
         return literal;
     }
 
-    panda::es2panda::ir::Identifier* get_identifier_byreg(compiler::Register reg){
+    panda::es2panda::ir::Identifier* GetIdentifierByReg(compiler::Register reg){
         panda::es2panda::ir::Identifier* identifier;
         if (this->identifers.find(reg)  != this->identifers.end()) {
             identifier =  this->identifers[reg];
@@ -253,7 +253,7 @@ public:
         return identifier;
     }
 
-    panda::es2panda::ir::Identifier* get_identifier_byname(std::string* raw_name){
+    panda::es2panda::ir::Identifier* GetIdentifierByName(std::string* raw_name){
         panda::es2panda::ir::Identifier* identifier;
         if (this->str2identifers.find(*raw_name)  != this->str2identifers.end()) {
             identifier = this->str2identifers[*raw_name];
@@ -267,57 +267,57 @@ public:
         return identifier;
     }
 
-    std::optional<panda::es2panda::ir::Expression*> get_expression_by_id(Inst* inst, uint32_t index){
+    std::optional<panda::es2panda::ir::Expression*> GetExpressionById(Inst* inst, uint32_t index){
         auto id = inst->GetInput(index).GetInst()->GetId();
         
         auto it = this->id2expression.find(id);
         if (it != this->id2expression.end()) {
-            std::cout << "#get_expression_by_register: " << std::to_string(id) << std::endl;
+            std::cout << "#GetExpressionByRegister: " << std::to_string(id) << std::endl;
             return it->second;  
         }
         
 
         // @@@###@@@TODO temp test suport for phi
-        //return this->get_identifier_byname(new std::string(std::to_string(index))); 
+        //return this->GetIdentifierByName(new std::string(std::to_string(index))); 
         
-        //handleError("can't find expression in reg2expression: " + std::to_string(id));
+        //HandleError("can't find expression in reg2expression: " + std::to_string(id));
         return std::nullopt;
     }
 
-    void set_expression_by_id(Inst* inst, uint32_t id, panda::es2panda::ir::Expression* value){
+    void SetExpressionById(Inst* inst, uint32_t id, panda::es2panda::ir::Expression* value){
         if(value == nullptr){
-            handleError("#set_expression_by_register: can't set null expression in reg2expression");
+            HandleError("#SetExpressionByRegister: can't set null expression in reg2expression");
         }
         this->id2expression[id] = value;
     }
 
 
-    std::optional<panda::es2panda::ir::Expression*> get_expression_by_register(Inst* inst, compiler::Register key){
+    std::optional<panda::es2panda::ir::Expression*> GetExpressionByRegister(Inst* inst, compiler::Register key){
         if(key == compiler::ACC_REG_ID){
             if(this->bb2acc2expression[inst->GetBasicBlock()] != nullptr){
                 return this->bb2acc2expression[inst->GetBasicBlock()];
             }else{
-                handleError("#get_expression_by_register: acc point to null");
+                HandleError("#GetExpressionByRegister: acc point to null");
             }
         }
 
         auto it = this->reg2expression.find(key);
         if (it != this->reg2expression.end()) {
-            std::cout << "#get_expression_by_register: " << std::to_string(key) << std::endl;
+            std::cout << "#GetExpressionByRegister: " << std::to_string(key) << std::endl;
             return it->second;  
         }
 
-        handleError("can't find expression in reg2expression: " + std::to_string(key));
+        HandleError("can't find expression in reg2expression: " + std::to_string(key));
         
         return std::nullopt;
     }
 
-    void merge_method2lexicalmap(uint32_t sourceKey, uint32_t targetKey) {
+    void MergeMethod2LexicalMap(uint32_t sourceKey, uint32_t targetKey) {
         auto& mapRef = *(this->method2lexicalmap_);
 
         auto sourceIter = mapRef.find(sourceKey);
         if (sourceIter == mapRef.end()) {
-            handleError("#merge_method2lexicalmap: source key not found");
+            HandleError("#MergeMethod2LexicalMap: source key not found");
             return;
         }
 
@@ -329,20 +329,20 @@ public:
         }
     }
 
-    void copy_lexicalenvstack(uint32_t methodoffset_, Inst* inst){
+    void CopyLexicalenvStack(uint32_t methodoffset_, Inst* inst){
         if(this->bb2lexicalenvstack[inst->GetBasicBlock()]->empty()){
             return;
-            //handleError("#copy_lexicalenvstack: source bb2lexicalenvstack is empty");
+            //HandleError("#CopyLexicalenvStack: source bb2lexicalenvstack is empty");
         }
         auto wait_method = new LexicalEnvStack(*(this->bb2lexicalenvstack[inst->GetBasicBlock()]));
         (*this->method2lexicalenvstack_)[methodoffset_] = wait_method;
         this->globallexical_waitlist_->push_back(wait_method);
     }
 
-    void dealwith_globallexical_waitlist(uint32_t tier, uint32_t index, std::string closure_name){
+    void DealWithGlobalLexicalWaitlist(uint32_t tier, uint32_t index, std::string closure_name){
         for (auto it = this->globallexical_waitlist_->begin(); it != this->globallexical_waitlist_->end(); ) {
             auto* waitelement = *it;
-            waitelement->set(tier, index, new std::string(closure_name));
+            waitelement->Set(tier, index, new std::string(closure_name));
 
             if(waitelement->IsFull()){
                 it = this->globallexical_waitlist_->erase(it);
@@ -352,7 +352,7 @@ public:
         }
     }
 
-    void print_inner_method2lexicalmap(){
+    void PrintInnerMethod2LexicalMap(){
         auto outerIt = this->method2lexicalmap_->find(this->methodoffset_);
         if (outerIt == this->method2lexicalmap_->end()) {
             std::cerr << "Method offset not found in the map." << std::endl;
@@ -372,18 +372,18 @@ public:
         }
     }
 
-    uint32_t search_startpos_for_createprivateproperty(Inst *inst){
+    uint32_t SearchStartposForCreatePrivateproperty(Inst *inst){
         if(this->method2lexicalmap_->find(this->methodoffset_) != this->method2lexicalmap_->end() ){
             auto outerIt = this->method2lexicalmap_->find(this->methodoffset_);
             if (outerIt == this->method2lexicalmap_->end()) {
-                handleError("#print_inner_method2lexicalmap: Method offset not found in the map1.");
+                HandleError("#PrintInnerMethod2LexicalMap: Method offset not found in the map1.");
             }
 
             const std::map<uint32_t, std::vector<uint32_t>>& innerMap = outerIt->second;
 
             auto innerIt = innerMap.find(0);
             if (innerIt == innerMap.end()) {
-                handleError("#print_inner_method2lexicalmap: Method offset not found in the map2.");
+                HandleError("#PrintInnerMethod2LexicalMap: Method offset not found in the map2.");
             }
 
             const std::vector<uint32_t>& vec = innerIt->second;
@@ -398,15 +398,15 @@ public:
                 }
             }           
         }else{
-            handleError("#search_startpos_for_createprivateproperty: not found !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            HandleError("#SearchStartposForCreatePrivateproperty: not found !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         }
 
-        handleError("#search_startpos_for_createprivateproperty: not found !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        HandleError("#SearchStartposForCreatePrivateproperty: not found !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
         return -1;
     }
 
-    void set_expression_by_register(Inst* inst, compiler::Register key, panda::es2panda::ir::Expression* value){
+    void SetExpressionByRegister(Inst* inst, compiler::Register key, panda::es2panda::ir::Expression* value){
         /**
             std::map<compiler::Register, panda::es2panda::ir::Expression*> reg2expression;
             std::map<compiler::BasicBlock*, panda::es2panda::ir::Expression*> bb2acc2expression;
@@ -414,11 +414,11 @@ public:
         */
 
         if(value == nullptr){
-            handleError("#set_expression_by_register: can't set null expression in reg2expression");
+            HandleError("#SetExpressionByRegister: can't set null expression in reg2expression");
         }
-        this->set_expression_by_id(inst, inst->GetId(), value);
+        this->SetExpressionById(inst, inst->GetId(), value);
 
-        std::cout << "#set_expression_by_register: " << std::to_string(key) << std::endl;
+        std::cout << "#SetExpressionByRegister: " << std::to_string(key) << std::endl;
         
         if(inst->IsAccWrite()){
             this->bb2acc2expression[inst->GetBasicBlock()] = value;
@@ -427,7 +427,7 @@ public:
         this->reg2expression[key] = value;
     }
 
-    void logid2blockkeys(){
+    void Logid2BlockKeys(){
         std::cout << "id2block keys: ";
         for (const auto& pair : this->id2block) {
             std::cout << pair.first << ", ";
@@ -435,7 +435,7 @@ public:
         std::cout << std::endl;
     }
 
-    void logspecialblockid(){
+    void LogSpecialBlockId(){
         std::cout << "specialblockid: ";
         for (auto it = this->specialblockid.begin(); it != this->specialblockid.end(); ++it) {
             std::cout << *it;
@@ -446,7 +446,7 @@ public:
         std::cout << std::endl;
     }
  
-    void logbackedgeid(ArenaVector<BasicBlock *> backedges){
+    void LogBackEdgeId(ArenaVector<BasicBlock *> backedges){
         std::cout << "backedgeid: ";
         for (auto it = backedges.begin(); it != backedges.end(); ++it) {
             std::cout << (*it)->GetId();
@@ -457,7 +457,7 @@ public:
         std::cout << std::endl;
     }
 
-    BasicBlock* search_preheader(BasicBlock* header){
+    BasicBlock* SearchPreHeader(BasicBlock* header){
         for (auto pred : header->GetPredsBlocks()) {
             if(pred->IsLoopPreHeader()){
                 return pred;
@@ -466,9 +466,9 @@ public:
         return nullptr;
     }
 
-    void add_insAst_to_blockstatemnt_by_inst(Inst *inst, es2panda::ir::Statement *statement){
+    void AddInstAst2BlockStatemntByInst(Inst *inst, es2panda::ir::Statement *statement){
         BasicBlock* block = inst->GetBasicBlock();
-        this->add_insAst_to_blockstatemnt_by_block(block, statement);
+        this->AddInstAst2BlockStatemntByBlock(block, statement);
 
         if(block->IsLoopValid() && block->IsLoopHeader() && inst->GetOpcode()!= Opcode::If   && inst->GetOpcode()!= Opcode::IfImm ){
             auto headerblockstatements = this->whileheader2redundant[block];
@@ -477,13 +477,13 @@ public:
         }
     }
 
-    void add_insAst_to_blockstatemnt_by_block(BasicBlock* block, es2panda::ir::Statement *statement){
-        es2panda::ir::BlockStatement* block_statements = this->get_blockstatement_byid(block);
+    void AddInstAst2BlockStatemntByBlock(BasicBlock* block, es2panda::ir::Statement *statement){
+        es2panda::ir::BlockStatement* block_statements = this->GetBlockStatementById(block);
         const auto &statements = block_statements->Statements();
         block_statements->AddStatementAtPos(statements.size(), statement);
     }
 
-    void log_loop_bbs(BasicBlock* header){
+    void LogLoopBBs(BasicBlock* header){
         ArenaVector<BasicBlock *> bbs = header->GetLoop()->GetBlocks();
         std::cout << "[+] loop list >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " << std::endl;
         for (size_t i = 0; i < bbs.size(); i++) {
@@ -498,7 +498,7 @@ public:
         std::cout << "[-] loop list >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " << std::endl;
     }
 
-    void judge_looptype(BasicBlock* header){
+    void JudgeLoopType(BasicBlock* header){
         auto &back_edges = header->GetLoop()->GetBackEdges();
         for (auto back_edge : back_edges) {
             auto succs_size = back_edge->GetSuccsBlocks().size();
@@ -521,12 +521,12 @@ public:
             }
         } 
 
-        //log_loop_bbs(header);
+        //LogLoopBBs(header);
     }
 
-    es2panda::ir::BlockStatement* get_blockstatement_byid(BasicBlock *block){
+    es2panda::ir::BlockStatement* GetBlockStatementById(BasicBlock *block){
         auto block_id = block->GetId();
-        std::cout << "[*] get_blockstatement_byid bbid: " << block_id << ", ";
+        std::cout << "[*] GetBlockStatementById bbid: " << block_id << ", ";
 
         // case1: found blockstatment
         if (this->id2block.find(block_id) != this->id2block.end()) {
@@ -537,7 +537,7 @@ public:
         // case2: found loop
         if(block->IsLoopValid() && block->IsLoopHeader() ){
             std::cout << "@@ case 2" << std::endl;
-            judge_looptype(block);
+            JudgeLoopType(block);
 
             //////////////////////////////////////////////////////////////////////////////////////
             ArenaVector<panda::es2panda::ir::Statement *> statements(this->parser_program_->Allocator()->Adapter());
@@ -562,7 +562,7 @@ public:
         auto new_block_statement = this->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
         this->id2block[block_id] = new_block_statement;
 
-        logspecialblockid();
+        LogSpecialBlockId();
 
         // nested if-else
         if(this->specialblockid.find(block_id) == this->specialblockid.end() ){
@@ -571,14 +571,14 @@ public:
             ancestor_block = block->GetDominator();
 
             if(ancestor_block == nullptr){
-                handleError("get_blockstatement_byid# find ancestor is nullptr");
+                HandleError("GetBlockStatementById# find ancestor is nullptr");
             }
             std::cout << "@ ancestor_block: " <<  std::to_string(ancestor_block->GetId()) <<  std::endl;
 
-            auto ancestor_block_statements = this->get_blockstatement_byid(ancestor_block);
+            auto ancestor_block_statements = this->GetBlockStatementById(ancestor_block);
             this->id2block[block_id] =  ancestor_block_statements;
 
-            this->add_insAst_to_blockstatemnt_by_block(ancestor_block, new_block_statement);
+            this->AddInstAst2BlockStatemntByBlock(ancestor_block, new_block_statement);
             
 
             return this->id2block[block_id];

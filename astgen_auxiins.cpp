@@ -3,13 +3,13 @@ void AstGen::VisitPhi(GraphVisitor* v, Inst* inst_base) {
     pandasm::Ins ins;
     [[maybe_unused]] auto enc = static_cast<AstGen*>(v);
     [[maybe_unused]] auto inst = inst_base->CastToPhi();
-    panda::es2panda::ir::Expression* funname = enc->get_identifier_byname(new std::string("φ"));
+    panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName(new std::string("φ"));
     ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
 
     for (size_t i = 0; i < inst->GetInputsCount(); i++) {
         std::cout << "[+] phi: end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
         std::cout << "[*] reg " << std::to_string(i) << " , " << std::to_string(inst->GetSrcReg(i-2)) << std::endl;
-        arguments.push_back(*enc->get_expression_by_id(inst, i));
+        arguments.push_back(*enc->GetExpressionById(inst, i));
         std::cout << "[-] phi: end >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
     }
 
@@ -20,7 +20,7 @@ void AstGen::VisitPhi(GraphVisitor* v, Inst* inst_base) {
                                                         false
                                                         );
 
-    enc->set_expression_by_register(inst, inst->GetDstReg(), callexpression);
+    enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
     std::cout << "[-] VisitPhi  <<<<<<<<<<<<<<<" << std::endl;
 }
 
@@ -39,12 +39,12 @@ void AstGen::VisitParameter(GraphVisitor* v, Inst* inst_base) {
     panda::es2panda::ir::Expression* arg = nullptr;
 
     if(std::find(enc->memfuncs_->begin(), enc->memfuncs_->end(), enc->methodoffset_) != enc->memfuncs_->end() && inst->GetArgNumber() == 2 ){
-        arg = enc->get_identifier_byname(new std::string("this"));
+        arg = enc->GetIdentifierByName(new std::string("this"));
     }else{
-        arg = enc->get_identifier_byname(new std::string("arg" + std::to_string(inst->GetArgNumber()-3)));
+        arg = enc->GetIdentifierByName(new std::string("arg" + std::to_string(inst->GetArgNumber()-3)));
     }
     
-    enc->set_expression_by_register(inst, inst->GetDstReg(), arg);
+    enc->SetExpressionByRegister(inst, inst->GetDstReg(), arg);
     std::cout << "[-] VisitParameter  >>>>>>>>>>>>>>>>>" << std::endl;
 }
 
@@ -61,12 +61,12 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
     }else if(inst->GetBasicBlock()->GetSuccessor(1)->IsCatchBegin()){
         tryblock = inst->GetBasicBlock()->GetSuccessor(0);
     }else{
-        handleError("can't handle this case  in visitTry for finding try block");
+        HandleError("can't handle this case  in visitTry for finding try block");
     }
 
     enc->specialblockid.insert(tryblock->GetId());
     
-    panda::es2panda::ir::BlockStatement* tryblock_statement = enc->get_blockstatement_byid(tryblock);
+    panda::es2panda::ir::BlockStatement* tryblock_statement = enc->GetBlockStatementById(tryblock);
 
     if(inst->GetBasicBlock()->GetTryId() !=  panda::compiler::INVALID_ID){
         enc->tyrid2block[inst->GetBasicBlock()->GetTryId()] = tryblock_statement;
@@ -86,7 +86,7 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
         }
 
         enc->specialblockid.insert(succ->GetId());
-        auto catch_block = enc->get_blockstatement_byid(succ);
+        auto catch_block = enc->GetBlockStatementById(succ);
    
         panda::es2panda::ir::Expression *param = enc->constant_catcherror;
         
@@ -97,7 +97,7 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
 
     
     if(inst->GetBasicBlock()->GetPredsBlocks().size() == 2){
-        handleError("analysis try-catch error for more than one predecessor");
+        HandleError("analysis try-catch error for more than one predecessor");
     }
     
     // create null finally case
@@ -106,12 +106,12 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
     
     
     // create try-catch statement
-    enc->get_blockstatement_byid(inst->GetBasicBlock());
+    enc->GetBlockStatementById(inst->GetBasicBlock());
 
     auto tryStatement = AllocNode<panda::es2panda::ir::TryStatement>(enc, tryblock_statement, catchClause, finnalyClause);
     enc->tyridtrystatement[inst->GetBasicBlock()->GetTryId()] = tryStatement;
     
-    enc->add_insAst_to_blockstatemnt_by_inst(inst_base, tryStatement);
+    enc->AddInstAst2BlockStatemntByInst(inst_base, tryStatement);
 
     std::cout << "[-] VisitTry  >>>>>>>>>>>>>>>>>" << std::endl;
 

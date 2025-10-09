@@ -1,6 +1,6 @@
 #include "base.h"
 
-void handleError(const std::string& errorMessage) {
+void HandleError(const std::string& errorMessage) {
     std::cerr << "Error: " << errorMessage << std::endl;
     std::exit(EXIT_FAILURE); 
 }
@@ -42,7 +42,7 @@ bool IsArray(const panda::panda_file::LiteralTag &tag)
     }
 }
 
-std::optional<std::vector<std::string>> getLiteralArrayByOffset(panda::pandasm::Program* program, uint32_t offset){
+std::optional<std::vector<std::string>> GetLiteralArrayByOffset(panda::pandasm::Program* program, uint32_t offset){
     std::vector<std::string> res;
     std::stringstream hexStream;
     hexStream << "0x" << std::hex << offset;

@@ -164,25 +164,25 @@ private:
 
     void EmitBlockStatement(const ir::AstNode *node);
 
-    void writeTrailingSemicolon(); //;
-    void writeSpace();
-    void writeLeftBrace();    // {
-    void writeRightBrace();   // }
-    void writeLeftBracket();  // [
-    void writeRightBracket(); // ]
+    void WriteTrailingSemicolon(); //;
+    void WriteSpace();
+    void WriteLeftBrace();    // {
+    void WriteRightBrace();   // }
+    void WriteLeftBracket();  // [
+    void WriteRightBracket(); // ]
 
-    void writeLeftParentheses(); // (
-    void writeRightParentheses(); // )
+    void WriteLeftParentheses(); // (
+    void WriteRightParentheses(); // )
     
 
-    void writeColon();// :
-    void writeEqual();// =
-    void writeComma();// ,
-    void writeDot(); // .
-    void writeSpreadDot(); // ...
-    void writeKeyWords(std::string keyword); 
-    void writeNewLine();
-    void writeIndent();
+    void WriteColon();// :
+    void WriteEqual();// =
+    void WriteComma();// ,
+    void WriteDot(); // .
+    void WriteSpreadDot(); // ...
+    void WriteKeyWords(std::string keyword); 
+    void WriteNewLine();
+    void WriteIndent();
 
     void EmitExpression(const ir::AstNode *node);
     void EmitExpressionStatement(const ir::AstNode *node);
