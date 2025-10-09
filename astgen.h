@@ -330,7 +330,7 @@ public:
     }
 
     void CopyLexicalenvStack(uint32_t methodoffset_, Inst* inst){
-        if(this->bb2lexicalenvstack[inst->GetBasicBlock()]->empty()){
+        if(this->bb2lexicalenvstack[inst->GetBasicBlock()]->Empty()){
             return;
             //HandleError("#CopyLexicalenvStack: source bb2lexicalenvstack is empty");
         }

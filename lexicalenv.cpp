@@ -159,7 +159,7 @@ size_t LexicalEnvStack::size() const {
     return stack_.size();
 }
 
-bool LexicalEnvStack::empty() const {
+bool LexicalEnvStack::Empty() const {
     return stack_.empty();
 }
 
