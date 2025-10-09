@@ -39,6 +39,9 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
                 if(method_name.find("instance_initializer") != std::string::npos){
                     enc->constructor_funcs_.push_back(methodoffset);
                     enc->UpdateMemberDepConstructor();
+                    ///////////////////////////////////////////////////////
+                    // enc->memfuncs_->push_back(methodoffset);
+                    ///////////////////////////////////////////////////////
                 }
             }
             break;
