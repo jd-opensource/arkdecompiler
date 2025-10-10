@@ -1198,7 +1198,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
                     if (enc->methodname2offset_->find(class_name) != enc->methodname2offset_->end()) {
                         auto constructor_offset = (*enc->methodname2offset_)[class_name];
-                        (*enc->class2memberfuns_)[constructor_offset].push_back(method_offset);
+                        (*enc->class2memberfuns_)[constructor_offset].insert(method_offset);
                     }else{
                         std::cout << "##name: " << class_name << std::endl;
                         HandleError("#DEFINEMETHOD: find constructor_offset error");
@@ -1407,6 +1407,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        {
             //////////////////////////////////////////////////////////////////////////////////////////////////////
             auto constructor_offset = static_cast<uint32_t>(inst->GetImms()[1]);
+            enc->current_constructor_offset = constructor_offset;
             auto constructor_offset_name = enc->ir_interface_->GetMethodIdByOffset(constructor_offset);
 
             enc->CopyLexicalenvStack(constructor_offset, inst);
@@ -1415,6 +1416,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 auto& member_funcs = (*enc->class2memberfuns_)[constructor_offset];
                 for (const auto& member_func_offset : member_funcs) {
                     enc->CopyLexicalenvStack(member_func_offset, inst);
+                    (*enc->class2memberfuns_)[constructor_offset].insert(member_func_offset);
                 }
             }
             
@@ -1450,8 +1452,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_CREATEPRIVATEPROPERTY_PREF_IMM16_ID16:
        {
             auto startpos = enc->SearchStartposForCreatePrivateproperty(inst);
-            auto constructor_offset = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto member_functions = GetLiteralArrayByOffset(enc->program_, constructor_offset);
+            auto literalarray_offset = static_cast<uint32_t>(inst->GetImms()[1]);
+            auto member_functions = GetLiteralArrayByOffset(enc->program_, literalarray_offset);
             if(member_functions){
                 int cout = 0;
                 for(const auto &member_function: *member_functions){
@@ -1465,6 +1467,18 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     std::cout << "[+] capacity_: " << lexicalenv.capacity_ << std::endl;
 
                     (*enc->method2lexicalmap_)[enc->methodoffset_][0].push_back(startpos);
+
+                    if (enc->methodname2offset_->find(member_function) != enc->methodname2offset_->end()) {
+                        auto member_offset = (*enc->methodname2offset_)[member_function];
+                        std::cout << "member_offset: " << member_offset << std::endl;
+                        
+                        (*enc->class2memberfuns_)[enc->current_constructor_offset].insert(member_offset);
+                    }else{
+                        std::cout << "##name: " << member_function << std::endl;
+                        HandleError("#DEFINEMETHOD: find constructor_offset error");
+                    }
+
+
                     auto newname = enc->ExtractTrueFunName(member_function);
                     auto memfun_str = new std::string(newname);
 
