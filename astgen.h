@@ -27,12 +27,13 @@ public:
         std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap,
         std::vector<LexicalEnvStack*> *globallexical_waitlist,
         std::map<std::string, std::string> *raw2newname,
+        std::map<std::string, uint32_t> *methodname2offset,
         std::string fun_name)
         : compiler::Optimization(graph), function_(function), ir_interface_(iface), program_(prog), methodoffset_(methodoffset),
         method2lexicalenvstack_(method2lexicalenvstack), patchvarspace_(patchvarspace), parser_program_(parser_program), 
         index2namespaces_(index2namespaces), localnamespaces_(localnamespaces), class2memberfuns_(class2memberfuns),
         method2scriptfunast_(method2scriptfunast), ctor2classdeclast_(ctor2classdeclast), memfuncs_(memfuncs), class2father_(class2father),
-        method2lexicalmap_(method2lexicalmap), globallexical_waitlist_(globallexical_waitlist), raw2newname_(raw2newname)
+        method2lexicalmap_(method2lexicalmap), globallexical_waitlist_(globallexical_waitlist), raw2newname_(raw2newname), methodname2offset_(methodname2offset)
     {
 
         this->closure_count = 0;
@@ -633,6 +634,8 @@ public:
     std::vector<LexicalEnvStack*> *globallexical_waitlist_;
 
     std::map<std::string, std::string> *raw2newname_;
+
+    [[maybe_unused]] std::map<std::string, uint32_t> *methodname2offset_;
 
    
     ///////////////////////////////////////////////////////////////////////////////////////

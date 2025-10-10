@@ -40,7 +40,7 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
                     enc->constructor_funcs_.push_back(methodoffset);
                     enc->UpdateMemberDepConstructor();
                     ///////////////////////////////////////////////////////
-                    // enc->memfuncs_->push_back(methodoffset);
+                    enc->memfuncs_->push_back(methodoffset);
                     ///////////////////////////////////////////////////////
                 }
             }
@@ -56,9 +56,9 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
             auto literalarray_offset = static_cast<uint32_t>(inst->GetImms()[2]);
             auto member_functions = GetLiteralArrayByOffset(enc->program_, literalarray_offset);
             if(member_functions){
-                for(auto const& member_function : *member_functions ){
-                    if (enc->methodname2offset_.find(member_function) != enc->methodname2offset_.end()) {
-                        auto memeber_offset = enc->methodname2offset_[member_function];
+                for(auto const& member_function : *member_functions){
+                    if (enc->methodname2offset_->find(member_function) != enc->methodname2offset_->end()) {
+                        auto memeber_offset = (*enc->methodname2offset_)[member_function];
                         (*enc->class2memberfuns_)[constructor_offset].push_back(memeber_offset);
                         enc->memfuncs_->push_back(memeber_offset);
                     }else{
@@ -75,7 +75,7 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
             auto member_functions = GetLiteralArrayByOffset(enc->program_, ir_id0);
             if(member_functions){
                 for(const auto& member_function : *member_functions){
-                    auto memeber_offset = enc->methodname2offset_[member_function];
+                    auto memeber_offset = (*enc->methodname2offset_)[member_function];
                     enc->depedges_->push_back(std::make_pair(enc->methodoffset_, memeber_offset));
                     enc->memfuncs_->push_back(memeber_offset);
                     std::cout << member_function << std::endl;
