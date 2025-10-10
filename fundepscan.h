@@ -17,11 +17,12 @@ public:
         std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns,
         std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap,
         std::vector<uint32_t>* memfuncs,
-        std::map<std::string, std::string> *raw2newname
+        std::map<std::string, std::string> *raw2newname,
+        std::map<std::string, uint32_t> *methodname2offset
         )
         : compiler::Optimization(graph), ir_interface_(iface), program_(program), disasm_(disasm), methodoffset_(methodoffset), 
         depedges_(depedges), class2memberfuns_(class2memberfuns), method2lexicalmap_(method2lexicalmap),
-        memfuncs_(memfuncs), raw2newname_(raw2newname)
+        memfuncs_(memfuncs), raw2newname_(raw2newname), methodname2offset_(methodname2offset)
     {
         for (const auto& pair : this->disasm_.method_name_to_id_) {
             std::cout << "##########################################################" << std::endl;
@@ -35,7 +36,7 @@ public:
                 
                 std::cout << "result: " << result << std::endl;
 
-                this->methodname2offset_[result] = pair.second.GetOffset();
+                (*this->methodname2offset_)[result] = pair.second.GetOffset();
             }
         }
 
@@ -78,8 +79,6 @@ public:
     [[maybe_unused]] std::vector<std::pair<uint32_t, uint32_t>>* depedges_;
     [[maybe_unused]] std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns_;
 
-    [[maybe_unused]] std::map<std::string, uint32_t> methodname2offset_;
-
     [[maybe_unused]] std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>> *method2lexicalmap_;
 
     [[maybe_unused]] std::vector<uint32_t> constructor_funcs_;
@@ -87,6 +86,8 @@ public:
     [[maybe_unused]] std::vector<uint32_t>* memfuncs_;
 
     [[maybe_unused]] std::map<std::string, std::string> *raw2newname_;
+
+    [[maybe_unused]] std::map<std::string, uint32_t> *methodname2offset_;
 
 };
 

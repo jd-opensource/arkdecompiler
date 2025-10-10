@@ -1173,8 +1173,37 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             // support callruntime.createprivateproperty
             if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM8_ID16_IMM8 ||
                 inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM16_ID16_IMM8){
+
                 if(method_name.find("instance_initializer") != std::string::npos){
                     enc->MergeMethod2LexicalMap(method_offset, enc->methodoffset_);
+
+                    auto class_expression  = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
+
+                    std::string class_name;
+
+                    if(class_expression->IsIdentifier()){
+                        class_name = class_expression->AsIdentifier()->Name().Mutf8();
+
+                    }else if(class_expression->IsMemberExpression()){
+                        auto obj = class_expression->AsMemberExpression()->Object();
+                        if(obj->IsIdentifier()){
+                            class_name = obj->AsIdentifier()->Name().Mutf8();
+
+                        }else{
+                            HandleError("#DEFINEMETHOD: not handle this case in memberexpression");
+                        }
+                    }else{
+                        HandleError("#DEFINEMETHOD: not handle this case");
+                    }
+
+                    if (enc->methodname2offset_->find(class_name) != enc->methodname2offset_->end()) {
+                        auto constructor_offset = (*enc->methodname2offset_)[class_name];
+                        (*enc->class2memberfuns_)[constructor_offset].push_back(method_offset);
+                    }else{
+                        std::cout << "##name: " << class_name << std::endl;
+                        HandleError("#DEFINEMETHOD: find constructor_offset error");
+                    }
+
                 }
             }
 
@@ -1405,7 +1434,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             (*enc->class2father_)[constructor_offset] = father;
        
-            auto newname = enc->ExtractTrueFunName(constructor_offset_name);
+            //auto newname = enc->ExtractTrueFunName(constructor_offset_name);
+            auto newname = RemoveArgumentsOfFunc(constructor_offset_name);
             enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->GetIdentifierByName(new std::string(newname)));
             
             break;
@@ -2349,7 +2379,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             if (acc_src != compiler::ACC_REG_ID) {
                 DoLda(acc_src, enc->result_);
             }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
+            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
             auto v0 = inst->GetSrcReg(0);
             auto v1 = inst->GetSrcReg(1);
