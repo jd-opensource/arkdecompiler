@@ -107,7 +107,7 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
                         std::map<uint32_t, std::string*>* patchvarspace,
                         std::map<size_t, std::vector<std::string>>& index2namespaces, 
                         std::vector<std::string>& localnamespaces,
-                        std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns,
+                        std::map<uint32_t, std::set<uint32_t>> *class2memberfuns,
                         std::map<uint32_t, panda::es2panda::ir::ScriptFunction *> *method2scriptfunast,
                         std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *>* ctor2classdeclast,
                         std::vector<uint32_t>* memfuncs,
@@ -223,7 +223,7 @@ void LogArkTS2File(panda::es2panda::parser::Program *parser_program, std::string
 bool ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
                 BytecodeOptIrInterface *ir_interface,
                 std::vector<std::pair<uint32_t, uint32_t>>* depedges,
-                std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns,
+                std::map<uint32_t, std::set<uint32_t>> *class2memberfuns,
                 std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap,
                 std::vector<uint32_t>* memfuncs,
                 std::map<std::string, std::string> *raw2newname,
@@ -288,7 +288,7 @@ bool ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
     return true;
 }
 
-bool ConstructClasses(std::map<uint32_t, std::vector<uint32_t>> &class2memberfuns, panda::es2panda::parser::Program *parser_program,  BytecodeOptIrInterface *ir_interface,
+bool ConstructClasses(std::map<uint32_t, std::set<uint32_t>> &class2memberfuns, panda::es2panda::parser::Program *parser_program,  BytecodeOptIrInterface *ir_interface,
         std::map<uint32_t, panda::es2panda::ir::Expression*> &class2father, std::map<uint32_t, panda::es2panda::ir::ScriptFunction *> &method2scriptfunast,
         std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *> &ctor2classdeclast, std::map<std::string, std::string>& raw2newname
         ){
@@ -296,6 +296,9 @@ bool ConstructClasses(std::map<uint32_t, std::vector<uint32_t>> &class2memberfun
     for(const auto & pair : class2memberfuns){
         
         auto constructor_offset = pair.first;
+
+        std::cout << constructor_offset << std::endl;
+
         auto member_funcs = pair.second;
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         auto constructor_offset_name = RemoveArgumentsOfFunc(ir_interface->GetMethodIdByOffset(constructor_offset));
@@ -306,7 +309,6 @@ bool ConstructClasses(std::map<uint32_t, std::vector<uint32_t>> &class2memberfun
         }else{
             HandleError("#ConstructClasses: find constructor_offset_name newname error");
         }
-
         panda::es2panda::util::StringView name_view1 = panda::es2panda::util::StringView(*(new std::string(RemoveArgumentsOfFunc(newname_constructor_offset_name))));
 
         auto identNode =  parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(name_view1);
@@ -325,11 +327,11 @@ bool ConstructClasses(std::map<uint32_t, std::vector<uint32_t>> &class2memberfun
 
         auto func = method2scriptfunast[constructor_offset];
         method2scriptfunast.erase(constructor_offset);
-        
+
         if(func == nullptr){
             HandleError("#DecompilePandaFile: find constructor function fail!");
         }
-
+        std::cout << "33333" << std::endl;
         auto funcExpr = parser_program->Allocator()->New<panda::es2panda::ir::FunctionExpression>(func);
 
 
@@ -345,14 +347,16 @@ bool ConstructClasses(std::map<uint32_t, std::vector<uint32_t>> &class2memberfun
         auto classDefinition = parser_program->Allocator()->New<es2panda::ir::ClassDefinition>(
                             nullptr, identNode, nullptr, nullptr, std::move(implements), ctor, nullptr,
                             nullptr, father, std::move(properties), std::move(indexSignatures), false, false);
-
+        
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         for (const auto& member_func_offset : member_funcs) {
             
             auto func = method2scriptfunast[member_func_offset];
             method2scriptfunast.erase(member_func_offset);
 
             if(func == nullptr){
+                std::cout << "member function offset: " << member_func_offset << std::endl;
                 HandleError("#ConstructClasses: find member function fail!");
             }
 
@@ -365,7 +369,6 @@ bool ConstructClasses(std::map<uint32_t, std::vector<uint32_t>> &class2memberfun
                 HandleError("#ConstructClasses: find new_member_name newname error");
             }
 
-            
             panda::es2panda::util::StringView name_view3 = panda::es2panda::util::StringView(*(new std::string(new_member_name)));
             auto keyNode = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(name_view3);
 
@@ -379,16 +382,19 @@ bool ConstructClasses(std::map<uint32_t, std::vector<uint32_t>> &class2memberfun
                                                         std::move(decorators), std::move(annotations), 
                                                         std::move(paramDecorators), false);
             classDefinition->AddToBody(method);
+
         }
+
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ArenaVector<es2panda::ir::Decorator *> decorators1(parser_program->Allocator()->Adapter());
         ArenaVector<es2panda::ir::Annotation *> annotations1(parser_program->Allocator()->Adapter());
 
-        
+       
         auto *classDecl = parser_program->Allocator()->New<es2panda::ir::ClassDeclaration>(classDefinition, 
                                                 std::move(decorators1), std::move(annotations1), false);
-
+        
         ctor2classdeclast[constructor_offset] = classDecl;
+         
 
     }
     return true;
@@ -415,7 +421,7 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
 
     std::map<size_t, std::vector<std::string>> index2importnamespaces; 
 
-    std::map<uint32_t, std::vector<uint32_t>> class2memberfuns;
+    std::map<uint32_t, std::set<uint32_t>> class2memberfuns;
     std::map<uint32_t, panda::es2panda::ir::Expression*> class2father;
 
     std::map<uint32_t, panda::es2panda::ir::ScriptFunction *> method2scriptfunast;
