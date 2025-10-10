@@ -20,7 +20,7 @@ public:
         const BytecodeOptIrInterface *iface, pandasm::Program *prog,  es2panda::parser::Program* parser_program, 
         uint32_t methodoffset, std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack, std::map<uint32_t, std::string*> *patchvarspace,
         std::map<size_t, std::vector<std::string>> index2namespaces, std::vector<std::string> localnamespaces,
-        std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns, 
+        std::map<uint32_t, std::set<uint32_t>> *class2memberfuns, 
         std::map<uint32_t, panda::es2panda::ir::ScriptFunction *> *method2scriptfunast, 
         std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *>* ctor2classdeclast, std::vector<uint32_t> *memfuncs, 
         std::map<uint32_t, panda::es2panda::ir::Expression*> *class2father, 
@@ -69,6 +69,7 @@ public:
         auto body = parser_program->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(func_statements));
         panda::es2panda::ir::ScriptFunctionFlags flags_ {panda::es2panda::ir::ScriptFunctionFlags::NONE};
         auto funcNode = parser_program->Allocator()->New<panda::es2panda::ir::ScriptFunction>(nullptr, std::move(arguments), nullptr, body, nullptr, flags_, true, false);
+        
         
         (*this->method2scriptfunast_)[methodoffset] = funcNode;
 
@@ -621,7 +622,7 @@ public:
 
     std::map<size_t, std::vector<std::string>> index2namespaces_;
     std::vector<std::string> localnamespaces_;
-    std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns_;
+    std::map<uint32_t, std::set<uint32_t>> *class2memberfuns_;
     std::map<uint32_t, panda::es2panda::ir::ScriptFunction *> *method2scriptfunast_;
     std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *>* ctor2classdeclast_;
 
@@ -635,16 +636,18 @@ public:
 
     std::map<std::string, std::string> *raw2newname_;
 
-    [[maybe_unused]] std::map<std::string, uint32_t> *methodname2offset_;
+    std::map<std::string, uint32_t> *methodname2offset_;
 
-   
+    
     ///////////////////////////////////////////////////////////////////////////////////////
-  
+    uint32_t current_constructor_offset;
+
     std::unique_ptr<LCAFinder> lcaFinder;
 
     bool success_ {true};
     std::vector<pandasm::Ins> result_;
    
+
     std::string* acc_global_str = NULL;
 
     panda::es2panda::ir::Expression* acc = NULL;

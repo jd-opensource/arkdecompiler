@@ -14,7 +14,7 @@ public:
     explicit FunDepScan(compiler::Graph *graph,  const BytecodeOptIrInterface *iface, panda::pandasm::Program* program, 
         panda::disasm::Disassembler& disasm, uint32_t methodoffset,
         std::vector<std::pair<uint32_t, uint32_t>>* depedges,
-        std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns,
+        std::map<uint32_t, std::set<uint32_t>> *class2memberfuns,
         std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap,
         std::vector<uint32_t>* memfuncs,
         std::map<std::string, std::string> *raw2newname,
@@ -77,7 +77,7 @@ public:
     [[maybe_unused]] uint32_t methodoffset_;
 
     [[maybe_unused]] std::vector<std::pair<uint32_t, uint32_t>>* depedges_;
-    [[maybe_unused]] std::map<uint32_t, std::vector<uint32_t>> *class2memberfuns_;
+    [[maybe_unused]] std::map<uint32_t, std::set<uint32_t>> *class2memberfuns_;
 
     [[maybe_unused]] std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>> *method2lexicalmap_;
 

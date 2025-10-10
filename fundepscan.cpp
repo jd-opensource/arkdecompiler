@@ -40,7 +40,7 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
                     enc->constructor_funcs_.push_back(methodoffset);
                     enc->UpdateMemberDepConstructor();
                     ///////////////////////////////////////////////////////
-                    // enc->memfuncs_->push_back(methodoffset);
+                    enc->memfuncs_->push_back(methodoffset);
                     ///////////////////////////////////////////////////////
                 }
             }
@@ -59,7 +59,7 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
                 for(auto const& member_function : *member_functions){
                     if (enc->methodname2offset_->find(member_function) != enc->methodname2offset_->end()) {
                         auto memeber_offset = (*enc->methodname2offset_)[member_function];
-                        (*enc->class2memberfuns_)[constructor_offset].push_back(memeber_offset);
+                        (*enc->class2memberfuns_)[constructor_offset].insert(memeber_offset);
                         enc->memfuncs_->push_back(memeber_offset);
                     }else{
                         HandleError("#function dep scan: DEFINECLASSWITHBUFFER");
