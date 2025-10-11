@@ -38,9 +38,9 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
 
                 if(method_name.find("instance_initializer") != std::string::npos){
                     enc->constructor_funcs_.push_back(methodoffset);
+                    enc->memfuncs_->push_back(methodoffset);
                     enc->UpdateMemberDepConstructor();
                     ///////////////////////////////////////////////////////
-                    enc->memfuncs_->push_back(methodoffset);
                     ///////////////////////////////////////////////////////
                 }
             }
@@ -50,7 +50,7 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
         case compiler::RuntimeInterface::IntrinsicId::DEFINECLASSWITHBUFFER_IMM8_ID16_ID16_IMM16_V8:
         case compiler::RuntimeInterface::IntrinsicId::DEFINECLASSWITHBUFFER_IMM16_ID16_ID16_IMM16_V8:{
             auto constructor_offset = static_cast<uint32_t>(inst->GetImms()[1]);
-            //enc->depedges_->push_back(std::make_pair(constructor_offset, enc->methodoffset_));
+            enc->depedges_->push_back(std::make_pair(enc->methodoffset_, constructor_offset));
 
             enc->memfuncs_->push_back(constructor_offset);
             auto literalarray_offset = static_cast<uint32_t>(inst->GetImms()[2]);
@@ -80,6 +80,8 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
                     enc->memfuncs_->push_back(memeber_offset);
                     std::cout << member_function << std::endl;
                 }
+                enc->UpdateMemberDepConstructor();
+        
             }else{
                 HandleError("#function dep scan: CALLRUNTIME_CREATEPRIVATEPROPERTY");
             }

@@ -294,7 +294,6 @@ bool ConstructClasses(std::map<uint32_t, std::set<uint32_t>> &class2memberfuns, 
         ){
 
     for(const auto & pair : class2memberfuns){
-        
         auto constructor_offset = pair.first;
 
         std::cout << constructor_offset << std::endl;
@@ -309,6 +308,7 @@ bool ConstructClasses(std::map<uint32_t, std::set<uint32_t>> &class2memberfuns, 
         }else{
             HandleError("#ConstructClasses: find constructor_offset_name newname error");
         }
+       
         panda::es2panda::util::StringView name_view1 = panda::es2panda::util::StringView(*(new std::string(RemoveArgumentsOfFunc(newname_constructor_offset_name))));
 
         auto identNode =  parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(name_view1);
@@ -331,7 +331,7 @@ bool ConstructClasses(std::map<uint32_t, std::set<uint32_t>> &class2memberfuns, 
         if(func == nullptr){
             HandleError("#DecompilePandaFile: find constructor function fail!");
         }
-        std::cout << "33333" << std::endl;
+
         auto funcExpr = parser_program->Allocator()->New<panda::es2panda::ir::FunctionExpression>(func);
 
 
@@ -384,7 +384,7 @@ bool ConstructClasses(std::map<uint32_t, std::set<uint32_t>> &class2memberfuns, 
             classDefinition->AddToBody(method);
 
         }
-
+  
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ArenaVector<es2panda::ir::Decorator *> decorators1(parser_program->Allocator()->Adapter());
         ArenaVector<es2panda::ir::Annotation *> annotations1(parser_program->Allocator()->Adapter());
@@ -476,6 +476,13 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
         
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         auto sorted_methodoffsets = TopologicalSort(depedges);
+
+        std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+        for(auto methodoffset : sorted_methodoffsets){
+            std::cout << methodoffset << std::endl;
+        }
+        std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
+
         std::map<uint32_t, std::string*> patchvarspace;
 
         for(const auto & methodoffset : sorted_methodoffsets ){
