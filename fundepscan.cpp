@@ -37,6 +37,8 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
                 inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM16_ID16_IMM8){
 
                 if(method_name.find("instance_initializer") != std::string::npos){
+                    (*enc->class2memberfuns_)[enc->current_constructor_offset].insert(method_offset);
+
                     enc->constructor_funcs_.insert(methodoffset);
                     enc->memfuncs_->insert(methodoffset);
                     enc->UpdateMemberDepConstructor();
@@ -50,6 +52,8 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
         case compiler::RuntimeInterface::IntrinsicId::DEFINECLASSWITHBUFFER_IMM8_ID16_ID16_IMM16_V8:
         case compiler::RuntimeInterface::IntrinsicId::DEFINECLASSWITHBUFFER_IMM16_ID16_ID16_IMM16_V8:{
             auto constructor_offset = static_cast<uint32_t>(inst->GetImms()[1]);
+            enc->current_constructor_offset = constructor_offset;
+
             enc->depedges_->push_back(std::make_pair(enc->methodoffset_, constructor_offset));
 
             enc->memfuncs_->insert(constructor_offset);
@@ -79,6 +83,8 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
             if(member_functions){
                 for(const auto& member_function : *member_functions){
                     auto memeber_offset = (*enc->methodname2offset_)[member_function];
+                    (*enc->class2memberfuns_)[enc->current_constructor_offset].insert(memeber_offset);
+
                     enc->depedges_->push_back(std::make_pair(enc->methodoffset_, memeber_offset));
                     enc->memfuncs_->insert(memeber_offset);
                     std::cout << member_function << std::endl;
