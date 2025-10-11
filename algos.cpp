@@ -1,5 +1,5 @@
 #include "algos.h"
-
+#include "base.h"
 
 LCAFinder::LCAFinder(panda::compiler::Graph* graph) : graph(graph) {
         Initialize();
@@ -89,6 +89,7 @@ std::vector<uint32_t> TopologicalSort(const std::vector<std::pair<uint32_t, uint
     }
     
     if (result.size() != allNodes.size()) {
+        HandleError("#TopologicalSort: search failed");
         return {}; 
     }
     

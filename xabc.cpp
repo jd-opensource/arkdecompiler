@@ -476,6 +476,13 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
         
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         auto sorted_methodoffsets = TopologicalSort(depedges);
+
+        std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+        for(auto methodoffset : sorted_methodoffsets){
+            std::cout << methodoffset << std::endl;
+        }
+        std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
+
         std::map<uint32_t, std::string*> patchvarspace;
 
         for(const auto & methodoffset : sorted_methodoffsets ){
