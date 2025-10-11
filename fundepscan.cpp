@@ -8,6 +8,7 @@ bool FunDepScan::RunImpl(){
             VisitInstruction(inst);
         }
     }
+
     this->UpdateMemberDepConstructor();
     return true;
 }
@@ -36,7 +37,14 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
 
                 if(method_name.find("instance_initializer") != std::string::npos){
                     (*enc->class2memberfuns_)[enc->current_constructor_offset].insert(methodoffset);
-                    enc->current_function_initializer = methodoffset;
+
+                    if(enc->current_constructor_offset){
+                        std::cout << "set construct2initializer: " << enc->current_constructor_offset << " : " << methodoffset << std::endl;
+                        enc->construct2initializer_[enc->current_constructor_offset] = methodoffset;
+                    }else{
+                        HandleError("#DEFINEMETHOD: find current_constructor_offset error");
+                    }
+                    
                 }
             }
             break;
@@ -46,6 +54,8 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
         case compiler::RuntimeInterface::IntrinsicId::DEFINECLASSWITHBUFFER_IMM16_ID16_ID16_IMM16_V8:{
             auto constructor_offset = static_cast<uint32_t>(inst->GetImms()[1]);
             enc->current_constructor_offset = constructor_offset;
+
+            enc->inserted_construct_order_.push_back(enc->current_constructor_offset);
 
             // case: not include instance_initializer
             // enc->depedges_->push_back(std::make_pair(enc->methodoffset_, constructor_offset));
