@@ -110,7 +110,7 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
                         std::map<uint32_t, std::set<uint32_t>> *class2memberfuns,
                         std::map<uint32_t, panda::es2panda::ir::ScriptFunction *> *method2scriptfunast,
                         std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *>* ctor2classdeclast,
-                        std::vector<uint32_t>* memfuncs,
+                        std::set<uint32_t>* memfuncs,
                         std::map<uint32_t, panda::es2panda::ir::Expression*> *class2father,
                         std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>> *method2lexicalmap,
                         std::vector<LexicalEnvStack*>* globallexical_waitlist,
@@ -225,7 +225,7 @@ bool ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
                 std::vector<std::pair<uint32_t, uint32_t>>* depedges,
                 std::map<uint32_t, std::set<uint32_t>> *class2memberfuns,
                 std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap,
-                std::vector<uint32_t>* memfuncs,
+                std::set<uint32_t>* memfuncs,
                 std::map<std::string, std::string> *raw2newname,
                 std::map<std::string, uint32_t> *methodname2offset,
                 const panda_file::MethodDataAccessor &mda, bool is_dynamic)
@@ -400,7 +400,21 @@ bool ConstructClasses(std::map<uint32_t, std::set<uint32_t>> &class2memberfuns, 
     return true;
 }
 
+void ConstructMethodname2offset(panda::disasm::Disassembler& disasm, std::map<std::string, uint32_t> *methodname2offset){
+    for (const auto& pair : disasm.method_name_to_id_) {
+        std::cout << "##########################################################" << std::endl;
+        std::cout << "first: " << pair.first << std::endl;
+        std::cout << "second: " << pair.second << std::endl;
+        
 
+        std::size_t pos = pair.first.find(':');
+        if (pos != std::string::npos) {
+            std::string result = RemoveArgumentsOfFunc(pair.first);
+            std::cout << "result: " << result << std::endl;
+            (*methodname2offset)[result] = pair.second.GetOffset();
+        }
+    }
+}
 
 bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_interface,
                        const std::string &pfile_name, panda::disasm::Disassembler& disasm, bool is_dynamic)
@@ -409,6 +423,8 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
     if (!pfile) {
         LOG(FATAL, BYTECODE_OPTIMIZER) << "Can not open binary file: " << pfile_name;
     }
+
+    
 
     bool result = true;
     panda::es2panda::parser::Program *parser_program = new panda::es2panda::parser::Program(panda::es2panda::ScriptExtension::TS);
@@ -428,7 +444,7 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
 
     std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *> ctor2classdeclast;
 
-    std::vector<uint32_t> memfuncs; // all member functions(all classes)
+    std::set<uint32_t> memfuncs; // all member functions(all classes)
     
     std::vector<std::string> localnamespaces; 
 
@@ -436,11 +452,13 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
 
     std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>> method2lexicalmap;
 
-    [[maybe_unused]] std::vector<LexicalEnvStack*> globallexical_waitlist;
+    std::vector<LexicalEnvStack*> globallexical_waitlist;
 
     std::map<std::string, uint32_t> methodname2offset;
 
     ParseModuleVars(pfile, disasm, parser_program, index2importnamespaces, localnamespaces);
+
+    ConstructMethodname2offset(disasm, &methodname2offset);
 
     for (uint32_t id : pfile->GetClasses()) {
         panda_file::File::EntityId record_id {id};
@@ -452,7 +470,6 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
         std::cout << "classname: " << std::left << std::setw(40) <<   cda.GetName().data  << " , fileds: " << cda.GetFieldsNumber() << " , method: " << cda.GetMethodsNumber() << " interface: " << cda.GetIfacesNumber() << " superclass: " <<  cda.GetSuperClassId()   << std::endl;
     }
     
-    std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
     for (uint32_t id : pfile->GetClasses()) {
         
         panda_file::File::EntityId record_id {id};
@@ -477,11 +494,11 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         auto sorted_methodoffsets = TopologicalSort(depedges);
 
-        std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+        std::cout << "@@@ topological order start @@@" << std::endl;
         for(auto methodoffset : sorted_methodoffsets){
             std::cout << methodoffset << std::endl;
         }
-        std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
+        std::cout << "@@@ topological order end @@@" << std::endl;
 
         std::map<uint32_t, std::string*> patchvarspace;
 
