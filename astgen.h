@@ -22,7 +22,7 @@ public:
         std::map<size_t, std::vector<std::string>> index2namespaces, std::vector<std::string> localnamespaces,
         std::map<uint32_t, std::set<uint32_t>> *class2memberfuns, 
         std::map<uint32_t, panda::es2panda::ir::ScriptFunction *> *method2scriptfunast, 
-        std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *>* ctor2classdeclast, std::vector<uint32_t> *memfuncs, 
+        std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *>* ctor2classdeclast, std::set<uint32_t> *memfuncs, 
         std::map<uint32_t, panda::es2panda::ir::Expression*> *class2father, 
         std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap,
         std::vector<LexicalEnvStack*> *globallexical_waitlist,
@@ -56,7 +56,7 @@ public:
                 continue;
             }
             std::string* argname = nullptr;
-            if(std::find(this->memfuncs_->begin(), this->memfuncs_->end(), methodoffset) != this->memfuncs_->end() && i == 2 ){
+            if(this->memfuncs_->find(methodoffset) != this->memfuncs_->end() && i == 2 ){
                 argname = new std::string("this");
             }else{
                 argname = new std::string("arg"+std::to_string(i-3));
@@ -626,7 +626,7 @@ public:
     std::map<uint32_t, panda::es2panda::ir::ScriptFunction *> *method2scriptfunast_;
     std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *>* ctor2classdeclast_;
 
-    std::vector<uint32_t> *memfuncs_;
+    std::set<uint32_t> *memfuncs_;
 
     std::map<uint32_t, panda::es2panda::ir::Expression*> *class2father_;
 

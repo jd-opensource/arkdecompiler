@@ -38,7 +38,7 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
 
                 if(method_name.find("instance_initializer") != std::string::npos){
                     enc->constructor_funcs_.push_back(methodoffset);
-                    enc->memfuncs_->push_back(methodoffset);
+                    enc->memfuncs_->insert(methodoffset);
                     enc->UpdateMemberDepConstructor();
                     ///////////////////////////////////////////////////////
                     ///////////////////////////////////////////////////////
@@ -52,7 +52,7 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
             auto constructor_offset = static_cast<uint32_t>(inst->GetImms()[1]);
             enc->depedges_->push_back(std::make_pair(enc->methodoffset_, constructor_offset));
 
-            enc->memfuncs_->push_back(constructor_offset);
+            enc->memfuncs_->insert(constructor_offset);
             auto literalarray_offset = static_cast<uint32_t>(inst->GetImms()[2]);
             auto member_functions = GetLiteralArrayByOffset(enc->program_, literalarray_offset);
             if(member_functions){
@@ -62,7 +62,7 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
                     if (enc->methodname2offset_->find(member_function) != enc->methodname2offset_->end()) {
                         auto memeber_offset = (*enc->methodname2offset_)[member_function];
                         (*enc->class2memberfuns_)[constructor_offset].insert(memeber_offset);
-                        enc->memfuncs_->push_back(memeber_offset);
+                        enc->memfuncs_->insert(memeber_offset);
                     }else{
                         HandleError("#function dep scan: DEFINECLASSWITHBUFFER");
                     }
@@ -80,7 +80,7 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
                 for(const auto& member_function : *member_functions){
                     auto memeber_offset = (*enc->methodname2offset_)[member_function];
                     enc->depedges_->push_back(std::make_pair(enc->methodoffset_, memeber_offset));
-                    enc->memfuncs_->push_back(memeber_offset);
+                    enc->memfuncs_->insert(memeber_offset);
                     std::cout << member_function << std::endl;
                 }
                 enc->UpdateMemberDepConstructor();

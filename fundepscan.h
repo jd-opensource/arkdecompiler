@@ -16,7 +16,7 @@ public:
         std::vector<std::pair<uint32_t, uint32_t>>* depedges,
         std::map<uint32_t, std::set<uint32_t>> *class2memberfuns,
         std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap,
-        std::vector<uint32_t>* memfuncs,
+        std::set<uint32_t>* memfuncs,
         std::map<std::string, std::string> *raw2newname,
         std::map<std::string, uint32_t> *methodname2offset
         )
@@ -84,7 +84,7 @@ public:
 
     [[maybe_unused]] std::vector<uint32_t> constructor_funcs_;
 
-    [[maybe_unused]] std::vector<uint32_t>* memfuncs_;
+    [[maybe_unused]] std::set<uint32_t>* memfuncs_;
 
     [[maybe_unused]] std::map<std::string, std::string> *raw2newname_;
 
