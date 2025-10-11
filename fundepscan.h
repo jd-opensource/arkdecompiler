@@ -43,16 +43,17 @@ public:
 
     void UpdateMemberDepConstructor(){
         // method define class > instance_initializer > member functions
-
-        if(this->current_function_initializer == 0){
-            return;
-        }
-        
+  
         for(const auto& pair : *this->class2memberfuns_){
+            auto constructor_offset = pair.first;
             auto member_funcs = pair.second;
-            for (const auto& member_func_offset : member_funcs) {
-                if(this->current_function_initializer != member_func_offset){
-                    this->depedges_->push_back(std::make_pair(this->current_function_initializer, member_func_offset));
+            
+            this->memberfuncs_->insert(constructor_offset);
+
+            for (const auto& memeber_offset : member_funcs) {
+                this->memberfuncs_->insert(memeber_offset);
+                if(this->current_function_initializer && this->current_function_initializer != memeber_offset){
+                    this->depedges_->push_back(std::make_pair(this->current_function_initializer, memeber_offset));
                 }
             }
         }
