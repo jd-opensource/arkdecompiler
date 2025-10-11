@@ -1330,7 +1330,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-       case compiler::RuntimeInterface::IntrinsicId::TESTIN_IMM8_IMM16_IMM16: // hard to trigger
+       case compiler::RuntimeInterface::IntrinsicId::TESTIN_IMM8_IMM16_IMM16:
        {
             std::cout << enc->methodoffset_ << std::endl;
             auto tier = static_cast<uint32_t>(inst->GetImms()[0]);
@@ -1578,6 +1578,29 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc,
                                                                                 assignexpression);
             enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+            break;
+        }
+        
+       case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_CALLINIT_PREF_IMM8_V8:
+       {
+            auto funobj = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+
+            es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
+                                                                                funobj,
+                                                                                std::move(arguments),
+                                                                                nullptr,
+                                                                                false
+                                                                            );
+
+            if(inst->HasUsers()){
+                enc->SetExpressionByRegister(inst, inst->GetDstReg(), callarg0expression);
+            }else{
+                auto callarg0statement = AllocNode<es2panda::ir::ExpressionStatement>(enc, callarg0expression);
+                enc->AddInstAst2BlockStatemntByInst(inst, callarg0statement);
+            }
+
+            enc->thisptr = *enc->GetExpressionById(inst, 0);
             break;
         }
         
@@ -2478,18 +2501,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        {
             auto v0 = inst->GetSrcReg(0);
             enc->result_.emplace_back(pandasm::Create_THROW_IFNOTOBJECT(v0));
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_CALLINIT_PREF_IMM8_V8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_CALLINIT(imm0, v0));
             break;
         }
 
