@@ -59,7 +59,7 @@ public:
         // Member functions are initialized after the constructor.
         for(auto const constructor_func: this->constructor_funcs_){
             for(auto const memfunc: *this->memfuncs_){
-                if(std::find(this->constructor_funcs_.begin(), this->constructor_funcs_.end(),  memfunc) != this->constructor_funcs_.end()){
+                if(this->constructor_funcs_.find(memfunc) != this->constructor_funcs_.end()){
                     continue;
                 }
                 this->depedges_->push_back(std::make_pair(constructor_func, memfunc));
@@ -82,7 +82,7 @@ public:
 
     [[maybe_unused]] std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>> *method2lexicalmap_;
 
-    [[maybe_unused]] std::vector<uint32_t> constructor_funcs_;
+    [[maybe_unused]] std::set<uint32_t> constructor_funcs_;
 
     [[maybe_unused]] std::set<uint32_t>* memfuncs_;
 
