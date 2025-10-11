@@ -394,8 +394,6 @@ bool ConstructClasses(std::map<uint32_t, std::set<uint32_t>> &class2memberfuns, 
                                                 std::move(decorators1), std::move(annotations1), false);
         
         ctor2classdeclast[constructor_offset] = classDecl;
-         
-
     }
     return true;
 }
@@ -406,11 +404,9 @@ void ConstructMethodname2offset(panda::disasm::Disassembler& disasm, std::map<st
         std::cout << "first: " << pair.first << std::endl;
         std::cout << "second: " << pair.second << std::endl;
         
-
         std::size_t pos = pair.first.find(':');
         if (pos != std::string::npos) {
             std::string result = RemoveArgumentsOfFunc(pair.first);
-            std::cout << "result: " << result << std::endl;
             (*methodname2offset)[result] = pair.second.GetOffset();
         }
     }
@@ -496,7 +492,8 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
 
         std::cout << "@@@ topological order start @@@" << std::endl;
         for(auto methodoffset : sorted_methodoffsets){
-            std::cout << methodoffset << std::endl;
+            auto res = FindKeyByValue(methodname2offset, methodoffset);
+            std::cout << "offset: " << methodoffset << " , name: " << *res << std::endl;
         }
         std::cout << "@@@ topological order end @@@" << std::endl;
 
