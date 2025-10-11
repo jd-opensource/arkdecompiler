@@ -61,6 +61,9 @@ public:
         // Member functions are initialized after the constructor.
         for(auto const constructor_func: this->constructor_funcs_){
             for(auto const memfunc: *this->memfuncs_){
+                if(std::find(this->constructor_funcs_.begin(), this->constructor_funcs_.end(),  memfunc) != this->constructor_funcs_.end()){
+                    continue;
+                }
                 this->depedges_->push_back(std::make_pair(constructor_func, memfunc));
             }
         }
@@ -76,7 +79,7 @@ public:
     [[maybe_unused]] panda::disasm::Disassembler& disasm_;
     [[maybe_unused]] uint32_t methodoffset_;
 
-    [[maybe_unused]] std::vector<std::pair<uint32_t, uint32_t>>* depedges_;
+    [[maybe_unused]] std::vector<std::pair<uint32_t, uint32_t>>* depedges_; // left depends on right
     [[maybe_unused]] std::map<uint32_t, std::set<uint32_t>> *class2memberfuns_;
 
     [[maybe_unused]] std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>> *method2lexicalmap_;
