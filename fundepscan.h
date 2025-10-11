@@ -16,16 +16,15 @@ public:
         std::vector<std::pair<uint32_t, uint32_t>>* depedges,
         std::map<uint32_t, std::set<uint32_t>> *class2memberfuns,
         std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap,
-        std::set<uint32_t>* memfuncs,
+        std::set<uint32_t>* memberfuncs,
         std::map<std::string, std::string> *raw2newname,
         std::map<std::string, uint32_t> *methodname2offset
         )
         : compiler::Optimization(graph), ir_interface_(iface), program_(program), disasm_(disasm), methodoffset_(methodoffset), 
         depedges_(depedges), class2memberfuns_(class2memberfuns), method2lexicalmap_(method2lexicalmap),
-        memfuncs_(memfuncs), raw2newname_(raw2newname), methodname2offset_(methodname2offset)
+        memberfuncs_(memberfuncs), raw2newname_(raw2newname), methodname2offset_(methodname2offset)
     {
         this->current_function_initializer = 0;
-        //HandleError("-----------------------------------------------------------------------");
 
     }
 
@@ -58,15 +57,6 @@ public:
             }
         }
 
-
-        // for(auto const constructor_func: this->constructor_funcs_){
-        //     for(auto const memfunc: *this->memfuncs_){
-        //         if(this->constructor_funcs_.find(memfunc) != this->constructor_funcs_.end()){
-        //             continue;
-        //         }
-        //         this->depedges_->push_back(std::make_pair(constructor_func, memfunc));
-        //     }
-        // }
     }
 
     static void VisitIntrinsic(GraphVisitor *visitor, Inst *inst_base);
@@ -84,9 +74,7 @@ public:
 
     [[maybe_unused]] std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>> *method2lexicalmap_;
 
-    [[maybe_unused]] std::set<uint32_t> constructor_funcs_;
-
-    [[maybe_unused]] std::set<uint32_t>* memfuncs_;
+    [[maybe_unused]] std::set<uint32_t>* memberfuncs_;
 
     [[maybe_unused]] std::map<std::string, std::string> *raw2newname_;
 
