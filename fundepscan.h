@@ -25,7 +25,7 @@ public:
         memberfuncs_(memberfuncs), raw2newname_(raw2newname), methodname2offset_(methodname2offset)
     {
         this->current_function_initializer = 0;
-
+        this->current_constructor_offset = 0;
     }
 
     ~FunDepScan() override = default;
@@ -44,20 +44,32 @@ public:
     void UpdateMemberDepConstructor(){
         // method define class > instance_initializer > member functions
   
-        for(const auto& pair : *this->class2memberfuns_){
-            auto constructor_offset = pair.first;
-            auto member_funcs = pair.second;
-            
+        uint32_t last_member = 0;
+        for(const auto& constructor_offset : this->inserted_construct_order_){
+            if(this->class2memberfuns_->find(constructor_offset) == this->class2memberfuns_->end()){
+                continue;
+            }
+
+            auto member_funcs = (*this->class2memberfuns_)[constructor_offset];
             this->memberfuncs_->insert(constructor_offset);
+
+            uint32_t function_initializer = 0;
+            if(this->construct2initializer_.find(constructor_offset) != this->construct2initializer_.end()){
+                function_initializer = this->construct2initializer_[constructor_offset];
+            }
+
+            if(function_initializer && last_member){
+                this->depedges_->push_back(std::make_pair(last_member, function_initializer));
+            }
 
             for (const auto& memeber_offset : member_funcs) {
                 this->memberfuncs_->insert(memeber_offset);
-                if(this->current_function_initializer && this->current_function_initializer != memeber_offset){
-                    this->depedges_->push_back(std::make_pair(this->current_function_initializer, memeber_offset));
+                last_member = memeber_offset;
+                if(function_initializer && function_initializer != memeber_offset){
+                    this->depedges_->push_back(std::make_pair(function_initializer, memeber_offset));
                 }
             }
         }
-
     }
 
     static void VisitIntrinsic(GraphVisitor *visitor, Inst *inst_base);
@@ -80,6 +92,10 @@ public:
     [[maybe_unused]] std::map<std::string, std::string> *raw2newname_;
 
     [[maybe_unused]] std::map<std::string, uint32_t> *methodname2offset_;
+
+    [[maybe_unused]] std::map<uint32_t, uint32_t> construct2initializer_;
+
+    [[maybe_unused]] std::vector<uint32_t> inserted_construct_order_;
 
     [[maybe_unused]] uint32_t current_constructor_offset;
     [[maybe_unused]] uint32_t current_function_initializer;
