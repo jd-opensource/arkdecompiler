@@ -24,20 +24,6 @@ public:
         depedges_(depedges), class2memberfuns_(class2memberfuns), method2lexicalmap_(method2lexicalmap),
         memfuncs_(memfuncs), raw2newname_(raw2newname), methodname2offset_(methodname2offset)
     {
-        for (const auto& pair : this->disasm_.method_name_to_id_) {
-            std::cout << "##########################################################" << std::endl;
-            std::cout << "first: " << pair.first << std::endl;
-            std::cout << "second: " << pair.second << std::endl;
-            
-
-            std::size_t pos = pair.first.find(':');
-            if (pos != std::string::npos) {
-                std::string result = RemoveArgumentsOfFunc(pair.first);
-                std::cout << "result: " << result << std::endl;
-                (*this->methodname2offset_)[result] = pair.second.GetOffset();
-            }
-        }
-
         //HandleError("-----------------------------------------------------------------------");
 
     }
@@ -89,6 +75,8 @@ public:
     [[maybe_unused]] std::map<std::string, std::string> *raw2newname_;
 
     [[maybe_unused]] std::map<std::string, uint32_t> *methodname2offset_;
+
+    [[maybe_unused]] uint32_t current_constructor_offset;
 
 };
 

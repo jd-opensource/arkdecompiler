@@ -1176,33 +1176,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
                 if(method_name.find("instance_initializer") != std::string::npos){
                     enc->MergeMethod2LexicalMap(method_offset, enc->methodoffset_);
-
-                    auto class_expression  = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
-
-                    std::string class_name;
-
-                    if(class_expression->IsIdentifier()){
-                        class_name = class_expression->AsIdentifier()->Name().Mutf8();
-
-                    }else if(class_expression->IsMemberExpression()){
-                        auto obj = class_expression->AsMemberExpression()->Object();
-                        if(obj->IsIdentifier()){
-                            class_name = obj->AsIdentifier()->Name().Mutf8();
-
-                        }else{
-                            HandleError("#DEFINEMETHOD: not handle this case in memberexpression");
-                        }
-                    }else{
-                        HandleError("#DEFINEMETHOD: not handle this case");
-                    }
-
-                    if (enc->methodname2offset_->find(class_name) != enc->methodname2offset_->end()) {
-                        auto constructor_offset = (*enc->methodname2offset_)[class_name];
-                        (*enc->class2memberfuns_)[constructor_offset].insert(method_offset);
-                    }else{
-                        std::cout << "##name: " << class_name << std::endl;
-                        HandleError("#DEFINEMETHOD: find constructor_offset error");
-                    }
                 }
             }
 
@@ -1415,7 +1388,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 auto& member_funcs = (*enc->class2memberfuns_)[constructor_offset];
                 for (const auto& member_func_offset : member_funcs) {
                     enc->CopyLexicalenvStack(member_func_offset, inst);
-                    (*enc->class2memberfuns_)[constructor_offset].insert(member_func_offset);
                 }
             }
             
@@ -1462,8 +1434,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     if (enc->methodname2offset_->find(member_function) != enc->methodname2offset_->end()) {
                         member_offset = (*enc->methodname2offset_)[member_function];
                         // std::cout << "member_offset: " << member_offset << std::endl;
-                        
-                        (*enc->class2memberfuns_)[enc->current_constructor_offset].insert(member_offset);
                     }else{
                         std::cout << "##name: " << member_function << std::endl;
                         HandleError("#DEFINEMETHOD: find constructor_offset error");
