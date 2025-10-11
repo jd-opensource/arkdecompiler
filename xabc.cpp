@@ -436,7 +436,7 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
 
     std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>> method2lexicalmap;
 
-    [[maybe_unused]] std::vector<LexicalEnvStack*> globallexical_waitlist;
+    std::vector<LexicalEnvStack*> globallexical_waitlist;
 
     std::map<std::string, uint32_t> methodname2offset;
 
@@ -452,7 +452,6 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
         std::cout << "classname: " << std::left << std::setw(40) <<   cda.GetName().data  << " , fileds: " << cda.GetFieldsNumber() << " , method: " << cda.GetMethodsNumber() << " interface: " << cda.GetIfacesNumber() << " superclass: " <<  cda.GetSuperClassId()   << std::endl;
     }
     
-    std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
     for (uint32_t id : pfile->GetClasses()) {
         
         panda_file::File::EntityId record_id {id};
@@ -477,11 +476,11 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         auto sorted_methodoffsets = TopologicalSort(depedges);
 
-        std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+        std::cout << "@@@ topological order start @@@" << std::endl;
         for(auto methodoffset : sorted_methodoffsets){
             std::cout << methodoffset << std::endl;
         }
-        std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
+        std::cout << "@@@ topological order end @@@" << std::endl;
 
         std::map<uint32_t, std::string*> patchvarspace;
 

@@ -1203,7 +1203,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                         std::cout << "##name: " << class_name << std::endl;
                         HandleError("#DEFINEMETHOD: find constructor_offset error");
                     }
-
                 }
             }
 
@@ -1228,7 +1227,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::STLEXVAR_IMM8_IMM8:
        case compiler::RuntimeInterface::IntrinsicId::WIDE_STLEXVAR_PREF_IMM16_IMM16:
        {
-            std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
+            std::cout << "@@@ stlevar >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
             std::cout << enc->methodoffset_ << std::endl;
 
             auto tier = static_cast<uint32_t>(inst->GetImms()[0]);
@@ -1271,7 +1270,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         case compiler::RuntimeInterface::IntrinsicId::LDLEXVAR_IMM8_IMM8:
         case compiler::RuntimeInterface::IntrinsicId::WIDE_LDLEXVAR_PREF_IMM16_IMM16:
        {
-            std::cout << "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC" << std::endl;
+            std::cout << "@@@ ldlexvar >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
             std::cout << enc->methodoffset_ << std::endl;
             auto tier = static_cast<uint32_t>(inst->GetImms()[0]);
             auto index = static_cast<uint32_t>(inst->GetImms()[1]);

@@ -32,10 +32,8 @@ public:
 
             std::size_t pos = pair.first.find(':');
             if (pos != std::string::npos) {
-                std::string result = pair.first.substr(0, pos);
-                
+                std::string result = RemoveArgumentsOfFunc(pair.first);
                 std::cout << "result: " << result << std::endl;
-
                 (*this->methodname2offset_)[result] = pair.second.GetOffset();
             }
         }

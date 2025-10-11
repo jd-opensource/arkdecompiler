@@ -56,7 +56,9 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
             auto literalarray_offset = static_cast<uint32_t>(inst->GetImms()[2]);
             auto member_functions = GetLiteralArrayByOffset(enc->program_, literalarray_offset);
             if(member_functions){
+                std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
                 for(auto const& member_function : *member_functions){
+                    std::cout << "memberfunction: " << member_function << std::endl;
                     if (enc->methodname2offset_->find(member_function) != enc->methodname2offset_->end()) {
                         auto memeber_offset = (*enc->methodname2offset_)[member_function];
                         (*enc->class2memberfuns_)[constructor_offset].insert(memeber_offset);
@@ -65,6 +67,7 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
                         HandleError("#function dep scan: DEFINECLASSWITHBUFFER");
                     }
                 }
+                std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
                 enc->UpdateMemberDepConstructor();
             }
             break;
