@@ -68,3 +68,13 @@ std::optional<std::vector<std::string>> GetLiteralArrayByOffset(panda::pandasm::
 
     return std::nullopt;
 }
+
+
+std::optional<std::string> FindKeyByValue(const std::map<std::string, uint32_t>& myMap, const uint32_t& value) {
+    for (const auto& pair : myMap) {
+        if (pair.second == value) {
+            return pair.first;
+        }
+    }
+    return std::nullopt;
+}
