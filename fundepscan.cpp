@@ -8,7 +8,7 @@ bool FunDepScan::RunImpl(){
             VisitInstruction(inst);
         }
     }
-
+    enc->UpdateMemberDepConstructor();
     return true;
 }
 void FunDepScan::VisitIntrinsic(GraphVisitor *visitor, Inst *inst_base)
@@ -40,12 +40,9 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
                     (*enc->class2memberfuns_)[enc->current_constructor_offset].insert(method_offset);
 
                     enc->current_function_initializer = method_offset;
+                    enc->memberfuncs_->insert(methodoffset);
+                    //enc->UpdateMemberDepConstructor();
 
-                    enc->constructor_funcs_.insert(methodoffset);
-                    enc->memfuncs_->insert(methodoffset);
-                    enc->UpdateMemberDepConstructor();
-                    ///////////////////////////////////////////////////////
-                    ///////////////////////////////////////////////////////
                 }
             }
             break;
@@ -59,7 +56,7 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
             // case: not include instance_initializer
             // enc->depedges_->push_back(std::make_pair(enc->methodoffset_, constructor_offset));
 
-            enc->memfuncs_->insert(constructor_offset);
+            enc->memberfuncs_->insert(constructor_offset);
             auto literalarray_offset = static_cast<uint32_t>(inst->GetImms()[2]);
             auto member_functions = GetLiteralArrayByOffset(enc->program_, literalarray_offset);
             if(member_functions){
@@ -67,12 +64,12 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
                     if (enc->methodname2offset_->find(member_function) != enc->methodname2offset_->end()) {
                         auto memeber_offset = (*enc->methodname2offset_)[member_function];
                         (*enc->class2memberfuns_)[constructor_offset].insert(memeber_offset);
-                        enc->memfuncs_->insert(memeber_offset);
+                        enc->memberfuncs_->insert(memeber_offset);
                     }else{
                         HandleError("#function dep scan: DEFINECLASSWITHBUFFER");
                     }
                 }
-                enc->UpdateMemberDepConstructor();
+                //enc->UpdateMemberDepConstructor();
             }
             break;
         }
@@ -88,7 +85,7 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
                     // case: not include instance_initializer
                     //enc->depedges_->push_back(std::make_pair(enc->methodoffset_, memeber_offset));
                     
-                    enc->memfuncs_->insert(memeber_offset);
+                    enc->memberfuncs_->insert(memeber_offset);
                 }
                 enc->UpdateMemberDepConstructor();
         
