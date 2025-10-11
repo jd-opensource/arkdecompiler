@@ -293,11 +293,7 @@ bool ConstructClasses(std::map<uint32_t, std::set<uint32_t>> &class2memberfuns, 
         std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *> &ctor2classdeclast, std::map<std::string, std::string>& raw2newname
         ){
 
-    std::cout << "start " << std::endl;
     for(const auto & pair : class2memberfuns){
-        
-        std::cout << "111111" << std::endl;
-        
         auto constructor_offset = pair.first;
 
         std::cout << constructor_offset << std::endl;
@@ -305,7 +301,6 @@ bool ConstructClasses(std::map<uint32_t, std::set<uint32_t>> &class2memberfuns, 
         auto member_funcs = pair.second;
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         auto constructor_offset_name = RemoveArgumentsOfFunc(ir_interface->GetMethodIdByOffset(constructor_offset));
-         std::cout << "22222" << std::endl;
         std::string newname_constructor_offset_name;
 
         if(raw2newname.find(constructor_offset_name) != raw2newname.end()){
@@ -336,7 +331,7 @@ bool ConstructClasses(std::map<uint32_t, std::set<uint32_t>> &class2memberfuns, 
         if(func == nullptr){
             HandleError("#DecompilePandaFile: find constructor function fail!");
         }
-        std::cout << "33333" << std::endl;
+
         auto funcExpr = parser_program->Allocator()->New<panda::es2panda::ir::FunctionExpression>(func);
 
 
@@ -355,8 +350,6 @@ bool ConstructClasses(std::map<uint32_t, std::set<uint32_t>> &class2memberfuns, 
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-        std::cout << "44444" << std::endl;
         for (const auto& member_func_offset : member_funcs) {
             
             auto func = method2scriptfunast[member_func_offset];
@@ -376,7 +369,6 @@ bool ConstructClasses(std::map<uint32_t, std::set<uint32_t>> &class2memberfuns, 
                 HandleError("#ConstructClasses: find new_member_name newname error");
             }
 
-            std::cout << "aaaaaaa" << std::endl;
             panda::es2panda::util::StringView name_view3 = panda::es2panda::util::StringView(*(new std::string(new_member_name)));
             auto keyNode = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(name_view3);
 
@@ -391,11 +383,8 @@ bool ConstructClasses(std::map<uint32_t, std::set<uint32_t>> &class2memberfuns, 
                                                         std::move(paramDecorators), false);
             classDefinition->AddToBody(method);
 
-            std::cout << "bbbbbbb" << std::endl;
         }
-
-         std::cout << "55555555555" << std::endl;
-        
+  
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ArenaVector<es2panda::ir::Decorator *> decorators1(parser_program->Allocator()->Adapter());
         ArenaVector<es2panda::ir::Annotation *> annotations1(parser_program->Allocator()->Adapter());
