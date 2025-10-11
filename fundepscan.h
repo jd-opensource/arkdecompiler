@@ -16,7 +16,7 @@ public:
         std::vector<std::pair<uint32_t, uint32_t>>* depedges,
         std::map<uint32_t, std::set<uint32_t>> *class2memberfuns,
         std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap,
-        std::vector<uint32_t>* memfuncs,
+        std::set<uint32_t>* memfuncs,
         std::map<std::string, std::string> *raw2newname,
         std::map<std::string, uint32_t> *methodname2offset
         )
@@ -24,22 +24,6 @@ public:
         depedges_(depedges), class2memberfuns_(class2memberfuns), method2lexicalmap_(method2lexicalmap),
         memfuncs_(memfuncs), raw2newname_(raw2newname), methodname2offset_(methodname2offset)
     {
-        for (const auto& pair : this->disasm_.method_name_to_id_) {
-            std::cout << "##########################################################" << std::endl;
-            std::cout << "first: " << pair.first << std::endl;
-            std::cout << "second: " << pair.second << std::endl;
-            
-
-            std::size_t pos = pair.first.find(':');
-            if (pos != std::string::npos) {
-                std::string result = pair.first.substr(0, pos);
-                
-                std::cout << "result: " << result << std::endl;
-
-                (*this->methodname2offset_)[result] = pair.second.GetOffset();
-            }
-        }
-
         //HandleError("-----------------------------------------------------------------------");
 
     }
@@ -61,7 +45,7 @@ public:
         // Member functions are initialized after the constructor.
         for(auto const constructor_func: this->constructor_funcs_){
             for(auto const memfunc: *this->memfuncs_){
-                if(std::find(this->constructor_funcs_.begin(), this->constructor_funcs_.end(),  memfunc) != this->constructor_funcs_.end()){
+                if(this->constructor_funcs_.find(memfunc) != this->constructor_funcs_.end()){
                     continue;
                 }
                 this->depedges_->push_back(std::make_pair(constructor_func, memfunc));
@@ -84,13 +68,15 @@ public:
 
     [[maybe_unused]] std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>> *method2lexicalmap_;
 
-    [[maybe_unused]] std::vector<uint32_t> constructor_funcs_;
+    [[maybe_unused]] std::set<uint32_t> constructor_funcs_;
 
-    [[maybe_unused]] std::vector<uint32_t>* memfuncs_;
+    [[maybe_unused]] std::set<uint32_t>* memfuncs_;
 
     [[maybe_unused]] std::map<std::string, std::string> *raw2newname_;
 
     [[maybe_unused]] std::map<std::string, uint32_t> *methodname2offset_;
+
+    [[maybe_unused]] uint32_t current_constructor_offset;
 
 };
 
