@@ -24,6 +24,7 @@ public:
         depedges_(depedges), class2memberfuns_(class2memberfuns), method2lexicalmap_(method2lexicalmap),
         memfuncs_(memfuncs), raw2newname_(raw2newname), methodname2offset_(methodname2offset)
     {
+        this->current_function_initializer = 0;
         //HandleError("-----------------------------------------------------------------------");
 
     }
@@ -42,15 +43,30 @@ public:
     }
 
     void UpdateMemberDepConstructor(){
-        // Member functions are initialized after the constructor.
-        for(auto const constructor_func: this->constructor_funcs_){
-            for(auto const memfunc: *this->memfuncs_){
-                if(this->constructor_funcs_.find(memfunc) != this->constructor_funcs_.end()){
-                    continue;
+        // method define class > instance_initializer > member functions
+
+        if(this->current_function_initializer == 0){
+            return;
+        }
+        
+        for(const auto& pair : *this->class2memberfuns_){
+            auto member_funcs = pair.second;
+            for (const auto& member_func_offset : member_funcs) {
+                if(this->current_function_initializer != member_func_offset){
+                    this->depedges_->push_back(std::make_pair(this->current_function_initializer, member_func_offset));
                 }
-                this->depedges_->push_back(std::make_pair(constructor_func, memfunc));
             }
         }
+
+
+        // for(auto const constructor_func: this->constructor_funcs_){
+        //     for(auto const memfunc: *this->memfuncs_){
+        //         if(this->constructor_funcs_.find(memfunc) != this->constructor_funcs_.end()){
+        //             continue;
+        //         }
+        //         this->depedges_->push_back(std::make_pair(constructor_func, memfunc));
+        //     }
+        // }
     }
 
     static void VisitIntrinsic(GraphVisitor *visitor, Inst *inst_base);
@@ -77,6 +93,7 @@ public:
     [[maybe_unused]] std::map<std::string, uint32_t> *methodname2offset_;
 
     [[maybe_unused]] uint32_t current_constructor_offset;
+    [[maybe_unused]] uint32_t current_function_initializer;
 
 };
 
