@@ -1443,34 +1443,26 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_CREATEPRIVATEPROPERTY_PREF_IMM16_ID16:
        {
             auto startpos = enc->SearchStartposForCreatePrivateproperty(inst);
             auto literalarray_offset = static_cast<uint32_t>(inst->GetImms()[1]);
             auto member_functions = GetLiteralArrayByOffset(enc->program_, literalarray_offset);
             if(member_functions){
-                int cout = 0;
                 for(const auto &member_function: *member_functions){
-                    std::cout << "count: " << cout++  << " ### : " << member_function << std::endl;
- 
                     auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
                     auto &lexicalenv = lexicalenvstack->Top();
                     
-                    std::cout << "[+] size: " << lexicalenvstack->Size() << std::endl;
-                    std::cout << "[+] env size: " << lexicalenvstack->GetLexicalEnv(0).Size() << std::endl;
-                    std::cout << "[+] capacity_: " << lexicalenv.capacity_ << std::endl;
+                    // std::cout << "[+] size: " << lexicalenvstack->Size() << std::endl;
+                    // std::cout << "[+] env size: " << lexicalenvstack->GetLexicalEnv(0).Size() << std::endl;
+                    // std::cout << "[+] capacity_: " << lexicalenv.capacity_ << std::endl;
 
                     (*enc->method2lexicalmap_)[enc->methodoffset_][0].push_back(startpos);
 
+                    uint32_t member_offset = 0;
                     if (enc->methodname2offset_->find(member_function) != enc->methodname2offset_->end()) {
-                        auto member_offset = (*enc->methodname2offset_)[member_function];
-                        std::cout << "member_offset: " << member_offset << std::endl;
+                        member_offset = (*enc->methodname2offset_)[member_function];
+                        // std::cout << "member_offset: " << member_offset << std::endl;
                         
                         (*enc->class2memberfuns_)[enc->current_constructor_offset].insert(member_offset);
                     }else{
@@ -1482,18 +1474,17 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     auto newname = enc->ExtractTrueFunName(member_function);
                     auto memfun_str = new std::string(newname);
 
-                    std::cout << "@@@: " << member_function << std::endl;
-                    std::cout << *memfun_str << std::endl;
-                    //HandleError(std::string("PPPPPPPPPPPPPPPPPPPPPPPP: ") + *memfun_str);
-                    
+                    // std::cout << "@@@: " << member_function << std::endl;
+                    // std::cout << *memfun_str << std::endl;
+            
                     lexicalenv.Set(startpos, memfun_str);
                     enc->DealWithGlobalLexicalWaitlist(0, startpos++, *memfun_str);
-                    std::cout << "-----------------------------------------------------------------------------" << std::endl;
 
-                    std::cout << "[-] size: " << lexicalenvstack->Size() << std::endl;
-                    std::cout << "[-] env size: " << lexicalenvstack->GetLexicalEnv(0).Size() << std::endl;
-                    std::cout << "[-] capacity_: " << lexicalenv.capacity_ << std::endl;
-
+                    enc->CopyLexicalenvStack(member_offset, inst);
+                    // std::cout << "-----------------------------------------------------------------------------" << std::endl;
+                    // std::cout << "[-] size: " << lexicalenvstack->Size() << std::endl;
+                    // std::cout << "[-] env size: " << lexicalenvstack->GetLexicalEnv(0).Size() << std::endl;
+                    // std::cout << "[-] capacity_: " << lexicalenv.capacity_ << std::endl;
                 }
             }
 
@@ -1501,30 +1492,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-
-       case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM8:
-       case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM16:
-       {
-            std::cout << "111111111111111111111111111111" << std::endl;
-            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName(new std::string("GetIterator"));
-            std::cout << "222222222222222222222222222222" << std::endl;
-            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
-            std::cout << "333333333333333333333333333333" << std::endl;
-
-            arguments.push_back(*enc->GetExpressionById(inst, inst->GetInputsCount() - 2));
-            std::cout << "555555555555555555555555555555" << std::endl;
-            auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
-                                                                funname,
-                                                                std::move(arguments),
-                                                                nullptr,
-                                                                false
-                                                                );
-            std::cout << "666666666666666666666666666666" << std::endl;
-            std::cout << "777777777777777777777777777777" << std::endl;
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
-            std::cout << "888888888888888888888888888888" << std::endl;
-            break;
-        }
 
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_DEFINEPRIVATEPROPERTY_PREF_IMM8_IMM16_IMM16_V8:
        {
@@ -1555,24 +1522,85 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+       case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM8:
+       case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM16:
+       {
+            std::cout << "111111111111111111111111111111" << std::endl;
+            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName(new std::string("GetIterator"));
+            std::cout << "222222222222222222222222222222" << std::endl;
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+            std::cout << "333333333333333333333333333333" << std::endl;
+
+            arguments.push_back(*enc->GetExpressionById(inst, inst->GetInputsCount() - 2));
+            std::cout << "555555555555555555555555555555" << std::endl;
+            auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
+                                                                funname,
+                                                                std::move(arguments),
+                                                                nullptr,
+                                                                false
+                                                                );
+            std::cout << "666666666666666666666666666666" << std::endl;
+            std::cout << "777777777777777777777777777777" << std::endl;
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
+            std::cout << "888888888888888888888888888888" << std::endl;
+            break;
+        }
+
        case compiler::RuntimeInterface::IntrinsicId::LDPRIVATEPROPERTY_IMM8_IMM16_IMM16:
        {
             std::cout << "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM" << std::endl;
+            auto tier = static_cast<uint32_t>(inst->GetImms()[1]);
+            auto index = static_cast<uint32_t>(inst->GetImms()[2]);
+            auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
+            if(lexicalenvstack->GetLexicalEnv(tier)[index] == nullptr){
+                HandleError("#LDLEXVAR: lexicalenv is null");
+            }
+
+            auto attr_name = lexicalenvstack->Get(tier, index);
+            auto attr_expression = enc->GetIdentifierByName(new std::string(*attr_name));
+
+            auto obj_expression = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
+
+            auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
+                                                        obj_expression,
+                                                        attr_expression,
+                                                        es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                        false, 
+                                                        false);   
+            // panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+            //                                                                 *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
+            //                                                                 objattrexpression,
+            //                                                                 es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+            //                                                             ); 
+            // auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
+            //                                                                     assignexpression);
+
+
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), objattrexpression);
+
+            break;
+        }
+
+       case compiler::RuntimeInterface::IntrinsicId::STPRIVATEPROPERTY_IMM8_IMM16_IMM16_V8:
+       {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
             if (acc_src != compiler::ACC_REG_ID) {
                 DoLda(acc_src, enc->result_);
             }
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
+           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
+           ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
             auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 2); // NOLINTNEXTLINE(readability-container-size-empty)
+           ASSERT(inst->HasImms() && inst->GetImms().size() > 2); // NOLINTNEXTLINE(readability-container-size-empty)
             auto imm2 = static_cast<uint32_t>(inst->GetImms()[2]);
-            enc->result_.emplace_back(pandasm::Create_LDPRIVATEPROPERTY(imm0, imm1, imm2));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
+            auto v0 = inst->GetSrcReg(0);
+            enc->result_.emplace_back(pandasm::Create_STPRIVATEPROPERTY(imm0, imm1, imm2, v0));
             break;
         }
 
@@ -2313,23 +2341,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             if (acc_dst != compiler::ACC_REG_ID) {
                 DoSta(inst->GetDstReg(), enc->result_);
             }
-            break;
-        }
-
-       case compiler::RuntimeInterface::IntrinsicId::STPRIVATEPROPERTY_IMM8_IMM16_IMM16_V8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 2); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm2 = static_cast<uint32_t>(inst->GetImms()[2]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_STPRIVATEPROPERTY(imm0, imm1, imm2, v0));
             break;
         }
 

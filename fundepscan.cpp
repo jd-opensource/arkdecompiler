@@ -80,6 +80,8 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
                     enc->memfuncs_->push_back(memeber_offset);
                     std::cout << member_function << std::endl;
                 }
+                
+        
             }else{
                 HandleError("#function dep scan: CALLRUNTIME_CREATEPRIVATEPROPERTY");
             }
