@@ -215,7 +215,3 @@
 //     }
 // } while (i < 5); 
 // x = 2; 
-
-// #23. function call def-use detection
-// console.log("hi");
-// var x6 = console.log("hello");
