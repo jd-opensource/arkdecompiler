@@ -1174,8 +1174,12 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM8_ID16_IMM8 ||
                 inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM16_ID16_IMM8){
 
+                
                 if(method_name.find("instance_initializer") != std::string::npos){
+                    std::cout << "###### AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+                    enc->PrintInnerMethod2LexicalMap();
                     enc->MergeMethod2LexicalMap(method_offset, enc->methodoffset_);
+                    enc->PrintInnerMethod2LexicalMap();
                 }
             }
 
@@ -1235,7 +1239,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             ///////////////////////////////////////////////////////////////////////////////
             /// support callruntime.createprivateproperty
-            (*enc->method2lexicalmap_)[enc->methodoffset_][tier].push_back(index);
+            (*enc->method2lexicalmap_)[enc->methodoffset_][tier].insert(index);
             break;
         }
 
@@ -1266,6 +1270,19 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         {
             auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
             lexicalenvstack->Pop();
+
+            auto it1 = enc->method2lexicalmap_->find(enc->methodoffset_);
+            if (it1 != enc->method2lexicalmap_->end()) {
+                auto it2 = it1->second.find(0);
+                if (it2 != it1->second.end()) {
+                    it2->second.clear();  // Clear the vector at the specified offsets
+                } else {
+                   HandleError("#POPLEXENV: key 0 not found");
+                }
+            } else {
+                HandleError("#POPLEXENV: methodoffset_ not found");
+            }
+
             break;
         }
 
@@ -1428,7 +1445,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     // std::cout << "[+] env size: " << lexicalenvstack->GetLexicalEnv(0).Size() << std::endl;
                     // std::cout << "[+] capacity_: " << lexicalenv.capacity_ << std::endl;
 
-                    (*enc->method2lexicalmap_)[enc->methodoffset_][0].push_back(startpos);
+                    (*enc->method2lexicalmap_)[enc->methodoffset_][0].insert(startpos);
 
                     uint32_t member_offset = 0;
                     if (enc->methodname2offset_->find(member_function) != enc->methodname2offset_->end()) {
