@@ -510,6 +510,8 @@ public:
     std::map<uint32_t, panda::es2panda::ir::TryStatement*> tyridtrystatement;
     std::map<uint32_t, panda::es2panda::ir::CatchClause*> tyrid2catchclause;
 
+    std::set<panda::es2panda::ir::Expression*> not_add_assgin_for_stlexvar; // class and instance_initializer
+
     panda::es2panda::ir::Identifier* DEFINEFUNC = AllocNode<panda::es2panda::ir::Identifier>(this, "DEFINEFUNC");
 
     panda::es2panda::ir::Identifier* constant_undefined = AllocNode<panda::es2panda::ir::Identifier>(this, "undefined");

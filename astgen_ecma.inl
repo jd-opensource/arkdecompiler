@@ -426,6 +426,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         case compiler::RuntimeInterface::IntrinsicId::STCONSTTOGLOBALRECORD_IMM16_ID16:
         {
             panda::es2panda::ir::Expression* src_expression = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
+            if(enc->not_add_assgin_for_stlexvar.find(src_expression) != enc->not_add_assgin_for_stlexvar.end()){
+                break;
+            }
             
             auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
             auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
@@ -1166,19 +1169,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto method_offset = static_cast<uint32_t>(inst->GetImms()[1]);
             auto method_name = enc->ir_interface_->GetMethodIdByOffset(method_offset);
 
-            //auto newname = enc->RemovePrefixOfFunc(method_name);
-
-            std::string newname;
-
-            auto classrawnameres = FindKeyByValue(*enc->methodname2offset_, enc->current_constructor_offset);
-            if(classrawnameres){
-                newname = enc->RemovePrefixOfFunc(*classrawnameres) + "_" + enc->RemovePrefixOfFunc(method_name);
-            }else{
-                newname = method_name;
-            }
-            // methodname2offset_
-            
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->GetIdentifierByName(new std::string(newname)));
+            std::string newname = enc->RemovePrefixOfFunc(method_name);
+            auto new_expression = enc->GetIdentifierByName(new std::string(newname));
 
             // support callruntime.createprivateproperty
             if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM8_ID16_IMM8 ||
@@ -1187,8 +1179,11 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 
                 if(method_name.find("instance_initializer") != std::string::npos){
                     MergeMethod2LexicalMap(method_offset, enc->methodoffset_, enc->method2lexicalmap_);
+                    enc->not_add_assgin_for_stlexvar.insert(new_expression);
                 }
             }
+
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), new_expression);
 
             break;
         }
@@ -1224,18 +1219,33 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "env size: " << lexicalenvstack->GetLexicalEnv(0).Size() << std::endl;
 
             auto raw_expression  = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
-            std::string closure_name =  "closure_" + std::to_string(enc->methodoffset_) + "_" + std::to_string(enc->closure_count);
-            enc->closure_count++;
+            std::string closure_name;
+            
+            if(enc->not_add_assgin_for_stlexvar.find(raw_expression) == enc->not_add_assgin_for_stlexvar.end()){
+                closure_name =  "closure_" + std::to_string(enc->methodoffset_) + "_" + std::to_string(enc->closure_count);
+                enc->closure_count++;
 
-            panda::es2panda::ir::Expression* assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                            enc->GetIdentifierByName(new std::string(closure_name)),
-                                                                            raw_expression,
-                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-                                                                        ); 
-            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
-                                                                                assignexpression);
-            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
-            lexicalenvstack->Set(tier, index, new std::string(closure_name));
+                panda::es2panda::ir::Expression* assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                enc->GetIdentifierByName(new std::string(closure_name)),
+                                                                                raw_expression,
+                                                                                es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                            ); 
+                auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
+                                                                                    assignexpression);
+                enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+                lexicalenvstack->Set(tier, index, new std::string(closure_name));
+            }else{
+                std::string idname;
+                if(raw_expression->IsIdentifier()){
+                    idname = raw_expression->AsIdentifier()->Name().Mutf8();
+                    closure_name = idname;
+                    
+                }else{
+                    HandleError("#STLEXVAR: not deal this case for find expression string name");
+                }
+                lexicalenvstack->Set(tier, index, new std::string(idname));
+            }
+
 
             std::cout << "size: " << lexicalenvstack->Size() << std::endl;
             std::cout << "env size: " << lexicalenvstack->GetLexicalEnv(0).Size() << std::endl;
@@ -1434,7 +1444,10 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        
             //auto newname = enc->RemovePrefixOfFunc(constructor_offset_name);
             auto newname = RemoveArgumentsOfFunc(constructor_offset_name);
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->GetIdentifierByName(new std::string(newname)));
+            auto newexpression = enc->GetIdentifierByName(new std::string(newname));
+            
+            enc->not_add_assgin_for_stlexvar.insert(newexpression);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), newexpression);
             
             break;
         }
