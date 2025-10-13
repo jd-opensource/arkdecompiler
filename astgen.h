@@ -25,7 +25,7 @@ public:
         std::map<uint32_t, panda::es2panda::ir::ScriptFunction *> *method2scriptfunast, 
         std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *>* ctor2classdeclast, std::set<uint32_t> *memberfuncs, 
         std::map<uint32_t, panda::es2panda::ir::Expression*> *class2father, 
-        std::map<uint32_t, std::map<uint32_t,  std::set<uint32_t>>>* method2lexicalmap,
+        std::map<uint32_t, std::map<uint32_t,  std::set<size_t>>>* method2lexicalmap,
         std::vector<LexicalEnvStack*> *globallexical_waitlist,
         std::map<std::string, std::string> *raw2newname,
         std::map<std::string, uint32_t> *methodname2offset,
@@ -457,7 +457,7 @@ public:
 
     std::map<uint32_t, panda::es2panda::ir::Expression*> *class2father_;
 
-    std::map<uint32_t, std::map<uint32_t,  std::set<uint32_t>>>* method2lexicalmap_;
+    std::map<uint32_t, std::map<uint32_t,  std::set<size_t>>>* method2lexicalmap_;
 
     std::vector<LexicalEnvStack*> *globallexical_waitlist_;
 

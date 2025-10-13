@@ -15,7 +15,7 @@ public:
         panda::disasm::Disassembler& disasm, uint32_t methodoffset,
         std::vector<std::pair<uint32_t, uint32_t>>* depedges,
         std::map<uint32_t, std::set<uint32_t>> *class2memberfuns,
-        std::map<uint32_t, std::map<uint32_t,  std::set<uint32_t>>>* method2lexicalmap,
+        std::map<uint32_t, std::map<uint32_t,  std::set<size_t>>>* method2lexicalmap,
         std::set<uint32_t>* memberfuncs,
         std::map<std::string, std::string> *raw2newname,
         std::map<std::string, uint32_t> *methodname2offset
@@ -85,7 +85,7 @@ public:
     [[maybe_unused]] std::vector<std::pair<uint32_t, uint32_t>>* depedges_; // left depends on right
     [[maybe_unused]] std::map<uint32_t, std::set<uint32_t>> *class2memberfuns_;
 
-    [[maybe_unused]] std::map<uint32_t, std::map<uint32_t,  std::set<uint32_t>>> *method2lexicalmap_;
+    [[maybe_unused]] std::map<uint32_t, std::map<uint32_t,  std::set<size_t>>> *method2lexicalmap_;
 
     [[maybe_unused]] std::set<uint32_t>* memberfuncs_;
 
