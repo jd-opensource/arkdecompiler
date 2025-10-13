@@ -84,13 +84,13 @@ bool AstGen::RunImpl()
         ///////////////////////////////////////////////////////////////////////////////////////////////////
 
         if(bb != this->GetGraph()->GetStartBlock()) {
-            if(nearestpre != nullptr && this->bb2lexicalenvstack[nearestpre] != nullptr){
-                std::cout << "!!!!!!!!!!!!!!!!!!!! found pre id for bb2lexicalenvstack: " << nearestpre->GetId() << std::endl;
-                this->bb2lexicalenvstack[bb] = new LexicalEnvStack(*this->bb2lexicalenvstack[nearestpre]);
-                std::cout << "size: " << (*this->bb2lexicalenvstack[nearestpre]).Size()  << std::endl;
+            if(nearestpre != nullptr && this->bb2lexicalenvstack_[nearestpre] != nullptr){
+                std::cout << "!!!!!!!!!!!!!!!!!!!! found pre id for bb2lexicalenvstack_: " << nearestpre->GetId() << std::endl;
+                this->bb2lexicalenvstack_[bb] = new LexicalEnvStack(*this->bb2lexicalenvstack_[nearestpre]);
+                std::cout << "size: " << (*this->bb2lexicalenvstack_[nearestpre]).Size()  << std::endl;
             }else{
-                std::cout << "!!!!!!!!!!!!!!!!!!!! not found pre id for bb2lexicalenvstack: "<< "curid: " << bb->GetId()  << std::endl;
-                this->bb2lexicalenvstack[bb] = new LexicalEnvStack();
+                std::cout << "!!!!!!!!!!!!!!!!!!!! not found pre id for bb2lexicalenvstack_: "<< "curid: " << bb->GetId()  << std::endl;
+                this->bb2lexicalenvstack_[bb] = new LexicalEnvStack();
             }
         }
         visited.push_back(bb);        

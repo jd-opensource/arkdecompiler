@@ -201,7 +201,6 @@ void ParseModuleVars(std::unique_ptr<const panda_file::File>& file_, panda::disa
             panda::es2panda::parser::Program *parser_program, std::map<size_t, std::vector<std::string>>& index2namespaces, 
             std::vector<std::string>& localnamespaces){
     
-    std::cout << "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH" << std::endl;
     size_t index = 0;
     
     if (panda_file::ContainsLiteralArrayInHeader(file_->GetHeader()->version)) {
@@ -236,5 +235,4 @@ void ParseModuleVars(std::unique_ptr<const panda_file::File>& file_, panda::disa
         }
     }
 
-    std::cout << "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE" << std::endl;
 }
