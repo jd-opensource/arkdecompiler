@@ -1166,7 +1166,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto method_offset = static_cast<uint32_t>(inst->GetImms()[1]);
             auto method_name = enc->ir_interface_->GetMethodIdByOffset(method_offset);
 
-            auto newname = enc->ExtractTrueFunName(method_name);
+            auto newname = enc->RemovePrefixOfFunc(method_name);
             
             enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->GetIdentifierByName(new std::string(newname)));
 
@@ -1422,7 +1422,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             (*enc->class2father_)[constructor_offset] = father;
        
-            //auto newname = enc->ExtractTrueFunName(constructor_offset_name);
+            //auto newname = enc->RemovePrefixOfFunc(constructor_offset_name);
             auto newname = RemoveArgumentsOfFunc(constructor_offset_name);
             enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->GetIdentifierByName(new std::string(newname)));
             
@@ -1455,7 +1455,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     }
 
 
-                    auto newname = enc->ExtractTrueFunName(member_function);
+                    auto newname = enc->RemovePrefixOfFunc(member_function);
                     auto memfun_str = new std::string(newname);
 
                     // std::cout << "@@@: " << member_function << std::endl;

@@ -61,7 +61,7 @@ bool AstGen::RunImpl()
     for (auto *bb : GetGraph()->GetBlocksLinearOrder()) {
         
         if(bb->IsLoopValid() && bb->IsLoopHeader() ){
-            JudgeLoopType(bb);
+            JudgeLoopType(bb, this->loop2type, this->loop2exit, this->backedge2dowhileloop);
             /////////////////////////////////////////////////////////////////
             ArenaVector<panda::es2panda::ir::Statement *> statements(this->parser_program_->Allocator()->Adapter());
             auto new_block_statement = this->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
@@ -437,7 +437,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             std::cout << "[+] do-while =====" << std::endl;
             compiler::Loop* loop = block->GetLoop();
             auto back_edges = loop->GetBackEdges();
-            enc->LogBackEdgeId(back_edges);
+            LogBackEdgeId(back_edges);
 
             es2panda::ir::DoWhileStatement* dowhilestatement;
             if(block->GetTrueSuccessor() == loop->GetHeader()){
@@ -460,7 +460,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             std::cout << "[+] while ===" << std::endl;
             compiler::Loop* loop = block->GetLoop();
             auto back_edges = loop->GetBackEdges();
-            enc->LogBackEdgeId(back_edges);
+            LogBackEdgeId(back_edges);
 
             es2panda::ir::WhileStatement* whilestatement;
             if( std::find(loop->GetBlocks().begin(), loop->GetBlocks().end(), block->GetFalseSuccessor()) != loop->GetBlocks().end() ){

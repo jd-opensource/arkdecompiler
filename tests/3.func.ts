@@ -20,7 +20,13 @@
 // var x = add(2, 3);
 
 
+// #23. function call def-use detection
+// console.log("hi");
+// var x6 = console.log("hello");
+
+
 // # 28. DEFINECLASSWITHBUFFER_IMM16_ID16_ID16_IMM16_V8
 // function hello(){
 //     var x = 1;
 // }
+

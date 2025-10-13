@@ -4,6 +4,7 @@
 #include "base.h"
 #include "lexicalenv.h"
 #include "algos.h"
+#include "loopconstruction.h"
 
 namespace panda::bytecodeopt {
 
@@ -73,7 +74,7 @@ public:
         
         (*this->method2scriptfunast_)[methodoffset] = funcNode;
 
-        auto newfunname = this->ExtractTrueFunName(fun_name);
+        auto newfunname = this->RemovePrefixOfFunc(fun_name);
         (*this->raw2newname_)[fun_name] = newfunname;
         panda::es2panda::util::StringView name_view = panda::es2panda::util::StringView(*new std::string(newfunname));
         auto funname_id = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(name_view);
@@ -168,7 +169,7 @@ public:
         success_ = false;
     }
 
-    std::string ExtractTrueFunName(const std::string& input) {
+    std::string RemovePrefixOfFunc(const std::string& input) {
         if(this->raw2newname_->find(input) != this->raw2newname_->end()){
             return (*this->raw2newname_)[input];
         }
@@ -334,26 +335,6 @@ public:
         std::cout << std::endl;
     }
  
-    void LogBackEdgeId(ArenaVector<BasicBlock *> backedges){
-        std::cout << "backedgeid: ";
-        for (auto it = backedges.begin(); it != backedges.end(); ++it) {
-            std::cout << (*it)->GetId();
-            if (std::next(it) != backedges.end()) {
-                std::cout << ", ";
-            }
-        }
-        std::cout << std::endl;
-    }
-
-    BasicBlock* SearchPreHeader(BasicBlock* header){
-        for (auto pred : header->GetPredsBlocks()) {
-            if(pred->IsLoopPreHeader()){
-                return pred;
-            }
-        }
-        return nullptr;
-    }
-
     void AddInstAst2BlockStatemntByInst(Inst *inst, es2panda::ir::Statement *statement){
         BasicBlock* block = inst->GetBasicBlock();
         this->AddInstAst2BlockStatemntByBlock(block, statement);
@@ -371,47 +352,6 @@ public:
         block_statements->AddStatementAtPos(statements.size(), statement);
     }
 
-    void LogLoopBBs(BasicBlock* header){
-        ArenaVector<BasicBlock *> bbs = header->GetLoop()->GetBlocks();
-        std::cout << "[+] loop list >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " << std::endl;
-        for (size_t i = 0; i < bbs.size(); i++) {
-            BasicBlock * bb = bbs[i];
-            std::cout << bb->GetId() << " ";
-            if(bb->IsLoopValid() && bb->GetLoop()->IsRoot()){
-                std::cout << "bbi@ " << bb->GetId() << std::endl;
-            }
-        } 
-
-        std::cout << std::endl;
-        std::cout << "[-] loop list >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " << std::endl;
-    }
-
-    void JudgeLoopType(BasicBlock* header){
-        auto &back_edges = header->GetLoop()->GetBackEdges();
-        for (auto back_edge : back_edges) {
-            auto succs_size = back_edge->GetSuccsBlocks().size();
-            if(succs_size > 1){
-                this->loop2type[header->GetLoop()] = 1;  // do-whle
-                this->backedge2dowhileloop[back_edge] = header->GetLoop();
-
-                if(back_edge->GetTrueSuccessor()->GetLoop() == header->GetLoop()){
-                    this->loop2exit[header->GetLoop()] = back_edge->GetFalseSuccessor();
-                }else{
-                    this->loop2exit[header->GetLoop()] = back_edge->GetTrueSuccessor();
-                }
-            }else{
-                this->loop2type[header->GetLoop()] = 0;  // while
-                if(header->GetTrueSuccessor()->GetLoop() == header->GetLoop()){
-                    this->loop2exit[header->GetLoop()] = header->GetFalseSuccessor();
-                }else{
-                    this->loop2exit[header->GetLoop()] = header->GetTrueSuccessor();
-                }
-            }
-        } 
-
-        //LogLoopBBs(header);
-    }
-
     es2panda::ir::BlockStatement* GetBlockStatementById(BasicBlock *block){
         auto block_id = block->GetId();
         std::cout << "[*] GetBlockStatementById bbid: " << block_id << ", ";
@@ -425,7 +365,7 @@ public:
         // case2: found loop
         if(block->IsLoopValid() && block->IsLoopHeader() ){
             std::cout << "@@ case 2" << std::endl;
-            JudgeLoopType(block);
+            JudgeLoopType(block, this->loop2type, this->loop2exit, this->backedge2dowhileloop);
 
             //////////////////////////////////////////////////////////////////////////////////////
             ArenaVector<panda::es2panda::ir::Statement *> statements(this->parser_program_->Allocator()->Adapter());

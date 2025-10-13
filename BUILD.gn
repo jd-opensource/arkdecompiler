@@ -50,7 +50,8 @@ ohos_executable("xabc") {
     "modulevar.cpp",
     "base.cpp",
     "fundepscan.cpp",
-    "classconstruction.cpp"
+    "classconstruction.cpp",
+    "loopconstruction.cpp"
   ]
   
   configs =  [
