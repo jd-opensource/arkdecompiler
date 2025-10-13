@@ -1,10 +1,12 @@
-*.abc
 base.map
 a
+
 repos/*
 logs/*
 out/*
+
 .vscode
+*.abc
 *.log
 *.o
 *.xml
@@ -13,3 +15,5 @@ out/*
 *.ts
 *.ast
 *.swp
+
+!tests/*.ts
