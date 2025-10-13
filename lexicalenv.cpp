@@ -53,7 +53,7 @@ std::string* LexicalEnv::Get(size_t index) const {
 void LexicalEnv::Set(size_t index, std::string* expr) {
     CheckIndex(index);
     expressions_[index] = expr;
-    AddIndexes(index);
+    AddIndexes(index); /// support callruntime.createprivateproperty
 }
 
 size_t LexicalEnv::Size() const {
@@ -128,25 +128,19 @@ void LexicalEnvStack::Set(size_t A, size_t B, std::string* expr) {
     stack_[actualIndex].Set(B, expr);
 }
 
-const LexicalEnv& LexicalEnvStack::GetLexicalEnv(size_t A) const {
+void LexicalEnvStack::SetIndexes(size_t A, std::set<size_t> indexes) {
     CheckStackIndex(A);
     
     size_t actualIndex = stack_.size() - 1 - A;
-    return stack_[actualIndex];
+    stack_[actualIndex].indexes_.insert(indexes.begin(), indexes.end());
 }
+
 
 LexicalEnv& LexicalEnvStack::GetLexicalEnv(size_t A) {
     CheckStackIndex(A);
     
     size_t actualIndex = stack_.size() - 1 - A;
     return stack_[actualIndex];
-}
-
-const LexicalEnv& LexicalEnvStack::Top() const {
-    if (stack_.empty()) {
-        throw std::runtime_error("Stack is empty");
-    }
-    return stack_.back();
 }
 
 LexicalEnv& LexicalEnvStack::Top() {
@@ -193,8 +187,10 @@ void DealWithGlobalLexicalWaitlist(uint32_t tier, uint32_t index, std::string cl
     }
 }
 
-void MergeMethod2LexicalMap(uint32_t source_methodoffset, uint32_t target_methodoffset, std::map<uint32_t, std::map<uint32_t,  std::set<uint32_t>>>* method2lexicalmap) {
+void MergeMethod2LexicalMap(Inst* inst, std::map<panda::compiler::BasicBlock*, LexicalEnvStack*> bb2lexicalenvstack,
+                  uint32_t source_methodoffset, uint32_t target_methodoffset, std::map<uint32_t, std::map<uint32_t,  std::set<size_t>>>* method2lexicalmap) {
     // merge instance_initializer lexical to current 
+
     auto& tmpmethod2lexicalmap = *(method2lexicalmap);
 
     auto source_lexicalmap = tmpmethod2lexicalmap.find(source_methodoffset);
@@ -203,26 +199,25 @@ void MergeMethod2LexicalMap(uint32_t source_methodoffset, uint32_t target_method
         return;
     }
 
-    auto& target_lexicalmap = tmpmethod2lexicalmap[target_methodoffset];
-
+    auto lexicalenvstack = bb2lexicalenvstack[inst->GetBasicBlock()];
     for (const auto& [tier, source_indexes] : source_lexicalmap->second) {
-        auto& target_indexes = target_lexicalmap[tier];
-        target_indexes.insert(source_indexes.begin(), source_indexes.end());
+        lexicalenvstack->SetIndexes(tier, source_indexes);
     }
+
 }
 
-void PrintInnerMethod2LexicalMap(std::map<uint32_t, std::map<uint32_t,  std::set<uint32_t>>>* method2lexicalmap, uint32_t methodoffset){
+void PrintInnerMethod2LexicalMap(std::map<uint32_t, std::map<uint32_t,  std::set<size_t>>>* method2lexicalmap, uint32_t methodoffset){
     auto outerIt = method2lexicalmap->find(methodoffset);
     if (outerIt == method2lexicalmap->end()) {
         std::cerr << "Method offset not found in the map." << std::endl;
         return;
     }
 
-    const std::map<uint32_t, std::set<uint32_t>>& innerMap = outerIt->second;
+    const std::map<uint32_t, std::set<size_t>>& innerMap = outerIt->second;
 
     for (const auto& pair : innerMap) {
         uint32_t key = pair.first;
-        const std::set<uint32_t>& vec = pair.second;
+        const std::set<size_t>& vec = pair.second;
 
         std::cout << "Key: " << key << " Values: ";
         for (const auto& value : vec) {
@@ -233,34 +228,21 @@ void PrintInnerMethod2LexicalMap(std::map<uint32_t, std::map<uint32_t,  std::set
 }
 
 
-uint32_t SearchStartposForCreatePrivateproperty(Inst *inst, std::map<uint32_t, std::map<uint32_t,  std::set<uint32_t>>>* method2lexicalmap, uint32_t methodoffset){
-    if(method2lexicalmap->find(methodoffset) != method2lexicalmap->end() ){
-        auto outerIt = method2lexicalmap->find(methodoffset);
-        if (outerIt == method2lexicalmap->end()) {
-            HandleError("#PrintInnerMethod2LexicalMap: Method offset not found in the map1.");
+uint32_t SearchStartposForCreatePrivateproperty(Inst *inst, std::map<panda::compiler::BasicBlock*, LexicalEnvStack*> bb2lexicalenvstack,
+        std::map<uint32_t, std::map<uint32_t,  std::set<size_t>>>* method2lexicalmap, uint32_t methodoffset){
+    
+    auto lexicalenvstack = bb2lexicalenvstack[inst->GetBasicBlock()];
+    auto &toplexicalenv = lexicalenvstack->Top();
+    std::set<size_t> vec(toplexicalenv.indexes_);
+
+    std::vector<size_t> sorted(vec.begin(), vec.end());
+    std::sort(sorted.begin(), sorted.end());
+
+    for (size_t i = 0; i < sorted.size(); ++i) {
+        if (i != sorted[i]) {
+            return i;
         }
-
-        const std::map<uint32_t, std::set<uint32_t>>& innerMap = outerIt->second;
-
-        auto innerIt = innerMap.find(0);
-        if (innerIt == innerMap.end()) {
-            HandleError("#PrintInnerMethod2LexicalMap: Method offset not found in the map2.");
-        }
-
-        const std::set<uint32_t>& vec = innerIt->second;
-
-        std::vector<uint32_t> sorted(vec.begin(), vec.end());
-        std::sort(sorted.begin(), sorted.end());
-
-
-        for (size_t i = 0; i < sorted.size(); ++i) {
-            if (i != sorted[i]) {
-                return i;
-            }
-        }           
-    }else{
-        HandleError("#SearchStartposForCreatePrivateproperty: not found !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    }
+    } 
 
     HandleError("#SearchStartposForCreatePrivateproperty: not found !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 

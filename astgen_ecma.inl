@@ -1178,7 +1178,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
                 
                 if(method_name.find("instance_initializer") != std::string::npos){
-                    MergeMethod2LexicalMap(method_offset, enc->methodoffset_, enc->method2lexicalmap_);
+                    MergeMethod2LexicalMap(inst, enc->bb2lexicalenvstack_, method_offset, enc->methodoffset_, enc->method2lexicalmap_);
                     enc->not_add_assgin_for_stlexvar.insert(new_expression);
                 }
             }
@@ -1253,10 +1253,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             ////////////////////////////////////////////////////////////////////////////////
             /// support forward reference stack
             DealWithGlobalLexicalWaitlist(tier, index, closure_name, enc->globallexical_waitlist_);
-
-            ///////////////////////////////////////////////////////////////////////////////
-            /// support callruntime.createprivateproperty
-            (*enc->method2lexicalmap_)[enc->methodoffset_][tier].insert(index);
             break;
         }
 
@@ -1287,19 +1283,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         {
             auto lexicalenvstack = enc->bb2lexicalenvstack_[inst->GetBasicBlock()];
             lexicalenvstack->Pop();
-
-            auto it1 = enc->method2lexicalmap_->find(enc->methodoffset_);
-            if (it1 != enc->method2lexicalmap_->end()) {
-                auto it2 = it1->second.find(0);
-                if (it2 != it1->second.end()) {
-                    it2->second.clear();  // Clear the vector at the specified offsets
-                } else {
-                   HandleError("#POPLEXENV: key 0 not found");
-                }
-            } else {
-                HandleError("#POPLEXENV: methodoffset_ not found");
-            }
-
             break;
         }
 
@@ -1454,7 +1437,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_CREATEPRIVATEPROPERTY_PREF_IMM16_ID16:
        {
-            auto startpos = SearchStartposForCreatePrivateproperty(inst, enc->method2lexicalmap_, enc->methodoffset_);
+            auto startpos = SearchStartposForCreatePrivateproperty(inst, enc->bb2lexicalenvstack_, enc->method2lexicalmap_, enc->methodoffset_);
             auto literalarray_offset = static_cast<uint32_t>(inst->GetImms()[1]);
             auto member_functions = GetLiteralArrayByOffset(enc->program_, literalarray_offset);
             if(member_functions){
@@ -1466,12 +1449,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     // std::cout << "[+] env size: " << lexicalenvstack->GetLexicalEnv(0).Size() << std::endl;
                     // std::cout << "[+] capacity_: " << lexicalenv.capacity_ << std::endl;
 
-                    (*enc->method2lexicalmap_)[enc->methodoffset_][0].insert(startpos);
-
                     uint32_t member_offset = 0;
                     if (enc->methodname2offset_->find(member_function) != enc->methodname2offset_->end()) {
                         member_offset = (*enc->methodname2offset_)[member_function];
-                        // std::cout << "member_offset: " << member_offset << std::endl;
                     }else{
                         std::cout << "##name: " << member_function << std::endl;
                         HandleError("#DEFINEMETHOD: find constructor_offset error");
