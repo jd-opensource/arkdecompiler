@@ -59,8 +59,8 @@ public:
     
     std::string* Get(size_t A, size_t B) const;
     void Set(size_t A, size_t B, std::string* expr);
+    void SetIndexes(size_t A, std::set<size_t> indexes);
     
-    const LexicalEnv& GetLexicalEnv(size_t A) const;
     LexicalEnv& GetLexicalEnv(size_t A);
     
     const LexicalEnv& Top() const;
@@ -75,11 +75,13 @@ private:
 
 void DealWithGlobalLexicalWaitlist(uint32_t tier, uint32_t index, std::string closure_name, std::vector<LexicalEnvStack*> *globallexical_waitlist);
 
-void MergeMethod2LexicalMap(uint32_t source_methodoffset, uint32_t target_methodoffset, std::map<uint32_t, std::map<uint32_t,  std::set<uint32_t>>>* method2lexicalmap);
+void MergeMethod2LexicalMap(Inst* inst, std::map<panda::compiler::BasicBlock*, LexicalEnvStack*> bb2lexicalenvstack,
+                  uint32_t source_methodoffset, uint32_t target_methodoffset, std::map<uint32_t, std::map<uint32_t,  std::set<size_t>>>* method2lexicalmap);
 
-void PrintInnerMethod2LexicalMap(std::map<uint32_t, std::map<uint32_t,  std::set<uint32_t>>>* method2lexicalmap, uint32_t methodoffset);
+void PrintInnerMethod2LexicalMap(std::map<uint32_t, std::map<uint32_t,  std::set<size_t>>>* method2lexicalmap, uint32_t methodoffset);
 
-uint32_t SearchStartposForCreatePrivateproperty(Inst *inst, std::map<uint32_t, std::map<uint32_t,  std::set<uint32_t>>>* method2lexicalmap, uint32_t methodoffset);
+uint32_t SearchStartposForCreatePrivateproperty(Inst *inst, std::map<panda::compiler::BasicBlock*, LexicalEnvStack*> bb2lexicalenvstack,
+                   std::map<uint32_t, std::map<uint32_t,  std::set<size_t>>>* method2lexicalmap, uint32_t methodoffset);
 
 
 void CopyLexicalenvStack(uint32_t methodoffset_, Inst* inst, std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack, 
