@@ -1166,7 +1166,17 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto method_offset = static_cast<uint32_t>(inst->GetImms()[1]);
             auto method_name = enc->ir_interface_->GetMethodIdByOffset(method_offset);
 
-            auto newname = enc->RemovePrefixOfFunc(method_name);
+            //auto newname = enc->RemovePrefixOfFunc(method_name);
+
+            std::string newname;
+
+            auto classrawnameres = FindKeyByValue(*enc->methodname2offset_, enc->current_constructor_offset);
+            if(classrawnameres){
+                newname = enc->RemovePrefixOfFunc(*classrawnameres) + "_" + enc->RemovePrefixOfFunc(method_name);
+            }else{
+                newname = method_name;
+            }
+            // methodname2offset_
             
             enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->GetIdentifierByName(new std::string(newname)));
 
