@@ -7,6 +7,11 @@ LexicalEnv::LexicalEnv(size_t capacity)
     : expressions_(capacity, nullptr), capacity_(capacity), full_size_(0) {
 }
 
+void LexicalEnv::AddIndexes(size_t index){
+    indexes_.insert(index);
+}
+
+
 bool LexicalEnv::IsFull() const {
     for (size_t i = 0; i < capacity_; ++i) {
         if(expressions_[i] == nullptr){
@@ -26,36 +31,8 @@ LexicalEnv::LexicalEnv(const LexicalEnv& other)
             expressions_[i] = new std::string(*(other.expressions_[i]));
         }
     }
-}
 
-LexicalEnv& LexicalEnv::operator=(const LexicalEnv& other) {
-    if (this != &other) {
-        expressions_.clear();
-        capacity_ = other.capacity_;
-        expressions_.resize(capacity_);
-        full_size_ = other.full_size_;
-        
-        for (size_t i = 0; i < capacity_; ++i) {
-            expressions_[i] = new std::string(*other.expressions_[i]);
-        }
-    }
-    return *this;
-}
-
-LexicalEnv::LexicalEnv(LexicalEnv&& other) noexcept 
-    : expressions_(std::move(other.expressions_)), 
-      capacity_(other.capacity_) {
-    
-    other.capacity_ = 0;
-}
-
-LexicalEnv& LexicalEnv::operator=(LexicalEnv&& other) noexcept {
-    if (this != &other) {
-        expressions_ = std::move(other.expressions_);
-        capacity_ = other.capacity_;
-        other.capacity_ = 0;
-    }
-    return *this;
+    indexes_.insert(other.indexes_.begin(), other.indexes_.end());
 }
 
 std::string*& LexicalEnv::operator[](size_t index) {
@@ -76,9 +53,8 @@ std::string* LexicalEnv::Get(size_t index) const {
 void LexicalEnv::Set(size_t index, std::string* expr) {
     CheckIndex(index);
     expressions_[index] = expr;
-    
+    AddIndexes(index);
 }
-
 
 size_t LexicalEnv::Size() const {
     for (size_t i = 0; i < capacity_; ++i) {
@@ -86,10 +62,8 @@ size_t LexicalEnv::Size() const {
             full_size_ = i;
         }
     }
-
     return full_size_;
 }
-
 
 bool LexicalEnv::IsValidIndex(size_t index) const {
     return index < capacity_;
@@ -115,24 +89,6 @@ bool LexicalEnvStack::IsFull() const {
         }
     }
     return true;
-}
-
-LexicalEnvStack& LexicalEnvStack::operator=(const LexicalEnvStack& other) {
-    if (this != &other) {
-        stack_ = other.stack_;
-    }
-    return *this;
-}
-
-LexicalEnvStack::LexicalEnvStack(LexicalEnvStack&& other) noexcept 
-    : stack_(std::move(other.stack_)) {
-}
-
-LexicalEnvStack& LexicalEnvStack::operator=(LexicalEnvStack&& other) noexcept {
-    if (this != &other) {
-        stack_ = std::move(other.stack_);
-    }
-    return *this;
 }
 
 LexicalEnvStack::~LexicalEnvStack() {
