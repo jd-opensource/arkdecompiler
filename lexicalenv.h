@@ -10,6 +10,8 @@ using panda::compiler::Opcode;
 class LexicalEnv {
 public:
     std::vector<std::string*> expressions_;
+    std::set<size_t> indexes_;
+
     size_t capacity_;
     mutable size_t full_size_;
 
@@ -17,12 +19,6 @@ public:
     explicit LexicalEnv(size_t capacity = 256);
     
     LexicalEnv(const LexicalEnv& other);
-    
-    LexicalEnv& operator=(const LexicalEnv& other);
-    
-    LexicalEnv(LexicalEnv&& other) noexcept;
-    
-    LexicalEnv& operator=(LexicalEnv&& other) noexcept;
     
     std::string *& operator[](size_t index);
     const std::string* operator[](size_t index) const;
@@ -32,6 +28,8 @@ public:
     void Set(size_t index, std::string* expr);
     
     size_t Size() const;
+
+    void AddIndexes(size_t index);
     
     bool IsValidIndex(size_t index) const;
 
@@ -49,12 +47,6 @@ public:
     LexicalEnvStack(const LexicalEnvStack& other);
     
     bool IsFull() const;
-    
-    LexicalEnvStack& operator=(const LexicalEnvStack& other);
-    
-    LexicalEnvStack(LexicalEnvStack&& other) noexcept;
-    
-    LexicalEnvStack& operator=(LexicalEnvStack&& other) noexcept;
     
     ~LexicalEnvStack();
     LexicalEnv* Push(size_t capacity);
