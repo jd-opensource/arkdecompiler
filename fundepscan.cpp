@@ -96,7 +96,7 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
         case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_DEFINEPRIVATEPROPERTY_PREF_IMM8_IMM16_IMM16_V8:{
             auto tier = static_cast<uint32_t>(inst->GetImms()[1]);
             auto index = static_cast<uint32_t>(inst->GetImms()[2]);
-            (*enc->method2lexicalmap_)[enc->methodoffset_][tier].push_back(index);
+            (*enc->method2lexicalmap_)[enc->methodoffset_][tier].insert(index);
             
             break;
         }
