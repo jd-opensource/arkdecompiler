@@ -313,20 +313,21 @@ public:
         return std::nullopt;
     }
 
-    void MergeMethod2LexicalMap(uint32_t sourceKey, uint32_t targetKey) {
-        auto& mapRef = *(this->method2lexicalmap_);
+    void MergeMethod2LexicalMap(uint32_t source_methodoffset, uint32_t target_methodoffset) {
+        // merge instance_initializer lexical to current 
+        auto& tmpmethod2lexicalmap = *(this->method2lexicalmap_);
 
-        auto sourceIter = mapRef.find(sourceKey);
-        if (sourceIter == mapRef.end()) {
+        auto source_lexicalmap = tmpmethod2lexicalmap.find(source_methodoffset);
+        if (source_lexicalmap == tmpmethod2lexicalmap.end()) {
             HandleError("#MergeMethod2LexicalMap: source key not found");
             return;
         }
 
-        auto& targetMap = mapRef[targetKey];
+        auto& target_lexicalmap = tmpmethod2lexicalmap[target_methodoffset];
 
-        for (const auto& [innerKey, sourceVector] : sourceIter->second) {
-            auto& targetVector = targetMap[innerKey];
-            targetVector.insert(targetVector.end(), sourceVector.begin(), sourceVector.end());
+        for (const auto& [tier, source_indexes] : source_lexicalmap->second) {
+            auto& target_indexes = target_lexicalmap[tier];
+            target_indexes.insert(target_indexes.end(), source_indexes.begin(), source_indexes.end());
         }
     }
 
@@ -357,6 +358,7 @@ public:
         auto outerIt = this->method2lexicalmap_->find(this->methodoffset_);
         if (outerIt == this->method2lexicalmap_->end()) {
             std::cerr << "Method offset not found in the map." << std::endl;
+            return;
         }
 
         const std::map<uint32_t, std::vector<uint32_t>>& innerMap = outerIt->second;

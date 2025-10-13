@@ -1174,8 +1174,12 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM8_ID16_IMM8 ||
                 inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM16_ID16_IMM8){
 
+                
                 if(method_name.find("instance_initializer") != std::string::npos){
+                    std::cout << "###### AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+                    enc->PrintInnerMethod2LexicalMap();
                     enc->MergeMethod2LexicalMap(method_offset, enc->methodoffset_);
+                    enc->PrintInnerMethod2LexicalMap();
                 }
             }
 
@@ -1264,8 +1268,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
         case compiler::RuntimeInterface::IntrinsicId::POPLEXENV:
         {
-            auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
-            lexicalenvstack->Pop();
+            //auto lexicalenvstack = enc->bb2lexicalenvstack[inst->GetBasicBlock()];
+            //lexicalenvstack->Pop();
             break;
         }
 
@@ -1417,6 +1421,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_CREATEPRIVATEPROPERTY_PREF_IMM16_ID16:
        {
             auto startpos = enc->SearchStartposForCreatePrivateproperty(inst);
+
+            startpos = 2;
+
+            std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+            std::cout << "startpos: " << startpos << std::endl;
+            std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
+            
+            
             auto literalarray_offset = static_cast<uint32_t>(inst->GetImms()[1]);
             auto member_functions = GetLiteralArrayByOffset(enc->program_, literalarray_offset);
             if(member_functions){

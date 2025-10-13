@@ -12,6 +12,7 @@ bool FunDepScan::RunImpl(){
     this->UpdateMemberDepConstructor();
     return true;
 }
+
 void FunDepScan::VisitIntrinsic(GraphVisitor *visitor, Inst *inst_base)
 {
     ASSERT(inst_base->IsIntrinsic());
