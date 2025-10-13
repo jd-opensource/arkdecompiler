@@ -18,3 +18,9 @@
 //     return a + b;
 // }
 // var x = add(2, 3);
+
+
+// # 28. DEFINECLASSWITHBUFFER_IMM16_ID16_ID16_IMM16_V8
+// function hello(){
+//     var x = 1;
+// }

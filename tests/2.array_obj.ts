@@ -39,4 +39,7 @@
 // const numbers = [10, 20, 30, 5, 15];
 // const maxNumber = Math.max(1,2,3,...numbers); 
 
+// # 24. stownbyvalue
+// const arr1 = [1, 2, 3];
+// const arr2 = [...arr1, 4, 5]; 
 
