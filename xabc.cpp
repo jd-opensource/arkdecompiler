@@ -112,7 +112,7 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
                         std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *>* ctor2classdeclast,
                         std::set<uint32_t>* memberfuncs,
                         std::map<uint32_t, panda::es2panda::ir::Expression*> *class2father,
-                        std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>> *method2lexicalmap,
+                        std::map<uint32_t, std::map<uint32_t,  std::set<uint32_t>>> *method2lexicalmap,
                         std::vector<LexicalEnvStack*>* globallexical_waitlist,
                         std::map<std::string, std::string> *raw2newname,
                         std::map<std::string, uint32_t> *methodname2offset
@@ -224,7 +224,7 @@ bool ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
                 BytecodeOptIrInterface *ir_interface,
                 std::vector<std::pair<uint32_t, uint32_t>>* depedges,
                 std::map<uint32_t, std::set<uint32_t>> *class2memberfuns,
-                std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap,
+                std::map<uint32_t, std::map<uint32_t,  std::set<uint32_t>>>* method2lexicalmap,
                 std::set<uint32_t>* memberfuncs,
                 std::map<std::string, std::string> *raw2newname,
                 std::map<std::string, uint32_t> *methodname2offset,
@@ -446,7 +446,7 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
 
     std::map<std::string, std::string> raw2newname;
 
-    std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>> method2lexicalmap; // methodoffset, tier, <full index>
+    std::map<uint32_t, std::map<uint32_t,  std::set<uint32_t>>> method2lexicalmap; // methodoffset, tier, <full index>
 
     std::vector<LexicalEnvStack*> globallexical_waitlist;
 

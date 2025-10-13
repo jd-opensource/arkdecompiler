@@ -24,7 +24,7 @@ public:
         std::map<uint32_t, panda::es2panda::ir::ScriptFunction *> *method2scriptfunast, 
         std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *>* ctor2classdeclast, std::set<uint32_t> *memberfuncs, 
         std::map<uint32_t, panda::es2panda::ir::Expression*> *class2father, 
-        std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap,
+        std::map<uint32_t, std::map<uint32_t,  std::set<uint32_t>>>* method2lexicalmap,
         std::vector<LexicalEnvStack*> *globallexical_waitlist,
         std::map<std::string, std::string> *raw2newname,
         std::map<std::string, uint32_t> *methodname2offset,
@@ -327,7 +327,7 @@ public:
 
         for (const auto& [tier, source_indexes] : source_lexicalmap->second) {
             auto& target_indexes = target_lexicalmap[tier];
-            target_indexes.insert(target_indexes.end(), source_indexes.begin(), source_indexes.end());
+            target_indexes.insert(source_indexes.begin(), source_indexes.end());
         }
     }
 
@@ -361,11 +361,11 @@ public:
             return;
         }
 
-        const std::map<uint32_t, std::vector<uint32_t>>& innerMap = outerIt->second;
+        const std::map<uint32_t, std::set<uint32_t>>& innerMap = outerIt->second;
 
         for (const auto& pair : innerMap) {
             uint32_t key = pair.first;
-            const std::vector<uint32_t>& vec = pair.second;
+            const std::set<uint32_t>& vec = pair.second;
 
             std::cout << "Key: " << key << " Values: ";
             for (const auto& value : vec) {
@@ -382,16 +382,16 @@ public:
                 HandleError("#PrintInnerMethod2LexicalMap: Method offset not found in the map1.");
             }
 
-            const std::map<uint32_t, std::vector<uint32_t>>& innerMap = outerIt->second;
+            const std::map<uint32_t, std::set<uint32_t>>& innerMap = outerIt->second;
 
             auto innerIt = innerMap.find(0);
             if (innerIt == innerMap.end()) {
                 HandleError("#PrintInnerMethod2LexicalMap: Method offset not found in the map2.");
             }
 
-            const std::vector<uint32_t>& vec = innerIt->second;
+            const std::set<uint32_t>& vec = innerIt->second;
 
-            std::vector<uint32_t> sorted = vec;
+            std::vector<uint32_t> sorted(vec.begin(), vec.end());
             std::sort(sorted.begin(), sorted.end());
 
 
@@ -632,7 +632,7 @@ public:
 
     std::map<uint32_t, panda::es2panda::ir::Expression*> *class2father_;
 
-    std::map<uint32_t, std::map<uint32_t,  std::vector<uint32_t>>>* method2lexicalmap_;
+    std::map<uint32_t, std::map<uint32_t,  std::set<uint32_t>>>* method2lexicalmap_;
 
     std::vector<LexicalEnvStack*> *globallexical_waitlist_;
 
