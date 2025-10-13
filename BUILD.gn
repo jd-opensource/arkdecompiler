@@ -49,7 +49,8 @@ ohos_executable("xabc") {
     "algos.cpp",
     "modulevar.cpp",
     "base.cpp",
-    "fundepscan.cpp"
+    "fundepscan.cpp",
+    "classconstruction.cpp"
   ]
   
   configs =  [
