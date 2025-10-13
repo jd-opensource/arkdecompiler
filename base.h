@@ -72,4 +72,6 @@ void HandleError(const std::string& errorMessage);
 std::string RemoveArgumentsOfFunc(const std::string& input);
 std::optional<std::vector<std::string>> GetLiteralArrayByOffset(panda::pandasm::Program* program, uint32_t offset);
 std::optional<std::string> FindKeyByValue(const std::map<std::string, uint32_t>& myMap, const uint32_t& value);
+
+uint32_t ParseHexFromKey(const std::string& key);
 #endif

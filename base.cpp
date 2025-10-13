@@ -78,3 +78,24 @@ std::optional<std::string> FindKeyByValue(const std::map<std::string, uint32_t>&
     }
     return std::nullopt;
 }
+
+
+uint32_t ParseHexFromKey(const std::string& key) {
+    std::istringstream iss(key);
+    std::string temp;
+    std::string hexString;
+
+    while (iss >> temp) {
+        if (temp.find("0x") == 0 || temp.find("0X") == 0) {
+            hexString = temp;
+            break;
+        }
+    }
+
+    uint32_t hexNumber = 0;
+    if (!hexString.empty()) {
+        std::istringstream(hexString) >> std::hex >> hexNumber;
+    }
+
+    return hexNumber;
+}

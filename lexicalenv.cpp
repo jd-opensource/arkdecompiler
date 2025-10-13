@@ -222,3 +222,104 @@ void LexicalEnvStack::CheckStackIndex(size_t A) const {
         throw std::out_of_range("Stack index A out of range");
     }
 }
+
+
+void DealWithGlobalLexicalWaitlist(uint32_t tier, uint32_t index, std::string closure_name, std::vector<LexicalEnvStack*> *globallexical_waitlist){
+    for (auto it = globallexical_waitlist->begin(); it != globallexical_waitlist->end(); ) {
+        auto* waitelement = *it;
+        waitelement->Set(tier, index, new std::string(closure_name));
+
+        if(waitelement->IsFull()){
+            it = globallexical_waitlist->erase(it);
+        }else{
+            ++it;
+        }
+    }
+}
+
+void MergeMethod2LexicalMap(uint32_t source_methodoffset, uint32_t target_methodoffset, std::map<uint32_t, std::map<uint32_t,  std::set<uint32_t>>>* method2lexicalmap) {
+    // merge instance_initializer lexical to current 
+    auto& tmpmethod2lexicalmap = *(method2lexicalmap);
+
+    auto source_lexicalmap = tmpmethod2lexicalmap.find(source_methodoffset);
+    if (source_lexicalmap == tmpmethod2lexicalmap.end()) {
+        HandleError("#MergeMethod2LexicalMap: source key not found");
+        return;
+    }
+
+    auto& target_lexicalmap = tmpmethod2lexicalmap[target_methodoffset];
+
+    for (const auto& [tier, source_indexes] : source_lexicalmap->second) {
+        auto& target_indexes = target_lexicalmap[tier];
+        target_indexes.insert(source_indexes.begin(), source_indexes.end());
+    }
+}
+
+void PrintInnerMethod2LexicalMap(std::map<uint32_t, std::map<uint32_t,  std::set<uint32_t>>>* method2lexicalmap, uint32_t methodoffset){
+    auto outerIt = method2lexicalmap->find(methodoffset);
+    if (outerIt == method2lexicalmap->end()) {
+        std::cerr << "Method offset not found in the map." << std::endl;
+        return;
+    }
+
+    const std::map<uint32_t, std::set<uint32_t>>& innerMap = outerIt->second;
+
+    for (const auto& pair : innerMap) {
+        uint32_t key = pair.first;
+        const std::set<uint32_t>& vec = pair.second;
+
+        std::cout << "Key: " << key << " Values: ";
+        for (const auto& value : vec) {
+            std::cout << value << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+
+
+uint32_t SearchStartposForCreatePrivateproperty(Inst *inst, std::map<uint32_t, std::map<uint32_t,  std::set<uint32_t>>>* method2lexicalmap, uint32_t methodoffset){
+    if(method2lexicalmap->find(methodoffset) != method2lexicalmap->end() ){
+        auto outerIt = method2lexicalmap->find(methodoffset);
+        if (outerIt == method2lexicalmap->end()) {
+            HandleError("#PrintInnerMethod2LexicalMap: Method offset not found in the map1.");
+        }
+
+        const std::map<uint32_t, std::set<uint32_t>>& innerMap = outerIt->second;
+
+        auto innerIt = innerMap.find(0);
+        if (innerIt == innerMap.end()) {
+            HandleError("#PrintInnerMethod2LexicalMap: Method offset not found in the map2.");
+        }
+
+        const std::set<uint32_t>& vec = innerIt->second;
+
+        std::vector<uint32_t> sorted(vec.begin(), vec.end());
+        std::sort(sorted.begin(), sorted.end());
+
+
+        for (size_t i = 0; i < sorted.size(); ++i) {
+            if (i != sorted[i]) {
+                return i;
+            }
+        }           
+    }else{
+        HandleError("#SearchStartposForCreatePrivateproperty: not found !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    }
+
+    HandleError("#SearchStartposForCreatePrivateproperty: not found !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+    return -1;
+}
+
+
+void CopyLexicalenvStack(uint32_t methodoffset_, Inst* inst, std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack, 
+        std::map<panda::compiler::BasicBlock*, LexicalEnvStack*> bb2lexicalenvstack, std::vector<LexicalEnvStack*> *globallexical_waitlist){
+            
+    if(bb2lexicalenvstack[inst->GetBasicBlock()]->Empty()){
+        return;
+        //HandleError("#CopyLexicalenvStack: source bb2lexicalenvstack is empty");
+    }
+    auto wait_method = new LexicalEnvStack(*(bb2lexicalenvstack[inst->GetBasicBlock()]));
+    (*method2lexicalenvstack)[methodoffset_] = wait_method;
+    globallexical_waitlist->push_back(wait_method);
+}

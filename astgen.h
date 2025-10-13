@@ -42,14 +42,14 @@ public:
         ArenaVector<es2panda::ir::Expression*> arguments(parser_program->Allocator()->Adapter());
 
         if(this->method2lexicalenvstack_->find(methodoffset) != this->method2lexicalenvstack_->end()){
-            std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX found lexicalenvstack " << std::endl;
-            auto x = (*this->method2lexicalenvstack_)[methodoffset];
-            std::cout << "lexicalenvstack size: " << x->Size() << std::endl;
+            //std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX found lexicalenvstack " << std::endl;
+            //auto x = (*this->method2lexicalenvstack_)[methodoffset];
+            //std::cout << "lexicalenvstack size: " << x->Size() << std::endl;
         }else{
-            std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX not found lexicalenvstack " << std::endl;
+            //std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX not found lexicalenvstack " << std::endl;
             (*this->method2lexicalenvstack_)[methodoffset] = new LexicalEnvStack();
         }
-        this->bb2lexicalenvstack[graph->GetStartBlock()] = (*this->method2lexicalenvstack_)[methodoffset];
+        this->bb2lexicalenvstack_[graph->GetStartBlock()] = (*this->method2lexicalenvstack_)[methodoffset];
         
         for (size_t i = 0; i < function->GetParamsNum(); ++i) {
             if(i <= 2){
@@ -166,26 +166,6 @@ public:
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Opcode " << compiler::GetOpcodeString(inst->GetOpcode())
                                        << " not yet implemented in codegen";
         success_ = false;
-    }
-
-    uint32_t ParseHexFromKey(const std::string& key) {
-        std::istringstream iss(key);
-        std::string temp;
-        std::string hexString;
-
-        while (iss >> temp) {
-            if (temp.find("0x") == 0 || temp.find("0X") == 0) {
-                hexString = temp;
-                break;
-            }
-        }
-
-        uint32_t hexNumber = 0;
-        if (!hexString.empty()) {
-            std::istringstream(hexString) >> std::hex >> hexNumber;
-        }
-
-        return hexNumber;
     }
 
     std::string ExtractTrueFunName(const std::string& input) {
@@ -313,101 +293,6 @@ public:
         return std::nullopt;
     }
 
-    void MergeMethod2LexicalMap(uint32_t source_methodoffset, uint32_t target_methodoffset) {
-        // merge instance_initializer lexical to current 
-        auto& tmpmethod2lexicalmap = *(this->method2lexicalmap_);
-
-        auto source_lexicalmap = tmpmethod2lexicalmap.find(source_methodoffset);
-        if (source_lexicalmap == tmpmethod2lexicalmap.end()) {
-            HandleError("#MergeMethod2LexicalMap: source key not found");
-            return;
-        }
-
-        auto& target_lexicalmap = tmpmethod2lexicalmap[target_methodoffset];
-
-        for (const auto& [tier, source_indexes] : source_lexicalmap->second) {
-            auto& target_indexes = target_lexicalmap[tier];
-            target_indexes.insert(source_indexes.begin(), source_indexes.end());
-        }
-    }
-
-    void CopyLexicalenvStack(uint32_t methodoffset_, Inst* inst){
-        if(this->bb2lexicalenvstack[inst->GetBasicBlock()]->Empty()){
-            return;
-            //HandleError("#CopyLexicalenvStack: source bb2lexicalenvstack is empty");
-        }
-        auto wait_method = new LexicalEnvStack(*(this->bb2lexicalenvstack[inst->GetBasicBlock()]));
-        (*this->method2lexicalenvstack_)[methodoffset_] = wait_method;
-        this->globallexical_waitlist_->push_back(wait_method);
-    }
-
-    void DealWithGlobalLexicalWaitlist(uint32_t tier, uint32_t index, std::string closure_name){
-        for (auto it = this->globallexical_waitlist_->begin(); it != this->globallexical_waitlist_->end(); ) {
-            auto* waitelement = *it;
-            waitelement->Set(tier, index, new std::string(closure_name));
-
-            if(waitelement->IsFull()){
-                it = this->globallexical_waitlist_->erase(it);
-            }else{
-                ++it;
-            }
-        }
-    }
-
-    void PrintInnerMethod2LexicalMap(){
-        auto outerIt = this->method2lexicalmap_->find(this->methodoffset_);
-        if (outerIt == this->method2lexicalmap_->end()) {
-            std::cerr << "Method offset not found in the map." << std::endl;
-            return;
-        }
-
-        const std::map<uint32_t, std::set<uint32_t>>& innerMap = outerIt->second;
-
-        for (const auto& pair : innerMap) {
-            uint32_t key = pair.first;
-            const std::set<uint32_t>& vec = pair.second;
-
-            std::cout << "Key: " << key << " Values: ";
-            for (const auto& value : vec) {
-                std::cout << value << " ";
-            }
-            std::cout << std::endl;
-        }
-    }
-
-    uint32_t SearchStartposForCreatePrivateproperty(Inst *inst){
-        if(this->method2lexicalmap_->find(this->methodoffset_) != this->method2lexicalmap_->end() ){
-            auto outerIt = this->method2lexicalmap_->find(this->methodoffset_);
-            if (outerIt == this->method2lexicalmap_->end()) {
-                HandleError("#PrintInnerMethod2LexicalMap: Method offset not found in the map1.");
-            }
-
-            const std::map<uint32_t, std::set<uint32_t>>& innerMap = outerIt->second;
-
-            auto innerIt = innerMap.find(0);
-            if (innerIt == innerMap.end()) {
-                HandleError("#PrintInnerMethod2LexicalMap: Method offset not found in the map2.");
-            }
-
-            const std::set<uint32_t>& vec = innerIt->second;
-
-            std::vector<uint32_t> sorted(vec.begin(), vec.end());
-            std::sort(sorted.begin(), sorted.end());
-
-
-            for (size_t i = 0; i < sorted.size(); ++i) {
-                if (i != sorted[i]) {
-                    return i;
-                }
-            }           
-        }else{
-            HandleError("#SearchStartposForCreatePrivateproperty: not found !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        }
-
-        HandleError("#SearchStartposForCreatePrivateproperty: not found !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
-        return -1;
-    }
 
     void SetExpressionByRegister(Inst* inst, compiler::Register key, panda::es2panda::ir::Expression* value){
         /**
@@ -677,7 +562,7 @@ public:
 
     LexicalEnv* acc_lexicalenv = NULL;
 
-    std::map<compiler::BasicBlock*, LexicalEnvStack*> bb2lexicalenvstack;
+    std::map<compiler::BasicBlock*, LexicalEnvStack*> bb2lexicalenvstack_;
 
     std::map<uint32_t, panda::es2panda::ir::Expression*> id2expression;
     
