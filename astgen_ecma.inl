@@ -1648,6 +1648,27 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
        
+
+       case compiler::RuntimeInterface::IntrinsicId::STSUPERBYVALUE_IMM8_V8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::STSUPERBYVALUE_IMM16_V8_V8:
+       {
+            auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
+                                                        enc->GetIdentifierByName(new std::string("super")),
+                                                        *enc->GetExpressionById(inst, 1),
+                                                        es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                        true, 
+                                                        false);  
+            panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                            objattrexpression,
+                                                                            *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
+                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                        ); 
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
+                                                                                assignexpression);
+            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+            break;
+        }
+       
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
@@ -2221,33 +2242,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
             auto v0 = inst->GetSrcReg(0);
             enc->result_.emplace_back(pandasm::Create_SETOBJECTWITHPROTO(imm0, v0));
-            break;
-        }
-
-       case compiler::RuntimeInterface::IntrinsicId::STSUPERBYVALUE_IMM8_V8_V8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-            auto v1 = inst->GetSrcReg(1);
-            enc->result_.emplace_back(pandasm::Create_STSUPERBYVALUE(imm0, v0, v1));
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::STSUPERBYVALUE_IMM16_V8_V8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-            auto v1 = inst->GetSrcReg(1);
-            enc->result_.emplace_back(pandasm::Create_STSUPERBYVALUE(imm0, v0, v1));
             break;
         }
 
