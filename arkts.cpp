@@ -636,7 +636,7 @@ void ArkTSGen::EmitExportNamedDeclaration(const ir::AstNode *node){
 void ArkTSGen::EmitClassDeclaration(const ir::AstNode *node){
     std::cout << "[+] start emit class declaration statement"  << std::endl;
     auto classdeclaration = node->AsClassDeclaration();
-    auto classdefinition = classdeclaration->Definition()->AsClassDefinition();
+    auto classdefinition = const_cast<ir::ClassDefinition*>(classdeclaration->Definition());
 
     this->WriteKeyWords("class");
     this->WriteSpace();
