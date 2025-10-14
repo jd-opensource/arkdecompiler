@@ -746,8 +746,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto v0 = inst->GetSrcReg(0);
 
             auto target_obj = *enc->GetExpressionById(inst, 0);
+            auto target_objexpression = target_obj->AsObjectExpression();
 
-            auto target_objexpression = static_cast<panda::es2panda::ir::ObjectExpression*>(target_obj);
             auto target_properties = target_objexpression->Properties();
             for (auto *it : target_properties) {
                 elements.push_back(it);
@@ -772,7 +772,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto fun = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
             auto raw_expression = *enc->GetExpressionById(inst, 1);
 
-            auto raw_array_expression = static_cast<const panda::es2panda::ir::ArrayExpression*>(raw_expression);
+            auto raw_array_expression = raw_expression->AsArrayExpression();
 
             ArenaVector<es2panda::ir::Expression *> elements(enc->parser_program_->Allocator()->Adapter());
 
@@ -801,12 +801,12 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             es2panda::ir::Expression* spreadelement = AllocNode<es2panda::ir::SpreadElement>(enc, es2panda::ir::AstNodeType::SPREAD_ELEMENT, element);
 
             auto raw_obj = *enc->GetExpressionById(inst, 0);
-            auto raw_arrayexpression = static_cast<panda::es2panda::ir::ArrayExpression*>(raw_obj);
+            auto raw_arrayexpression = raw_obj->AsArrayExpression();
 
             ArenaVector<es2panda::ir::Expression *> elements(enc->parser_program_->Allocator()->Adapter());
             auto index_expression = *enc->GetExpressionById(inst, 1);
-
-            auto index_literal = static_cast<panda::es2panda::ir::NumberLiteral*>(index_expression);
+            auto index_literal = index_expression->AsNumberLiteral();
+            
             uint32_t index = index_literal->Number();
 
             for (auto *it : raw_arrayexpression->Elements()) {
