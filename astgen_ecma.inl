@@ -199,7 +199,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        {
             panda::es2panda::ir::Expression* src_reg_identifier = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);  
 
-            if(src_reg_identifier != enc->DEFINEFUNC){
+            if(enc->not_add_assgin_for_stlexvar.find(src_reg_identifier) == enc->not_add_assgin_for_stlexvar.end()){
                 auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
                 auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
                 std::string* global_name = new std::string(bc_id0);
@@ -1179,9 +1179,11 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 
                 if(method_name.find("instance_initializer") != std::string::npos){
                     MergeMethod2LexicalMap(inst, enc->bb2lexicalenvstack_, method_offset, enc->methodoffset_, enc->method2lexicalmap_);
-                    enc->not_add_assgin_for_stlexvar.insert(new_expression);
+                    
                 }
             }
+
+            enc->not_add_assgin_for_stlexvar.insert(new_expression);
 
             enc->SetExpressionByRegister(inst, inst->GetDstReg(), new_expression);
 
