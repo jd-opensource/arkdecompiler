@@ -10,7 +10,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
     inst->DumpOpcode(&oss);
     std::cout << "VisitIntrinsicInst: " << oss.str() << std::endl;
 
-    // inst->GetIntrinsicId()
     switch (inst->GetIntrinsicId()) {
        case compiler::RuntimeInterface::IntrinsicId::RETURNUNDEFINED:
        {
@@ -400,7 +399,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                         es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
                                                         false, 
                                                         false);
-
 
             enc->SetExpressionByRegister(inst, inst->GetDstReg(), objattrexpression);
             break;
@@ -1001,8 +999,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-       case compiler::RuntimeInterface::IntrinsicId::STOWNBYVALUEWITHNAMESET_IMM16_V8_V8: // tobetested
-       case compiler::RuntimeInterface::IntrinsicId::STOWNBYVALUEWITHNAMESET_IMM8_V8_V8:  // tobetested
+       case compiler::RuntimeInterface::IntrinsicId::STOWNBYVALUEWITHNAMESET_IMM16_V8_V8: 
+       case compiler::RuntimeInterface::IntrinsicId::STOWNBYVALUEWITHNAMESET_IMM8_V8_V8:
        case compiler::RuntimeInterface::IntrinsicId::STOWNBYVALUE_IMM16_V8_V8:
        case compiler::RuntimeInterface::IntrinsicId::STOWNBYVALUE_IMM8_V8_V8:
        {
@@ -1156,18 +1154,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM16_ID16_IMM8:
         {
             std::cout << "define function >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-            auto methodoffset_ = static_cast<uint32_t>(inst->GetImms()[1]);
-            std::cout << "new func offset: " << methodoffset_ << std::endl;
-
-            
-            std::cout << "before size: " << enc->method2lexicalenvstack_->size() <<  std::endl;
-
-            CopyLexicalenvStack(methodoffset_, inst, enc->method2lexicalenvstack_, enc->bb2lexicalenvstack_, enc->globallexical_waitlist_);
-
-            // enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->DEFINEFUNC);
-
             auto method_offset = static_cast<uint32_t>(inst->GetImms()[1]);
             auto method_name = enc->ir_interface_->GetMethodIdByOffset(method_offset);
+  
+            // std::cout << "before size: " << enc->method2lexicalenvstack_->size() <<  std::endl;
+
+            CopyLexicalenvStack(method_offset, inst, enc->method2lexicalenvstack_, enc->bb2lexicalenvstack_, enc->globallexical_waitlist_);
+
+
 
             std::string newname = enc->RemovePrefixOfFunc(method_name);
             auto new_expression = enc->GetIdentifierByName(new std::string(newname));
@@ -1176,7 +1170,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM8_ID16_IMM8 ||
                 inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM16_ID16_IMM8){
 
-                
                 if(method_name.find("instance_initializer") != std::string::npos){
                     MergeMethod2LexicalMap(inst, enc->bb2lexicalenvstack_, method_offset, enc->methodoffset_, enc->method2lexicalmap_);
                     
@@ -1184,7 +1177,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
 
             enc->not_add_assgin_for_stlexvar.insert(new_expression);
-
             enc->SetExpressionByRegister(inst, inst->GetDstReg(), new_expression);
 
             break;
