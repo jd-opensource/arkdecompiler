@@ -1599,12 +1599,26 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
 
             auto attr_expression = enc->GetIdentifierByName(new std::string(bc_id0));
-
             auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
                                                         enc->GetIdentifierByName(new std::string("super")),
                                                         attr_expression, 
                                                         es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
                                                         false, 
+                                                        false);
+
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), objattrexpression);
+            break;
+        }
+        
+       case compiler::RuntimeInterface::IntrinsicId::LDSUPERBYVALUE_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::LDSUPERBYVALUE_IMM16_V8:
+       {
+            auto attr_expression = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
+            auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
+                                                        enc->GetIdentifierByName(new std::string("super")),
+                                                        attr_expression, 
+                                                        es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                        true, 
                                                         false);
 
             enc->SetExpressionByRegister(inst, inst->GetDstReg(), objattrexpression);
@@ -1642,28 +1656,10 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         }
 
 
-
        case compiler::RuntimeInterface::IntrinsicId::GETNEXTPROPNAME_V8:
        {
             auto v0 = inst->GetSrcReg(0);
             enc->result_.emplace_back(pandasm::Create_GETNEXTPROPNAME(v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-
-       case compiler::RuntimeInterface::IntrinsicId::LDSUPERBYVALUE_IMM8_V8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_LDSUPERBYVALUE(imm0, v0));
             auto acc_dst = inst->GetDstReg();
             if (acc_dst != compiler::ACC_REG_ID) {
                 DoSta(inst->GetDstReg(), enc->result_);
@@ -1852,24 +1848,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->result_.emplace_back(pandasm::Create_SETOBJECTWITHPROTO(imm0, v0));
             break;
         }
- 
-       case compiler::RuntimeInterface::IntrinsicId::LDSUPERBYVALUE_IMM16_V8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_LDSUPERBYVALUE(imm0, v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       
+        
        case compiler::RuntimeInterface::IntrinsicId::LDTHISBYNAME_IMM16_ID16:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
