@@ -101,8 +101,6 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
     switch(node->Type()){ 
         case AstNodeType::BINARY_EXPRESSION:{
             std::cout << "enter BINARY_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
-            //auto binexpression = static_cast<const panda::es2panda::ir::BinaryExpression*>(node);
-
             auto binexpression = node->AsBinaryExpression();
 
             this->EmitExpression(binexpression->Left());
@@ -115,7 +113,7 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
 
         case AstNodeType::UNARY_EXPRESSION:{
             std::cout << "enter UNARY_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
-            auto unaryexpression = static_cast<const panda::es2panda::ir::UnaryExpression*>(node);
+            auto unaryexpression = node->AsUnaryExpression();
             ss_ << TokenToString(unaryexpression->OperatorType());
             WriteSpace();
             this->EmitExpression(unaryexpression->Argument());
@@ -123,8 +121,7 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
         }
 
         case AstNodeType::ASSIGNMENT_EXPRESSION:{
-            auto assignexpression = static_cast<const panda::es2panda::ir::AssignmentExpression*>(node);
-
+            auto assignexpression = node->AsAssignmentExpression();
             std::cout << "enter ASSIGNMENT_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
             
             this->EmitExpression(assignexpression->Left());
@@ -135,19 +132,19 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
             break;
         }
         case AstNodeType::IDENTIFIER:{
-            auto identifier = static_cast<const panda::es2panda::ir::Identifier*>(node);
+            auto identifier = node->AsIdentifier();
             ss_ << identifier->Name();
             break;
         }
 
         case AstNodeType::NUMBER_LITERAL:{
-            auto number_literal = static_cast<const panda::es2panda::ir::NumberLiteral*>(node);
+            auto number_literal = node->AsNumberLiteral();
             this->SerializeNumber(number_literal->Number());
             break;
         } 
 
         case AstNodeType::BIGINT_LITERAL:{
-            auto bigint_literal = static_cast<const panda::es2panda::ir::BigIntLiteral*>(node);
+            auto bigint_literal = node->AsBigIntLiteral();
             this->SerializeString(bigint_literal->Str());
             break;
         } 
@@ -158,18 +155,18 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
         }
 
         case AstNodeType::STRING_LITERAL:{
-            auto string_literal = static_cast<const panda::es2panda::ir::StringLiteral*>(node);
+            auto string_literal = node->AsStringLiteral();
             this->SerializeString(string_literal->Str());
             break;
         }
         
         case AstNodeType::BOOLEAN_LITERAL:{
-            auto bool_literal = static_cast<const panda::es2panda::ir::BooleanLiteral*>(node);
+            auto bool_literal = node->AsBooleanLiteral();
             this->SerializeBoolean(bool_literal->Value());
             break;
         }
         case AstNodeType::MEMBER_EXPRESSION:{
-            auto member_expression = static_cast<const panda::es2panda::ir::MemberExpression*>(node);
+            auto member_expression = node->AsMemberExpression();
             this->EmitExpression(member_expression->Object());
             if(member_expression->IsComputed()){
                 this->WriteLeftBracket();
@@ -184,7 +181,7 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
 
         case AstNodeType::OBJECT_EXPRESSION:{
             std::cout << "enter OBJECT_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
-            auto objexpression = static_cast<const panda::es2panda::ir::ObjectExpression*>(node);
+            auto objexpression = node->AsObjectExpression();
             
             WriteLeftBrace();
             size_t properties_size = objexpression->Properties().size();
@@ -221,7 +218,7 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
 
         case AstNodeType::ARRAY_EXPRESSION:{
             std::cout << "enter OBJECT_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
-            auto arrayexpression = static_cast<const panda::es2panda::ir::ArrayExpression*>(node);
+            auto arrayexpression = node->AsArrayExpression();
             
             WriteLeftBracket();
             int count = 0;
@@ -239,7 +236,7 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
         }
 
         case AstNodeType::PROPERTY:{
-            auto propertyexpression = static_cast<const panda::es2panda::ir::Property*>(node);
+            auto propertyexpression = node->AsProperty();
 
             this->EmitExpression(propertyexpression->Key());
             this->WriteColon();
@@ -250,7 +247,7 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
         }
 
         case AstNodeType::CALL_EXPRESSION:{
-            auto callexpression = static_cast<const panda::es2panda::ir::CallExpression*>(node);
+            auto callexpression = node->AsCallExpression();
 
             this->EmitExpression(callexpression->Callee());
             this->WriteLeftParentheses();
@@ -270,7 +267,7 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
         }
 
         case AstNodeType::NEW_EXPRESSION:{
-            auto newexpression = static_cast<const panda::es2panda::ir::NewExpression*>(node);
+            auto newexpression = node->AsNewExpression();
 
             this->WriteKeyWords("new");
             this->WriteSpace();
@@ -293,7 +290,7 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
 
         case AstNodeType::SPREAD_ELEMENT:{
             this->WriteSpreadDot();
-            auto spreadarg = static_cast<const es2panda::ir::SpreadElement*>(node);
+            auto spreadarg = node->AsSpreadElement();
             this->EmitExpression(spreadarg->Argument());
             break;
         }
@@ -306,13 +303,13 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
 }
 
 void ArkTSGen::EmitExpressionStatement(const ir::AstNode *node){
-    auto expressionstatement = static_cast<const panda::es2panda::ir::ExpressionStatement*>(node);
+    auto expressionstatement = node->AsExpressionStatement();
     this->EmitExpression(expressionstatement->GetExpression());
     this->WriteTrailingSemicolon();
 }
 
 void ArkTSGen::EmitVariableDeclarationStatement(const ir::AstNode *node){
-    auto vardeclstatement = static_cast<const panda::es2panda::ir::VariableDeclaration*>(node);
+     auto vardeclstatement = node->AsVariableDeclaration();
     
     int size = vardeclstatement->Declarators().size();
     int count = 1;
@@ -338,7 +335,8 @@ void ArkTSGen::EmitVariableDeclarationStatement(const ir::AstNode *node){
 }
 
 void ArkTSGen::EmitVariableDeclaratorStatement(const ir::AstNode *node){
-    auto vardeclstatement = static_cast<const panda::es2panda::ir::VariableDeclarator*>(node);
+    auto vardeclstatement = node->AsVariableDeclarator();
+
     this->EmitExpression(vardeclstatement->Id());
     this->WriteEqual();
     this->EmitExpression(vardeclstatement->Init());
@@ -346,7 +344,7 @@ void ArkTSGen::EmitVariableDeclaratorStatement(const ir::AstNode *node){
 
 
 void ArkTSGen::EmitReturnStatement(const ir::AstNode *node){
-    auto returnstatement = static_cast<const panda::es2panda::ir::ReturnStatement*>(node);
+    auto returnstatement = node->AsReturnStatement();
     this->WriteKeyWords("return");
     this->WriteSpace();
     this->EmitExpression(returnstatement->Argument());
@@ -364,7 +362,7 @@ void  ArkTSGen::EmitDebuggerStatement(const ir::AstNode *node){
 }
 
 void  ArkTSGen::EmitThrowStatement(const ir::AstNode *node){
-    auto throwstatement = static_cast<const panda::es2panda::ir::ThrowStatement*>(node);
+    auto throwstatement = node->AsThrowStatement();
 
     this->WriteKeyWords("throw");
     this->WriteSpace();
@@ -374,7 +372,7 @@ void  ArkTSGen::EmitThrowStatement(const ir::AstNode *node){
 
 
 void  ArkTSGen::EmitFunctionDeclaration(const ir::AstNode *node){
-    auto fundeclare = static_cast<const panda::es2panda::ir::FunctionDeclaration*>(node);
+    auto fundeclare = node->AsFunctionDeclaration();
     auto scriptfunction =  fundeclare->Function();
 
     this->WriteKeyWords("function");
@@ -409,7 +407,7 @@ void  ArkTSGen::EmitFunctionDeclaration(const ir::AstNode *node){
 }
 
 void ArkTSGen::EmitTryStatement(const ir::AstNode *node){
-    auto trystatement = static_cast<const panda::es2panda::ir::TryStatement*>(node);
+    auto trystatement = node->AsTryStatement();
     
     // if(test)
     this->WriteKeyWords("try");
@@ -444,8 +442,8 @@ void ArkTSGen::EmitTryStatement(const ir::AstNode *node){
 
 void ArkTSGen::EmitIfStatement(const ir::AstNode *node){
     std::cout << "[+] start EmitIfStatement"  << std::endl;
-    auto ifstatement = static_cast<const panda::es2panda::ir::IfStatement*>(node);
-    if(ifstatement->Consequent() == nullptr ||  static_cast<const panda::es2panda::ir::BlockStatement*>(ifstatement->Consequent())->Statements().size() == 0){
+    auto ifstatement = node->AsIfStatement();
+    if(ifstatement->Consequent() == nullptr ||  ifstatement->Consequent()->AsBlockStatement()->Statements().size() == 0){
         return;
     }
 
@@ -464,7 +462,7 @@ void ArkTSGen::EmitIfStatement(const ir::AstNode *node){
     this->WriteIndent();
     this->WriteRightBrace();
 
-    if(ifstatement->Alternate() != nullptr &&  static_cast<const panda::es2panda::ir::BlockStatement*>(ifstatement->Alternate())->Statements().size() > 0){
+    if(ifstatement->Alternate() != nullptr && ifstatement->Alternate()->AsBlockStatement()->Statements().size() > 0){
         // }else{
         this->WriteKeyWords("else");
         this->WriteLeftBrace();
@@ -486,8 +484,8 @@ void ArkTSGen::EmitIfStatement(const ir::AstNode *node){
 
 void ArkTSGen::EmitWhileStatement(const ir::AstNode *node){
     std::cout << "[+] start emit while statement"  << std::endl;
-    auto whilestatement = static_cast<const panda::es2panda::ir::WhileStatement*>(node);
-    
+    auto whilestatement = node->AsWhileStatement();
+
     // while(test){
     this->WriteKeyWords("while");
     this->WriteLeftParentheses();
@@ -511,7 +509,7 @@ void ArkTSGen::EmitWhileStatement(const ir::AstNode *node){
 
 void ArkTSGen::EmitDoWhileStatement(const ir::AstNode *node){
     std::cout << "[+] start emit dowhile statement"  << std::endl;
-    auto dowhilestatement = static_cast<const panda::es2panda::ir::DoWhileStatement*>(node);
+    auto dowhilestatement = node->AsDoWhileStatement();
     
     // do {
     this->WriteKeyWords("do");
@@ -537,7 +535,7 @@ void ArkTSGen::EmitDoWhileStatement(const ir::AstNode *node){
 
 void ArkTSGen::EmitImportSpecifier(const ir::AstNode *node){
     std::cout << "[+] start emit import specifier statement"  << std::endl;
-    auto importspecifier = static_cast<const panda::es2panda::ir::ImportSpecifier*>(node);
+    auto importspecifier = node->AsImportSpecifier();
     
     this->WriteKeyWords("import");
 
@@ -555,10 +553,10 @@ void ArkTSGen::EmitImportSpecifier(const ir::AstNode *node){
 
 void ArkTSGen::EmitImportDeclaration(const ir::AstNode *node){
     std::cout << "[+] start emit import declaration statement"  << std::endl;
-    auto importdeclaration = static_cast<const panda::es2panda::ir::ImportDeclaration*>(node);
+    auto importdeclaration = node->AsImportDeclaration();
     
     for (const auto *astnode : importdeclaration->Specifiers()) {
-        auto importspecifier = static_cast<const panda::es2panda::ir::ImportSpecifier*>(astnode);
+        auto importspecifier = astnode->AsImportSpecifier();
         this->WriteKeyWords("import");
 
         this->WriteSpace();
@@ -582,7 +580,7 @@ void ArkTSGen::EmitImportDeclaration(const ir::AstNode *node){
 
 void ArkTSGen::EmitExportAllDeclaration(const ir::AstNode *node){
     std::cout << "[+] start emit export all declaration statement"  << std::endl;
-    auto exportdeclaration = static_cast<const panda::es2panda::ir::ExportAllDeclaration*>(node);
+    auto exportdeclaration = node->AsExportAllDeclaration();
     
     this->WriteKeyWords("export");
     this->WriteSpace();
@@ -596,7 +594,7 @@ void ArkTSGen::EmitExportAllDeclaration(const ir::AstNode *node){
 
 void ArkTSGen::EmitExportSpecifier(const ir::AstNode *node){
     std::cout << "[+] start emit export specifier statement"  << std::endl;
-    auto exportspecifier = static_cast<const panda::es2panda::ir::ExportSpecifier*>(node);
+    auto exportspecifier = node->AsExportSpecifier();
     
     this->WriteKeyWords("export");
     this->WriteSpace();
@@ -610,10 +608,10 @@ void ArkTSGen::EmitExportSpecifier(const ir::AstNode *node){
 
 void ArkTSGen::EmitExportNamedDeclaration(const ir::AstNode *node){
     std::cout << "[+] start emit export named declaration statement"  << std::endl;
-    auto exportnameddeclaration = static_cast<const panda::es2panda::ir::ExportNamedDeclaration*>(node);
+    auto exportnameddeclaration = node->AsExportNamedDeclaration();
     
     for (const auto *astnode : exportnameddeclaration->Specifiers()) {
-        auto exportspecifier = static_cast<const panda::es2panda::ir::ExportSpecifier*>(astnode);
+        auto exportspecifier = astnode->AsExportSpecifier();
         this->WriteKeyWords("export");
 
         this->WriteSpace();
@@ -637,8 +635,8 @@ void ArkTSGen::EmitExportNamedDeclaration(const ir::AstNode *node){
 
 void ArkTSGen::EmitClassDeclaration(const ir::AstNode *node){
     std::cout << "[+] start emit class declaration statement"  << std::endl;
-    [[maybe_unused]] auto classdeclaration = static_cast<const panda::es2panda::ir::ClassDeclaration*>(node);
-    [[maybe_unused]] auto classdefinition = const_cast<ir::ClassDefinition*>(classdeclaration->Definition());
+    auto classdeclaration = node->AsClassDeclaration();
+    auto classdefinition = classdeclaration->Definition()->AsClassDefinition();
 
     this->WriteKeyWords("class");
     this->WriteSpace();
@@ -676,12 +674,12 @@ void ArkTSGen::EmitClassDeclaration(const ir::AstNode *node){
 
 void ArkTSGen::EmitMethodDefinition(const ir::AstNode *node){
     std::cout << "[+] start emit method definition statement"  << std::endl;
-    auto methoddefinition = static_cast<const panda::es2panda::ir::MethodDefinition*>(node);
+    auto methoddefinition = node->AsMethodDefinition();
     
     this->EmitExpression(methoddefinition->Key());
     this->WriteLeftParentheses();
 
-    auto scriptfunction = static_cast<const panda::es2panda::ir::ScriptFunction*>(methoddefinition->Value()->Function());
+    auto scriptfunction = methoddefinition->Value()->Function()->AsScriptFunction();
 
     int count = 1;
     int argumentsize = scriptfunction->Params().size();
