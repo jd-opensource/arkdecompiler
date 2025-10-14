@@ -58,6 +58,8 @@ public:
     bool Empty() const;
     
     std::string* Get(size_t A, size_t B) const;
+
+    bool IsSetSafe(size_t A, size_t B);
     void Set(size_t A, size_t B, std::string* expr);
     void SetIndexes(size_t A, std::set<size_t> indexes);
     

@@ -121,6 +121,22 @@ std::string* LexicalEnvStack::Get(size_t A, size_t B) const {
     return stack_[actualIndex].Get(B);
 }
 
+bool LexicalEnvStack::IsSetSafe(size_t A, size_t B) {
+    if (stack_.empty()) {
+        return false;
+    }
+    
+    if (A >= stack_.size()) {
+        return false;
+    }
+
+    size_t actualIndex = stack_.size() - 1 - A;
+    if (!stack_[actualIndex].IsValidIndex(B)) {
+       return false;
+    }
+    return true;
+}
+
 void LexicalEnvStack::Set(size_t A, size_t B, std::string* expr) {
     CheckIndex(A, B);
     
@@ -177,8 +193,13 @@ void LexicalEnvStack::CheckStackIndex(size_t A) const {
 void DealWithGlobalLexicalWaitlist(uint32_t tier, uint32_t index, std::string closure_name, std::vector<LexicalEnvStack*> *globallexical_waitlist){
     for (auto it = globallexical_waitlist->begin(); it != globallexical_waitlist->end(); ) {
         auto* waitelement = *it;
-        waitelement->Set(tier, index, new std::string(closure_name));
 
+        std::cout << "DealWithGlobalLexicalWaitlist: tier: " << tier << " , index: " << index << std::endl; 
+        
+        if(waitelement->IsSetSafe(tier, index)){
+            waitelement->Set(tier, index, new std::string(closure_name));
+        }
+       
         if(waitelement->IsFull()){
             it = globallexical_waitlist->erase(it);
         }else{
