@@ -418,10 +418,16 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
     for (auto it = method2scriptfunast.rbegin(); it != method2scriptfunast.rend(); ++it) {
         auto funcDecl = parser_program->Allocator()->New<panda::es2panda::ir::FunctionDeclaration>(it->second);
         program_ast->AddStatementAtPos(program_statements.size(), funcDecl);
+
+        //std::cout << it->first << " MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM" << std::endl;
+        //LogAst(parser_program, outputAstFileName);
     }
 
     for (auto it = ctor2classdeclast.begin(); it != ctor2classdeclast.end(); ++it) {
         program_ast->AddStatementAtPos(program_statements.size(), it->second);
+        
+        //std::cout << it->first << " MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM" << std::endl;
+        //LogAst(parser_program, outputAstFileName);
     }
 
     LogAst(parser_program, outputAstFileName);
