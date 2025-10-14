@@ -14,7 +14,7 @@ ArkTSGen::ArkTSGen(const ir::AstNode *node) : indent_(0), dumpNodeOnly_(true)
 
 void ArkTSGen::EmitBlockStatement(const ir::AstNode *node){
     auto tmp = const_cast<ir::AstNode*>(node);
-    auto blockstatement = static_cast<panda::es2panda::ir::BlockStatement*>(tmp);
+    auto blockstatement = tmp->AsBlockStatement();
 
     const auto &statements = blockstatement->Statements();
     
@@ -101,7 +101,10 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
     switch(node->Type()){ 
         case AstNodeType::BINARY_EXPRESSION:{
             std::cout << "enter BINARY_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
-            auto binexpression = static_cast<const panda::es2panda::ir::BinaryExpression*>(node);
+            //auto binexpression = static_cast<const panda::es2panda::ir::BinaryExpression*>(node);
+
+            auto binexpression = node->AsBinaryExpression();
+
             this->EmitExpression(binexpression->Left());
             WriteSpace();
             ss_ << TokenToString(binexpression->OperatorType());
