@@ -512,8 +512,6 @@ public:
 
     std::set<panda::es2panda::ir::Expression*> not_add_assgin_for_stlexvar; // class and instance_initializer
 
-    panda::es2panda::ir::Identifier* DEFINEFUNC = AllocNode<panda::es2panda::ir::Identifier>(this, "DEFINEFUNC");
-
     panda::es2panda::ir::Identifier* constant_undefined = AllocNode<panda::es2panda::ir::Identifier>(this, "undefined");
     panda::es2panda::ir::Identifier* constant_hole = AllocNode<panda::es2panda::ir::Identifier>(this, "hole");
 
@@ -531,6 +529,6 @@ public:
 
 };
 
-}  // namespace panda::bytecodeopt
+}
 
-#endif  // BYTECODE_OPTIMIZER_CODEGEN_H
+#endif

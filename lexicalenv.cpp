@@ -3,6 +3,7 @@
 #include <utility>
 
 
+
 LexicalEnv::LexicalEnv(size_t capacity) 
     : expressions_(capacity, nullptr), capacity_(capacity), full_size_(0) {
 }
