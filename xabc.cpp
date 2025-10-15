@@ -10,6 +10,7 @@
 #include "fundepscan.h"
 #include "algos.h"
 #include "classconstruction.h"
+
 using namespace std;
 using namespace panda;
 using namespace bytecodeopt;
