@@ -864,7 +864,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             for (uint32_t i = 1; i <= argsum; ++i) {
                 arguments.push_back(*enc->GetExpressionById(inst, i-1));
             }
-
             
             es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                                 funname,
@@ -965,13 +964,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->SetExpressionByRegister(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), obj_reg_identifier);
             ArenaVector<es2panda::ir::VariableDeclarator *> declarators1(enc->parser_program_->Allocator()->Adapter());
             auto *declarator1 = AllocNode<es2panda::ir::VariableDeclarator>(enc,
-                                                                                obj_reg_identifier, 
-                                                                                expression1);
+                                                                            obj_reg_identifier, 
+                                                                            expression1);
             declarators1.push_back(declarator1);
             auto variadeclaration1 = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
-                                                                                    es2panda::ir::VariableDeclaration::VariableDeclarationKind::VAR,
-                                                                                    std::move(declarators1),
-                                                                                    true
+                                                                                  es2panda::ir::VariableDeclaration::VariableDeclarationKind::VAR,
+                                                                                  std::move(declarators1),
+                                                                                  true
                                                                                 );
             enc->AddInstAst2BlockStatemntByInst(inst, variadeclaration1);
             
@@ -984,30 +983,33 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             ArenaVector<es2panda::ir::VariableDeclarator *> declarators2(enc->parser_program_->Allocator()->Adapter());
             auto *declarator2 = AllocNode<es2panda::ir::VariableDeclarator>(enc,
-                                                                                index_reg_identifier, 
-                                                                                expression2);
+                                                                            index_reg_identifier, 
+                                                                            expression2
+                                                                        );
             declarators2.push_back(declarator2);
             auto variadeclaration2 = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
-                                                                                    es2panda::ir::VariableDeclaration::VariableDeclarationKind::VAR,
-                                                                                    std::move(declarators2),
-                                                                                    true
+                                                                                  es2panda::ir::VariableDeclaration::VariableDeclarationKind::VAR,
+                                                                                  std::move(declarators2),
+                                                                                  true
                                                                                 );
             enc->AddInstAst2BlockStatemntByInst(inst, variadeclaration2);
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
             auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
-                                                        obj_reg_identifier,
-                                                        index_reg_identifier, 
-                                                        es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
-                                                        true, 
-                                                        false);   
-            panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                            objattrexpression,
-                                                                            *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
-                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-                                                                        ); 
-            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
-                                                                                assignexpression);
+                                                                                obj_reg_identifier,
+                                                                                index_reg_identifier, 
+                                                                                es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                                                true, 
+                                                                                false
+                                                                            );
+
+            auto assignexpression =  AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                  objattrexpression,
+                                                                                  *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
+                                                                                   es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                            );
+
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
             enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
 
             break;
@@ -1029,31 +1031,32 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             enc->SetExpressionByRegister(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), obj_reg_identifier);
             ArenaVector<es2panda::ir::VariableDeclarator *> declarators1(enc->parser_program_->Allocator()->Adapter());
-            auto *declarator1 = AllocNode<es2panda::ir::VariableDeclarator>(enc,
-                                                                                obj_reg_identifier, 
-                                                                                expression1);
+            auto *declarator1 = AllocNode<es2panda::ir::VariableDeclarator>(enc, obj_reg_identifier, expression1);
             declarators1.push_back(declarator1);
+
             auto variadeclaration1 = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
-                                                                                    es2panda::ir::VariableDeclaration::VariableDeclarationKind::VAR,
-                                                                                    std::move(declarators1),
-                                                                                    true
+                                                                                  es2panda::ir::VariableDeclaration::VariableDeclarationKind::VAR,
+                                                                                  std::move(declarators1),
+                                                                                  true
                                                                                 );
             enc->AddInstAst2BlockStatemntByInst(inst, variadeclaration1);
             
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
             auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
-                                                        obj_reg_identifier,
-                                                        enc->GetLiteralByNum(imm),  
-                                                        es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
-                                                        true, 
-                                                        false);   
-            panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                               obj_reg_identifier,
+                                                                               enc->GetLiteralByNum(imm),  
+                                                                               es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                                               true, 
+                                                                               false);
+
+            auto assignexpression =  AllocNode<es2panda::ir::AssignmentExpression>(enc, 
                                                                             objattrexpression,
                                                                             *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
                                                                             es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
                                                                         ); 
-            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
-                                                                                assignexpression);
+
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
+
             enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
 
             break;
@@ -1069,14 +1072,12 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             enc->SetExpressionByRegister(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), obj_reg_identifier);
             ArenaVector<es2panda::ir::VariableDeclarator *> declarators1(enc->parser_program_->Allocator()->Adapter());
-            auto *declarator1 = AllocNode<es2panda::ir::VariableDeclarator>(enc,
-                                                                                obj_reg_identifier, 
-                                                                                expression1);
+            auto *declarator1 = AllocNode<es2panda::ir::VariableDeclarator>(enc, obj_reg_identifier, expression1);
             declarators1.push_back(declarator1);
             auto variadeclaration1 = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
-                                                                                    es2panda::ir::VariableDeclaration::VariableDeclarationKind::VAR,
-                                                                                    std::move(declarators1),
-                                                                                    true
+                                                                                  es2panda::ir::VariableDeclaration::VariableDeclarationKind::VAR,
+                                                                                  std::move(declarators1),
+                                                                                  true
                                                                                 );
             enc->AddInstAst2BlockStatemntByInst(inst, variadeclaration1);
             
@@ -1091,13 +1092,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                         es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
                                                         false, 
                                                         false);   
-            panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                            objattrexpression,
-                                                                            *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
-                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-                                                                        ); 
-            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
-                                                                                assignexpression);
+            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                 objattrexpression,
+                                                                                 *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
+                                                                                 es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                        );
+
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
             enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
 
             break;
@@ -1112,10 +1113,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto method_offset = static_cast<uint32_t>(inst->GetImms()[1]);
             auto method_name = enc->ir_interface_->GetMethodIdByOffset(method_offset);
   
-            // std::cout << "before size: " << enc->method2lexicalenvstack_->size() <<  std::endl;
-
             CopyLexicalenvStack(method_offset, inst, enc->method2lexicalenvstack_, enc->bb2lexicalenvstack_, enc->globallexical_waitlist_);
-
 
 
             std::string newname = enc->RemovePrefixOfFunc(method_name);
@@ -1174,13 +1172,12 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 closure_name =  "closure_" + std::to_string(enc->methodoffset_) + "_" + std::to_string(enc->closure_count);
                 enc->closure_count++;
 
-                panda::es2panda::ir::Expression* assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                                enc->GetIdentifierByName(new std::string(closure_name)),
-                                                                                raw_expression,
-                                                                                es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                      enc->GetIdentifierByName(new std::string(closure_name)),
+                                                                                      raw_expression,
+                                                                                      es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
                                                                             ); 
-                auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
-                                                                                    assignexpression);
+                auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
                 enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
                 lexicalenvstack->Set(tier, index, new std::string(closure_name));
             }else{
@@ -1287,10 +1284,10 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             
             panda::es2panda::ir::Expression* source_expression = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
             auto binexpression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
-                                                            identifier_name_expression,
-                                                            source_expression,
-                                                            BinIntrinsicIdToToken(compiler::RuntimeInterface::IntrinsicId::ISIN_IMM8_V8)
-            );
+                                                                            identifier_name_expression,
+                                                                            source_expression,
+                                                                            BinIntrinsicIdToToken(compiler::RuntimeInterface::IntrinsicId::ISIN_IMM8_V8)
+                                                                        );
 
             enc->SetExpressionByRegister(inst, inst->GetDstReg(), binexpression);
             break;
@@ -1318,13 +1315,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::string closure_name =  "closure_" + std::to_string(enc->methodoffset_) + "_" + std::to_string(enc->closure_count);
             enc->closure_count++;
 
-            panda::es2panda::ir::Expression* assignexpression =  AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                            enc->GetIdentifierByName(new std::string(closure_name)),
-                                                                            raw_expression,
-                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-                                                                        ); 
-            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
-                                                                                assignexpression);
+            auto assignexpression =  AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                enc->GetIdentifierByName(new std::string(closure_name)),
+                                                                                raw_expression,
+                                                                                es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                            ); 
+
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
             enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
 
             (*enc->patchvarspace_)[imm0] = new std::string(closure_name);
@@ -1374,7 +1371,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             (*enc->class2father_)[constructor_offset] = father;
        
-            //auto newname = enc->RemovePrefixOfFunc(constructor_offset_name);
             auto newname = RemoveArgumentsOfFunc(constructor_offset_name);
             auto newexpression = enc->GetIdentifierByName(new std::string(newname));
             
@@ -1441,18 +1437,21 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto obj_reg_identifier = *enc->GetExpressionById(inst, 0);
             auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
-                                                        obj_reg_identifier,
-                                                        privateid,
-                                                        es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS,
-                                                        false,
-                                                        false);
-            panda::es2panda::ir::Expression* assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                            objattrexpression,
-                                                                            *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
-                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-                                                                        );
-            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc,
-                                                                                assignexpression);
+                                                                                obj_reg_identifier,
+                                                                                privateid,
+                                                                                es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS,
+                                                                                false,
+                                                                                false
+                                                                            );
+
+            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                  objattrexpression,
+                                                                                  *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
+                                                                                  es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                                );
+
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
+
             enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
 
             lexicalenvstack->Set(tier, index, privatevar);
@@ -1476,11 +1475,11 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto obj_expression = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
 
             auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
-                                                        obj_expression,
-                                                        attr_expression,
-                                                        es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
-                                                        false, 
-                                                        false);   
+                                                                                obj_expression,
+                                                                                attr_expression,
+                                                                                es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                                                false, 
+                                                                                false);
             enc->HandleNewCreatedExpression(inst, objattrexpression);
             break;
         }
@@ -1499,17 +1498,18 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto obj_expression = *enc->GetExpressionById(inst, 0);
 
             auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
-                                                        obj_expression,
-                                                        attr_expression,
-                                                        es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
-                                                        false, 
-                                                        false);   
+                                                                                obj_expression,
+                                                                                attr_expression,
+                                                                                es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                                                false, 
+                                                                                false
+                                                                            );   
 
-            panda::es2panda::ir::Expression* assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                            objattrexpression,
-                                                                            *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
-                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-                                                                        );
+            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                  objattrexpression,
+                                                                                  *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
+                                                                                  es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                                );
             auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc,
                                                                                 assignexpression);
             enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
@@ -1521,7 +1521,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto funobj = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
 
-            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
+            auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                                 funobj,
                                                                                 std::move(arguments),
                                                                                 nullptr,
@@ -1584,7 +1584,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                         es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
                                                         false, 
                                                         false);  
-            panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+            auto assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
                                                                             objattrexpression,
                                                                             *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
                                                                             es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
@@ -1605,7 +1605,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                         es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
                                                         true, 
                                                         false);  
-            panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+            auto assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
                                                                             objattrexpression,
                                                                             *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
                                                                             es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
@@ -1658,18 +1658,19 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
 
             auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
-                                                        enc->GetIdentifierByName(new std::string("this")),
-                                                        enc->GetIdentifierByName(new std::string(bc_id0)),
-                                                        es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
-                                                        false, 
-                                                        false);  
-            panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                            objattrexpression,
-                                                                            *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
-                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-                                                                        ); 
-            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
-                                                                                assignexpression);
+                                                                                enc->GetIdentifierByName(new std::string("this")),
+                                                                                enc->GetIdentifierByName(new std::string(bc_id0)),
+                                                                                es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                                                false, 
+                                                                                false);
+
+            auto assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                    objattrexpression,
+                                                                                    *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
+                                                                                    es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                                );
+
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
             enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
             break;
         }
@@ -1678,18 +1679,19 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::STTHISBYVALUE_IMM16_V8:
        {
             auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
-                                                        enc->GetIdentifierByName(new std::string("this")),
-                                                        *enc->GetExpressionById(inst, 1),
-                                                        es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
-                                                        true, 
-                                                        false);  
-            panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                            objattrexpression,
-                                                                            *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
-                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-                                                                        ); 
-            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
-                                                                                assignexpression);
+                                                                                enc->GetIdentifierByName(new std::string("this")),
+                                                                                *enc->GetExpressionById(inst, 1),
+                                                                                es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                                                true, 
+                                                                                false); 
+
+            auto assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                    objattrexpression,
+                                                                                    *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
+                                                                                    es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                                ); 
+
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
             enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
             break;
         }
