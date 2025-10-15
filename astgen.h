@@ -253,12 +253,15 @@ public:
         return identifier;
     }
 
-    void HandleNewCreatedExpression(Inst* inst, es2panda::ir::Expression* callexpression){
+    void HandleNewCreatedExpression(Inst* inst, es2panda::ir::Expression* expression){
         if(inst->HasUsers()){
-            this->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
+            this->SetExpressionByRegister(inst, inst->GetDstReg(), expression);
         }else{
-            auto callstatement = AllocNode<es2panda::ir::ExpressionStatement>(this, callexpression);
-            this->AddInstAst2BlockStatemntByInst(inst, callstatement);
+            if(expression->IsCallExpression()){
+                auto callstatement = AllocNode<es2panda::ir::ExpressionStatement>(this, expression);
+                this->AddInstAst2BlockStatemntByInst(inst, callstatement);
+            }
+
         }
     }
 
