@@ -96,17 +96,10 @@ bool AstGen::RunImpl()
         visited.push_back(bb);        
         ///////////////////////////////////////////////////////////////////////////////////////////////////
         for (const auto &inst : bb->AllInsts()) {
-            [[maybe_unused]] auto start = GetResult().size();
-
             VisitInstruction(inst);
-
             if (!GetStatus()) {
                 return false;
             }
-
-            [[maybe_unused]] auto end = GetResult().size();
-
-            ASSERT(end >= start);
         }
 
         // check whehter add break statement
@@ -563,7 +556,7 @@ void AstGen::VisitReturn(GraphVisitor *v, Inst *inst_base)
     std::cout << "[-] VisitReturn  >>>>>>>>>>>>>>>>>" << std::endl;
 }
 
-void AstGen::VisitCastValueToAnyType([[maybe_unused]] GraphVisitor *visitor, [[maybe_unused]] Inst *inst)
+void AstGen::VisitCastValueToAnyType(GraphVisitor *visitor, Inst *inst)
 {
     std::cout << "[+] VisitCastValueToAnyType  >>>>>>>>>>>>>>>>>" << std::endl;
     auto enc = static_cast<AstGen *>(visitor);

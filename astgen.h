@@ -81,15 +81,7 @@ public:
                 
 
         funcNode->SetIdent(funname_id);
-        //auto funcDecl = parser_program->Allocator()->New<panda::es2panda::ir::FunctionDeclaration>(funcNode);
 
-        //auto program_block = parser_program->Ast();
-        //auto program_statements = program_block->Statements();
-
-        // add 0 block statement
-        //program_block->AddStatementAtPos(program_statements.size(), funcDecl);
-
-        
         this->id2block[0] = body;
 
         //this->lcaFinder = std::make_unique<LCAFinder>(graph);
@@ -152,10 +144,9 @@ public:
     BasicBlock* FindNearestVisitedPred(const std::vector<BasicBlock*>& visited, BasicBlock* block);
 
     template <typename T, typename... Args>
-    static T *AllocNode(AstGen * xx, Args &&... args)
+    static T *AllocNode(AstGen * astgen, Args &&... args)
     {
-        //[[maybe_unused]] auto *xx = static_cast<AstGen *>(visitor);
-        auto ret = xx->parser_program_->Allocator()->New<T>(std::forward<Args>(args)...);
+        auto ret = astgen->parser_program_->Allocator()->New<T>(std::forward<Args>(args)...);
         if (ret == nullptr) {
             std::cout << "Unsuccessful allocation during parsing" << std::endl;;
         }
