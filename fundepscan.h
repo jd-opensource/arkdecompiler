@@ -77,28 +77,28 @@ public:
 
 #include "compiler/optimizer/ir/visitor.inc"
 
-    [[maybe_unused]] const BytecodeOptIrInterface *ir_interface_;
-    [[maybe_unused]] panda::pandasm::Program* program_;
+    const BytecodeOptIrInterface *ir_interface_;
+    panda::pandasm::Program* program_;
     [[maybe_unused]] panda::disasm::Disassembler& disasm_;
-    [[maybe_unused]] uint32_t methodoffset_;
+    uint32_t methodoffset_;
 
-    [[maybe_unused]] std::vector<std::pair<uint32_t, uint32_t>>* depedges_; // left depends on right
-    [[maybe_unused]] std::map<uint32_t, std::set<uint32_t>> *class2memberfuns_;
+    std::vector<std::pair<uint32_t, uint32_t>>* depedges_; // left depends on right
+    std::map<uint32_t, std::set<uint32_t>> *class2memberfuns_;
 
-    [[maybe_unused]] std::map<uint32_t, std::map<uint32_t,  std::set<size_t>>> *method2lexicalmap_;
+    std::map<uint32_t, std::map<uint32_t,  std::set<size_t>>> *method2lexicalmap_;
 
-    [[maybe_unused]] std::set<uint32_t>* memberfuncs_;
+    std::set<uint32_t>* memberfuncs_;
 
     [[maybe_unused]] std::map<std::string, std::string> *raw2newname_;
 
-    [[maybe_unused]] std::map<std::string, uint32_t> *methodname2offset_;
+    std::map<std::string, uint32_t> *methodname2offset_;
 
-    [[maybe_unused]] std::map<uint32_t, uint32_t> construct2initializer_;
+    std::map<uint32_t, uint32_t> construct2initializer_;
 
-    [[maybe_unused]] std::vector<uint32_t> inserted_construct_order_;
+    std::vector<uint32_t> inserted_construct_order_;
 
-    [[maybe_unused]] uint32_t current_constructor_offset;
-    [[maybe_unused]] uint32_t current_function_initializer;
+    uint32_t current_constructor_offset;
+    uint32_t current_function_initializer;
 
 };
 

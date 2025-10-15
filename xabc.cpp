@@ -238,7 +238,7 @@ bool ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
 
     auto func_name = ir_interface->GetMethodIdByOffset(mda.GetMethodId().GetOffset() );
     std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>> "  << func_name << " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-    [[maybe_unused]] auto it = prog->function_table.find(func_name);
+    auto it = prog->function_table.find(func_name);
     if (it == prog->function_table.end()) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Cannot find function: " << func_name;
         return false;
