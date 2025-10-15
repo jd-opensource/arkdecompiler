@@ -1668,6 +1668,84 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
             break;
         }
+
+        
+       case compiler::RuntimeInterface::IntrinsicId::LDTHISBYNAME_IMM8_ID16: // hard to trigger
+       case compiler::RuntimeInterface::IntrinsicId::LDTHISBYNAME_IMM16_ID16:
+       {
+            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
+            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
+
+            auto attr_expression = enc->GetIdentifierByName(new std::string(bc_id0));
+            auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
+                                                        enc->GetIdentifierByName(new std::string("this")),
+                                                        attr_expression, 
+                                                        es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                        false, 
+                                                        false);
+
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), objattrexpression);
+            break;
+        } 
+       
+       case compiler::RuntimeInterface::IntrinsicId::LDTHISBYVALUE_IMM8: // hard to trigger
+       case compiler::RuntimeInterface::IntrinsicId::LDTHISBYVALUE_IMM16:
+       {
+            auto attr_expression = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
+            auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
+                                                        enc->GetIdentifierByName(new std::string("this")),
+                                                        attr_expression, 
+                                                        es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                        true, 
+                                                        false);
+
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), objattrexpression);
+            break;
+
+        }
+       
+       case compiler::RuntimeInterface::IntrinsicId::STTHISBYNAME_IMM8_ID16:
+       case compiler::RuntimeInterface::IntrinsicId::STTHISBYNAME_IMM16_ID16:
+       {
+            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
+            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
+
+            auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
+                                                        enc->GetIdentifierByName(new std::string("this")),
+                                                        enc->GetIdentifierByName(new std::string(bc_id0)),
+                                                        es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                        false, 
+                                                        false);  
+            panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                            objattrexpression,
+                                                                            *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
+                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                        ); 
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
+                                                                                assignexpression);
+            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+            break;
+        }
+
+       case compiler::RuntimeInterface::IntrinsicId::STTHISBYVALUE_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::STTHISBYVALUE_IMM16_V8:
+       {
+            auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
+                                                        enc->GetIdentifierByName(new std::string("this")),
+                                                        *enc->GetExpressionById(inst, 1),
+                                                        es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                        true, 
+                                                        false);  
+            panda::es2panda::ir::Expression* assignexpression =   AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                            objattrexpression,
+                                                                            *enc->GetExpressionById(inst, inst->GetInputsCount() - 2),
+                                                                            es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                        ); 
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, 
+                                                                                assignexpression);
+            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+            break;
+        }
        
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
@@ -1708,62 +1786,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             if (acc_dst != compiler::ACC_REG_ID) {
                 DoSta(inst->GetDstReg(), enc->result_);
             }
-            break;
-        }
-
-       case compiler::RuntimeInterface::IntrinsicId::LDTHISBYNAME_IMM8_ID16:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
-            enc->result_.emplace_back(pandasm::Create_LDTHISBYNAME(imm0, bc_id0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::STTHISBYNAME_IMM8_ID16:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
-            enc->result_.emplace_back(pandasm::Create_STTHISBYNAME(imm0, bc_id0));
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::LDTHISBYVALUE_IMM8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_LDTHISBYVALUE(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::STTHISBYVALUE_IMM8_V8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_STTHISBYVALUE(imm0, v0));
             break;
         }
 
@@ -1892,62 +1914,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->result_.emplace_back(pandasm::Create_SETOBJECTWITHPROTO(imm0, v0));
             break;
         }
-        
-       case compiler::RuntimeInterface::IntrinsicId::LDTHISBYNAME_IMM16_ID16:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
-            enc->result_.emplace_back(pandasm::Create_LDTHISBYNAME(imm0, bc_id0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::STTHISBYNAME_IMM16_ID16:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
-            enc->result_.emplace_back(pandasm::Create_STTHISBYNAME(imm0, bc_id0));
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::LDTHISBYVALUE_IMM16:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_LDTHISBYVALUE(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::STTHISBYVALUE_IMM16_V8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_STTHISBYVALUE(imm0, v0));
-            break;
-        }
+    
        case compiler::RuntimeInterface::IntrinsicId::ASYNCGENERATORREJECT_V8:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
