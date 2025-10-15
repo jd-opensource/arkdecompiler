@@ -265,6 +265,10 @@ public:
         }
     }
 
+    std::optional<panda::es2panda::ir::Expression*> GetExpressionByAcc(Inst* inst){
+        return this->GetExpressionById(inst, inst->GetInputsCount() - 2);
+    }
+
     std::optional<panda::es2panda::ir::Expression*> GetExpressionById(Inst* inst, uint32_t index){
         auto id = inst->GetInput(index).GetInst()->GetId();
         
