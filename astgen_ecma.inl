@@ -896,7 +896,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                             UnaryPrefixIntrinsicIdToToken(inst->GetIntrinsicId())
             );
 
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), unaryexpression);
+            enc->HandleNewCreatedExpression(inst, unaryexpression);
             break;
         }
 
@@ -1481,9 +1481,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                         es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
                                                         false, 
                                                         false);   
-
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), objattrexpression);
-
+            enc->HandleNewCreatedExpression(inst, objattrexpression);
             break;
         }
 
@@ -1538,7 +1536,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_SUPERCALLFORWARDALLARGS_PREF_V8:
        {
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), *enc->GetExpressionById(inst, 0));
+            enc->HandleNewCreatedExpression(inst, *enc->GetExpressionById(inst, 0));
             break;
         }
 
@@ -1555,8 +1553,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                         es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
                                                         false, 
                                                         false);
-
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), objattrexpression);
+            enc->HandleNewCreatedExpression(inst, objattrexpression);
             break;
         }
         
@@ -1571,7 +1568,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                         true, 
                                                         false);
 
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), objattrexpression);
+            enc->HandleNewCreatedExpression(inst, objattrexpression);
             break;
         }
 
@@ -1634,7 +1631,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                         false, 
                                                         false);
 
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), objattrexpression);
+            enc->HandleNewCreatedExpression(inst, objattrexpression);
             break;
         } 
        
@@ -1649,7 +1646,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                         true, 
                                                         false);
 
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), objattrexpression);
+            enc->HandleNewCreatedExpression(inst, objattrexpression);
             break;
 
         }
