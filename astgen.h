@@ -233,7 +233,7 @@ public:
         if (this->str2identifers.find(raw_name)  != this->str2identifers.end()) {
             identifier = this->str2identifers[raw_name];
         } else {
-            panda::es2panda::util::StringView name_view = panda::es2panda::util::StringView(raw_name.c_str());
+            panda::es2panda::util::StringView name_view = panda::es2panda::util::StringView(*new std::string(raw_name));
             identifier = AllocNode<panda::es2panda::ir::Identifier>(this, name_view);
             this->str2identifers[raw_name] = identifier;
         }
@@ -242,15 +242,7 @@ public:
 
 
     panda::es2panda::ir::Identifier* GetIdentifierByName(std::string* raw_name){
-        panda::es2panda::ir::Identifier* identifier;
-        if (this->str2identifers.find(*raw_name)  != this->str2identifers.end()) {
-            identifier = this->str2identifers[*raw_name];
-        } else {
-            panda::es2panda::util::StringView name_view = panda::es2panda::util::StringView(*new std::string(*raw_name));
-            identifier = AllocNode<panda::es2panda::ir::Identifier>(this, name_view);
-            this->str2identifers[*raw_name] = identifier;
-        }
-        return identifier;
+        return this->GetIdentifierByName(*raw_name);
     }
 
     void HandleNewCreatedExpression(Inst* inst, es2panda::ir::Expression* expression){
