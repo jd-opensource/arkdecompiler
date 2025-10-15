@@ -43,8 +43,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             nullptr,
                                                                             false
                                                                             );
-
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression); 
+            enc->HandleCallExpression(inst, callexpression);
             break;
         }
 
@@ -188,7 +187,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             false
                                                                             );
 
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
+            enc->HandleCallExpression(inst, callexpression);
             break;
         }
 
@@ -465,14 +464,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             panda::es2panda::ir::Expression* funname = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
 
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
-            es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                                 funname,
                                                                                 std::move(arguments),
                                                                                 nullptr,
                                                                                 false
                                                                             );
 
-            enc->HandleCallExpression(inst, callarg0expression);
+            enc->HandleCallExpression(inst, callexpression);
             break;
         }
 
@@ -485,14 +484,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto v0 = *enc->GetExpressionById(inst, 0);
             
             arguments.push_back(v0);
-            es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                                 funname,
                                                                                 std::move(arguments),
                                                                                 nullptr,
                                                                                 false
                                                                             );
 
-            enc->HandleCallExpression(inst, callarg0expression);
+            enc->HandleCallExpression(inst, callexpression);
             break;
         }
 
@@ -506,14 +505,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             arguments.push_back(*enc->GetExpressionById(inst, 1));
 
 
-            es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                                 funname,
                                                                                 std::move(arguments),
                                                                                 nullptr,
                                                                                 false
                                                                             );
 
-            enc->HandleCallExpression(inst, callarg0expression);
+            enc->HandleCallExpression(inst, callexpression);
 
             break;
 
@@ -529,14 +528,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             arguments.push_back(*enc->GetExpressionById(inst, 1));
             arguments.push_back(*enc->GetExpressionById(inst, 2));
 
-            es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                                 funname,
                                                                                 std::move(arguments),
                                                                                 nullptr,
                                                                                 false
                                                                             );
 
-            enc->HandleCallExpression(inst, callarg0expression);
+            enc->HandleCallExpression(inst, callexpression);
             break;
         }
        
@@ -547,7 +546,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->thisptr = *enc->GetExpressionById(inst, 0);
 
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
-            es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                                 funname,
                                                                                 std::move(arguments),
                                                                                 nullptr,
@@ -555,7 +554,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             );
 
             
-            enc->HandleCallExpression(inst, callarg0expression);
+            enc->HandleCallExpression(inst, callexpression);
             break;
         }
 
@@ -567,14 +566,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->thisptr = *enc->GetExpressionById(inst, 0);
             arguments.push_back(*enc->GetExpressionById(inst, 1));
 
-            es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                                 funname,
                                                                                 std::move(arguments),
                                                                                 nullptr,
                                                                                 false
                                                                             );
 
-            enc->HandleCallExpression(inst, callarg0expression);
+            enc->HandleCallExpression(inst, callexpression);
 
             break;
         }
@@ -588,14 +587,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             arguments.push_back(*enc->GetExpressionById(inst, 1));
             arguments.push_back(*enc->GetExpressionById(inst, 2));
 
-            es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                                 funname,
                                                                                 std::move(arguments),
                                                                                 nullptr,
                                                                                 false
                                                                             );
 
-            enc->HandleCallExpression(inst, callarg0expression);
+            enc->HandleCallExpression(inst, callexpression);
 
             break;
         }
@@ -611,14 +610,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             arguments.push_back(*enc->GetExpressionById(inst, 2));
             arguments.push_back(*enc->GetExpressionById(inst, 3));
 
-            es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                                 funname,
                                                                                 std::move(arguments),
                                                                                 nullptr,
                                                                                 false
                                                                             );
 
-            enc->HandleCallExpression(inst, callarg0expression);
+            enc->HandleCallExpression(inst, callexpression);
 
             break;
         }
@@ -752,7 +751,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             false
                                                                             );
 
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
+            enc->HandleCallExpression(inst, callexpression);
 
             break;
         }
@@ -815,13 +814,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
 
             
-            es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                                 funname,
                                                                                 std::move(arguments),
                                                                                 nullptr,
                                                                                 false
                                                                             );
-            enc->HandleCallExpression(inst, callarg0expression);
+            enc->HandleCallExpression(inst, callexpression);
             break;
         }
 
@@ -845,13 +844,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
 
             
-            es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                                 funname,
                                                                                 std::move(arguments),
                                                                                 nullptr,
                                                                                 false
                                                                             );
-            enc->HandleCallExpression(inst, callarg0expression);
+            enc->HandleCallExpression(inst, callexpression);
             break;
         }
 
@@ -875,14 +874,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
 
             
-            es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                                 funname,
                                                                                 std::move(arguments),
                                                                                 nullptr,
                                                                                 false
                                                                             );
 
-            enc->HandleCallExpression(inst, callarg0expression);
+            enc->HandleCallExpression(inst, callexpression);
             break;
         }
 
@@ -924,7 +923,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                 false
                                                                 );
 
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
+            enc->HandleCallExpression(inst, callexpression);
             break;
         }
 
@@ -941,7 +940,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                 false
                                                                 );
 
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
+            enc->HandleCallExpression(inst, callexpression);
             break;
         }
 
@@ -1532,14 +1531,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto funobj = *enc->GetExpressionById(inst, inst->GetInputsCount() - 2);
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
 
-            es2panda::ir::CallExpression* callarg0expression = AllocNode<es2panda::ir::CallExpression>(enc, 
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                                 funobj,
                                                                                 std::move(arguments),
                                                                                 nullptr,
                                                                                 false
                                                                             );
 
-            enc->HandleCallExpression(inst, callarg0expression);
+            enc->HandleCallExpression(inst, callexpression);
 
             enc->thisptr = *enc->GetExpressionById(inst, 0);
             break;
