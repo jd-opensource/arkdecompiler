@@ -240,6 +240,15 @@ public:
         return identifier;
     }
 
+    void HandleCallExpression(Inst* inst, es2panda::ir::CallExpression* callexpression){
+        if(inst->HasUsers()){
+            this->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
+        }else{
+            auto callstatement = AllocNode<es2panda::ir::ExpressionStatement>(this, callexpression);
+            this->AddInstAst2BlockStatemntByInst(inst, callstatement);
+        }
+    }
+
     std::optional<panda::es2panda::ir::Expression*> GetExpressionById(Inst* inst, uint32_t index){
         auto id = inst->GetInput(index).GetInst()->GetId();
         
