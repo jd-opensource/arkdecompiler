@@ -258,10 +258,10 @@ public:
     }
 
     std::optional<panda::es2panda::ir::Expression*> GetExpressionByAcc(Inst* inst){
-        return this->GetExpressionById(inst, inst->GetInputsCount() - 2);
+        return this->GetExpressionByRegIndex(inst, inst->GetInputsCount() - 2);
     }
 
-    std::optional<panda::es2panda::ir::Expression*> GetExpressionById(Inst* inst, uint32_t index){
+    std::optional<panda::es2panda::ir::Expression*> GetExpressionByRegIndex(Inst* inst, uint32_t index){
         auto id = inst->GetInput(index).GetInst()->GetId();
         
         auto it = this->id2expression.find(id);
