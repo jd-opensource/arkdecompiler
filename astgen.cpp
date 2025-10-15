@@ -230,7 +230,7 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
     /////////////////////////////////////////////////////////////////////////////////////////////////
     /// deal with while/do-while
     auto block = inst->GetBasicBlock();
-    es2panda::ir::BlockStatement* block_statement = enc->GetBlockStatementById(block);
+    auto block_statement = enc->GetBlockStatementById(block);
 
     if(block->IsLoopValid() && block->IsLoopHeader()){
         std::cout << "1%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
@@ -241,8 +241,8 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
         }else{
             std::cout << "[+] while ===" << std::endl;
 
-            es2panda::ir::BlockStatement* true_statements =   enc->GetBlockStatementById(inst->GetBasicBlock()->GetTrueSuccessor());
-            es2panda::ir::BlockStatement* false_statements =  enc->GetBlockStatementById(inst->GetBasicBlock()->GetFalseSuccessor());
+            auto true_statements =   enc->GetBlockStatementById(inst->GetBasicBlock()->GetTrueSuccessor());
+            auto false_statements =  enc->GetBlockStatementById(inst->GetBasicBlock()->GetFalseSuccessor());
     
             if(enc->loop2exit[inst->GetBasicBlock()->GetLoop() ] == inst->GetBasicBlock()->GetTrueSuccessor() ){
                 std::swap(true_statements, false_statements);
@@ -260,8 +260,8 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
         }
     }else{
         std::cout << "2%%%%%%%%%%%%%%%%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-        es2panda::ir::BlockStatement* true_statements =   enc->GetBlockStatementById(inst->GetBasicBlock()->GetTrueSuccessor());
-        es2panda::ir::BlockStatement* false_statements =  enc->GetBlockStatementById(inst->GetBasicBlock()->GetFalseSuccessor());
+        auto true_statements =   enc->GetBlockStatementById(inst->GetBasicBlock()->GetTrueSuccessor());
+        auto false_statements =  enc->GetBlockStatementById(inst->GetBasicBlock()->GetFalseSuccessor());
 
         auto ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, test_expression, true_statements, false_statements);
         true_statements->SetParent(block_statement);
