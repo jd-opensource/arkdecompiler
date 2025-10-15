@@ -240,7 +240,7 @@ public:
         return identifier;
     }
 
-    void HandleCallExpression(Inst* inst, es2panda::ir::CallExpression* callexpression){
+    void HandleNewCreatedExpression(Inst* inst, es2panda::ir::Expression* callexpression){
         if(inst->HasUsers()){
             this->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
         }else{

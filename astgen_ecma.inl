@@ -20,7 +20,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
        case compiler::RuntimeInterface::IntrinsicId::LDINFINITY:
        {
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->constant_infinity);
+            enc->HandleNewCreatedExpression(inst, enc->constant_infinity);
             break;
         }
 
@@ -43,40 +43,40 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             nullptr,
                                                                             false
                                                                             );
-            enc->HandleCallExpression(inst, callexpression);
+            enc->HandleNewCreatedExpression(inst, callexpression);
             break;
         }
 
        case compiler::RuntimeInterface::IntrinsicId::LDHOLE:
        {
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->constant_hole);
+            enc->HandleNewCreatedExpression(inst, enc->constant_hole);
             break;
         }
 
        case compiler::RuntimeInterface::IntrinsicId::LDUNDEFINED:
        {
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->constant_undefined);
+            enc->HandleNewCreatedExpression(inst, enc->constant_undefined);
             break;
         }
 
        case compiler::RuntimeInterface::IntrinsicId::LDNULL:
        {
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->constant_null);
+            enc->HandleNewCreatedExpression(inst, enc->constant_null);
             break;
         }
        case compiler::RuntimeInterface::IntrinsicId::LDTRUE:
        {
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->constant_true);
+            enc->HandleNewCreatedExpression(inst, enc->constant_true);
             break;
         }
        case compiler::RuntimeInterface::IntrinsicId::LDFALSE:
        {
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->constant_false);
+            enc->HandleNewCreatedExpression(inst, enc->constant_false);
             break;
         }
        case compiler::RuntimeInterface::IntrinsicId::LDNAN:
        {
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->constant_nan);
+            enc->HandleNewCreatedExpression(inst, enc->constant_nan);
             break;
         }
 
@@ -108,13 +108,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                             source_expression,
                                                             BinIntrinsicIdToToken(inst->GetIntrinsicId())
             );
-
-            if(inst->HasUsers()){
-                enc->SetExpressionByRegister(inst, inst->GetDstReg(), binexpression);
-            }else{
-                auto binexpressionstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, binexpression);
-                enc->AddInstAst2BlockStatemntByInst(inst, binexpressionstatement);
-            }
+            enc->HandleNewCreatedExpression(inst, binexpression);
 
             break;
         }
@@ -128,8 +122,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                             enc->constant_one,
                                                             IncDecIntrinsicIdToToken(inst->GetIntrinsicId())
             );
-
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), binexpression);
+            enc->HandleNewCreatedExpression(inst, binexpression);
             break;
         }
 
@@ -140,8 +133,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                             enc->constant_true,
                                                             BinIntrinsicIdToToken(inst->GetIntrinsicId())
             );
-
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), binexpression);
+            enc->HandleNewCreatedExpression(inst, binexpression);
             break;
         }
        case compiler::RuntimeInterface::IntrinsicId::ISFALSE:{
@@ -152,7 +144,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                             BinIntrinsicIdToToken(inst->GetIntrinsicId())
             );
 
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), binexpression);
+            enc->HandleNewCreatedExpression(inst, binexpression);
             break;
 
         }
@@ -168,7 +160,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                             UnaryPrefixIntrinsicIdToToken(inst->GetIntrinsicId())
             );
 
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), unaryexpression);
+            enc->HandleNewCreatedExpression(inst, unaryexpression);
             break;
         }
 
@@ -187,7 +179,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             false
                                                                             );
 
-            enc->HandleCallExpression(inst, callexpression);
+            enc->HandleNewCreatedExpression(inst, callexpression);
             break;
         }
 
@@ -226,7 +218,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             );
 
             ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->parser_program_->Allocator()->Adapter());
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), objectexpression);
+
+            enc->HandleNewCreatedExpression(inst, objectexpression);
             break;
         }
 
@@ -241,8 +234,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             );
             ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->parser_program_->Allocator()->Adapter());
 
-
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), arrayexpression);
+            enc->HandleNewCreatedExpression(inst, arrayexpression);
             break;
         }
 
@@ -300,7 +292,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             false
                                                                             );
 
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), arrayexpression);
+            enc->HandleNewCreatedExpression(inst, arrayexpression);
             break;
         }
 
@@ -471,7 +463,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 false
                                                                             );
 
-            enc->HandleCallExpression(inst, callexpression);
+            enc->HandleNewCreatedExpression(inst, callexpression);
             break;
         }
 
@@ -491,7 +483,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 false
                                                                             );
 
-            enc->HandleCallExpression(inst, callexpression);
+            enc->HandleNewCreatedExpression(inst, callexpression);
             break;
         }
 
@@ -512,7 +504,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 false
                                                                             );
 
-            enc->HandleCallExpression(inst, callexpression);
+            enc->HandleNewCreatedExpression(inst, callexpression);
 
             break;
 
@@ -535,7 +527,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 false
                                                                             );
 
-            enc->HandleCallExpression(inst, callexpression);
+            enc->HandleNewCreatedExpression(inst, callexpression);
             break;
         }
        
@@ -554,7 +546,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             );
 
             
-            enc->HandleCallExpression(inst, callexpression);
+            enc->HandleNewCreatedExpression(inst, callexpression);
             break;
         }
 
@@ -573,7 +565,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 false
                                                                             );
 
-            enc->HandleCallExpression(inst, callexpression);
+            enc->HandleNewCreatedExpression(inst, callexpression);
 
             break;
         }
@@ -594,7 +586,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 false
                                                                             );
 
-            enc->HandleCallExpression(inst, callexpression);
+            enc->HandleNewCreatedExpression(inst, callexpression);
 
             break;
         }
@@ -617,7 +609,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 false
                                                                             );
 
-            enc->HandleCallExpression(inst, callexpression);
+            enc->HandleNewCreatedExpression(inst, callexpression);
 
             break;
         }
@@ -751,7 +743,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             false
                                                                             );
 
-            enc->HandleCallExpression(inst, callexpression);
+            enc->HandleNewCreatedExpression(inst, callexpression);
 
             break;
         }
@@ -820,7 +812,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 nullptr,
                                                                                 false
                                                                             );
-            enc->HandleCallExpression(inst, callexpression);
+            enc->HandleNewCreatedExpression(inst, callexpression);
             break;
         }
 
@@ -850,7 +842,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 nullptr,
                                                                                 false
                                                                             );
-            enc->HandleCallExpression(inst, callexpression);
+            enc->HandleNewCreatedExpression(inst, callexpression);
             break;
         }
 
@@ -881,7 +873,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 false
                                                                             );
 
-            enc->HandleCallExpression(inst, callexpression);
+            enc->HandleNewCreatedExpression(inst, callexpression);
             break;
         }
 
@@ -923,7 +915,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                 false
                                                                 );
 
-            enc->HandleCallExpression(inst, callexpression);
+            enc->HandleNewCreatedExpression(inst, callexpression);
             break;
         }
 
@@ -940,7 +932,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                 false
                                                                 );
 
-            enc->HandleCallExpression(inst, callexpression);
+            enc->HandleNewCreatedExpression(inst, callexpression);
             break;
         }
 
@@ -1538,7 +1530,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 false
                                                                             );
 
-            enc->HandleCallExpression(inst, callexpression);
+            enc->HandleNewCreatedExpression(inst, callexpression);
 
             enc->thisptr = *enc->GetExpressionById(inst, 0);
             break;
