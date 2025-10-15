@@ -351,8 +351,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 false
                                                                             );
 
-            ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->parser_program_->Allocator()->Adapter());
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), objectexpression);
+            enc->HandleNewCreatedExpression(inst, objectexpression);
             break;
         }
 
@@ -367,7 +366,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
 
             es2panda::ir::Expression* sourceexpression = enc->GetIdentifierByName(new std::string(bc_id0));
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), sourceexpression);
+
+            enc->HandleNewCreatedExpression(inst, sourceexpression);
 
             break;
         }
@@ -391,7 +391,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                         false, 
                                                         false);
 
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), objattrexpression);
+            enc->HandleNewCreatedExpression(inst, objattrexpression);
             break;
        }
 
@@ -406,8 +406,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                         es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
                                                         true, 
                                                         false);
-
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), objattrexpression);
+            enc->HandleNewCreatedExpression(inst, objattrexpression);
             break;
         }
 
@@ -687,7 +686,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
 
             es2panda::ir::Expression *newExprNode = AllocNode<es2panda::ir::NewExpression>(enc, callee, nullptr, std::move(arguments));
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), newExprNode);
+
+            enc->HandleNewCreatedExpression(inst, newExprNode);
             break;
 
         }
