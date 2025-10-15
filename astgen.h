@@ -369,7 +369,8 @@ public:
 
             //////////////////////////////////////////////////////////////////////////////////////
             ArenaVector<panda::es2panda::ir::Statement *> statements(this->parser_program_->Allocator()->Adapter());
-            auto new_block_statement = this->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
+            auto new_block_statement = AllocNode<es2panda::ir::BlockStatement>(this, nullptr, std::move(statements));
+            
             this->id2block[block_id] = new_block_statement;
             return this->id2block[block_id];
         }
@@ -387,7 +388,8 @@ public:
         // case4:create new statements
         std::cout << "@@ case 4" << std::endl;
         ArenaVector<panda::es2panda::ir::Statement *> statements(this->parser_program_->Allocator()->Adapter());
-        auto new_block_statement = this->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
+        auto new_block_statement = AllocNode<es2panda::ir::BlockStatement>(this, nullptr, std::move(statements));
+
         this->id2block[block_id] = new_block_statement;
 
         LogSpecialBlockId();

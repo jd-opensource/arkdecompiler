@@ -100,8 +100,7 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
     
     // create null finally case
     ArenaVector<panda::es2panda::ir::Statement *> finally_statements(enc->parser_program_->Allocator()->Adapter());
-    panda::es2panda::ir::BlockStatement* finnalyClause = enc->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(finally_statements));
-    
+    auto finnalyClause = AllocNode<es2panda::ir::BlockStatement>(enc, nullptr, std::move(finally_statements));
     
     // create try-catch statement
     enc->GetBlockStatementById(inst->GetBasicBlock());

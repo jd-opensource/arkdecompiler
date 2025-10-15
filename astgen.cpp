@@ -64,7 +64,8 @@ bool AstGen::RunImpl()
             JudgeLoopType(bb, this->loop2type, this->loop2exit, this->backedge2dowhileloop);
             /////////////////////////////////////////////////////////////////
             ArenaVector<panda::es2panda::ir::Statement *> statements(this->parser_program_->Allocator()->Adapter());
-            auto new_block_statement = this->parser_program_->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(statements));
+            auto new_block_statement =  AllocNode<es2panda::ir::BlockStatement>(this, nullptr, std::move(statements));
+            
             this->whileheader2redundant[bb] = new_block_statement;
         }
 
