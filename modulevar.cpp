@@ -16,13 +16,12 @@ void AddImportAst(panda::es2panda::parser::Program *parser_program, std::string 
     auto program_statements = program_ast->Statements();
 
     panda::es2panda::util::StringView imported_name_view = panda::es2panda::util::StringView(*new std::string(imported_name));
-    auto imported_nameid = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(imported_name_view);
+    auto imported_nameid = AllocNode<panda::es2panda::ir::Identifier>(parser_program, imported_name_view);
 
     panda::es2panda::util::StringView local_name_strview = panda::es2panda::util::StringView(*new std::string(local_name));
-    auto local_nameid = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(local_name_strview);  
+    auto local_nameid = AllocNode<panda::es2panda::ir::Identifier>(parser_program, local_name_strview);  
 
-    
-    auto importspefic = parser_program->Allocator()->New<panda::es2panda::ir::ImportSpecifier>(imported_nameid, local_nameid, false, false);
+    auto importspefic = AllocNode<panda::es2panda::ir::ImportSpecifier>(parser_program, imported_nameid, local_nameid, false, false);
 
     ArenaVector<panda::es2panda::ir::AstNode *> specifiers(parser_program->Allocator()->Adapter());
     specifiers.push_back(importspefic);
@@ -40,7 +39,7 @@ void AddExportAstAll(panda::es2panda::parser::Program *parser_program,  std::str
     auto program_statements = program_ast->Statements();
 
     panda::es2panda::util::StringView local_name_strview = panda::es2panda::util::StringView(*new std::string("*"));
-    auto local_nameid = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(local_name_strview);  
+    auto local_nameid = AllocNode<panda::es2panda::ir::Identifier>(parser_program, local_name_strview);
 
     
     std::string* source_str_ptr = new std::string(module_name);
@@ -56,13 +55,12 @@ void AddExportAstNamed(panda::es2panda::parser::Program *parser_program, std::st
     auto program_statements = program_ast->Statements();
 
     panda::es2panda::util::StringView import_name_view = panda::es2panda::util::StringView(*new std::string(import_name));
-    auto import_nameid = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(import_name_view);
+    auto import_nameid = AllocNode<panda::es2panda::ir::Identifier>(parser_program, import_name_view);
 
     panda::es2panda::util::StringView export_name_strview = panda::es2panda::util::StringView(*new std::string(export_name));
-    auto export_nameid = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(export_name_strview);  
+    auto export_nameid = AllocNode<panda::es2panda::ir::Identifier>(parser_program, export_name_strview);
 
-    
-    auto exportspefic = parser_program->Allocator()->New<panda::es2panda::ir::ExportSpecifier >(import_nameid, export_nameid, false);
+    auto exportspefic = AllocNode<panda::es2panda::ir::ExportSpecifier>(parser_program, import_nameid, export_nameid, false);
 
     ArenaVector<panda::es2panda::ir::ExportSpecifier  *> specifiers(parser_program->Allocator()->Adapter());
     specifiers.push_back(exportspefic);
@@ -80,10 +78,10 @@ void AddExportAst(panda::es2panda::parser::Program *parser_program,  std::string
     auto program_statements = program_ast->Statements();
 
     panda::es2panda::util::StringView local_name_strview = panda::es2panda::util::StringView(*new std::string(local_name));
-    auto local_nameid = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(local_name_strview);  
+    auto local_nameid = AllocNode<panda::es2panda::ir::Identifier>(parser_program, local_name_strview);
 
     panda::es2panda::util::StringView export_name_strview = panda::es2panda::util::StringView(*new std::string(export_name));
-    auto export_nameid = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(export_name_strview);  
+    auto export_nameid = AllocNode<panda::es2panda::ir::Identifier>(parser_program, export_name_strview);
 
     auto *exportast = AllocNode<panda::es2panda::ir::ExportSpecifier >(parser_program, local_nameid, export_nameid, false);
     program_ast->AddStatementAtPos(program_statements.size(), exportast);
