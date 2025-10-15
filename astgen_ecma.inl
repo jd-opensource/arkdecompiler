@@ -243,10 +243,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         case compiler::RuntimeInterface::IntrinsicId::CREATEARRAYWITHBUFFER_IMM16_ID16:
         {
             ArenaVector<es2panda::ir::Expression *> elements(enc->parser_program_->Allocator()->Adapter());
-
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 0);
-            
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 1);
             auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
 
             auto literalarray = enc->FindLiteralArrayByOffset(ir_id0);
