@@ -205,8 +205,8 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
     auto enc = static_cast<AstGen *>(v);
     auto inst = inst_base->CastToIf();
 
-    auto left_expression = *enc->GetExpressionById(inst, 0);
-    auto right_expression = *enc->GetExpressionById(inst, 1);
+    auto left_expression = *enc->GetExpressionByRegIndex(inst, 0);
+    auto right_expression = *enc->GetExpressionByRegIndex(inst, 1);
 
     panda::es2panda::ir::Expression* test_expression;
 
@@ -372,7 +372,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
     auto inst = inst_base->CastToIfImm();
     auto imm = inst->GetImm();
     if (imm == 0) {
-        auto src_expression = *enc->GetExpressionById(inst, 0);
+        auto src_expression = *enc->GetExpressionByRegIndex(inst, 0);
 
         panda::es2panda::ir::Expression* test_expression;
 
