@@ -317,7 +317,9 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
     panda::es2panda::parser::Program *parser_program = new panda::es2panda::parser::Program(panda::es2panda::ScriptExtension::TS);
     
     ArenaVector<panda::es2panda::ir::Statement *> program_statements(parser_program->Allocator()->Adapter());
-    auto program_ast = parser_program->Allocator()->New<panda::es2panda::ir::BlockStatement>(nullptr, std::move(program_statements));
+    
+    auto program_ast = AllocNode<panda::es2panda::ir::BlockStatement>(parser_program, nullptr, std::move(program_statements));
+
     parser_program->SetAst(program_ast);
 
     std::map<uint32_t, LexicalEnvStack*> method2lexicalenvstack;
@@ -417,7 +419,7 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
     std::cout <<  "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD" << std::endl;
 
     for (auto it = method2scriptfunast.rbegin(); it != method2scriptfunast.rend(); ++it) {
-        auto funcDecl = parser_program->Allocator()->New<panda::es2panda::ir::FunctionDeclaration>(it->second);
+        auto funcDecl = AllocNode<panda::es2panda::ir::FunctionDeclaration>(parser_program, it->second);
         program_ast->AddStatementAtPos(program_statements.size(), funcDecl);
 
         //std::cout << it->first << " MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM" << std::endl;

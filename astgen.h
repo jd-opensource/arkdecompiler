@@ -77,7 +77,7 @@ public:
         auto newfunname = this->RemovePrefixOfFunc(fun_name);
         (*this->raw2newname_)[fun_name] = newfunname;
         panda::es2panda::util::StringView name_view = panda::es2panda::util::StringView(*new std::string(newfunname));
-        auto funname_id = parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(name_view);
+        auto funname_id = AllocNode<panda::es2panda::ir::Identifier>(this, name_view);
                 
 
         funcNode->SetIdent(funname_id);
