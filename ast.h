@@ -114,5 +114,3 @@ static T *AllocNode(panda::es2panda::parser::Program *parser_program_, Args &&..
 }
 
 #endif
-
-

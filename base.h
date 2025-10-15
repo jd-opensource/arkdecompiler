@@ -68,7 +68,27 @@
 
 static int count = 0;
 
-void HandleError(const std::string& errorMessage);
+inline void HandleInnerError(const std::string& message) {
+    std::cerr << "Error: " << message << std::endl;
+    std::exit(EXIT_FAILURE);
+}
+
+template<typename... Args>
+std::string formatString(Args... args) {
+    std::ostringstream oss;
+    int unpack[] = {0, ((void)(oss << args), 0)...};
+    static_cast<void>(unpack);
+    return oss.str();
+}
+
+template<typename... Args>
+void HandleError(Args... args) {
+    std::ostringstream oss;
+    oss << formatString(args...);
+    HandleInnerError(oss.str());
+}
+
+
 std::string RemoveArgumentsOfFunc(const std::string& input);
 std::optional<std::vector<std::string>> GetLiteralArrayByOffset(panda::pandasm::Program* program, uint32_t offset);
 std::optional<std::string> FindKeyByValue(const std::map<std::string, uint32_t>& myMap, const uint32_t& value);

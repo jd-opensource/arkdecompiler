@@ -1,9 +1,10 @@
 #include "base.h"
 
-void HandleError(const std::string& errorMessage) {
-    std::cerr << "Error: " << errorMessage << std::endl;
-    std::exit(EXIT_FAILURE); 
-}
+// void HandleError(const std::string& errorMessage) {
+//     std::cerr << "Error: " << errorMessage << std::endl;
+//     std::exit(EXIT_FAILURE); 
+// }
+
 
 std::string RemoveArgumentsOfFunc(const std::string& input) {
     std::string result;
@@ -18,7 +19,6 @@ std::string RemoveArgumentsOfFunc(const std::string& input) {
     }
 
     return input;
-    
 }
 
 bool IsArray(const panda::panda_file::LiteralTag &tag)
