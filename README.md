@@ -37,8 +37,12 @@ git apply --check *.patch
 ```
 
 ## Usage
+## Prepare demo.ts
+refer `tests` directory
+
 ### Run
 ./run.sh
+
 ### detailed description
 - binary executable is **xabc**,
 - default input file is：**demo.abc**
