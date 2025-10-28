@@ -64,6 +64,9 @@ bool ConstructClasses(std::map<uint32_t, std::set<uint32_t>> &class2memberfuns, 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         for (const auto& member_func_offset : member_funcs) {
+            if(constructor_offset == member_func_offset){
+                continue;
+            }
             
             auto func = method2scriptfunast[member_func_offset];
             method2scriptfunast.erase(member_func_offset);

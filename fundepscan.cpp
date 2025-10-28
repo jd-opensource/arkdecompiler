@@ -52,11 +52,15 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
         }
 
         case compiler::RuntimeInterface::IntrinsicId::DEFINECLASSWITHBUFFER_IMM8_ID16_ID16_IMM16_V8:
-        case compiler::RuntimeInterface::IntrinsicId::DEFINECLASSWITHBUFFER_IMM16_ID16_ID16_IMM16_V8:{
+        case compiler::RuntimeInterface::IntrinsicId::DEFINECLASSWITHBUFFER_IMM16_ID16_ID16_IMM16_V8:
+        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_DEFINESENDABLECLASS_PREF_IMM16_ID16_ID16_IMM16_V8:
+        {
             auto constructor_offset = static_cast<uint32_t>(inst->GetImms()[1]);
             enc->current_constructor_offset = constructor_offset;
 
             enc->inserted_construct_order_.push_back(enc->current_constructor_offset);
+
+             (*enc->class2memberfuns_)[constructor_offset].insert(constructor_offset);
 
             // case: not include instance_initializer
             // enc->depedges_->push_back(std::make_pair(enc->methodoffset_, constructor_offset));
