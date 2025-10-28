@@ -29,6 +29,7 @@ public:
         std::map<uint32_t, panda::es2panda::ir::Expression*> *class2father, 
         std::map<uint32_t, std::map<uint32_t,  std::set<size_t>>>* method2lexicalmap,
         std::vector<LexicalEnvStack*> *globallexical_waitlist,
+        std::vector<LexicalEnvStack*> *globalsendablelexical_waitlist,
         std::map<std::string, std::string> *raw2newname,
         std::map<std::string, uint32_t> *methodname2offset,
         std::string fun_name)
@@ -37,7 +38,8 @@ public:
         patchvarspace_(patchvarspace), parser_program_(parser_program), 
         index2namespaces_(index2namespaces), localnamespaces_(localnamespaces), class2memberfuns_(class2memberfuns),
         method2scriptfunast_(method2scriptfunast), ctor2classdeclast_(ctor2classdeclast), memberfuncs_(memberfuncs), class2father_(class2father),
-        method2lexicalmap_(method2lexicalmap), globallexical_waitlist_(globallexical_waitlist), raw2newname_(raw2newname), methodname2offset_(methodname2offset)
+        method2lexicalmap_(method2lexicalmap), globallexical_waitlist_(globallexical_waitlist), globalsendablelexical_waitlist_(globalsendablelexical_waitlist), 
+        raw2newname_(raw2newname), methodname2offset_(methodname2offset)
     {
 
         this->closure_count = 0;
@@ -491,6 +493,7 @@ public:
     std::map<uint32_t, std::map<uint32_t,  std::set<size_t>>>* method2lexicalmap_;
 
     std::vector<LexicalEnvStack*> *globallexical_waitlist_;
+    std::vector<LexicalEnvStack*> *globalsendablelexical_waitlist_;
 
     std::map<std::string, std::string> *raw2newname_;
 
