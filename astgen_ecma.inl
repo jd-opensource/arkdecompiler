@@ -1319,18 +1319,28 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
        case compiler::RuntimeInterface::IntrinsicId::DEFINECLASSWITHBUFFER_IMM8_ID16_ID16_IMM16_V8:
        case compiler::RuntimeInterface::IntrinsicId::DEFINECLASSWITHBUFFER_IMM16_ID16_ID16_IMM16_V8:
+       case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_DEFINESENDABLECLASS_PREF_IMM16_ID16_ID16_IMM16_V8:
        {
             //////////////////////////////////////////////////////////////////////////////////////////////////////
             auto constructor_offset = static_cast<uint32_t>(inst->GetImms()[1]);
             enc->current_constructor_offset = constructor_offset;
             auto constructor_offset_name = enc->ir_interface_->GetMethodIdByOffset(constructor_offset);
 
-            CopyLexicalenvStack(constructor_offset, inst, enc->method2lexicalenvstack_, enc->bb2lexicalenvstack_, enc->globallexical_waitlist_);
+            if(inst->GetIntrinsicId() != compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_DEFINESENDABLECLASS_PREF_IMM16_ID16_ID16_IMM16_V8){
+                CopyLexicalenvStack(constructor_offset, inst, enc->method2lexicalenvstack_, enc->bb2lexicalenvstack_, enc->globallexical_waitlist_);
+            }else{
+                CopyLexicalenvStack(constructor_offset, inst, enc->method2sendablelexicalenvstack_, enc->bb2sendablelexicalenvstack_, enc->globalsendablelexical_waitlist_);
+            }
+            
 
             if (enc->class2memberfuns_->find(constructor_offset) != enc->class2memberfuns_->end()) {
                 auto& member_funcs = (*enc->class2memberfuns_)[constructor_offset];
                 for (const auto& member_func_offset : member_funcs) {
-                    CopyLexicalenvStack(member_func_offset, inst, enc->method2lexicalenvstack_, enc->bb2lexicalenvstack_, enc->globallexical_waitlist_);
+                    if(inst->GetIntrinsicId() != compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_DEFINESENDABLECLASS_PREF_IMM16_ID16_ID16_IMM16_V8){
+                        CopyLexicalenvStack(member_func_offset, inst, enc->method2lexicalenvstack_, enc->bb2lexicalenvstack_, enc->globallexical_waitlist_);
+                    }else{
+                        CopyLexicalenvStack(member_func_offset, inst, enc->method2sendablelexicalenvstack_, enc->bb2sendablelexicalenvstack_, enc->globalsendablelexical_waitlist_);
+                    }
 
                 }
             }
@@ -1676,6 +1686,31 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
        
+        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_NEWSENDABLEENV_PREF_IMM8:
+        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_WIDENEWSENDABLEENV_PREF_IMM16:
+        {
+            std::cout << "1111111111111111111111111111111111111111111111111111111111111111" << std::endl;
+            auto lexenv_size = static_cast<uint32_t>(inst->GetImms()[0]);
+
+            std::cout << "lexenv_size: " << lexenv_size << std::endl;
+            
+            std::cout << "2222222222222222222222222222222222222222222222222222222222222222" << std::endl;
+
+            auto lexicalenvstack = enc->bb2sendablelexicalenvstack_[inst->GetBasicBlock()];
+            
+            std::cout << "333333333333333333333333333333333333333333333333333333333333333" << std::endl;
+
+            if(lexicalenvstack){
+                std::cout << "not null" << std::endl;
+            }else{
+                std::cout << "null" << std::endl;
+            }
+            
+            std::cout << "size: " << lexicalenvstack->Size() << std::endl; 
+            lexicalenvstack->Push(lexenv_size);
+            break;
+        }
+        
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
@@ -1705,36 +1740,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "888888888888888888888888888888" << std::endl;
             break;
         }
-
-        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_NEWSENDABLEENV_PREF_IMM8:
-        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_WIDENEWSENDABLEENV_PREF_IMM16:
-        {
-        //    ASSERT(inst->HasImms() && inst->GetImms().size() > 0);
-        //     auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-        //     enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_WIDENEWSENDABLEENV(imm0));
-        
-            std::cout << "1111111111111111111111111111111111111111111111111111111111111111" << std::endl;
-            auto lexenv_size = static_cast<uint32_t>(inst->GetImms()[0]);
-
-            std::cout << "lexenv_size: " << lexenv_size << std::endl;
-            
-            std::cout << "2222222222222222222222222222222222222222222222222222222222222222" << std::endl;
-
-            auto lexicalenvstack = enc->bb2sendablelexicalenvstack_[inst->GetBasicBlock()];
-            
-            std::cout << "333333333333333333333333333333333333333333333333333333333333333" << std::endl;
-
-            if(lexicalenvstack){
-                std::cout << "not null" << std::endl;
-            }else{
-                std::cout << "null" << std::endl;
-            }
-            
-            std::cout << "size: " << lexicalenvstack->Size() << std::endl; 
-            lexicalenvstack->Push(lexenv_size);
-            break;
-        }
-
 
        case compiler::RuntimeInterface::IntrinsicId::GETNEXTPROPNAME_V8:
        {
@@ -2374,27 +2379,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->result_.emplace_back(pandasm::Create_THROW_UNDEFINEDIFHOLE(v0, v1));
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_DEFINESENDABLECLASS_PREF_IMM16_ID16_ID16_IMM16_V8:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto bc_id0 = enc->ir_interface_->GetMethodIdByOffset(ir_id0);
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 2); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id1 = static_cast<uint32_t>(inst->GetImms()[2]);
-            auto bc_id1 = enc->ir_interface_->GetLiteralArrayByOffset(ir_id1);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 3); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm3 = static_cast<uint32_t>(inst->GetImms()[3]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_DEFINESENDABLECLASS(imm0, bc_id0, bc_id1, imm3, v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-
        case compiler::RuntimeInterface::IntrinsicId::WIDE_SUPERCALLARROWRANGE_PREF_IMM16_V8:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
