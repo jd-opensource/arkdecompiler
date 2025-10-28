@@ -1132,6 +1132,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::STLEXVAR_IMM4_IMM4:
        case compiler::RuntimeInterface::IntrinsicId::STLEXVAR_IMM8_IMM8:
        case compiler::RuntimeInterface::IntrinsicId::WIDE_STLEXVAR_PREF_IMM16_IMM16:
+       case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_STSENDABLEVAR_PREF_IMM4_IMM4:
+       case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_STSENDABLEVAR_PREF_IMM8_IMM8:
+       case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_WIDESTSENDABLEVAR_PREF_IMM16_IMM16:
        {
             std::cout << "@@@ stlevar >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
             std::cout << enc->methodoffset_ << std::endl;
@@ -1141,7 +1144,15 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             std::cout << "tier: " << std::to_string(tier) << ", index: " << std::to_string(index) << std::endl;
 
-            auto lexicalenvstack = enc->bb2lexicalenvstack_[inst->GetBasicBlock()];
+            LexicalEnvStack* lexicalenvstack;
+            if(inst->GetIntrinsicId() ==  compiler::RuntimeInterface::IntrinsicId::STLEXVAR_IMM4_IMM4 || 
+                inst->GetIntrinsicId() ==  compiler::RuntimeInterface::IntrinsicId::STLEXVAR_IMM8_IMM8 || 
+                inst->GetIntrinsicId() ==  compiler::RuntimeInterface::IntrinsicId::WIDE_STLEXVAR_PREF_IMM16_IMM16){
+                lexicalenvstack = enc->bb2lexicalenvstack_[inst->GetBasicBlock()];
+            }else{
+                lexicalenvstack = enc->bb2sendablelexicalenvstack_[inst->GetBasicBlock()];
+            }
+            
             std::cout << "size: " << lexicalenvstack->Size() << std::endl; 
             std::cout << "env size: " << lexicalenvstack->GetLexicalEnv(0).Size() << std::endl;
 
@@ -1178,7 +1189,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             ////////////////////////////////////////////////////////////////////////////////
             /// support forward reference stack
-            DealWithGlobalLexicalWaitlist(tier, index, closure_name, enc->globallexical_waitlist_);
+            if(inst->GetIntrinsicId() ==  compiler::RuntimeInterface::IntrinsicId::STLEXVAR_IMM4_IMM4 
+                || inst->GetIntrinsicId() ==  compiler::RuntimeInterface::IntrinsicId::STLEXVAR_IMM8_IMM8 
+                || inst->GetIntrinsicId() ==  compiler::RuntimeInterface::IntrinsicId::WIDE_STLEXVAR_PREF_IMM16_IMM16){
+                DealWithGlobalLexicalWaitlist(tier, index, closure_name, enc->globallexical_waitlist_);
+            }else{
+                DealWithGlobalLexicalWaitlist(tier, index, closure_name, enc->globalsendablelexical_waitlist_);
+            }
             break;
         }
 
@@ -1710,7 +1727,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             lexicalenvstack->Push(lexenv_size);
             break;
         }
-        
+
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
@@ -2443,48 +2460,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             if (acc_dst != compiler::ACC_REG_ID) {
                 DoSta(inst->GetDstReg(), enc->result_);
             }
-            break;
-        }
-
-       case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_STSENDABLEVAR_PREF_IMM4_IMM4:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-            enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_STSENDABLEVAR(imm0, imm1));
-            break;
-        }
-
-       case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_STSENDABLEVAR_PREF_IMM8_IMM8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-            enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_STSENDABLEVAR(imm0, imm1));
-            break;
-        }
-
-       case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_WIDESTSENDABLEVAR_PREF_IMM16_IMM16:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm1 = static_cast<uint32_t>(inst->GetImms()[1]);
-            enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_WIDESTSENDABLEVAR(imm0, imm1));
             break;
         }
 
