@@ -19,7 +19,9 @@ class AstGen : public compiler::Optimization, public compiler::GraphVisitor {
 public:
     explicit AstGen(compiler::Graph *graph, pandasm::Function *function,
         const BytecodeOptIrInterface *iface, pandasm::Program *prog,  es2panda::parser::Program* parser_program, 
-        uint32_t methodoffset, std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack, std::map<uint32_t, std::string*> *patchvarspace,
+        uint32_t methodoffset, std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack,
+        std::map<uint32_t, LexicalEnvStack*>* method2sendablelexicalenvstack, 
+        std::map<uint32_t, std::string*> *patchvarspace,
         std::map<size_t, std::vector<std::string>> index2namespaces, std::vector<std::string> localnamespaces,
         std::map<uint32_t, std::set<uint32_t>> *class2memberfuns, 
         std::map<uint32_t, panda::es2panda::ir::ScriptFunction *> *method2scriptfunast, 
@@ -31,7 +33,8 @@ public:
         std::map<std::string, uint32_t> *methodname2offset,
         std::string fun_name)
         : compiler::Optimization(graph), function_(function), ir_interface_(iface), program_(prog), methodoffset_(methodoffset),
-        method2lexicalenvstack_(method2lexicalenvstack), patchvarspace_(patchvarspace), parser_program_(parser_program), 
+        method2lexicalenvstack_(method2lexicalenvstack), method2sendablelexicalenvstack_(method2sendablelexicalenvstack), 
+        patchvarspace_(patchvarspace), parser_program_(parser_program), 
         index2namespaces_(index2namespaces), localnamespaces_(localnamespaces), class2memberfuns_(class2memberfuns),
         method2scriptfunast_(method2scriptfunast), ctor2classdeclast_(ctor2classdeclast), memberfuncs_(memberfuncs), class2father_(class2father),
         method2lexicalmap_(method2lexicalmap), globallexical_waitlist_(globallexical_waitlist), raw2newname_(raw2newname), methodname2offset_(methodname2offset)
@@ -50,7 +53,19 @@ public:
             //std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX not found lexicalenvstack " << std::endl;
             (*this->method2lexicalenvstack_)[methodoffset] = new LexicalEnvStack();
         }
+
+        if(this->method2sendablelexicalenvstack_->find(methodoffset) != this->method2sendablelexicalenvstack_->end()){
+            //std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX found lexicalenvstack " << std::endl;
+            //auto x = (*this->method2sendablelexicalenvstack_)[methodoffset];
+            //std::cout << "lexicalenvstack size: " << x->Size() << std::endl;
+        }else{
+            //std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX not found lexicalenvstack " << std::endl;
+            (*this->method2sendablelexicalenvstack_)[methodoffset] = new LexicalEnvStack();
+        }
+
+
         this->bb2lexicalenvstack_[graph->GetStartBlock()] = (*this->method2lexicalenvstack_)[methodoffset];
+        this->bb2sendablelexicalenvstack_[graph->GetStartBlock()] = (*this->method2sendablelexicalenvstack_)[methodoffset];
         
         for (size_t i = 0; i < function->GetParamsNum(); ++i) {
             if(i <= 2){
@@ -457,6 +472,8 @@ public:
     std::vector<pandasm::Function::CatchBlock> catch_blocks_;
 
     std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack_;
+    std::map<uint32_t, LexicalEnvStack*>* method2sendablelexicalenvstack_;
+
     std::map<uint32_t, std::string*> *patchvarspace_;
 
     es2panda::parser::Program* parser_program_;
@@ -517,6 +534,8 @@ public:
     LexicalEnv* acc_lexicalenv = NULL;
 
     std::map<compiler::BasicBlock*, LexicalEnvStack*> bb2lexicalenvstack_;
+
+    std::map<compiler::BasicBlock*, LexicalEnvStack*> bb2sendablelexicalenvstack_;
 
     std::map<uint32_t, panda::es2panda::ir::Expression*> id2expression;
     

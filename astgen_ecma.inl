@@ -1706,6 +1706,35 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
+        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_NEWSENDABLEENV_PREF_IMM8:
+        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_WIDENEWSENDABLEENV_PREF_IMM16:
+        {
+        //    ASSERT(inst->HasImms() && inst->GetImms().size() > 0);
+        //     auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
+        //     enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_WIDENEWSENDABLEENV(imm0));
+        
+            std::cout << "1111111111111111111111111111111111111111111111111111111111111111" << std::endl;
+            auto lexenv_size = static_cast<uint32_t>(inst->GetImms()[0]);
+
+            std::cout << "lexenv_size: " << lexenv_size << std::endl;
+            
+            std::cout << "2222222222222222222222222222222222222222222222222222222222222222" << std::endl;
+
+            auto lexicalenvstack = enc->bb2sendablelexicalenvstack_[inst->GetBasicBlock()];
+            
+            std::cout << "333333333333333333333333333333333333333333333333333333333333333" << std::endl;
+
+            if(lexicalenvstack){
+                std::cout << "not null" << std::endl;
+            }else{
+                std::cout << "null" << std::endl;
+            }
+            
+            std::cout << "size: " << lexicalenvstack->Size() << std::endl; 
+            lexicalenvstack->Push(lexenv_size);
+            break;
+        }
+
 
        case compiler::RuntimeInterface::IntrinsicId::GETNEXTPROPNAME_V8:
        {
@@ -2421,14 +2450,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-       case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_NEWSENDABLEENV_PREF_IMM8:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_NEWSENDABLEENV(imm0));
-            break;
-        }
-
        case compiler::RuntimeInterface::IntrinsicId::WIDE_COPYRESTARGS_PREF_IMM16:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
@@ -2438,13 +2459,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             if (acc_dst != compiler::ACC_REG_ID) {
                 DoSta(inst->GetDstReg(), enc->result_);
             }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_WIDENEWSENDABLEENV_PREF_IMM16:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_WIDENEWSENDABLEENV(imm0));
             break;
         }
 
