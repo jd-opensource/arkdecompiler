@@ -424,16 +424,18 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
 
     std::cout <<  "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD" << std::endl;
 
-    for (auto it = method2scriptfunast.rbegin(); it != method2scriptfunast.rend(); ++it) {
+    for (auto it = method2scriptfunast.begin(); it != method2scriptfunast.end(); ++it) {
         auto funcDecl = AllocNode<panda::es2panda::ir::FunctionDeclaration>(parser_program, it->second);
-        program_ast->AddStatementAtPos(program_statements.size(), funcDecl);
+
+        program_ast->AddStatementAtPos(program_ast->Statements().size(), funcDecl);
+        std::cout << "size:::: "<< program_statements.size() << std::endl;
 
         //std::cout << it->first << " MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM" << std::endl;
         //LogAst(parser_program, outputAstFileName);
     }
 
     for (auto it = ctor2classdeclast.begin(); it != ctor2classdeclast.end(); ++it) {
-        program_ast->AddStatementAtPos(program_statements.size(), it->second);
+        program_ast->AddStatementAtPos(program_ast->Statements().size(), it->second);
         
         //std::cout << it->first << " MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM" << std::endl;
         //LogAst(parser_program, outputAstFileName);
