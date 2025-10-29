@@ -315,7 +315,6 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
         LOG(FATAL, BYTECODE_OPTIMIZER) << "Can not open binary file: " << pfile_name;
     }
 
-    
 
     bool result = true;
     panda::es2panda::parser::Program *parser_program = new panda::es2panda::parser::Program(panda::es2panda::ScriptExtension::TS);
@@ -352,10 +351,10 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
 
     std::map<std::string, uint32_t> methodname2offset;
 
-    ParseModuleVars(pfile, disasm, parser_program, index2importnamespaces, localnamespaces);
+    ParseModuleVars(pfile, prog, disasm, parser_program, index2importnamespaces, localnamespaces);
 
     ConstructMethodname2offset(disasm, &methodname2offset);
-
+     
     for (uint32_t id : pfile->GetClasses()) {
         panda_file::File::EntityId record_id {id};
         if (pfile->IsExternal(record_id)) {

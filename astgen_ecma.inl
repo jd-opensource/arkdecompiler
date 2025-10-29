@@ -1247,6 +1247,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::WIDE_STMODULEVAR_PREF_IMM16:
        {
             auto moudlevar_offset = static_cast<uint32_t>(inst->GetImms()[0]);
+            if(moudlevar_offset > enc->localnamespaces_.size()){
+                HandleError("#STMODULEVAR moudlevar_offset not in localnamespaces_");
+            }
 
             auto moudlevar_rawname = enc->localnamespaces_[moudlevar_offset];
             auto source_expression = enc->GetExpressionByAcc(inst); 
@@ -1269,10 +1272,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::WIDE_LDEXTERNALMODULEVAR_PREF_IMM16:
        {
             auto moudlevar_offset = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto moudlevar_rawname = enc->localnamespaces_[moudlevar_offset];
-            panda::es2panda::ir::Identifier* moudlevar = enc->GetIdentifierByName(moudlevar_rawname);
+            if(moudlevar_offset < enc->localnamespaces_.size()){
+                auto moudlevar_rawname = enc->localnamespaces_[moudlevar_offset];
+                panda::es2panda::ir::Identifier* moudlevar = enc->GetIdentifierByName(moudlevar_rawname);
+                enc->SetExpressionByRegister(inst, inst->GetDstReg(), moudlevar);
+            }else{
+                HandleError("#LDLOCALMODULEVAR: module slot not in localnamespaces_");
+            }
 
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), moudlevar);
             break;
         }
 

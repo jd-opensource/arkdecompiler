@@ -195,11 +195,11 @@ void GetModuleLiteralArray(std::unique_ptr<const panda_file::File>& file_, panda
 
 }
 
-void ParseModuleVars(std::unique_ptr<const panda_file::File>& file_, panda::disasm::Disassembler& disasm, 
+void ParseModuleVars(std::unique_ptr<const panda_file::File>& file_, pandasm::Program *prog, panda::disasm::Disassembler& disasm, 
             panda::es2panda::parser::Program *parser_program, std::map<size_t, std::vector<std::string>>& index2namespaces, 
             std::vector<std::string>& localnamespaces){
     
-    size_t index = 0;
+    
     
     if (panda_file::ContainsLiteralArrayInHeader(file_->GetHeader()->version)) {
         const auto lit_arrays_id = file_->GetLiteralArraysId();
@@ -213,24 +213,40 @@ void ParseModuleVars(std::unique_ptr<const panda_file::File>& file_, panda::disa
             if (disasm.module_request_phase_literals_.count(id.GetOffset())) {
                 continue;
             }
+
             if (disasm.IsModuleLiteralOffset(id)) {
                 GetModuleLiteralArray(file_, id, disasm, parser_program, index2namespaces, localnamespaces);
             }
         }
     }else{
-        panda::libpandafile::CollectUtil collect_util;
-        std::unordered_set<uint32_t> literal_array_ids;
-        collect_util.CollectLiteralArray(*file_, literal_array_ids);
-
-        for (uint32_t literal_array_id : literal_array_ids) {
-            panda_file::File::EntityId id {literal_array_id};
-
-            if (disasm.IsModuleLiteralOffset(id)) {
-                GetModuleLiteralArray(file_, id, disasm, parser_program, index2namespaces, localnamespaces);
+        // release mode
+        for (const auto &r : prog->record_table) {
+            auto& record = r.second;
+            for (const auto &f : record.field_list) {
+                std::cout << "##: " << f.type.GetPandasmName() << std::endl;
+                if (f.metadata->GetValue().has_value()) {
+                    std::cout << "has value " << f.name << std::endl;
+                }
+                if (f.type.GetId() == panda_file::Type::TypeId::U32) {
+                    panda_file::File::EntityId module_entity_id(f.metadata->GetValue().value().GetValue<uint32_t>());
+                        if (disasm.IsModuleLiteralOffset(module_entity_id)) {
+                            GetModuleLiteralArray(file_, module_entity_id, disasm, parser_program, index2namespaces, localnamespaces);
+                    }
+                }
             }
-            
-            index++;
+
         }
+
+        // debug mode       
+        // panda::libpandafile::CollectUtil collect_util;
+        // std::unordered_set<uint32_t> literal_array_ids;
+        // collect_util.CollectLiteralArray(*file_, literal_array_ids);
+        // for (uint32_t literal_array_id : literal_array_ids) {
+        //     panda_file::File::EntityId id {literal_array_id};
+        //     if (disasm.IsModuleLiteralOffset(id)) {
+        //         GetModuleLiteralArray(file_, id, disasm, parser_program, index2namespaces, localnamespaces);
+        //     } 
+        // }
     }
 
 }
