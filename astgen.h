@@ -17,7 +17,7 @@ void DoSta(compiler::Register reg, std::vector<pandasm::Ins> &result);
 
 class AstGen : public compiler::Optimization, public compiler::GraphVisitor {
 public:
-    explicit AstGen(compiler::Graph *graph, pandasm::Function *function,
+    explicit AstGen(compiler::Graph *graph, pandasm::Function *function, 
         const BytecodeOptIrInterface *iface, pandasm::Program *prog,  es2panda::parser::Program* parser_program, 
         uint32_t methodoffset, std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack,
         std::map<uint32_t, LexicalEnvStack*>* method2sendablelexicalenvstack, 
