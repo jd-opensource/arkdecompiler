@@ -1811,6 +1811,23 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
+       case compiler::RuntimeInterface::IntrinsicId::DYNAMICIMPORT:
+       {
+            panda::es2panda::ir::Expression* source_expression = *enc->GetExpressionByAcc(inst);
+            panda::es2panda::ir::Identifier* funname = enc->GetIdentifierByName("import");
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+            arguments.push_back(source_expression);
+
+            auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
+                                                                            funname,
+                                                                            std::move(arguments),
+                                                                            nullptr,
+                                                                            false
+                                                                            );
+
+            enc->HandleNewCreatedExpression(inst, callexpression);
+            break;
+        }
 
        case compiler::RuntimeInterface::IntrinsicId::GETNEXTPROPNAME_V8:
        {
@@ -2148,19 +2165,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::DYNAMICIMPORT:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-            enc->result_.emplace_back(pandasm::Create_DYNAMICIMPORT());
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
 
        case compiler::RuntimeInterface::IntrinsicId::RESUMEGENERATOR:
        {
@@ -2452,9 +2456,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
        
-       
-
-    
        case compiler::RuntimeInterface::IntrinsicId::WIDE_COPYRESTARGS_PREF_IMM16:
        {
            ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
