@@ -170,7 +170,7 @@ void GetModuleLiteralArray(std::unique_ptr<const panda_file::File>& file_, panda
             }
             index2namespaces[importmodule2index[curmaps["module_request"]]].push_back(curmaps["local_name"]);
 
-            localnamespaces.push_back(curmaps["import_name"]);
+            localnamespaces.push_back(curmaps["local_name"]);
         }else{
             ss << ", EXPORT ";
             exportmaps_arrays.push_back(curmaps);
@@ -223,9 +223,8 @@ void ParseModuleVars(std::unique_ptr<const panda_file::File>& file_, pandasm::Pr
         for (const auto &r : prog->record_table) {
             auto& record = r.second;
             for (const auto &f : record.field_list) {
-                std::cout << "##: " << f.type.GetPandasmName() << std::endl;
-                if (f.metadata->GetValue().has_value()) {
-                    std::cout << "has value " << f.name << std::endl;
+                if (!f.metadata->GetValue().has_value()) {
+                    continue;
                 }
                 if (f.type.GetId() == panda_file::Type::TypeId::U32) {
                     panda_file::File::EntityId module_entity_id(f.metadata->GetValue().value().GetValue<uint32_t>());
