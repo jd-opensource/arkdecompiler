@@ -57,9 +57,9 @@ public:
         }
 
         if(this->method2sendablelexicalenvstack_->find(methodoffset) != this->method2sendablelexicalenvstack_->end()){
-            //std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX found lexicalenvstack " << std::endl;
-            //auto x = (*this->method2sendablelexicalenvstack_)[methodoffset];
-            //std::cout << "lexicalenvstack size: " << x->Size() << std::endl;
+            std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX found lexicalenvstack " << std::endl;
+            auto x = (*this->method2sendablelexicalenvstack_)[methodoffset];
+            std::cout << "sendablelexicalenvstack size: " << x->Size() << std::endl;
         }else{
             //std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX not found lexicalenvstack " << std::endl;
             (*this->method2sendablelexicalenvstack_)[methodoffset] = new LexicalEnvStack();

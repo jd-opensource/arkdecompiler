@@ -1366,8 +1366,31 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->current_constructor_offset = constructor_offset;
             auto constructor_offset_name = enc->ir_interface_->GetMethodIdByOffset(constructor_offset);
 
+            std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+            std::cout << enc->method2lexicalenvstack_->size() << std::endl;
+            std::cout << enc->bb2lexicalenvstack_.size() << std::endl;
+            std::cout << enc->globallexical_waitlist_->size() << std::endl;
+
+            ///////////////////////////////////////////////////////////////////////
+            std::cout << enc->method2sendablelexicalenvstack_->size() << std::endl;
+            std::cout << enc->bb2sendablelexicalenvstack_.size() << std::endl;
+            std::cout << enc->globalsendablelexical_waitlist_->size() << std::endl;
+            std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
+
             CopyLexicalenvStack(constructor_offset, inst, enc->method2lexicalenvstack_, enc->bb2lexicalenvstack_, enc->globallexical_waitlist_);
             CopyLexicalenvStack(constructor_offset, inst, enc->method2sendablelexicalenvstack_, enc->bb2sendablelexicalenvstack_, enc->globalsendablelexical_waitlist_);
+
+
+            std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+            std::cout << enc->method2lexicalenvstack_->size() << std::endl;
+            std::cout << enc->bb2lexicalenvstack_.size() << std::endl;
+            std::cout << enc->globallexical_waitlist_->size() << std::endl;
+
+            ///////////////////////////////////////////////////////////////////////
+            std::cout << enc->method2sendablelexicalenvstack_->size() << std::endl;
+            std::cout << enc->bb2sendablelexicalenvstack_.size() << std::endl;
+            std::cout << enc->globalsendablelexical_waitlist_->size() << std::endl;
+            std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
             
             if (enc->class2memberfuns_->find(constructor_offset) != enc->class2memberfuns_->end()) {
                 auto& member_funcs = (*enc->class2memberfuns_)[constructor_offset];
@@ -1721,24 +1744,16 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_NEWSENDABLEENV_PREF_IMM8:
         case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_WIDENEWSENDABLEENV_PREF_IMM16:
         {
-            std::cout << "1111111111111111111111111111111111111111111111111111111111111111" << std::endl;
             auto lexenv_size = static_cast<uint32_t>(inst->GetImms()[0]);
-
-            std::cout << "lexenv_size: " << lexenv_size << std::endl;
-            
-            std::cout << "2222222222222222222222222222222222222222222222222222222222222222" << std::endl;
 
             auto lexicalenvstack = enc->bb2sendablelexicalenvstack_[inst->GetBasicBlock()];
             
-            std::cout << "333333333333333333333333333333333333333333333333333333333333333" << std::endl;
-
             if(lexicalenvstack){
                 std::cout << "not null" << std::endl;
             }else{
                 std::cout << "null" << std::endl;
             }
-            
-            std::cout << "size: " << lexicalenvstack->Size() << std::endl; 
+        
             lexicalenvstack->Push(lexenv_size);
             break;
         }
@@ -1753,7 +1768,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "tier: " << std::to_string(tier) << ", index: " << std::to_string(index) << std::endl;
 
             LexicalEnvStack* lexicalenvstack;
-            lexicalenvstack = enc->bb2lexicalenvstack_[inst->GetBasicBlock()];
+            lexicalenvstack = enc->bb2sendablelexicalenvstack_[inst->GetBasicBlock()];
             std::cout << "size: " << lexicalenvstack->Size() << std::endl;
 
             if(lexicalenvstack->GetLexicalEnv(tier)[index] == nullptr){
@@ -1767,7 +1782,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
        case compiler::RuntimeInterface::IntrinsicId::DEFINEFIELDBYNAME_IMM8_ID16_V8:
        {
-            // TODO add member variable definition
             auto stroffset = static_cast<uint32_t>(inst->GetImms()[1]);
             auto str = enc->ir_interface_->GetStringIdByOffset(stroffset);
             auto attr_expression = enc->GetIdentifierByName(str);
