@@ -1765,6 +1765,25 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
+       case compiler::RuntimeInterface::IntrinsicId::DEFINEFIELDBYNAME_IMM8_ID16_V8:
+       {
+            // TODO add member variable definition
+            auto stroffset = static_cast<uint32_t>(inst->GetImms()[1]);
+            auto str = enc->ir_interface_->GetStringIdByOffset(stroffset);
+            auto attr_expression = enc->GetIdentifierByName(str);
+
+            panda::es2panda::ir::Expression* obj_expression = *enc->GetExpressionByRegIndex(inst, 0);
+            auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
+                                                        obj_expression,
+                                                        attr_expression, 
+                                                        es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                        true, 
+                                                        false);
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), objattrexpression);
+            
+            break;
+        }
+        
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
@@ -1794,6 +1813,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "888888888888888888888888888888" << std::endl;
             break;
         }
+
 
        case compiler::RuntimeInterface::IntrinsicId::GETNEXTPROPNAME_V8:
        {
@@ -2296,21 +2316,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-       case compiler::RuntimeInterface::IntrinsicId::DEFINEFIELDBYNAME_IMM8_ID16_V8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            ASSERT(inst->HasImms() && inst->GetImms().size() > 1); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto ir_id0 = static_cast<uint32_t>(inst->GetImms()[1]);
-            auto bc_id0 = enc->ir_interface_->GetStringIdByOffset(ir_id0);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_DEFINEFIELDBYNAME(imm0, bc_id0, v0));
-            break;
-        }
        case compiler::RuntimeInterface::IntrinsicId::DEFINEPROPERTYBYNAME_IMM8_ID16_V8:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
