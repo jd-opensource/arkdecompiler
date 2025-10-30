@@ -1780,7 +1780,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-       case compiler::RuntimeInterface::IntrinsicId::DEFINEFIELDBYNAME_IMM8_ID16_V8:
+       case compiler::RuntimeInterface::IntrinsicId::DEFINEPROPERTYBYNAME_IMM8_ID16_V8:
        {
             auto stroffset = static_cast<uint32_t>(inst->GetImms()[1]);
             auto str = enc->ir_interface_->GetStringIdByOffset(stroffset);
@@ -2330,7 +2330,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-       case compiler::RuntimeInterface::IntrinsicId::DEFINEPROPERTYBYNAME_IMM8_ID16_V8:
+       case compiler::RuntimeInterface::IntrinsicId::DEFINEFIELDBYNAME_IMM8_ID16_V8:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
             if (acc_src != compiler::ACC_REG_ID) {
