@@ -1780,6 +1780,24 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             
             break;
         }
+
+       case compiler::RuntimeInterface::IntrinsicId::DYNAMICIMPORT:
+       {
+            panda::es2panda::ir::Expression* source_expression = *enc->GetExpressionByAcc(inst);
+            panda::es2panda::ir::Identifier* funname = enc->GetIdentifierByName("import");
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+            arguments.push_back(source_expression);
+
+            auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
+                                                                            funname,
+                                                                            std::move(arguments),
+                                                                            nullptr,
+                                                                            false
+                                                                            );
+
+            enc->HandleNewCreatedExpression(inst, callexpression);
+            break;
+        }
         
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
@@ -1808,24 +1826,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "777777777777777777777777777777" << std::endl;
             enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
             std::cout << "888888888888888888888888888888" << std::endl;
-            break;
-        }
-
-       case compiler::RuntimeInterface::IntrinsicId::DYNAMICIMPORT:
-       {
-            panda::es2panda::ir::Expression* source_expression = *enc->GetExpressionByAcc(inst);
-            panda::es2panda::ir::Identifier* funname = enc->GetIdentifierByName("import");
-            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
-            arguments.push_back(source_expression);
-
-            auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
-                                                                            funname,
-                                                                            std::move(arguments),
-                                                                            nullptr,
-                                                                            false
-                                                                            );
-
-            enc->HandleNewCreatedExpression(inst, callexpression);
             break;
         }
 
