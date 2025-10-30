@@ -1366,32 +1366,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->current_constructor_offset = constructor_offset;
             auto constructor_offset_name = enc->ir_interface_->GetMethodIdByOffset(constructor_offset);
 
-            std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
-            std::cout << enc->method2lexicalenvstack_->size() << std::endl;
-            std::cout << enc->bb2lexicalenvstack_.size() << std::endl;
-            std::cout << enc->globallexical_waitlist_->size() << std::endl;
-
-            ///////////////////////////////////////////////////////////////////////
-            std::cout << enc->method2sendablelexicalenvstack_->size() << std::endl;
-            std::cout << enc->bb2sendablelexicalenvstack_.size() << std::endl;
-            std::cout << enc->globalsendablelexical_waitlist_->size() << std::endl;
-            std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
-
             CopyLexicalenvStack(constructor_offset, inst, enc->method2lexicalenvstack_, enc->bb2lexicalenvstack_, enc->globallexical_waitlist_);
             CopyLexicalenvStack(constructor_offset, inst, enc->method2sendablelexicalenvstack_, enc->bb2sendablelexicalenvstack_, enc->globalsendablelexical_waitlist_);
 
-
-            std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
-            std::cout << enc->method2lexicalenvstack_->size() << std::endl;
-            std::cout << enc->bb2lexicalenvstack_.size() << std::endl;
-            std::cout << enc->globallexical_waitlist_->size() << std::endl;
-
-            ///////////////////////////////////////////////////////////////////////
-            std::cout << enc->method2sendablelexicalenvstack_->size() << std::endl;
-            std::cout << enc->bb2sendablelexicalenvstack_.size() << std::endl;
-            std::cout << enc->globalsendablelexical_waitlist_->size() << std::endl;
-            std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
-            
             if (enc->class2memberfuns_->find(constructor_offset) != enc->class2memberfuns_->end()) {
                 auto& member_funcs = (*enc->class2memberfuns_)[constructor_offset];
                 for (const auto& member_func_offset : member_funcs) {
