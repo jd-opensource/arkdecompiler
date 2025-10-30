@@ -24,6 +24,12 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
+       case compiler::RuntimeInterface::IntrinsicId::LDSYMBOL:
+       {
+            enc->HandleNewCreatedExpression(inst, enc->constant_symbol);
+            break;
+        }
+
        case compiler::RuntimeInterface::IntrinsicId::LDBIGINT_ID16:
        {
             panda::es2panda::ir::Identifier* funname = enc->GetIdentifierByName("BigInt");
@@ -1798,7 +1804,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->HandleNewCreatedExpression(inst, callexpression);
             break;
         }
-        
+
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
@@ -1994,15 +2000,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::LDSYMBOL:
-       {
-            enc->result_.emplace_back(pandasm::Create_LDSYMBOL());
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
+
        case compiler::RuntimeInterface::IntrinsicId::ASYNCFUNCTIONENTER:
        {
             enc->result_.emplace_back(pandasm::Create_ASYNCFUNCTIONENTER());
