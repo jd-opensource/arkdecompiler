@@ -39,7 +39,7 @@ public:
         index2namespaces_(index2namespaces), localnamespaces_(localnamespaces), class2memberfuns_(class2memberfuns),
         method2scriptfunast_(method2scriptfunast), ctor2classdeclast_(ctor2classdeclast), memberfuncs_(memberfuncs), class2father_(class2father),
         method2lexicalmap_(method2lexicalmap), globallexical_waitlist_(globallexical_waitlist), globalsendablelexical_waitlist_(globalsendablelexical_waitlist), 
-        raw2newname_(raw2newname), methodname2offset_(methodname2offset)
+        raw2newname_(raw2newname), methodname2offset_(methodname2offset), fun_name_(fun_name)
     {
 
         this->closure_count = 0;
@@ -498,6 +498,8 @@ public:
     std::map<std::string, std::string> *raw2newname_;
 
     std::map<std::string, uint32_t> *methodname2offset_;
+
+    std::string fun_name_;
 
     
     ///////////////////////////////////////////////////////////////////////////////////////
