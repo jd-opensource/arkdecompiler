@@ -30,6 +30,12 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
+       case compiler::RuntimeInterface::IntrinsicId::LDFUNCTION:
+       {
+            enc->HandleNewCreatedExpression(inst, enc->GetIdentifierByName(enc->fun_name_));
+            break;
+        }
+
        case compiler::RuntimeInterface::IntrinsicId::LDSYMBOL:
        {
             enc->HandleNewCreatedExpression(inst, enc->constant_symbol);
@@ -2026,15 +2032,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::ASYNCFUNCTIONENTER:
        {
             enc->result_.emplace_back(pandasm::Create_ASYNCFUNCTIONENTER());
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::LDFUNCTION:
-       {
-            enc->result_.emplace_back(pandasm::Create_LDFUNCTION());
             auto acc_dst = inst->GetDstReg();
             if (acc_dst != compiler::ACC_REG_ID) {
                 DoSta(inst->GetDstReg(), enc->result_);
