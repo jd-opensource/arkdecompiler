@@ -679,6 +679,23 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
         }
 
+       case compiler::RuntimeInterface::IntrinsicId::NEWOBJAPPLY_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::NEWOBJAPPLY_IMM16_V8:
+       {
+            panda::es2panda::ir::Expression* source_expression = *enc->GetExpressionByAcc(inst);
+            auto arrayexpression = source_expression->AsArrayExpression();
+            es2panda::ir::Expression *callee = *enc->GetExpressionByRegIndex(inst, 0);
+
+
+            auto constElements = arrayexpression->Elements();
+            auto &nonConstElements = const_cast<ArenaVector<es2panda::ir::Expression *> &>(constElements);
+
+            es2panda::ir::Expression *newExprNode = AllocNode<es2panda::ir::NewExpression>(enc, callee, nullptr, std::move(nonConstElements));
+            enc->HandleNewCreatedExpression(inst, newExprNode);
+            
+            break;
+        }
+
        case compiler::RuntimeInterface::IntrinsicId::COPYDATAPROPERTIES_V8:
        {
             auto src_obj = *enc->GetExpressionByAcc(inst);
@@ -1842,22 +1859,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-       case compiler::RuntimeInterface::IntrinsicId::NEWOBJAPPLY_IMM8_V8:
-       case compiler::RuntimeInterface::IntrinsicId::NEWOBJAPPLY_IMM16_V8:
-       {
-            panda::es2panda::ir::Expression* source_expression = *enc->GetExpressionByAcc(inst);
-            auto arrayexpression = source_expression->AsArrayExpression();
-            es2panda::ir::Expression *callee = *enc->GetExpressionByRegIndex(inst, 0);
 
-
-            auto constElements = arrayexpression->Elements();
-            auto &nonConstElements = const_cast<ArenaVector<es2panda::ir::Expression *> &>(constElements);
-
-            es2panda::ir::Expression *newExprNode = AllocNode<es2panda::ir::NewExpression>(enc, callee, nullptr, std::move(nonConstElements));
-            enc->HandleNewCreatedExpression(inst, newExprNode);
-            
-            break;
-        }
 
 
        case compiler::RuntimeInterface::IntrinsicId::GETNEXTPROPNAME_V8:
