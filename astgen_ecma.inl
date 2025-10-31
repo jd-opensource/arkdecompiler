@@ -115,7 +115,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->HandleNewCreatedExpression(inst, enc->constant_restargs);
             break;
         }
-        
+
        case compiler::RuntimeInterface::IntrinsicId::INSTANCEOF_IMM8_V8:
        case compiler::RuntimeInterface::IntrinsicId::ISIN_IMM8_V8:
        case compiler::RuntimeInterface::IntrinsicId::ADD2_IMM8_V8:
@@ -1907,6 +1907,25 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
+       case compiler::RuntimeInterface::IntrinsicId::SUPERCALLSPREAD_IMM8_V8:
+       {
+            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName("super");
+            auto source_expression =  *enc->GetExpressionByRegIndex(inst, 0);
+            auto arrayexpression = source_expression->AsArrayExpression();
+            auto constElements = arrayexpression->Elements();
+            auto &nonConstElements = const_cast<ArenaVector<es2panda::ir::Expression *> &>(constElements);
+
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
+                                                                                funname,
+                                                                                std::move(nonConstElements),
+                                                                                nullptr,
+                                                                                false
+                                                                            );
+
+            enc->HandleNewCreatedExpression(inst, callexpression);
+            break;
+        }
+
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
@@ -1936,8 +1955,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "888888888888888888888888888888" << std::endl;
             break;
         }
-
-
 
        case compiler::RuntimeInterface::IntrinsicId::GETNEXTPROPNAME_V8:
        {
@@ -2139,22 +2156,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto v1 = inst->GetSrcReg(1);
             auto v2 = inst->GetSrcReg(2);
             enc->result_.emplace_back(pandasm::Create_ASYNCGENERATORRESOLVE(v0, v1, v2));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::SUPERCALLSPREAD_IMM8_V8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_SUPERCALLSPREAD(imm0, v0));
             auto acc_dst = inst->GetDstReg();
             if (acc_dst != compiler::ACC_REG_ID) {
                 DoSta(inst->GetDstReg(), enc->result_);
