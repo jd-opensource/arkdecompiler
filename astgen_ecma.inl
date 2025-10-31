@@ -1842,6 +1842,24 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
+       case compiler::RuntimeInterface::IntrinsicId::NEWOBJAPPLY_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::NEWOBJAPPLY_IMM16_V8:
+       {
+            panda::es2panda::ir::Expression* source_expression = *enc->GetExpressionByAcc(inst);
+            auto arrayexpression = source_expression->AsArrayExpression();
+            es2panda::ir::Expression *callee = *enc->GetExpressionByRegIndex(inst, 0);
+
+
+            auto constElements = arrayexpression->Elements();
+            auto &nonConstElements = const_cast<ArenaVector<es2panda::ir::Expression *> &>(constElements);
+
+            es2panda::ir::Expression *newExprNode = AllocNode<es2panda::ir::NewExpression>(enc, callee, nullptr, std::move(nonConstElements));
+            enc->HandleNewCreatedExpression(inst, newExprNode);
+            
+            break;
+        }
+
+
        case compiler::RuntimeInterface::IntrinsicId::GETNEXTPROPNAME_V8:
        {
             auto v0 = inst->GetSrcReg(0);
@@ -2061,41 +2079,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::NEWOBJAPPLY_IMM8_V8:
-       {
-            std::cout << "compiler::RuntimeInterface::IntrinsicId::NEWOBJAPPLY_IMM8_V8 " << std::endl;
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_NEWOBJAPPLY(imm0, v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::NEWOBJAPPLY_IMM16_V8:
-       {
-            std::cout << "compiler::RuntimeInterface::IntrinsicId::NEWOBJAPPLY_IMM16_V8 " << std::endl;
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_NEWOBJAPPLY(imm0, v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-
+       
        case compiler::RuntimeInterface::IntrinsicId::CREATEASYNCGENERATOROBJ_V8:
        {
             auto v0 = inst->GetSrcReg(0);
