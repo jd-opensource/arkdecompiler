@@ -258,21 +258,21 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             */
             for (const auto& literal : literalarray->literals_) {
                 if(literal.IsBoolValue()){
-                    elements.push_back(AllocNode<es2panda::ir::BooleanLiteral>(enc, std::get<bool>(literal.value_)));
+                    elements.push_back(AllocNode<es2panda::ir::BooleanLiteral>(enc, *new bool(std::get<bool>(literal.value_))));
                 }else if(literal.IsByteValue()){
-                    elements.push_back(AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<uint8_t>(literal.value_)));
+                    elements.push_back(AllocNode<es2panda::ir::NumberLiteral>(enc, *new uint8_t(std::get<uint8_t>(literal.value_))));
                 }else if(literal.IsShortValue()){
-                    elements.push_back(AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<uint16_t>(literal.value_)));
+                    elements.push_back(AllocNode<es2panda::ir::NumberLiteral>(enc, *new uint16_t(std::get<uint16_t>(literal.value_))));
                 }else if(literal.IsIntegerValue()){
-                    elements.push_back(AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<uint32_t>(literal.value_)));
+                    elements.push_back(AllocNode<es2panda::ir::NumberLiteral>(enc, *new uint32_t(std::get<uint32_t>(literal.value_))));
                 }else if(literal.IsLongValue()){
-                    elements.push_back(AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<uint64_t>(literal.value_)));
+                    elements.push_back(AllocNode<es2panda::ir::NumberLiteral>(enc, *new uint64_t(std::get<uint64_t>(literal.value_))));
                 }else if(literal.IsFloatValue()){
-                    elements.push_back(AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<float>(literal.value_)));
+                    elements.push_back(AllocNode<es2panda::ir::NumberLiteral>(enc, *new float(std::get<float>(literal.value_))));
                 }else if(literal.IsDoubleValue()){
-                    elements.push_back(AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<double>(literal.value_)));
+                    elements.push_back(AllocNode<es2panda::ir::NumberLiteral>(enc, *new double(std::get<double>(literal.value_))));
                 }else if(literal.IsStringValue()){
-                    es2panda::util::StringView literal_strview(std::get<std::string>(literal.value_));
+                    es2panda::util::StringView literal_strview(*new std::string( std::get<std::string>(literal.value_)));
 
                     elements.push_back(AllocNode<es2panda::ir::StringLiteral>(enc, literal_strview));
                 }else{
