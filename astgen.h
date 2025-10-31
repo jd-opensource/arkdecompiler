@@ -560,6 +560,7 @@ public:
     panda::es2panda::ir::Identifier* constant_this = AllocNode<panda::es2panda::ir::Identifier>(this, "this");
     panda::es2panda::ir::Identifier* constant_global = AllocNode<panda::es2panda::ir::Identifier>(this, "global");
     panda::es2panda::ir::Identifier* constant_newtarget = AllocNode<panda::es2panda::ir::Identifier>(this, "new.target");
+    panda::es2panda::ir::Identifier* constant_restargs = AllocNode<panda::es2panda::ir::Identifier>(this, "args");
 
     panda::es2panda::ir::BooleanLiteral* constant_true = AllocNode<panda::es2panda::ir::BooleanLiteral>(this, true);
     panda::es2panda::ir::BooleanLiteral* constant_false = AllocNode<panda::es2panda::ir::BooleanLiteral>(this, false);

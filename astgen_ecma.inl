@@ -109,6 +109,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
+        case compiler::RuntimeInterface::IntrinsicId::COPYRESTARGS_IMM8:
+        case compiler::RuntimeInterface::IntrinsicId::WIDE_COPYRESTARGS_PREF_IMM16:
+       {
+            enc->HandleNewCreatedExpression(inst, enc->constant_restargs);
+            break;
+        }
+        
        case compiler::RuntimeInterface::IntrinsicId::INSTANCEOF_IMM8_V8:
        case compiler::RuntimeInterface::IntrinsicId::ISIN_IMM8_V8:
        case compiler::RuntimeInterface::IntrinsicId::ADD2_IMM8_V8:
@@ -1929,7 +1936,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "888888888888888888888888888888" << std::endl;
             break;
         }
-        
+
+
+
        case compiler::RuntimeInterface::IntrinsicId::GETNEXTPROPNAME_V8:
        {
             auto v0 = inst->GetSrcReg(0);
@@ -2301,17 +2310,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       case compiler::RuntimeInterface::IntrinsicId::COPYRESTARGS_IMM8:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_COPYRESTARGS(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
 
        case compiler::RuntimeInterface::IntrinsicId::SETGENERATORSTATE_IMM8:
        {
@@ -2394,19 +2392,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       
-       case compiler::RuntimeInterface::IntrinsicId::WIDE_COPYRESTARGS_PREF_IMM16:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_WIDE_COPYRESTARGS(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-
        
         //////////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////
