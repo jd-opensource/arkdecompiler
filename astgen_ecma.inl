@@ -36,6 +36,18 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
+       case compiler::RuntimeInterface::IntrinsicId::LDGLOBAL:
+       {
+            enc->HandleNewCreatedExpression(inst, enc->constant_global);
+            break;
+        }
+
+       case compiler::RuntimeInterface::IntrinsicId::LDNEWTARGET:
+       {
+            enc->HandleNewCreatedExpression(inst, enc->constant_newtarget);
+            break;
+        }
+
        case compiler::RuntimeInterface::IntrinsicId::LDSYMBOL:
        {
             enc->HandleNewCreatedExpression(inst, enc->constant_symbol);
@@ -1868,25 +1880,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "777777777777777777777777777777" << std::endl;
             enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
             std::cout << "888888888888888888888888888888" << std::endl;
-            break;
-        }
-
-       case compiler::RuntimeInterface::IntrinsicId::LDGLOBAL:
-       {
-            enc->result_.emplace_back(pandasm::Create_LDGLOBAL());
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::LDNEWTARGET:
-       {
-            enc->result_.emplace_back(pandasm::Create_LDNEWTARGET());
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
             break;
         }
 
