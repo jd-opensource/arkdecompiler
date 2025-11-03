@@ -2060,6 +2060,32 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->HandleNewCreatedExpression(inst, callexpression);
             break;
         }
+
+       case compiler::RuntimeInterface::IntrinsicId::SETOBJECTWITHPROTO_IMM8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::SETOBJECTWITHPROTO_IMM16_V8:
+       {
+            panda::es2panda::ir::Expression* obj_expression = *enc->GetExpressionByAcc(inst);
+            auto value = *enc->GetExpressionByRegIndex(inst, 0);
+
+            auto attr_expression = enc->GetIdentifierByName("__proto__");
+            auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
+                                                                                obj_expression,
+                                                                                attr_expression,
+                                                                                es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                                                false, 
+                                                                                false
+                                                                            );   
+            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                  objattrexpression,
+                                                                                  value,
+                                                                                  es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                                );
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc,
+                                                                                assignexpression);
+            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+            break;
+        }
+        
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
@@ -2128,19 +2154,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
        
-       case compiler::RuntimeInterface::IntrinsicId::SETOBJECTWITHPROTO_IMM8_V8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_SETOBJECTWITHPROTO(imm0, v0));
-            break;
-        }
-    
        case compiler::RuntimeInterface::IntrinsicId::ASYNCGENERATORREJECT_V8:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -2295,19 +2308,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             if (acc_dst != compiler::ACC_REG_ID) {
                 DoSta(inst->GetDstReg(), enc->result_);
             }
-            break;
-        }
-
-       case compiler::RuntimeInterface::IntrinsicId::SETOBJECTWITHPROTO_IMM16_V8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_SETOBJECTWITHPROTO(imm0, v0));
             break;
         }
 
