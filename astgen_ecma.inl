@@ -54,6 +54,12 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
+       case compiler::RuntimeInterface::IntrinsicId::GETUNMAPPEDARGS:
+       {
+            enc->HandleNewCreatedExpression(inst, enc->constant_arguments);
+            break;
+        }
+
        case compiler::RuntimeInterface::IntrinsicId::LDBIGINT_ID16:
        {
             panda::es2panda::ir::Identifier* funname = enc->GetIdentifierByName("BigInt");
@@ -2036,6 +2042,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
             break;
         }
+
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
@@ -2097,16 +2104,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
             auto v0 = inst->GetSrcReg(0);
             enc->result_.emplace_back(pandasm::Create_CLOSEITERATOR(imm0, v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-
-       case compiler::RuntimeInterface::IntrinsicId::GETUNMAPPEDARGS:
-       {
-            enc->result_.emplace_back(pandasm::Create_GETUNMAPPEDARGS());
             auto acc_dst = inst->GetDstReg();
             if (acc_dst != compiler::ACC_REG_ID) {
                 DoSta(inst->GetDstReg(), enc->result_);
