@@ -2043,6 +2043,23 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
+       case compiler::RuntimeInterface::IntrinsicId::GETTEMPLATEOBJECT_IMM8:
+       case compiler::RuntimeInterface::IntrinsicId::GETTEMPLATEOBJECT_IMM16:
+       {
+            panda::es2panda::ir::Expression* acc = *enc->GetExpressionByAcc(inst);
+            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName("GetTemplateObject");
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+            arguments.push_back(acc);
+
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
+                                                                                funname,
+                                                                                std::move(arguments),
+                                                                                nullptr,
+                                                                                false
+                                                                            );
+            enc->HandleNewCreatedExpression(inst, callexpression);
+            break;
+        }
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
@@ -2110,23 +2127,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-
-       case compiler::RuntimeInterface::IntrinsicId::GETTEMPLATEOBJECT_IMM8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_GETTEMPLATEOBJECT(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-
+       
        case compiler::RuntimeInterface::IntrinsicId::SETOBJECTWITHPROTO_IMM8_V8:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
@@ -2261,21 +2262,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 DoLda(acc_src, enc->result_);
             }
             enc->result_.emplace_back(pandasm::Create_GETRESUMEMODE());
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::GETTEMPLATEOBJECT_IMM16:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_GETTEMPLATEOBJECT(imm0));
             auto acc_dst = inst->GetDstReg();
             if (acc_dst != compiler::ACC_REG_ID) {
                 DoSta(inst->GetDstReg(), enc->result_);
