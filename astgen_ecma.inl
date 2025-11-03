@@ -223,14 +223,16 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::TRYSTGLOBALBYNAME_IMM8_ID16:
        case compiler::RuntimeInterface::IntrinsicId::TRYSTGLOBALBYNAME_IMM16_ID16:
        {
-            panda::es2panda::ir::Expression* src_reg_identifier = *enc->GetExpressionByAcc(inst);  
+            panda::es2panda::ir::Expression* src_reg_identifier = *enc->GetExpressionByAcc(inst); 
+            
+            auto stroffset = static_cast<uint32_t>(inst->GetImms()[1]);
+            auto str = enc->ir_interface_->GetStringIdByOffset(stroffset);
+            auto dst_reg_identifier = enc->GetIdentifierByName(str); 
+            enc->globalname2expression_[dst_reg_identifier] = src_reg_identifier;
 
             if(enc->not_add_assgin_for_stlexvar.find(src_reg_identifier) == enc->not_add_assgin_for_stlexvar.end()){
-                auto stroffset = static_cast<uint32_t>(inst->GetImms()[1]);
-                auto str = enc->ir_interface_->GetStringIdByOffset(stroffset);
-
                 auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                                    enc->GetIdentifierByName(str),
+                                                                                    dst_reg_identifier,
                                                                                     src_reg_identifier,
                                                                                     es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
                                                                                 );
@@ -438,15 +440,17 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         case compiler::RuntimeInterface::IntrinsicId::STCONSTTOGLOBALRECORD_IMM16_ID16:
         {
             panda::es2panda::ir::Expression* src_expression = *enc->GetExpressionByAcc(inst);
-            if(enc->not_add_assgin_for_stlexvar.find(src_expression) != enc->not_add_assgin_for_stlexvar.end()){
-                break;
-            }
-            
             auto stroffset = static_cast<uint32_t>(inst->GetImms()[1]);
             auto str = enc->ir_interface_->GetStringIdByOffset(stroffset);
 
             auto dst_identifier = enc->GetIdentifierByName(str);
 
+            enc->globalname2expression_[dst_identifier] = src_expression;
+
+            if(enc->not_add_assgin_for_stlexvar.find(src_expression) != enc->not_add_assgin_for_stlexvar.end()){
+                break;
+            }
+            
             ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->parser_program_->Allocator()->Adapter());
             auto *declarator = AllocNode<es2panda::ir::VariableDeclarator>(enc,
                                                                                 dst_identifier, 
@@ -1946,6 +1950,88 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->HandleNewCreatedExpression(inst, newExprNode);
             break;
         }
+
+       case compiler::RuntimeInterface::IntrinsicId::CREATEOBJECTWITHEXCLUDEDKEYS_IMM8_V8_V8:
+       case compiler::RuntimeInterface::IntrinsicId::WIDE_CREATEOBJECTWITHEXCLUDEDKEYS_PREF_IMM16_V8_V8:
+       {
+            uint32_t argsum = static_cast<uint32_t>(inst->GetImms()[0]);
+            es2panda::ir::Expression* rawobj;
+            rawobj = *enc->GetExpressionByRegIndex(inst, 0);
+
+            es2panda::ir::ObjectExpression* obj = nullptr;
+            es2panda::ir::Expression* tmpobj = nullptr;
+
+            if(rawobj->IsIdentifier()){
+                tmpobj = enc->globalname2expression_[rawobj->AsIdentifier()];
+                if(tmpobj->IsObjectExpression()){
+                    obj = tmpobj->AsObjectExpression();
+                }else{
+                    HandleError("#CREATEOBJECTWITHEXCLUDEDKEYS @1");
+                }
+            }else if(rawobj->IsObjectExpression()){
+                obj = rawobj->AsObjectExpression();
+            }else{
+                HandleError("#CREATEOBJECTWITHEXCLUDEDKEYS @2");
+            }
+            
+            auto objprops = obj->Properties();
+            ArenaVector<es2panda::ir::Expression *> properties(enc->parser_program_->Allocator()->Adapter());
+
+            std::set<std::string> props;
+            for (uint32_t i = 1; i <= argsum+1; ++i) {
+                std::string idname;
+                auto rawattr = *enc->GetExpressionByRegIndex(inst, i);
+                if(rawattr->IsIdentifier()){
+                    idname = rawattr->AsIdentifier()->Name().Mutf8();
+                }else if(rawattr->IsStringLiteral()){
+                    idname = rawattr->AsStringLiteral()->Str().Mutf8();
+                }else{
+                    std::cout << "error type: " << std::to_string( static_cast<int>(rawattr->Type()) ) << std::endl;
+                    HandleError("#CREATEOBJECTWITHEXCLUDEDKEYS @3");
+                }
+                props.insert(idname);
+            }
+
+            for(uint32_t i = 0; i < objprops.size(); i++){
+                auto rawattrkey = objprops[i];
+                if(rawattrkey->IsProperty()){
+                    auto rawprop = rawattrkey->AsProperty();
+                    auto rawkey = rawprop->Key();
+
+                    std::string idname;
+                    if(rawkey->IsIdentifier()){
+                        idname = rawkey->AsIdentifier()->Name().Mutf8();
+                    }else if(rawkey->IsStringLiteral() ){
+                        idname = rawkey->AsStringLiteral()->Str().Mutf8();
+                    }else{
+                        std::cout << "error type: " << std::to_string( static_cast<int>(rawkey->Type()) ) << std::endl;
+                        HandleError("#CREATEOBJECTWITHEXCLUDEDKEYS @4");
+                    }
+
+                    if(props.find(idname) == props.end()){
+                        properties.push_back(  rawattrkey );
+                    }
+                }else{
+                    HandleError("#CREATEOBJECTWITHEXCLUDEDKEYS @5");
+                }                
+            }
+
+            auto objectexpression = AllocNode<es2panda::ir::ObjectExpression>(enc, 
+                                                                            es2panda::ir::AstNodeType::OBJECT_EXPRESSION,
+                                                                            std::move(properties),
+                                                                            false
+                                                                            );
+            enc->HandleNewCreatedExpression(inst, objectexpression);
+
+            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                enc->GetIdentifierByName("tt"),
+                                                                                objectexpression,
+                                                                                es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                            );
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
+            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+            break;
+        }
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
@@ -2106,19 +2192,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto v0 = inst->GetSrcReg(0);
             auto v1 = inst->GetSrcReg(1);
             enc->result_.emplace_back(pandasm::Create_CREATEITERRESULTOBJ(v0, v1));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::CREATEOBJECTWITHEXCLUDEDKEYS_IMM8_V8_V8:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-            auto v1 = inst->GetSrcReg(1);
-            enc->result_.emplace_back(pandasm::Create_CREATEOBJECTWITHEXCLUDEDKEYS(imm0, v0, v1));
             auto acc_dst = inst->GetDstReg();
             if (acc_dst != compiler::ACC_REG_ID) {
                 DoSta(inst->GetDstReg(), enc->result_);
@@ -2332,20 +2405,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 DoLda(acc_src, enc->result_);
             }
             enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_NOTIFYCONCURRENTRESULT());
-            break;
-        }
-
-       case compiler::RuntimeInterface::IntrinsicId::WIDE_CREATEOBJECTWITHEXCLUDEDKEYS_PREF_IMM16_V8_V8:
-       {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-            auto v1 = inst->GetSrcReg(1);
-            enc->result_.emplace_back(pandasm::Create_WIDE_CREATEOBJECTWITHEXCLUDEDKEYS(imm0, v0, v1));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
             break;
         }
 
