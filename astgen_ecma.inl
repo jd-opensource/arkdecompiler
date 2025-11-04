@@ -2085,7 +2085,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
             break;
         }
-        
+
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
@@ -2113,6 +2113,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "777777777777777777777777777777" << std::endl;
             enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
             std::cout << "888888888888888888888888888888" << std::endl;
+            break;
+        }
+
+       case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_TOPROPERTYKEY_PREF_NONE:
+       {
+            panda::es2panda::ir::Expression* obj_expression = *enc->GetExpressionByAcc(inst);
+            enc->HandleNewCreatedExpression(inst, obj_expression);
             break;
         }
 
@@ -2374,20 +2381,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 DoLda(acc_src, enc->result_);
             }
             enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_NOTIFYCONCURRENTRESULT());
-            break;
-        }
-
-       case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_TOPROPERTYKEY_PREF_NONE:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-            enc->result_.emplace_back(pandasm::Create_CALLRUNTIME_TOPROPERTYKEY());
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
             break;
         }
        
