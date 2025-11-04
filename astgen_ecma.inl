@@ -1164,8 +1164,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             CopyLexicalenvStack(method_offset, inst, enc->method2lexicalenvstack_, enc->bb2lexicalenvstack_, enc->globallexical_waitlist_);
             CopyLexicalenvStack(method_offset, inst, enc->method2sendablelexicalenvstack_, enc->bb2sendablelexicalenvstack_, enc->globalsendablelexical_waitlist_);
 
-            std::string newname = enc->RemovePrefixOfFunc(method_name);
-            auto new_expression = enc->GetIdentifierByName(newname);
+            //std::string newname = enc->RemovePrefixOfFunc(method_name);
+            auto new_expression = enc->GetIdentifierByName(method_name);
 
             // support callruntime.createprivateproperty
             if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM8_ID16_IMM8 ||
@@ -2034,13 +2034,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                             );
             enc->HandleNewCreatedExpression(inst, objectexpression);
 
-            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                                enc->GetIdentifierByName("tt"),
-                                                                                objectexpression,
-                                                                                es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-                                                                            );
-            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
-            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+            // just for testing
+            // auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+            //                                                                     enc->GetIdentifierByName("tt"),
+            //                                                                     objectexpression,
+            //                                                                     es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+            //                                                                 );
+            // auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
+            // enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
             break;
         }
 
@@ -2094,6 +2095,59 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
+       case compiler::RuntimeInterface::IntrinsicId::DEFINEGETTERSETTERBYVALUE_V8_V8_V8_V8:
+       {
+            es2panda::ir::Expression *rawmember = *enc->GetExpressionByRegIndex(inst, 0);
+            uint32_t constructor_offset;
+            if(rawmember->IsMemberExpression()){
+                auto rawobj = rawmember->AsMemberExpression()->Object();
+                if(rawobj->IsIdentifier()){
+                    auto objname = rawobj->AsIdentifier()->Name().Mutf8();
+                    if(enc->methodname2offset_->find(objname) != enc->methodname2offset_->end()){
+                        constructor_offset = (*enc->methodname2offset_)[objname];
+                    }else{
+                        HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case1"); 
+                    }
+                }else{
+                    std::cout << "###: " << std::to_string(static_cast<int>(rawobj->Type())) << std::endl;
+                    HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case2"); 
+                }
+            }else{
+                std::cout << "###: " << std::to_string(static_cast<int>(rawmember->Type())) << std::endl;
+                HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case3");       
+            }
+
+            es2panda::ir::Expression *rawcallee1 = *enc->GetExpressionByRegIndex(inst, 2);
+            if(rawcallee1->IsIdentifier()){
+                auto callee = rawcallee1->AsIdentifier()->Name().Mutf8();
+                auto tmp = RemoveArgumentsOfFunc(callee);
+                if(enc->methodname2offset_->find(tmp) != enc->methodname2offset_->end()){
+                    auto methodoffset = (*enc->methodname2offset_)[tmp];
+                    (*enc->class2memberfuns_)[constructor_offset].insert(methodoffset);
+                    enc->memberfuncs_->insert(methodoffset);
+                }
+            }else{
+                std::cout << "###: " << std::to_string(static_cast<int>(rawcallee1->Type())) << std::endl;
+                HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case5");
+            }
+
+            es2panda::ir::Expression *rawcallee2 = *enc->GetExpressionByRegIndex(inst, 3);
+            if(rawcallee2->IsIdentifier()){
+                auto callee = rawcallee2->AsIdentifier()->Name().Mutf8();
+                auto tmp = RemoveArgumentsOfFunc(callee);
+                if(enc->methodname2offset_->find(tmp) != enc->methodname2offset_->end()){
+                    auto methodoffset = (*enc->methodname2offset_)[tmp];
+                    (*enc->class2memberfuns_)[constructor_offset].insert(methodoffset);
+                    enc->memberfuncs_->insert(methodoffset);
+                }
+            }else{
+                std::cout << "###: " << std::to_string(static_cast<int>(rawcallee2->Type())) << std::endl;
+                HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case6");
+            }
+
+            break;
+        }
+
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
@@ -2124,24 +2178,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-       case compiler::RuntimeInterface::IntrinsicId::DEFINEGETTERSETTERBYVALUE_V8_V8_V8_V8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-            auto v0 = inst->GetSrcReg(0);
-            auto v1 = inst->GetSrcReg(1);
-            auto v2 = inst->GetSrcReg(2);
-            auto v3 = inst->GetSrcReg(3);
-            enc->result_.emplace_back(pandasm::Create_DEFINEGETTERSETTERBYVALUE(v0, v1, v2, v3));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-
        case compiler::RuntimeInterface::IntrinsicId::GETNEXTPROPNAME_V8:
        {
             auto v0 = inst->GetSrcReg(0);
@@ -2167,8 +2203,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-
-       
        case compiler::RuntimeInterface::IntrinsicId::ASYNCGENERATORREJECT_V8:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
