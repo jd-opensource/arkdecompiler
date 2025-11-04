@@ -2087,6 +2087,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
+       case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_TOPROPERTYKEY_PREF_NONE:
+       {
+            panda::es2panda::ir::Expression* obj_expression = *enc->GetExpressionByAcc(inst);
+            enc->HandleNewCreatedExpression(inst, obj_expression);
+            break;
+        }
+        
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
@@ -2132,13 +2139,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             if (acc_dst != compiler::ACC_REG_ID) {
                 DoSta(inst->GetDstReg(), enc->result_);
             }
-            break;
-        }
-
-       case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_TOPROPERTYKEY_PREF_NONE:
-       {
-            panda::es2panda::ir::Expression* obj_expression = *enc->GetExpressionByAcc(inst);
-            enc->HandleNewCreatedExpression(inst, obj_expression);
             break;
         }
 
