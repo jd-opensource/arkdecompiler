@@ -2178,6 +2178,15 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
+        case compiler::RuntimeInterface::IntrinsicId::ASYNCFUNCTIONRESOLVE_V8:
+        case compiler::RuntimeInterface::IntrinsicId::ASYNCFUNCTIONREJECT_V8:
+        case compiler::RuntimeInterface::IntrinsicId::GETRESUMEMODE:
+        {
+            panda::es2panda::ir::Expression* obj_expression = *enc->GetExpressionByAcc(inst);
+            enc->HandleNewCreatedExpression(inst, obj_expression);
+            break;
+        }
+        
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
@@ -2205,15 +2214,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "777777777777777777777777777777" << std::endl;
             enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
             std::cout << "888888888888888888888888888888" << std::endl;
-            break;
-        }
-
-        case compiler::RuntimeInterface::IntrinsicId::ASYNCFUNCTIONRESOLVE_V8:
-        case compiler::RuntimeInterface::IntrinsicId::ASYNCFUNCTIONREJECT_V8:
-        case compiler::RuntimeInterface::IntrinsicId::GETRESUMEMODE:
-        {
-            panda::es2panda::ir::Expression* obj_expression = *enc->GetExpressionByAcc(inst);
-            enc->HandleNewCreatedExpression(inst, obj_expression);
             break;
         }
 
