@@ -382,6 +382,10 @@ void  ArkTSGen::EmitFunctionDeclaration(const ir::AstNode *node){
     auto fundeclare = node->AsFunctionDeclaration();
     auto scriptfunction =  fundeclare->Function();
 
+    if(scriptfunction->IsAsync()){
+        this->WriteKeyWords("async");
+        this->WriteSpace();    
+    }
     this->WriteKeyWords("function");
     this->WriteSpace();
     this->EmitExpression(scriptfunction->Id());
