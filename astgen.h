@@ -566,6 +566,12 @@ public:
     panda::es2panda::ir::Identifier* constant_restargs = AllocNode<panda::es2panda::ir::Identifier>(this, "args");
     panda::es2panda::ir::Identifier* constant_arguments = AllocNode<panda::es2panda::ir::Identifier>(this, "arguments"); 
 
+    panda::es2panda::ir::Identifier* constant_asyncfuncmark = AllocNode<panda::es2panda::ir::Identifier>(this, "asyncfunc");
+
+
+    panda::es2panda::ir::Expression* suspendobj = nullptr;
+
+
     panda::es2panda::ir::BooleanLiteral* constant_true = AllocNode<panda::es2panda::ir::BooleanLiteral>(this, true);
     panda::es2panda::ir::BooleanLiteral* constant_false = AllocNode<panda::es2panda::ir::BooleanLiteral>(this, false);
     panda::es2panda::ir::NullLiteral* constant_null = AllocNode<panda::es2panda::ir::NullLiteral>(this);
