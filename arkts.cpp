@@ -295,6 +295,13 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
             break;
         }
 
+        case AstNodeType::AWAIT_EXPRESSION:{
+            auto awaitexpression = node->AsAwaitExpression();
+            this->WriteKeyWords("await");
+            this->WriteSpace();
+            this->EmitExpression(awaitexpression->Argument());
+            break;
+        }
 
         default:
             HandleError("#EmitExpression : unsupport expression");;

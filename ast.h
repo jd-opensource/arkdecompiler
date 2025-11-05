@@ -45,6 +45,7 @@
 #include "../ets_frontend/es2panda/ir/expressions/thisExpression.h"
 
 #include "../ets_frontend/es2panda/ir/expressions/newExpression.h"
+#include "../ets_frontend/es2panda/ir/expressions/awaitExpression.h"
 
 #include "../ets_frontend/es2panda/ir/module/exportDefaultDeclaration.h"
 #include "../ets_frontend/es2panda/ir/module/exportNamedDeclaration.h"
