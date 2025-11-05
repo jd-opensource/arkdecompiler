@@ -2150,6 +2150,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
         case compiler::RuntimeInterface::IntrinsicId::ASYNCFUNCTIONENTER:
         {
+            auto funcNode = (*enc->method2scriptfunast_)[enc->methodoffset_];
+            funcNode->AddFlag(es2panda::ir::ScriptFunctionFlags::ASYNC);
+
             enc->HandleNewCreatedExpression(inst, enc->constant_asyncfuncmark);
             break;
         }
