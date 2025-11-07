@@ -99,7 +99,7 @@ public:
 
         funcNode->SetIdent(funname_id);
 
-        this->id2block[0] = body;
+        this->id2block[graph->GetStartBlock()->GetId()] = body;
 
         //this->lcaFinder = std::make_unique<LCAFinder>(graph);
 
@@ -410,7 +410,14 @@ public:
         if(block->GetPredsBlocks().size() == 1 && block_id != 0 && block->GetPredecessor(0)->GetSuccsBlocks().size() == 1){
             std::cout << "@@ case 3" << std::endl;
             BasicBlock* ancestor_block = block->GetPredecessor(0);
-            this->id2block[block_id] =  this->id2block[ancestor_block->GetId()];;
+
+            if(this->id2block.find(ancestor_block->GetId()) != this->id2block.end()){
+                this->id2block[block_id] =  this->id2block[ancestor_block->GetId()];;
+            }else{
+                HandleError("#GetBlockStatementById: find ancestor error: ", block_id);
+            }
+            
+
             return this->id2block[block_id];
         }
         
@@ -442,6 +449,7 @@ public:
 
             return this->id2block[block_id];
         }else{
+            //HandleError("GetBlockStatementById# unsupported case, blockid: ", block_id);
             /**
              * add statement in special statements
              * a) if
@@ -451,7 +459,12 @@ public:
 
         }
         
-        es2panda::ir::BlockStatement* curstatement = this->id2block[block_id];
+        es2panda::ir::BlockStatement* curstatement = nullptr;
+        if(this->id2block.find(block_id) != this->id2block.end()){
+            curstatement = this->id2block[block_id];
+        }else{
+            HandleError("GetBlockStatementById# unsupported case, blockid: ", block_id);
+        }
         return curstatement;
     }
 
@@ -567,6 +580,8 @@ public:
     panda::es2panda::ir::Identifier* constant_arguments = AllocNode<panda::es2panda::ir::Identifier>(this, "arguments"); 
 
     panda::es2panda::ir::Identifier* constant_asyncfuncmark = AllocNode<panda::es2panda::ir::Identifier>(this, "asyncfunc");
+
+    panda::es2panda::ir::Identifier* constant_genratorcmark = AllocNode<panda::es2panda::ir::Identifier>(this, "generatorobj");
 
 
     panda::es2panda::ir::Expression* suspendobj = nullptr;

@@ -2186,7 +2186,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->HandleNewCreatedExpression(inst, obj_expression);
             break;
         }
-        
+
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
@@ -2214,6 +2214,22 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "777777777777777777777777777777" << std::endl;
             enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
             std::cout << "888888888888888888888888888888" << std::endl;
+            break;
+        }
+
+       case compiler::RuntimeInterface::IntrinsicId::CREATEGENERATOROBJ_V8:
+       {
+            enc->HandleNewCreatedExpression(inst, enc->constant_genratorcmark);
+
+            break;
+        }
+
+       case compiler::RuntimeInterface::IntrinsicId::CREATEITERRESULTOBJ_V8_V8:
+       {
+            es2panda::ir::Expression *obj_expression = *enc->GetExpressionByRegIndex(inst, 0);
+            auto yieldrexpression = AllocNode<es2panda::ir::YieldExpression>(enc, obj_expression, false);
+
+            enc->HandleNewCreatedExpression(inst, yieldrexpression);
             break;
         }
 
@@ -2270,29 +2286,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             break;
         }
-       
-       case compiler::RuntimeInterface::IntrinsicId::CREATEGENERATOROBJ_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_CREATEGENERATOROBJ(v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::CREATEITERRESULTOBJ_V8_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            auto v1 = inst->GetSrcReg(1);
-            enc->result_.emplace_back(pandasm::Create_CREATEITERRESULTOBJ(v0, v1));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       
+              
        case compiler::RuntimeInterface::IntrinsicId::CREATEASYNCGENERATOROBJ_V8:
        {
             auto v0 = inst->GetSrcReg(0);
