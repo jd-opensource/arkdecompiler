@@ -2179,14 +2179,43 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         }
 
         case compiler::RuntimeInterface::IntrinsicId::ASYNCFUNCTIONRESOLVE_V8:
-        case compiler::RuntimeInterface::IntrinsicId::ASYNCFUNCTIONREJECT_V8:
-        case compiler::RuntimeInterface::IntrinsicId::GETRESUMEMODE:
         {
             panda::es2panda::ir::Expression* obj_expression = *enc->GetExpressionByAcc(inst);
             enc->HandleNewCreatedExpression(inst, obj_expression);
             break;
         }
 
+        case compiler::RuntimeInterface::IntrinsicId::ASYNCFUNCTIONREJECT_V8:{
+            enc->HandleNewCreatedExpression(inst, enc->constant_rejectmode); 
+            break;
+
+        }
+
+        case compiler::RuntimeInterface::IntrinsicId::GETRESUMEMODE:
+        {
+            enc->HandleNewCreatedExpression(inst, enc->constant_resumemode); 
+            break;
+        }
+
+       case compiler::RuntimeInterface::IntrinsicId::CREATEGENERATOROBJ_V8:
+       {
+            enc->HandleNewCreatedExpression(inst, enc->constant_genratorcmark);
+
+            break;
+        }
+
+       case compiler::RuntimeInterface::IntrinsicId::CREATEITERRESULTOBJ_V8_V8:
+       {
+            es2panda::ir::Expression *obj_expression = *enc->GetExpressionByRegIndex(inst, 0);
+            auto yieldrexpression = AllocNode<es2panda::ir::YieldExpression>(enc, obj_expression, false);
+
+            auto yieldstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, yieldrexpression);
+            enc->AddInstAst2BlockStatemntByInst(inst, yieldstatement);
+
+            enc->HandleNewCreatedExpression(inst, enc->constant_itercmark);
+            break;
+        }
+        
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
@@ -2214,22 +2243,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             std::cout << "777777777777777777777777777777" << std::endl;
             enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
             std::cout << "888888888888888888888888888888" << std::endl;
-            break;
-        }
-
-       case compiler::RuntimeInterface::IntrinsicId::CREATEGENERATOROBJ_V8:
-       {
-            enc->HandleNewCreatedExpression(inst, enc->constant_genratorcmark);
-
-            break;
-        }
-
-       case compiler::RuntimeInterface::IntrinsicId::CREATEITERRESULTOBJ_V8_V8:
-       {
-            es2panda::ir::Expression *obj_expression = *enc->GetExpressionByRegIndex(inst, 0);
-            auto yieldrexpression = AllocNode<es2panda::ir::YieldExpression>(enc, obj_expression, false);
-
-            enc->HandleNewCreatedExpression(inst, yieldrexpression);
             break;
         }
 

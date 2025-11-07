@@ -583,6 +583,13 @@ public:
 
     panda::es2panda::ir::Identifier* constant_genratorcmark = AllocNode<panda::es2panda::ir::Identifier>(this, "generatorobj");
 
+    panda::es2panda::ir::Identifier* constant_itercmark = AllocNode<panda::es2panda::ir::Identifier>(this, "iterresultobj");
+
+
+    panda::es2panda::ir::Identifier* constant_resumemode = AllocNode<panda::es2panda::ir::Identifier>(this, "whether_resume_generator");
+
+    panda::es2panda::ir::Identifier* constant_rejectmode = AllocNode<panda::es2panda::ir::Identifier>(this, "reject_resume_generator");
+
 
     panda::es2panda::ir::Expression* suspendobj = nullptr;
 
