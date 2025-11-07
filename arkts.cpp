@@ -303,6 +303,14 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
             break;
         }
 
+        case AstNodeType::YIELD_EXPRESSION:{
+            auto awaitexpression = node->AsYieldExpression();
+            this->WriteKeyWords("yield");
+            this->WriteSpace();
+            this->EmitExpression(awaitexpression->Argument());
+            break;
+        }
+
         default:
             HandleError("#EmitExpression : unsupport expression");;
 
