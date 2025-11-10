@@ -2167,14 +2167,52 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
         case compiler::RuntimeInterface::IntrinsicId::SUSPENDGENERATOR_V8:
         {
+            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName("suspendgenerator");
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+
+            arguments.push_back(*enc->GetExpressionByAcc(inst));
+            arguments.push_back(*enc->GetExpressionByRegIndex(inst, 0));
+
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc,
+                                                                                funname,
+                                                                                std::move(arguments),
+                                                                                nullptr,
+                                                                                false
+                                                                            );
+            enc->HandleNewCreatedExpression(inst, callexpression);
+
             auto obj_expression = *enc->GetExpressionByAcc(inst);
-            enc->suspendobj = obj_expression;
             enc->HandleNewCreatedExpression(inst, obj_expression);
             break;
         }
 
         case compiler::RuntimeInterface::IntrinsicId::RESUMEGENERATOR:{
-            enc->HandleNewCreatedExpression(inst, enc->suspendobj);
+            panda::es2panda::ir::Identifier* obj_reg_identifier = enc->GetIdentifierByName(std::string("ret_resumegenerator") + "_" + std::to_string(enc->closure_count));
+            enc->closure_count++;
+
+            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName("GeneratorResume");
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+
+            arguments.push_back(*enc->GetExpressionByAcc(inst));
+
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc,
+                                                                                funname,
+                                                                                std::move(arguments),
+                                                                                nullptr,
+                                                                                false
+                                                                            );
+
+
+            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                  obj_reg_identifier,
+                                                                                  callexpression,
+                                                                                   es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                            );
+                                                                            
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
+            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+            enc->HandleNewCreatedExpression(inst, obj_reg_identifier);
+            
             break;
         }
 
@@ -2188,18 +2226,64 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         case compiler::RuntimeInterface::IntrinsicId::ASYNCFUNCTIONREJECT_V8:{
             enc->HandleNewCreatedExpression(inst, enc->constant_rejectmode); 
             break;
-
         }
 
         case compiler::RuntimeInterface::IntrinsicId::GETRESUMEMODE:
         {
-            enc->HandleNewCreatedExpression(inst, enc->constant_resumemode); 
+            panda::es2panda::ir::Identifier* obj_reg_identifier = enc->GetIdentifierByName(std::string("ret_getresumemode") + "_" + std::to_string(enc->closure_count));
+            enc->closure_count++;
+
+            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName("GetResumeMode");
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+
+            arguments.push_back(*enc->GetExpressionByAcc(inst));
+
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc,
+                                                                                funname,
+                                                                                std::move(arguments),
+                                                                                nullptr,
+                                                                                false
+                                                                            );
+
+
+            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                  obj_reg_identifier,
+                                                                                  callexpression,
+                                                                                   es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                            );
+                                                                            
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
+            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+            
+            enc->HandleNewCreatedExpression(inst, obj_reg_identifier);
             break;
         }
 
        case compiler::RuntimeInterface::IntrinsicId::CREATEGENERATOROBJ_V8:
        {
-            enc->HandleNewCreatedExpression(inst, enc->constant_genratorcmark);
+            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName("CreateGeneratorObj");
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+
+            arguments.push_back(*enc->GetExpressionByRegIndex(inst, 0));
+
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc,
+                                                                                funname,
+                                                                                std::move(arguments),
+                                                                                nullptr,
+                                                                                false
+                                                                            );
+            panda::es2panda::ir::Identifier* obj_reg_identifier = enc->GetIdentifierByName(std::string("ret_generatorobj") + "_" + std::to_string(enc->closure_count));
+            enc->closure_count++;
+
+            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                  obj_reg_identifier,
+                                                                                  callexpression,
+                                                                                   es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                            );
+                                                                            
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
+            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+            enc->HandleNewCreatedExpression(inst, obj_reg_identifier);
 
             break;
         }
@@ -2211,11 +2295,38 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             auto yieldstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, yieldrexpression);
             enc->AddInstAst2BlockStatemntByInst(inst, yieldstatement);
+            ////////////////////////////////////////////////////////////////////////////////////////////////
+            panda::es2panda::ir::Identifier* obj_reg_identifier = enc->GetIdentifierByName(std::string("ret_createresultobj") + "_" + std::to_string(enc->closure_count));
+            enc->closure_count++;
 
-            enc->HandleNewCreatedExpression(inst, enc->constant_itercmark);
+            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName("CreateIterResultObject");
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+
+            arguments.push_back(*enc->GetExpressionByRegIndex(inst, 0));
+            arguments.push_back(*enc->GetExpressionByRegIndex(inst, 1));
+
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc,
+                                                                                funname,
+                                                                                std::move(arguments),
+                                                                                nullptr,
+                                                                                false
+                                                                            );
+
+
+            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                  obj_reg_identifier,
+                                                                                  callexpression,
+                                                                                   es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                            );
+                                                                            
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
+            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+            
+            enc->HandleNewCreatedExpression(inst, obj_reg_identifier);
+            
             break;
         }
-        
+
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////

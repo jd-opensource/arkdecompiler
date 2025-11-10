@@ -33,15 +33,7 @@ void AstGen::VisitParameter(GraphVisitor* v, Inst* inst_base) {
     auto enc = static_cast<AstGen *>(v);
     auto inst = inst_base->CastToParameter();
 
-    panda::es2panda::ir::Expression* arg = nullptr;
-
-    if(enc->memberfuncs_->find(enc->methodoffset_) != enc->memberfuncs_->end() && inst->GetArgNumber() < 3 ){
-        arg = enc->GetIdentifierByName("this");
-        
-    }else{
-        arg = enc->GetIdentifierByName("arg" + std::to_string(inst->GetArgNumber()-3));
-    }
-    
+    panda::es2panda::ir::Expression* arg = enc->getParameterName(inst->GetArgNumber());    
     enc->SetExpressionByRegister(inst, inst->GetDstReg(), arg);
     std::cout << "[-] VisitParameter  >>>>>>>>>>>>>>>>>" << std::endl;
 }

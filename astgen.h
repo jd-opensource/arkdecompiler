@@ -73,14 +73,9 @@ public:
             if(i <= 2){
                 continue;
             }
-            std::string* argname = nullptr;
-            if(this->memberfuncs_->find(methodoffset) != this->memberfuncs_->end() && i == 2 ){
-                argname = new std::string("this");
-            }else{
-                argname = new std::string("arg"+std::to_string(i-3));
-            }
-            panda::es2panda::util::StringView tmp_name_view = panda::es2panda::util::StringView(*argname);
-            arguments.push_back(parser_program->Allocator()->New<panda::es2panda::ir::Identifier>(tmp_name_view));
+            //std::string* argname = ;
+            //panda::es2panda::util::StringView tmp_name_view = panda::es2panda::util::StringView(*argname);
+            arguments.push_back(this->getParameterName(i));
         }
 
         ArenaVector<panda::es2panda::ir::Statement *> func_statements(parser_program->Allocator()->Adapter());
@@ -175,6 +170,26 @@ public:
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Opcode " << compiler::GetOpcodeString(inst->GetOpcode())
                                        << " not yet implemented in codegen";
         success_ = false;
+    }
+
+    panda::es2panda::ir::Expression* getParameterName(int argnum){
+        // if(enc->memberfuncs_->find(enc->methodoffset_) != enc->memberfuncs_->end() && inst->GetArgNumber() < 3){
+        //     arg = enc->GetIdentifierByName("this");
+        // }else{
+        //      arg = enc->GetIdentifierByName("arg" + std::to_string(inst->GetArgNumber()-3));
+        // }
+
+        panda::es2panda::ir::Expression* arg = nullptr;
+        if(argnum == 0){
+            arg = this->GetIdentifierByName("FunctionObject");
+        }else if(argnum == 1){
+            arg = this->GetIdentifierByName("NewTarget");
+        }else if(argnum == 2){
+            arg = this->GetIdentifierByName("this");
+        }else{
+            arg = this->GetIdentifierByName("arg" + std::to_string(argnum - 3));
+        }
+        return arg;
     }
 
     std::string RemovePrefixOfFunc(const std::string& input) {
