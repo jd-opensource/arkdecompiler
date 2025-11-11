@@ -2150,8 +2150,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
         case compiler::RuntimeInterface::IntrinsicId::ASYNCFUNCTIONENTER:
         {
-            auto funcNode = (*enc->method2scriptfunast_)[enc->methodoffset_];
-            funcNode->AddFlag(es2panda::ir::ScriptFunctionFlags::ASYNC);
+            enc->MarkAsync();
 
             enc->HandleNewCreatedExpression(inst, enc->constant_asyncfuncmark);
             break;
@@ -2159,9 +2158,43 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
         case compiler::RuntimeInterface::IntrinsicId::ASYNCFUNCTIONAWAITUNCAUGHT_V8:
         {
+            // panda::es2panda::ir::Expression* source_expression = *enc->GetExpressionByAcc(inst);
+            // auto awaitexpression = AllocNode<es2panda::ir::AwaitExpression>(enc,  source_expression);
+            // enc->HandleNewCreatedExpression(inst, awaitexpression);
+
+            enc->MarkAsync();
+
+            panda::es2panda::ir::Identifier* obj_reg_identifier = enc->GetIdentifierByName(std::string("ret_await") + "_" + std::to_string(enc->closure_count));
+            enc->closure_count++;
+            
             panda::es2panda::ir::Expression* source_expression = *enc->GetExpressionByAcc(inst);
             auto awaitexpression = AllocNode<es2panda::ir::AwaitExpression>(enc,  source_expression);
-            enc->HandleNewCreatedExpression(inst, awaitexpression);
+            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                  obj_reg_identifier,
+                                                                                  awaitexpression,
+                                                                                  es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                            );
+                                                                            
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
+            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+            enc->HandleNewCreatedExpression(inst, obj_reg_identifier);
+
+            // panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName("suspendgenerator");
+            // ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+
+            // arguments.push_back(*enc->GetExpressionByAcc(inst));
+            // arguments.push_back(*enc->GetExpressionByRegIndex(inst, 0));
+
+            // es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc,
+            //                                                                     funname,
+            //                                                                     std::move(arguments),
+            //                                                                     nullptr,
+            //                                                                     false
+            //                                                                 );
+            // enc->HandleNewCreatedExpression(inst, callexpression);
+
+            // auto obj_expression = *enc->GetExpressionByAcc(inst);
+            // enc->HandleNewCreatedExpression(inst, obj_expression);
             break;
         }
 
@@ -2218,12 +2251,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
         case compiler::RuntimeInterface::IntrinsicId::ASYNCFUNCTIONRESOLVE_V8:
         {
+            enc->MarkAsync();
             panda::es2panda::ir::Expression* obj_expression = *enc->GetExpressionByAcc(inst);
             enc->HandleNewCreatedExpression(inst, obj_expression);
             break;
         }
 
         case compiler::RuntimeInterface::IntrinsicId::ASYNCFUNCTIONREJECT_V8:{
+            enc->MarkAsync();
             enc->HandleNewCreatedExpression(inst, enc->constant_rejectmode); 
             break;
         }
@@ -2327,6 +2362,125 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
+       case compiler::RuntimeInterface::IntrinsicId::ASYNCGENERATORRESOLVE_V8_V8_V8:
+       {
+            enc->MarkAsync();
+            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName("AsyncGeneratorResolve");
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+
+            arguments.push_back(*enc->GetExpressionByRegIndex(inst, 0));
+            arguments.push_back(*enc->GetExpressionByRegIndex(inst, 1));
+            arguments.push_back(*enc->GetExpressionByRegIndex(inst, 2));
+
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc,
+                                                                                funname,
+                                                                                std::move(arguments),
+                                                                                nullptr,
+                                                                                false
+                                                                            );
+            panda::es2panda::ir::Identifier* obj_reg_identifier = enc->GetIdentifierByName(std::string("ret_asyncgeneratorresolve") + "_" + std::to_string(enc->closure_count));
+            enc->closure_count++;
+
+            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                  obj_reg_identifier,
+                                                                                  callexpression,
+                                                                                  es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                            );
+                                                                            
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
+            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+            enc->HandleNewCreatedExpression(inst, obj_reg_identifier);
+
+            break;
+        }
+
+       case compiler::RuntimeInterface::IntrinsicId::SETGENERATORSTATE_IMM8:
+       {
+            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName("setgeneratorstate");
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+
+            arguments.push_back(*enc->GetExpressionByAcc(inst));
+
+            auto statevalue = static_cast<uint32_t>(inst->GetImms()[0]);
+            arguments.push_back(AllocNode<es2panda::ir::NumberLiteral>(enc, statevalue));
+
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc,
+                                                                                funname,
+                                                                                std::move(arguments),
+                                                                                nullptr,
+                                                                                false
+                                                                            );
+            enc->HandleNewCreatedExpression(inst, callexpression);
+
+            auto obj_expression = *enc->GetExpressionByAcc(inst);
+            enc->HandleNewCreatedExpression(inst, obj_expression);
+
+            break;
+        }
+
+       case compiler::RuntimeInterface::IntrinsicId::CREATEASYNCGENERATOROBJ_V8:
+       {
+            enc->MarkAsync();
+            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName("CreateAsyncGeneratorObj");
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+
+            arguments.push_back(*enc->GetExpressionByRegIndex(inst, 0));
+            // arguments.push_back(*enc->GetExpressionByRegIndex(inst, 1));
+            // arguments.push_back(*enc->GetExpressionByRegIndex(inst, 2));
+
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc,
+                                                                                funname,
+                                                                                std::move(arguments),
+                                                                                nullptr,
+                                                                                false
+                                                                            );
+            panda::es2panda::ir::Identifier* obj_reg_identifier = enc->GetIdentifierByName(std::string("ret_asyncgeneratorobj") + "_" + std::to_string(enc->closure_count));
+            enc->closure_count++;
+
+            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                  obj_reg_identifier,
+                                                                                  callexpression,
+                                                                                   es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                            );
+                                                                            
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
+            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+            enc->HandleNewCreatedExpression(inst, obj_reg_identifier);
+
+            break;
+        }
+
+       case compiler::RuntimeInterface::IntrinsicId::ASYNCGENERATORREJECT_V8:
+       {
+            enc->MarkAsync();
+            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName("AsyncGeneratorReject");
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+
+            arguments.push_back(*enc->GetExpressionByAcc(inst));
+            arguments.push_back(*enc->GetExpressionByRegIndex(inst, 0));
+
+            es2panda::ir::CallExpression* callexpression = AllocNode<es2panda::ir::CallExpression>(enc,
+                                                                                funname,
+                                                                                std::move(arguments),
+                                                                                nullptr,
+                                                                                false
+                                                                            );
+            panda::es2panda::ir::Identifier* obj_reg_identifier = enc->GetIdentifierByName(std::string("ret_asyncgeneratorreject") + "_" + std::to_string(enc->closure_count));
+            enc->closure_count++;
+
+            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                  obj_reg_identifier,
+                                                                                  callexpression,
+                                                                                   es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                            );
+                                                                            
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
+            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+            enc->HandleNewCreatedExpression(inst, obj_reg_identifier);
+
+            break;
+        }
+
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
@@ -2382,21 +2536,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-       case compiler::RuntimeInterface::IntrinsicId::ASYNCGENERATORREJECT_V8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_ASYNCGENERATORREJECT(v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-
        case compiler::RuntimeInterface::IntrinsicId::CLOSEITERATOR_IMM8_V8:
        case compiler::RuntimeInterface::IntrinsicId::CLOSEITERATOR_IMM16_V8:
        {
@@ -2411,40 +2550,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
               
-       case compiler::RuntimeInterface::IntrinsicId::CREATEASYNCGENERATOROBJ_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_CREATEASYNCGENERATOROBJ(v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-       case compiler::RuntimeInterface::IntrinsicId::ASYNCGENERATORRESOLVE_V8_V8_V8:
-       {
-            auto v0 = inst->GetSrcReg(0);
-            auto v1 = inst->GetSrcReg(1);
-            auto v2 = inst->GetSrcReg(2);
-            enc->result_.emplace_back(pandasm::Create_ASYNCGENERATORRESOLVE(v0, v1, v2));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
-
-       case compiler::RuntimeInterface::IntrinsicId::SETGENERATORSTATE_IMM8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_SETGENERATORSTATE(imm0));
-            break;
-        }
        case compiler::RuntimeInterface::IntrinsicId::GETASYNCITERATOR_IMM8:
        {
             auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
