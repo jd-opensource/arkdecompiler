@@ -192,6 +192,11 @@ public:
         return arg;
     }
 
+    void MarkAsync(){
+        auto funcNode = (*this->method2scriptfunast_)[this->methodoffset_];
+        funcNode->AddFlag(es2panda::ir::ScriptFunctionFlags::ASYNC);  
+    }
+
     std::string RemovePrefixOfFunc(const std::string& input) {
         if(this->raw2newname_->find(input) != this->raw2newname_->end()){
             return (*this->raw2newname_)[input];
