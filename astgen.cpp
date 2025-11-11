@@ -128,6 +128,12 @@ bool AstGen::RunImpl()
             }
         }
 
+        // check if add redundant block
+        if(this->whilebody2redundant.find(bb) != this->whilebody2redundant.end()){
+            this->AddInstAst2BlockStatemntByBlock(bb, this->whilebody2redundant[bb]);
+            this->whilebody2redundant.erase(bb);
+        }
+
     }
 
     if (!GetStatus()) {
@@ -464,7 +470,10 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             if( std::find(loop->GetBlocks().begin(), loop->GetBlocks().end(), block->GetFalseSuccessor()) != loop->GetBlocks().end() ){
                 if(enc->whileheader2redundant[block]->Statements().size() != 0){
                     // add redundant statement in while-header
-                    enc->AddInstAst2BlockStatemntByBlock(block->GetFalseSuccessor(), enc->whileheader2redundant[block] );
+
+                    enc->whilebody2redundant[block->GetFalseSuccessor()] = enc->whileheader2redundant[block];
+                    // adjust to RunImpl in the end of basickblock
+                    // enc->AddInstAst2BlockStatemntByBlock(block->GetFalseSuccessor(), enc->whileheader2redundant[block] );
                 }
 
                 std::swap(true_statements, false_statements);
@@ -476,7 +485,10 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             }else{
                 if(enc->whileheader2redundant[block]->Statements().size() != 0){
                     // add redundant statement in while-header
-                    enc->AddInstAst2BlockStatemntByBlock(block->GetTrueSuccessor(), enc->whileheader2redundant[block] );
+                    enc->whilebody2redundant[block->GetTrueSuccessor()] = enc->whileheader2redundant[block];
+
+                    // adjust to RunImpl in the end of basickblock
+                    //enc->AddInstAst2BlockStatemntByBlock(block->GetTrueSuccessor(), enc->whileheader2redundant[block] );
                 }
                 whilestatement = AllocNode<es2panda::ir::WhileStatement>(enc,
                         nullptr,
