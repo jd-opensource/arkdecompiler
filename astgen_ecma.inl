@@ -2465,35 +2465,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-       case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM8:
-       case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM16:
-       {
-            std::cout << "111111111111111111111111111111" << std::endl;
-            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName("GetIterator");
-            std::cout << "222222222222222222222222222222" << std::endl;
-            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
-            std::cout << "333333333333333333333333333333" << std::endl;
-
-            arguments.push_back(*enc->GetExpressionByAcc(inst));
-            std::cout << "555555555555555555555555555555" << std::endl;
-            auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
-                                                                funname,
-                                                                std::move(arguments),
-                                                                nullptr,
-                                                                false
-                                                                );
-            std::cout << "666666666666666666666666666666" << std::endl;
-            std::cout << "777777777777777777777777777777" << std::endl;
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
-            std::cout << "888888888888888888888888888888" << std::endl;
-            break;
-        }
 
        case compiler::RuntimeInterface::IntrinsicId::GETNEXTPROPNAME_V8:
        {
@@ -2556,6 +2527,36 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
 
             enc->HandleNewCreatedExpression(inst, obj_reg_identifier);
+            break;
+        }
+        
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
+       case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM8:
+       case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM16:
+       {
+            std::cout << "111111111111111111111111111111" << std::endl;
+            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName("GetIterator");
+            std::cout << "222222222222222222222222222222" << std::endl;
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+            std::cout << "333333333333333333333333333333" << std::endl;
+
+            arguments.push_back(*enc->GetExpressionByAcc(inst));
+            std::cout << "555555555555555555555555555555" << std::endl;
+            auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
+                                                                funname,
+                                                                std::move(arguments),
+                                                                nullptr,
+                                                                false
+                                                                );
+            std::cout << "666666666666666666666666666666" << std::endl;
+            std::cout << "777777777777777777777777777777" << std::endl;
+            enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
+            std::cout << "888888888888888888888888888888" << std::endl;
             break;
         }
 
