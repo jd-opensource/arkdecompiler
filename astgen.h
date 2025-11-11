@@ -389,7 +389,6 @@ public:
         this->AddInstAst2BlockStatemntByBlock(block, statement);
 
         if(block->IsLoopValid() && block->IsLoopHeader() && inst->GetOpcode()!= Opcode::If   && inst->GetOpcode()!= Opcode::IfImm ){
-            std::cout << "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG: " << block->GetId() << std::endl;
             auto headerblockstatements = this->whileheader2redundant[block];
             const auto &statements = headerblockstatements->Statements();
             headerblockstatements->AddStatementAtPos(statements.size(), statement);
@@ -399,7 +398,6 @@ public:
     void AddInstAst2BlockStatemntByBlock(BasicBlock* block, es2panda::ir::Statement *statement){
         es2panda::ir::BlockStatement* block_statements = this->GetBlockStatementById(block);
         const auto &statements = block_statements->Statements();
-        std::cout << "#AddInstAst2BlockStatemntByBlock - blocksize: " << statements.size() << std::endl;
         block_statements->AddStatementAtPos(statements.size(), statement);
     }
 
