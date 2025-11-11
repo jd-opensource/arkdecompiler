@@ -396,6 +396,7 @@ public:
     }
 
     void AddInstAst2BlockStatemntByBlock(BasicBlock* block, es2panda::ir::Statement *statement){
+        //std::cout << "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG: " << block->get
         es2panda::ir::BlockStatement* block_statements = this->GetBlockStatementById(block);
         const auto &statements = block_statements->Statements();
         block_statements->AddStatementAtPos(statements.size(), statement);
