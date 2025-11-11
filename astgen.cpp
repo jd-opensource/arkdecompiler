@@ -404,7 +404,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             enc->specialblockid.insert(inst->GetBasicBlock()->GetFalseSuccessor()->GetId());
             true_statements =   enc->GetBlockStatementById(inst->GetBasicBlock()->GetFalseSuccessor());
         }
-
+        
         panda::compiler::RuntimeInterface::IntrinsicId cmpid;
         switch (inst->GetCc()) {
             case compiler::CC_EQ:
