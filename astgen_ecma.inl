@@ -2502,7 +2502,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
        case compiler::RuntimeInterface::IntrinsicId::GETPROPITERATOR:
        {
-            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName("GetIterator");
+            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName("GetPropIterator");
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
 
             arguments.push_back(*enc->GetExpressionByAcc(inst));
