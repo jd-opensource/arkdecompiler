@@ -1,9 +1,11 @@
 #ifndef DECOMPILER_INTRINSIC2TOKEN
 #define DECOMPILER_INTRINSIC2TOKEN
 
-#include "base.h"
+//#include "base.h"
 
 #include "intrinsicid2name.h"
+
+
 
 panda::es2panda::lexer::TokenType BinIntrinsicIdToToken(panda::compiler::RuntimeInterface::IntrinsicId id){
 
@@ -74,6 +76,73 @@ panda::es2panda::lexer::TokenType BinIntrinsicIdToToken(panda::compiler::Runtime
     }
 }
 
+panda::es2panda::lexer::TokenType BinInverseToken2Token(panda::es2panda::lexer::TokenType id){
+    switch (id) {
+        case panda::es2panda::lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL:
+            return panda::es2panda::lexer::TokenType::PUNCTUATOR_GREATER_THAN;
+
+        case panda::es2panda::lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL:
+            return panda::es2panda::lexer::TokenType::PUNCTUATOR_LESS_THAN;
+
+
+        case panda::es2panda::lexer::TokenType::PUNCTUATOR_LESS_THAN:
+            return panda::es2panda::lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL;
+
+        case panda::es2panda::lexer::TokenType::PUNCTUATOR_GREATER_THAN:
+            return panda::es2panda::lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL;
+
+        case panda::es2panda::lexer::TokenType::PUNCTUATOR_EQUAL:
+            return panda::es2panda::lexer::TokenType::PUNCTUATOR_NOT_EQUAL;
+
+        case panda::es2panda::lexer::TokenType::PUNCTUATOR_NOT_EQUAL:
+            return panda::es2panda::lexer::TokenType::PUNCTUATOR_EQUAL;
+
+        case panda::es2panda::lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
+            return panda::es2panda::lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL;
+
+        case panda::es2panda::lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL:
+            return panda::es2panda::lexer::TokenType::PUNCTUATOR_STRICT_EQUAL;
+  
+        default:
+            return id;
+    }
+}
+
+
+panda::es2panda::lexer::TokenType BinInverseIntrinsicIdToToken(panda::compiler::RuntimeInterface::IntrinsicId id){
+
+    switch (id) {
+        case panda::compiler::RuntimeInterface::IntrinsicId::LESSEQ_IMM8_V8:
+            return panda::es2panda::lexer::TokenType::PUNCTUATOR_GREATER_THAN;
+
+        case panda::compiler::RuntimeInterface::IntrinsicId::GREATEREQ_IMM8_V8:
+            return panda::es2panda::lexer::TokenType::PUNCTUATOR_LESS_THAN;
+
+
+        case panda::compiler::RuntimeInterface::IntrinsicId::LESS_IMM8_V8:
+            return panda::es2panda::lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL;
+
+        case panda::compiler::RuntimeInterface::IntrinsicId::GREATER_IMM8_V8:
+            return panda::es2panda::lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL;
+
+        case panda::compiler::RuntimeInterface::IntrinsicId::EQ_IMM8_V8:
+            return panda::es2panda::lexer::TokenType::PUNCTUATOR_NOT_EQUAL;
+
+        case panda::compiler::RuntimeInterface::IntrinsicId::NOTEQ_IMM8_V8:
+            return panda::es2panda::lexer::TokenType::PUNCTUATOR_EQUAL;
+
+        case panda::compiler::RuntimeInterface::IntrinsicId::STRICTEQ_IMM8_V8:
+            return panda::es2panda::lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL;
+
+        case panda::compiler::RuntimeInterface::IntrinsicId::STRICTNOTEQ_IMM8_V8:
+            return panda::es2panda::lexer::TokenType::PUNCTUATOR_STRICT_EQUAL;
+  
+        default:
+            std::cout << "S7" << std::endl;
+            UNREACHABLE();
+    }
+}
+
 
 panda::es2panda::lexer::TokenType UnaryPrefixIntrinsicIdToToken(panda::compiler::RuntimeInterface::IntrinsicId id){
 
@@ -87,7 +156,7 @@ panda::es2panda::lexer::TokenType UnaryPrefixIntrinsicIdToToken(panda::compiler:
         case panda::compiler::RuntimeInterface::IntrinsicId::DELOBJPROP_V8:
             return panda::es2panda::lexer::TokenType::KEYW_DELETE;
         default:
-            std::cout << "S7: " << GetIntrinsicOpcodeName(id) << std::endl;
+            std::cout << "S8: " << GetIntrinsicOpcodeName(id) << std::endl;
             UNREACHABLE();
     }
 }
@@ -101,7 +170,7 @@ panda::es2panda::lexer::TokenType IncDecIntrinsicIdToToken(panda::compiler::Runt
         case panda::compiler::RuntimeInterface::IntrinsicId::INC_IMM8:
             return panda::es2panda::lexer::TokenType::PUNCTUATOR_PLUS;
         default:
-            std::cout << "S8" << std::endl;
+            std::cout << "S9" << std::endl;
             UNREACHABLE();
 
     }

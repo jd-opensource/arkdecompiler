@@ -154,6 +154,7 @@ public:
     static void VisitParameter(GraphVisitor* v, Inst* inst_base);
     
     BasicBlock* FindNearestVisitedPred(const std::vector<BasicBlock*>& visited, BasicBlock* block);
+    panda::es2panda::ir::Expression* InverseTestExpression(AstGen *enc, Inst* inst_base, uint32_t ret, panda::es2panda::ir::Expression* src_expression, bool swap_truefalse);
 
     template <typename T, typename... Args>
     static T *AllocNode(AstGen * astgen, Args &&... args)

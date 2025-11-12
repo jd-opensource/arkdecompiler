@@ -375,17 +375,59 @@ uint32_t onlyOneBranch(BasicBlock* father, AstGen * enc){
     return 0;
 }
 
+panda::es2panda::ir::Expression* AstGen::InverseTestExpression(AstGen *enc, Inst* inst_base, uint32_t ret, panda::es2panda::ir::Expression* src_expression, bool swap_truefalse){
+    [[maybe_unused]] auto inst = inst_base->CastToIfImm();
+    auto new_src_expression = src_expression->AsBinaryExpression();
+    auto raw_opeator = new_src_expression->OperatorType();
+    auto new_operator = BinInverseToken2Token(raw_opeator);
+
+    if(raw_opeator != new_operator){
+        if(swap_truefalse == false && inst->GetCc() == compiler::CC_EQ){
+            std::cout << "@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+            new_src_expression->SetOperator(new_operator);
+            return new_src_expression;
+        }else if(swap_truefalse == true && inst->GetCc() == compiler::CC_NE){
+            std::cout << "@ BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
+            new_src_expression->SetOperator(new_operator);
+            return new_src_expression;
+        }else{
+            return src_expression;
+        }
+    }else{
+        std::cout << "@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC" << std::endl;
+        panda::compiler::RuntimeInterface::IntrinsicId cmpid;
+        if(swap_truefalse == true){
+            if(inst->GetCc() == compiler::CC_EQ){
+                cmpid = compiler::RuntimeInterface::IntrinsicId::NOTEQ_IMM8_V8;
+            }else{
+                cmpid = compiler::RuntimeInterface::IntrinsicId::EQ_IMM8_V8;
+            }   
+        }else{
+            if(inst->GetCc() == compiler::CC_EQ){
+                cmpid = compiler::RuntimeInterface::IntrinsicId::EQ_IMM8_V8;
+            }else{
+                cmpid = compiler::RuntimeInterface::IntrinsicId::NOTEQ_IMM8_V8;
+            }       
+        }
+
+        new_src_expression = AllocNode<es2panda::ir::BinaryExpression>(enc,
+                                                    src_expression,
+                                                    enc->constant_zero,
+                                                    BinIntrinsicIdToToken(cmpid));
+        return new_src_expression;
+    }
+}
+
+
 void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
 {
     std::cout << "[+] VisitIfImm  >>>>>>>>>>>>>>>>>" << std::endl;
     auto enc = static_cast<AstGen *>(v);
     auto inst = inst_base->CastToIfImm();
     auto imm = inst->GetImm();
+    panda::es2panda::ir::Expression* test_expression;
     if (imm == 0) {
         auto src_expression = *enc->GetExpressionByRegIndex(inst, 0);
-
-        panda::es2panda::ir::Expression* test_expression;
-
 
         auto ret = onlyOneBranch(inst->GetBasicBlock(), enc);
 
@@ -402,36 +444,15 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             true_statements =   enc->GetBlockStatementById(inst->GetBasicBlock()->GetTrueSuccessor());
         }else{
             enc->specialblockid.insert(inst->GetBasicBlock()->GetFalseSuccessor()->GetId());
-            true_statements =   enc->GetBlockStatementById(inst->GetBasicBlock()->GetFalseSuccessor());
+            false_statements =   enc->GetBlockStatementById(inst->GetBasicBlock()->GetFalseSuccessor());
         }
         
-        panda::compiler::RuntimeInterface::IntrinsicId cmpid;
-        switch (inst->GetCc()) {
-            case compiler::CC_EQ:
-                if(ret != 2 ){
-                    cmpid = compiler::RuntimeInterface::IntrinsicId::EQ_IMM8_V8;
-
-                }else{
-                    cmpid = compiler::RuntimeInterface::IntrinsicId::NOTEQ_IMM8_V8;
-                }
-
-                break;
-            case compiler::CC_NE:
-                if(ret != 2 ){
-                    cmpid = compiler::RuntimeInterface::IntrinsicId::NOTEQ_IMM8_V8;
-
-                }else{
-                    cmpid = compiler::RuntimeInterface::IntrinsicId::EQ_IMM8_V8;
-                }
-                break;
-            default:
-                std::cout << "S5" << std::endl;
-                UNREACHABLE();
-        }
-        test_expression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
-                                                    src_expression,
-                                                    enc->constant_zero,
-                                                    BinIntrinsicIdToToken(cmpid));
+       /*
+            // 0: if-and-else
+            // 1: only if
+            // 2: only else
+        */
+       
 
         /////////////////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -442,15 +463,20 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             compiler::Loop* loop = block->GetLoop();
             auto back_edges = loop->GetBackEdges();
             LogBackEdgeId(back_edges);
-
+            
             es2panda::ir::DoWhileStatement* dowhilestatement;
+            
+            test_expression =  enc->InverseTestExpression(enc, inst_base, ret, src_expression, false);
+
             if(block->GetTrueSuccessor() == loop->GetHeader()){
+                std::cout << "do while case 1" << std::endl;
                 dowhilestatement = AllocNode<es2panda::ir::DoWhileStatement>(enc,
                     nullptr,
                     true_statements,
-                    src_expression
+                    test_expression
                 );
             }else{
+                std::cout << "do while case 2" << std::endl;
                 dowhilestatement = AllocNode<es2panda::ir::DoWhileStatement>(enc,
                         nullptr,
                         true_statements,
@@ -468,6 +494,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
 
             es2panda::ir::WhileStatement* whilestatement;
             if( std::find(loop->GetBlocks().begin(), loop->GetBlocks().end(), block->GetFalseSuccessor()) != loop->GetBlocks().end() ){
+                std::cout << "while case 1" << std::endl;
                 if(enc->whileheader2redundant[block]->Statements().size() != 0){
                     // add redundant statement in while-header
 
@@ -477,12 +504,14 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                 }
 
                 std::swap(true_statements, false_statements);
+                test_expression =  enc->InverseTestExpression(enc, inst_base, ret, src_expression, true);
                 whilestatement = AllocNode<es2panda::ir::WhileStatement>(enc,
                         nullptr,
-                        src_expression, 
+                        test_expression, 
                         true_statements
                         );
             }else{
+                std::cout << "while case 2" << std::endl;
                 if(enc->whileheader2redundant[block]->Statements().size() != 0){
                     // add redundant statement in while-header
                     enc->whilebody2redundant[block->GetTrueSuccessor()] = enc->whileheader2redundant[block];
@@ -490,6 +519,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                     // adjust to RunImpl in the end of basickblock
                     //enc->AddInstAst2BlockStatemntByBlock(block->GetTrueSuccessor(), enc->whileheader2redundant[block] );
                 }
+                test_expression = enc->InverseTestExpression(enc, inst_base, ret, src_expression,false);
                 whilestatement = AllocNode<es2panda::ir::WhileStatement>(enc,
                         nullptr,
                         test_expression, 
@@ -503,20 +533,30 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
 
             std::cout << "[-] while ===" << std::endl;
         }else{
+            std::cout << "[+] if ===" << std::endl;
             es2panda::ir::IfStatement* ifStatement;
 
             if(ret == 2){
+                std::cout << "if case 1" << std::endl;
+                std::swap(true_statements, false_statements);
+                test_expression = enc->InverseTestExpression(enc, inst_base, ret, src_expression, true);
                 ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, test_expression, true_statements, false_statements);
             }else{
                 if(inst->GetCc() == compiler::CC_EQ){
-                   std::swap(true_statements, false_statements); 
+                    std::cout << "if case 2" << std::endl;
+                    std::swap(true_statements, false_statements);
+                    test_expression = enc->InverseTestExpression(enc, inst_base, ret, src_expression, true);
+                }else{
+                    std::cout << "if case 3" << std::endl;
+                    test_expression = enc->InverseTestExpression(enc, inst_base, ret, src_expression, false);
                 }
-
-                ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, src_expression, true_statements, false_statements);
-
+                
+                ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, test_expression, true_statements, false_statements);
             }
 
             enc->AddInstAst2BlockStatemntByInst(inst, ifStatement);
+
+            std::cout << "[-] if ===" << std::endl;
 
         }
         /////////////////////////////////////////////////////////////////////////////////////////////////
