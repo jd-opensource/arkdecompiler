@@ -10,8 +10,16 @@
 //     function foo1() {}
 // }
 
-// var list = []
 
+// 47. getpropiterator getnextpropname
+// const list = []
+// for(let x in list) {
+//     console.log(x);
+// }
+
+
+// 48. getiterator
+// var list = []
 // for(var x of list) {
 //     console.log("hi");
 // }
