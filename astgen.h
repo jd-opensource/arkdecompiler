@@ -12,8 +12,6 @@ using compiler::BasicBlock;
 using compiler::Inst;
 using compiler::Opcode;
 
-void DoLda(compiler::Register reg, std::vector<pandasm::Ins> &result);
-void DoSta(compiler::Register reg, std::vector<pandasm::Ins> &result);
 
 class AstGen : public compiler::Optimization, public compiler::GraphVisitor {
 public:
@@ -99,18 +97,13 @@ public:
         //this->lcaFinder = std::make_unique<LCAFinder>(graph);
 
     }
+
     ~AstGen() override = default;
     bool RunImpl() override;
+
     const char *GetPassName() const override
     {
         return "AstGen";
-    }
-
-    void Reserve(size_t res_size = 0)
-    {
-        if (res_size > 0) {
-            result_.reserve(res_size);
-        }
     }
 
     bool GetStatus() const
@@ -118,20 +111,11 @@ public:
         return success_;
     }
 
-    const std::vector<pandasm::Ins> &GetResult() const
-    {
-        return result_;
-    }
-
-    std::vector<pandasm::Ins> &&GetResult()
-    {
-        return std::move(result_);
-    }
-
     const ArenaVector<BasicBlock *> &GetBlocksToVisit() const override
     {
         return GetGraph()->GetBlocksRPO();
     }
+    
     static void VisitSpillFill(GraphVisitor *visitor, Inst *inst);
     static void VisitConstant(GraphVisitor *visitor, Inst *inst);
     static void VisitCatchPhi(GraphVisitor *visitor, Inst *inst);
@@ -504,9 +488,6 @@ public:
 
     uint32_t privatevar_count;
 
-    std::vector<pandasm::Ins> res_;
-    std::vector<pandasm::Function::CatchBlock> catch_blocks_;
-
     std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack_;
     std::map<uint32_t, LexicalEnvStack*>* method2sendablelexicalenvstack_;
 
@@ -542,8 +523,6 @@ public:
     std::unique_ptr<LCAFinder> lcaFinder;
 
     bool success_ {true};
-    std::vector<pandasm::Ins> result_;
-   
 
     std::string* acc_global_str = NULL;
 
