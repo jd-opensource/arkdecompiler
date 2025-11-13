@@ -2529,80 +2529,69 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->HandleNewCreatedExpression(inst, obj_reg_identifier);
             break;
         }
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////
+
        case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM8:
        case compiler::RuntimeInterface::IntrinsicId::GETITERATOR_IMM16:
+       case compiler::RuntimeInterface::IntrinsicId::GETASYNCITERATOR_IMM8:
        {
-            std::cout << "111111111111111111111111111111" << std::endl;
-            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName("GetIterator");
-            std::cout << "222222222222222222222222222222" << std::endl;
+            panda::es2panda::ir::Expression* funname = nullptr;
+
+            if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::GETASYNCITERATOR_IMM8){
+                funname = enc->GetIdentifierByName("GetAsyncIterator");
+            }else{
+                funname = enc->GetIdentifierByName("GetIterator");
+            }
+
             ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
-            std::cout << "333333333333333333333333333333" << std::endl;
 
             arguments.push_back(*enc->GetExpressionByAcc(inst));
-            std::cout << "555555555555555555555555555555" << std::endl;
+
             auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
                                                                 funname,
                                                                 std::move(arguments),
                                                                 nullptr,
                                                                 false
                                                                 );
-            std::cout << "666666666666666666666666666666" << std::endl;
-            std::cout << "777777777777777777777777777777" << std::endl;
-            enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
-            std::cout << "888888888888888888888888888888" << std::endl;
+
+            panda::es2panda::ir::Identifier* obj_reg_identifier = enc->GetIdentifierByName(std::string("ret_iterator") + "_" + std::to_string(enc->closure_count));
+            enc->closure_count++;
+
+            auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                  obj_reg_identifier,
+                                                                                  callexpression,
+                                                                                   es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                            );
+                                                                            
+            auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
+            enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+
+            enc->HandleNewCreatedExpression(inst, obj_reg_identifier);
             break;
         }
 
        case compiler::RuntimeInterface::IntrinsicId::CLOSEITERATOR_IMM8_V8:
        case compiler::RuntimeInterface::IntrinsicId::CLOSEITERATOR_IMM16_V8:
        {
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            auto v0 = inst->GetSrcReg(0);
-            enc->result_.emplace_back(pandasm::Create_CLOSEITERATOR(imm0, v0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
+            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName("IteratorClose");
+
+            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+
+            arguments.push_back(*enc->GetExpressionByRegIndex(inst, 0));
+
+            auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
+                                                                funname,
+                                                                std::move(arguments),
+                                                                nullptr,
+                                                                false
+                                                                );
+            enc->HandleNewCreatedExpression(inst, callexpression);
             break;
         }
               
-       case compiler::RuntimeInterface::IntrinsicId::GETASYNCITERATOR_IMM8:
-       {
-            auto acc_src = inst->GetSrcReg(inst->GetInputsCount() - 2);
-            if (acc_src != compiler::ACC_REG_ID) {
-                DoLda(acc_src, enc->result_);
-            }
-           ASSERT(inst->HasImms() && inst->GetImms().size() > 0); // NOLINTNEXTLINE(readability-container-size-empty)
-            auto imm0 = static_cast<uint32_t>(inst->GetImms()[0]);
-            enc->result_.emplace_back(pandasm::Create_GETASYNCITERATOR(imm0));
-            auto acc_dst = inst->GetDstReg();
-            if (acc_dst != compiler::ACC_REG_ID) {
-                DoSta(inst->GetDstReg(), enc->result_);
-            }
-            break;
-        }
        
-        //////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////
-        // hard trigger to be tested
         case compiler::RuntimeInterface::IntrinsicId::LDOBJBYINDEX_IMM8_IMM16:
         case compiler::RuntimeInterface::IntrinsicId::LDOBJBYINDEX_IMM16_IMM16:
         {
-            HandleError("LDOBJBYINDEX testing");
             panda::es2panda::ir::Expression* obj_expression = *enc->GetExpressionByAcc(inst);
             
             uint32_t imm;
@@ -2631,8 +2620,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::STOBJBYINDEX_IMM16_V8_IMM16:
        case compiler::RuntimeInterface::IntrinsicId::WIDE_STOBJBYINDEX_PREF_V8_IMM32:
        {
-            HandleError("STOBJBYINDEX testing");
-
             uint32_t imm;
             if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::WIDE_STOBJBYINDEX_PREF_V8_IMM32){
                 imm = static_cast<uint32_t>(inst->GetImms()[0]);
