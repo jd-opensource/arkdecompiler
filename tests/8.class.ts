@@ -76,3 +76,160 @@
 // donald.move();
 // donald.fly();
 // donald.swim();
+
+
+// # 28. LDPRIVATEPROPERTY_IMM8_IMM16_IMM16
+// class XXX {
+//     #yyy: number = 8;
+//     #zzz: number = 9;
+//     #add1() {
+//       this.#yyy += 1;
+//     }
+
+//     #add2() {
+//         this.#zzz += 2;
+//     }
+
+//     sub() {
+//         this.#yyy -= 3;
+//         this.#add1();
+//         this.#add2();
+//     }
+// }
+// var xxx = new XXX();
+
+// class YYY {
+//     #yyy1: number = 8;
+//     #zzz1: number = 9;
+//     #adda() {
+//       this.#yyy1 += 1;
+//     }
+
+//     #addb() {
+//         this.#zzz1 += 2;
+//     }
+
+//     sub() {
+//         this.#yyy1 -= 3;
+//         this.#adda();
+//         this.#addb();
+//     }
+// }
+
+// var yyy = new YYY();
+// function hello() {
+//     function hi() {
+//         var x1 = 21;
+//         let x2 = function () {
+//             return x1;
+//         };
+//     }
+// }
+
+
+// 29. ldsuperbyvalue ldsuperbyname stsuperbyname stsuperbyvalue supercallforwardallargs
+// class Animal {
+//     constructor(name: string) {
+//         this.name = name;
+//     }
+
+//     makeSound() {
+//         console.log(this.name);
+//     }
+// }
+
+// class Dog extends Animal {
+//     makeSound() {
+//         super.makeSound(); 
+//         var x = super["name"];
+//         console.log(x);
+//     }
+
+//     makeDance(){
+//         super.name = "dance";
+//         super["name"] = "dog";
+//     }
+// }
+
+// const myDog = new Dog("Buddy", "Golden Retriever");
+// myDog.makeSound();
+
+// 30. ldthisbyname ldthisbyvalue stthisbyname stthisbyvalue
+// class Animal {
+//     constructor(name: string) {
+//         this.name = name;
+//     }
+
+//     makeDance(){
+//         console.log(this["hello"]);
+//     }
+// }
+
+// 31. sendable
+// class SendableB {
+//     constructor() {
+//         "use sendable";
+//     }
+
+//     hello(){
+//         this.name = "hello";
+//         console.log("11");
+//     }
+// }
+
+// function test2() {
+//     var a = new SendableB();
+//     var b = 1;
+//     function hi() {
+//         var m = a;
+//         console.log(m);
+//         var n = b;
+//         console.log(n);
+//     }
+// }
+
+// 32. ldsendableclass DEFINEPROPERTYBYNAME
+// class B {
+//     constructor() {
+//       "use sendable";
+//     }
+//     static b: number = 1;
+//     b: number = B.b;
+//     //c: number = B["b"];
+// }
+
+// 37. COPYRESTARGS SUPERCALLSPREAD
+// class A {}
+// class B extends A {
+//     constructor(...args) {
+//        super(1, ...args)
+//     }
+// }
+
+
+// 42. definegettersetterbyvalue
+// class Example {
+//     constructor(value) {
+//       this._value = value;
+//     }
+  
+//     // Getter
+//     get value() {
+//       console.log('Getting value');
+//       return this._value;
+//     }
+  
+//     // Setter
+//     set value(newValue) {
+//       console.log('Setting value');
+//       this._value = newValue;
+//     }
+// }
+  
+// const example = new Example(10);
+
+
+// 41. stownbyvaluewithnameset topropertykey
+// class A5 {
+//     [a5]() {}
+// }
