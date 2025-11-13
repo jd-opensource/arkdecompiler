@@ -30,3 +30,10 @@
 //     var x = 1;
 // }
 
+
+// 40. getunmappedargs
+// function exampleFunction(a, b) {
+//     console.log(arguments.length); 
+//     console.log(arguments[0]); 
+//     console.log(arguments[1]);
+// }
