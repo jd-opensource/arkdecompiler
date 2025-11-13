@@ -7,21 +7,6 @@ namespace panda::bytecodeopt {
 using panda_file::LiteralTag;
 
 
-void DoLda(compiler::Register reg, std::vector<pandasm::Ins> &result)
-{
-    if (reg != compiler::ACC_REG_ID) {
-        result.emplace_back(pandasm::Create_LDA(reg));
-    }
-}
-
-void DoSta(compiler::Register reg, std::vector<pandasm::Ins> &result)
-{
-    if (reg != compiler::ACC_REG_ID) {
-        result.emplace_back(pandasm::Create_STA(reg));
-    }
-}
-
-
 void AstGen::VisitTryBegin(const compiler::BasicBlock *bb)
 {
     std::cout << "[+] VisitTryBegin  >>>>>>>>>>>>>>>>>" << std::endl;
@@ -50,12 +35,6 @@ BasicBlock* AstGen::FindNearestVisitedPred(const std::vector<BasicBlock*>& visit
 bool AstGen::RunImpl()
 {
     
-    Reserve(function_->ins.size());
-    if (!GetGraph()->GetTryBeginBlocks().empty()) {
-        // Workaround for AOT and JIT
-        result_.emplace_back(pandasm::Create_NOP());
-    }
-
     std::vector<BasicBlock *> visited;
 
     for (auto *bb : GetGraph()->GetBlocksLinearOrder()) {
@@ -143,8 +122,7 @@ bool AstGen::RunImpl()
     for (auto *bb : GetGraph()->GetTryBeginBlocks()) {
         VisitTryBegin(bb);
     }
-    function_->ins = std::move(GetResult());
-    function_->catch_blocks = catch_blocks_;
+
     return true;
 }
 
@@ -287,36 +265,6 @@ void AstGen::VisitIf(GraphVisitor *v, Inst *inst_base)
 
     std::cout << "[-] VisitIf  >>>>>>>>>>>>>>>>>" << std::endl;
 }
-
-#if defined(ENABLE_BYTECODE_OPT) && defined(PANDA_WITH_ECMASCRIPT)
-static std::optional<coretypes::TaggedValue> IsEcmaConstTemplate(Inst const *inst)
-{
-    if (inst->GetOpcode() != compiler::Opcode::CastValueToAnyType) {
-        return {};
-    }
-    auto cvat_inst = inst->CastToCastValueToAnyType();
-    if (!cvat_inst->GetInput(0).GetInst()->IsConst()) {
-        return {};
-    }
-    auto const_inst = cvat_inst->GetInput(0).GetInst()->CastToConstant();
-
-    switch (cvat_inst->GetAnyType()) {
-        case compiler::AnyBaseType::ECMASCRIPT_UNDEFINED_TYPE:
-            return coretypes::TaggedValue(coretypes::TaggedValue::VALUE_UNDEFINED);
-        case compiler::AnyBaseType::ECMASCRIPT_INT_TYPE:
-            return coretypes::TaggedValue(static_cast<int32_t>(const_inst->GetIntValue()));
-        case compiler::AnyBaseType::ECMASCRIPT_DOUBLE_TYPE:
-            return coretypes::TaggedValue(const_inst->GetDoubleValue());
-        case compiler::AnyBaseType::ECMASCRIPT_BOOLEAN_TYPE:
-            return coretypes::TaggedValue(static_cast<bool>(const_inst->GetInt64Value() != 0));
-        case compiler::AnyBaseType::ECMASCRIPT_NULL_TYPE:
-            return coretypes::TaggedValue(coretypes::TaggedValue::VALUE_NULL);
-        default:
-            return {};
-    }
-}
-#endif
-
 
 uint32_t onlyOneBranch(BasicBlock* father, AstGen * enc){
     //std::cout << "if block: " << std::to_string(father->GetId()) << std::endl;
@@ -593,18 +541,6 @@ void AstGen::VisitReturn(GraphVisitor *v, Inst *inst_base)
     auto enc = static_cast<AstGen *>(v);
     auto inst = inst_base->CastToReturn();
     switch (inst->GetType()) {
-        case compiler::DataType::ANY: {
-#if defined(ENABLE_BYTECODE_OPT) && defined(PANDA_WITH_ECMASCRIPT)
-            auto test_arg = IsEcmaConstTemplate(inst->GetInput(0).GetInst());
-            if (test_arg.has_value() && test_arg->IsUndefined()) {
-                enc->result_.emplace_back(pandasm::Create_RETURNUNDEFINED());
-                break;
-            }
-#endif
-            DoLda(inst->GetSrcReg(0), enc->result_);
-            enc->result_.emplace_back(pandasm::Create_RETURN());
-            break;
-        }
         default:
             LOG(ERROR, BYTECODE_OPTIMIZER)
                 << "Codegen for " << compiler::GetOpcodeString(inst->GetOpcode()) << " failed";
