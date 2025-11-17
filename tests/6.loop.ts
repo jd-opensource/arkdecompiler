@@ -215,3 +215,9 @@
 //     }
 // } while (i < 5); 
 // x = 2; 
+
+// while-catch
+// const list = []
+// for(let x of list) {
+//     console.log("hi");
+// }
