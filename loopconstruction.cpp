@@ -21,11 +21,16 @@ void JudgeLoopType(BasicBlock* header, std::map<Loop *, uint32_t>& loop2type,
     std::map<Loop *, BasicBlock*> &loop2exit, 
     std::map<BasicBlock*, Loop *> &backedge2dowhileloop){
 
+    std::cout << "[+] judge loop type >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+
     auto &back_edges = header->GetLoop()->GetBackEdges();
+    int count = 0;
     for (auto back_edge : back_edges) {
+        std::cout << "[*] " << count++ << " : " << back_edge->GetId() <<  std::endl;
         auto succs_size = back_edge->GetSuccsBlocks().size();
-        if(succs_size > 1){
+        if(succs_size > 1 && back_edge->IsIfBlock()){
             loop2type[header->GetLoop()] = 1;  // do-whle
+            std::cout << "do - while" << std::endl;
             backedge2dowhileloop[back_edge] = header->GetLoop();
 
             if(back_edge->GetTrueSuccessor()->GetLoop() == header->GetLoop()){
@@ -41,7 +46,9 @@ void JudgeLoopType(BasicBlock* header, std::map<Loop *, uint32_t>& loop2type,
                 loop2exit[header->GetLoop()] = header->GetTrueSuccessor();
             }
         }
-    } 
+    }
+
+    std::cout << "[-] judge loop type >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
 
     //LogLoopBBs(header);
 }
