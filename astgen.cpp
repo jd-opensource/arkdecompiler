@@ -406,6 +406,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
         /////////////////////////////////////////////////////////////////////////////////////////////////
         /// deal with while/do-while
         auto block = inst->GetBasicBlock();
+
         if(enc->backedge2dowhileloop.find(block) != enc->backedge2dowhileloop.end()){
             std::cout << "[+] do-while =====" << std::endl;
             compiler::Loop* loop = block->GetLoop();
