@@ -35,8 +35,6 @@ BasicBlock* AstGen::FindNearestVisitedPred(const std::vector<BasicBlock*>& visit
 bool AstGen::RunImpl()
 {
     
-    std::vector<BasicBlock *> visited;
-
     for (auto *bb : GetGraph()->GetBlocksLinearOrder()) {
         
         if(bb->IsLoopValid() && bb->IsLoopHeader() ){
@@ -53,7 +51,7 @@ bool AstGen::RunImpl()
         ///////////////////////////////////////////////////////////////////////////////////////////////////
 
         
-        auto nearestpre = this->FindNearestVisitedPred(visited, bb);
+        auto nearestpre = this->FindNearestVisitedPred(this->visited, bb);
         if(nearestpre != nullptr && this->bb2acc2expression[nearestpre] != nullptr){
             std::cout << "!!!!!!!!!!!!!!!!!!!! found pre id for bb2acc2expression: " << nearestpre->GetId() << std::endl;
             this->bb2acc2expression[bb] = this->bb2acc2expression[nearestpre];
@@ -77,7 +75,8 @@ bool AstGen::RunImpl()
                 this->bb2sendablelexicalenvstack_[bb] = new LexicalEnvStack();
             }
         }
-        visited.push_back(bb);        
+        
+        this->visited.push_back(bb);        
         ///////////////////////////////////////////////////////////////////////////////////////////////////
         for (const auto &inst : bb->AllInsts()) {
             VisitInstruction(inst);
@@ -113,6 +112,11 @@ bool AstGen::RunImpl()
             this->whilebody2redundant.erase(bb);
         }
 
+        if(this->phiref2pendingredundant.find(bb) != this->phiref2pendingredundant.end()){
+            this->AddInstAst2BlockStatemntByBlock(bb, this->phiref2pendingredundant[bb]);
+            this->phiref2pendingredundant.erase(bb);
+        }
+        
     }
 
     if (!GetStatus()) {

@@ -553,6 +553,7 @@ public:
     std::map<compiler::BasicBlock*, es2panda::ir::BlockStatement*> whileheader2redundant;
     std::map<compiler::BasicBlock*, es2panda::ir::BlockStatement*> whilebody2redundant;
 
+    std::map<compiler::BasicBlock*, es2panda::ir::BlockStatement*> phiref2pendingredundant;
 
     std::map<uint32_t, es2panda::ir::BlockStatement*> id2block;
 
@@ -575,6 +576,8 @@ public:
 
     std::map<uint32_t, panda::es2panda::ir::Expression*> id2expression;
     std::set<uint32_t> untravedid;
+
+    std::vector<BasicBlock *> visited;
     
     std::map<uint32_t, es2panda::ir::BlockStatement*> tyrid2block;
     std::map<uint32_t, panda::es2panda::ir::TryStatement*> tyridtrystatement;
