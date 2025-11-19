@@ -49,17 +49,7 @@ bool AstGen::RunImpl()
         std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ visit bbid: " << bb->GetId() << std::endl;
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////
-
-        
         auto nearestpre = this->FindNearestVisitedPred(this->visited, bb);
-        if(nearestpre != nullptr && this->bb2acc2expression[nearestpre] != nullptr){
-            std::cout << "!!!!!!!!!!!!!!!!!!!! found pre id for bb2acc2expression: " << nearestpre->GetId() << std::endl;
-            this->bb2acc2expression[bb] = this->bb2acc2expression[nearestpre];
-        }else{
-            std::cout << "!!!!!!!!!!!!!!!!!!!! not found pre id for bb2acc2expression: " << "curid: " << bb->GetId()  << std::endl;
-            this->bb2acc2expression[bb] = nullptr;
-        }
-        ///////////////////////////////////////////////////////////////////////////////////////////////////
 
         if(bb != this->GetGraph()->GetStartBlock()) {
             if(nearestpre != nullptr && this->bb2lexicalenvstack_[nearestpre] != nullptr){
