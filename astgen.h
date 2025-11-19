@@ -307,7 +307,7 @@ public:
         
 
         auto untraveled_var =  this->GetIdentifierByReg(id); 
-        this->SetExpressionById(nullptr, id, untraveled_var);
+        this->SetExpressionById(id, untraveled_var);
 
         this->untravedid.insert(id);
 
@@ -316,7 +316,7 @@ public:
         //return std::nullopt;
     }
 
-    void SetExpressionById(Inst* inst, uint32_t id, panda::es2panda::ir::Expression* value){
+    void SetExpressionById(uint32_t id, panda::es2panda::ir::Expression* value){
         if(value == nullptr){
             HandleError("#SetExpressionByRegister: can't set null expression in reg2expression");
         }
@@ -341,7 +341,7 @@ public:
         if(value == nullptr){
             HandleError("#SetExpressionByRegister: can't set null expression in reg2expression");
         }
-        this->SetExpressionById(inst, inst->GetId(), value);
+        this->SetExpressionById(inst->GetId(), value);
 
         std::cout << "#SetExpressionByRegister: " << std::to_string(key) << std::endl;
         
