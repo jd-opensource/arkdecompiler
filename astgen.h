@@ -325,14 +325,6 @@ public:
 
 
     std::optional<panda::es2panda::ir::Expression*> GetExpressionByRegister(Inst* inst, compiler::Register key){
-        if(key == compiler::ACC_REG_ID){
-            if(this->bb2acc2expression[inst->GetBasicBlock()] != nullptr){
-                return this->bb2acc2expression[inst->GetBasicBlock()];
-            }else{
-                HandleError("#GetExpressionByRegister: acc point to null");
-            }
-        }
-
         auto it = this->reg2expression.find(key);
         if (it != this->reg2expression.end()) {
             std::cout << "#GetExpressionByRegister: " << std::to_string(key) << std::endl;
@@ -346,12 +338,6 @@ public:
 
 
     void SetExpressionByRegister(Inst* inst, compiler::Register key, panda::es2panda::ir::Expression* value){
-        /**
-            std::map<compiler::Register, panda::es2panda::ir::Expression*> reg2expression;
-            std::map<compiler::BasicBlock*, panda::es2panda::ir::Expression*> bb2acc2expression;
-         * 
-        */
-
         if(value == nullptr){
             HandleError("#SetExpressionByRegister: can't set null expression in reg2expression");
         }
@@ -359,10 +345,6 @@ public:
 
         std::cout << "#SetExpressionByRegister: " << std::to_string(key) << std::endl;
         
-        if(inst->IsAccWrite()){
-            this->bb2acc2expression[inst->GetBasicBlock()] = value;
-        }
-
         this->reg2expression[key] = value;
     }
 
@@ -566,7 +548,6 @@ public:
     std::map<uint32_t, panda::es2panda::ir::NumberLiteral*> num2literals;
 
     std::map<compiler::Register, panda::es2panda::ir::Expression*> reg2expression;
-    std::map<compiler::BasicBlock*, panda::es2panda::ir::Expression*> bb2acc2expression;
 
     LexicalEnv* acc_lexicalenv = NULL;
 
