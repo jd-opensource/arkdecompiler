@@ -119,7 +119,7 @@ def draw_function(function: Function, out_dir=None, no_insts=False):
 
 def main():
     parser = argparse.ArgumentParser(description="A tool for drawing CFGs by reading ir dump from stdin")
-    parser.add_argument("-i", "--input", type=str, default="input.txt", help="the file containing the IR dump (default: 'input.txt')")
+    parser.add_argument("-i", "--input", type=str, default="input.ir", help="the file containing the IR dump (default: 'input.ir')")
     parser.add_argument("--no-insts", action="store_true", help="drawing without IR instructions")
     parser.add_argument("-o", "--output", type=str, default="./out", help="output directory, default to './out'")
     args = parser.parse_args()
