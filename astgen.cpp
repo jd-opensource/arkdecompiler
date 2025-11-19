@@ -135,7 +135,7 @@ void AstGen::VisitSpillFill(GraphVisitor *visitor, Inst *inst_base)
         if (it == enc->reg2expression.end()) {
             std::cout << "VisitSpillFill # SpillFill none register"  << std::endl; 
         }else{
-            //enc->SetExpressionByRegister(inst, sf.DstValue(), *enc->GetExpressionByRegister(inst, sf.SrcValue()));
+            enc->SetExpressionByRegister(inst, sf.DstValue(), *enc->GetExpressionByRegister(inst, sf.SrcValue()));
         }
     }
     std::cout << "[-] VisitSpillFill  >>>>>>>>>>>>>>>>>" << std::endl;
@@ -589,8 +589,6 @@ void AstGen::VisitCastValueToAnyType(GraphVisitor *visitor, Inst *inst)
 
         case compiler::AnyBaseType::ECMASCRIPT_STRING_TYPE: {
             auto ls = cvat->GetInput(0).GetInst()->CastToLoadString();
-            // auto ls_dst_reg = ls->GetDstReg();
-            // source = *enc->GetExpressionByRegister(inst, ls_dst_reg);
             source = enc->id2expression[ls->GetId()];           
             break;
         }
