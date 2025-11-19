@@ -119,17 +119,17 @@ def draw_function(function: Function, out_dir=None, no_insts=False):
 
 def main():
     parser = argparse.ArgumentParser(description="A tool for drawing CFGs by reading ir dump from stdin")
-    parser.add_argument("-f", "--file", type=str, default="input.ir", help="the file containing the IR dump (default: 'input.ir')")
-    parser.add_argument("--no-insts", action="store_true", help="drawing without ir instructions")
-    parser.add_argument("--out", type=str, default="./out", help="output directory, default to './out'")
+    parser.add_argument("-i", "--input", type=str, default="input.txt", help="the file containing the IR dump (default: 'input.txt')")
+    parser.add_argument("--no-insts", action="store_true", help="drawing without IR instructions")
+    parser.add_argument("-o", "--output", type=str, default="./out", help="output directory, default to './out'")
     args = parser.parse_args()
 
-    with open(args.file, 'r') as file:
+    with open(args.input, 'r') as file:
         lines = file.readlines()
 
     functions = GraphDumpParser().parse(lines)
     for function in functions:
-        draw_function(function, args.out, no_insts=args.no_insts)
+        draw_function(function, args.output, no_insts=args.no_insts)
 
 
 if __name__ == "__main__":
