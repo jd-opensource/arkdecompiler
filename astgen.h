@@ -270,6 +270,19 @@ public:
     void HandleNewCreatedExpression(Inst* inst, es2panda::ir::Expression* expression){
         if(inst->HasUsers()){
             this->SetExpressionByRegister(inst, inst->GetDstReg(), expression);
+
+            auto curtargetid = inst->GetId();
+            if(this->untravedid.find(curtargetid) != this->untravedid.end()){
+                // dealwith untraved_reference
+                auto dst_reg_identifier = this->GetIdentifierByReg(curtargetid);
+                auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(this, 
+                                                                                    dst_reg_identifier,
+                                                                                    expression,
+                                                                                    es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                                );
+                auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(this, assignexpression);
+                this->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+            }
         }else{
             if(expression->IsCallExpression()){
                 auto callstatement = AllocNode<es2panda::ir::ExpressionStatement>(this, expression);
@@ -293,11 +306,14 @@ public:
         }
         
 
-        // @@@###@@@TODO temp test suport for phi
-        //return this->GetIdentifierByName(new std::string(std::to_string(index))); 
-        
+        auto untraveled_var =  this->GetIdentifierByReg(id); 
+        this->SetExpressionById(nullptr, id, untraveled_var);
+
+        this->untravedid.insert(id);
+
+        return untraveled_var;
         //HandleError("can't find expression in reg2expression: " + std::to_string(id));
-        return std::nullopt;
+        //return std::nullopt;
     }
 
     void SetExpressionById(Inst* inst, uint32_t id, panda::es2panda::ir::Expression* value){
@@ -558,6 +574,7 @@ public:
     std::map<compiler::BasicBlock*, LexicalEnvStack*> bb2sendablelexicalenvstack_;
 
     std::map<uint32_t, panda::es2panda::ir::Expression*> id2expression;
+    std::set<uint32_t> untravedid;
     
     std::map<uint32_t, es2panda::ir::BlockStatement*> tyrid2block;
     std::map<uint32_t, panda::es2panda::ir::TryStatement*> tyridtrystatement;
