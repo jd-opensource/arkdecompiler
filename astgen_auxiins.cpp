@@ -1,43 +1,3 @@
-// void AstGen::VisitPhi(GraphVisitor* v, Inst* inst_base) {
-//     std::cout << "[+] VisitPhi  >>>>>>>>>>>>>>>>>" << std::endl;
-//     pandasm::Ins ins;
-//     auto enc = static_cast<AstGen*>(v);
-//     auto inst = inst_base->CastToPhi();
-//     auto funname = enc->GetIdentifierByName("φ");
-//     ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
-
-//     for (size_t i = 0; i < inst->GetInputsCount(); i++) {
-//         std::cout << "[+] phi: end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-//         std::cout << "[*] reg " << std::to_string(i) << " , " << std::to_string(inst->GetSrcReg(i-2)) << std::endl;
-//         arguments.push_back(*enc->GetExpressionByRegIndex(inst, i));
-//         std::cout << "[-] phi: end >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-//     }
-
-//     auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
-//                                                         funname,
-//                                                         std::move(arguments),
-//                                                         nullptr,
-//                                                         false
-//                                                         );
-
-//     //enc->SetExpressionByRegister(inst, inst->GetDstReg(), callexpression);
-
-//     auto curtargetid = inst->GetId();
-//     auto dst_reg_identifier = enc->GetIdentifierByReg(curtargetid);
-//     enc->SetExpressionByRegister(inst, inst->GetDstReg(), dst_reg_identifier);
-//     auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-//                                                                         dst_reg_identifier,
-//                                                                         callexpression,
-//                                                                         es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-//                                                                     );
-//     auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
-
-//     enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
-
-//     std::cout << "[-] VisitPhi  <<<<<<<<<<<<<<<" << std::endl;
-// }
-
-
 void AstGen::VisitPhi(GraphVisitor* v, Inst* inst_base) {
     std::cout << "[+] VisitPhi  >>>>>>>>>>>>>>>>>" << std::endl;
     pandasm::Ins ins;
@@ -61,6 +21,7 @@ void AstGen::VisitPhi(GraphVisitor* v, Inst* inst_base) {
         if(std::find(enc->visited.begin(), enc->visited.end(), bb) != enc->visited.end()){
             enc->AddInstAst2BlockStatemntByBlock(bb, assignstatement);
         }else{
+            
             es2panda::ir::BlockStatement* new_block_statement;
             if(enc->phiref2pendingredundant.find(bb) != enc->phiref2pendingredundant.end()){
                 new_block_statement = enc->phiref2pendingredundant[bb];
