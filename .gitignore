@@ -1,6 +1,9 @@
 base.map
 a
 
+scripts/*.ir
+scripts/out/*
+
 repos/*
 logs/*
 out/*
