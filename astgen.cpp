@@ -69,6 +69,7 @@ bool AstGen::RunImpl()
         this->visited.push_back(bb);        
         ///////////////////////////////////////////////////////////////////////////////////////////////////
         for (const auto &inst : bb->AllInsts()) {
+            this->GetBlockStatementById(bb);
             VisitInstruction(inst);
             if (!GetStatus()) {
                 return false;
@@ -277,9 +278,9 @@ uint32_t onlyOneBranch(BasicBlock* father, AstGen * enc){
     }
 
     BasicBlock* analysis_block = nullptr;
-    if(true_branch->GetPredsBlocks().size() == 2){
+    if(true_branch->GetPredsBlocks().size() >= 2){
         analysis_block = true_branch;
-    }else if(false_branch->GetPredsBlocks().size() == 2){
+    }else if(false_branch->GetPredsBlocks().size() >= 2){
         analysis_block = false_branch;
     }else if(true_branch->GetPredsBlocks().size() == 1 && false_branch->GetPredsBlocks().size() == 1){
         return 0;
@@ -377,14 +378,17 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
         es2panda::ir::BlockStatement* false_statements = nullptr;
         
         if(ret == 0){
+            std::cout << "#VisitIfImm ret case: " << ret << std::endl;
             enc->specialblockid.insert(inst->GetBasicBlock()->GetTrueSuccessor()->GetId());
             enc->specialblockid.insert(inst->GetBasicBlock()->GetFalseSuccessor()->GetId());
             true_statements =   enc->GetBlockStatementById(inst->GetBasicBlock()->GetTrueSuccessor());
             false_statements =  enc->GetBlockStatementById(inst->GetBasicBlock()->GetFalseSuccessor());
         }else if(ret == 1){
+            std::cout << "#VisitIfImm ret case: " << ret << std::endl;
             enc->specialblockid.insert(inst->GetBasicBlock()->GetTrueSuccessor()->GetId());
             true_statements =   enc->GetBlockStatementById(inst->GetBasicBlock()->GetTrueSuccessor());
         }else{
+            std::cout << "#VisitIfImm ret case: " << ret << std::endl;
             enc->specialblockid.insert(inst->GetBasicBlock()->GetFalseSuccessor()->GetId());
             false_statements =   enc->GetBlockStatementById(inst->GetBasicBlock()->GetFalseSuccessor());
         }
