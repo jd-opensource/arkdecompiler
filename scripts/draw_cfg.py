@@ -113,7 +113,7 @@ def draw_function(function: Function, out_dir=None, no_insts=False):
             dot.edge(str(block.id), str(succ))
     basename = 'cfg_' + function.method
     dotfile_path = os.path.join(out_dir, basename)
-    dot.render(basename, out_dir, format="png")
+    dot.render(basename, out_dir, format="svg")
     os.rename(dotfile_path, dotfile_path + '.dot')
 
 

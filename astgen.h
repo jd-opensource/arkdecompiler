@@ -417,6 +417,7 @@ public:
             if(this->id2block.find(ancestor_block->GetId()) != this->id2block.end()){
                 this->id2block[block_id] =  this->id2block[ancestor_block->GetId()];;
             }else{
+                this->Logid2BlockKeys();
                 HandleError("#GetBlockStatementById: find ancestor error: ", block_id);
             }
             
