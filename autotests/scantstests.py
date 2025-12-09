@@ -85,10 +85,6 @@ def load_results(results_path):
             print(f"Warning: Could not parse {results_path}, creating new results.")
     return [], set()
 
-def save_results(results_list, results_path):
-    with open(results_path, 'w', encoding='utf-8') as f:
-        json.dump(results_list, f, ensure_ascii=False, indent=4)
-
 def analysis_onefile(analysis_file):
     #cpcmd = f"cp {analysis_file} demo.ts"
     #compilecmd = "../../out/x64.release/arkcompiler/ets_frontend/es2abc --module --dump-assembly demo.ts --output demo.abc"
@@ -104,28 +100,61 @@ def analysis_onefile(analysis_file):
     
     cp_res = execute_cmd(cpcmd)
     if cp_res["return_code"] != 0:
-        res["status"] = -1
+        res["status"] = 1
         return res
     
     compile_res = execute_cmd(compilecmd)
     if compile_res["return_code"] != 0:
-        res["status"] = -2
+        res["status"] = 2
         return res
     
     decompile_res = execute_cmd(decompilecmd)
     if decompile_res["return_code"] != 0:
-        res["status"] = -3
+        res["status"] = 3
         return res
     
     res["status"] = 0
 
     return res
 
-def analysis_files(root_dir, results_file):
+def save_results(results_list, output_dir):
+    results_path = Path(output_dir) / "res.json"
+    with open(results_path, 'w', encoding='utf-8') as f:
+        json.dump(results_list, f, ensure_ascii=False, indent=4)
+
+    grouped_results = {}
+    for result_entry in results_list:
+        status_code = result_entry.get("status")
+        if status_code is not None:
+            if status_code not in grouped_results:
+                grouped_results[status_code] = []
+            grouped_results[status_code].append(result_entry)
+        else:
+            # Handle entries that somehow lack a status code
+            if "unknown_status" not in grouped_results:
+                grouped_results["unknown_status"] = []
+            grouped_results["unknown_status"].append(result_entry)
+
+    print(f"Distributing results into files based on status code:")
+    for status_code, records in grouped_results.items():
+        # Ensure the filename is valid (e.g., status 0 -> 0.json, status -11 -> negative_11.json)
+        filename = f"{status_code}.json"
+        if isinstance(status_code, int) and status_code < 0:
+             filename = f"negative_{abs(status_code)}.json"
+
+        filepath = Path(output_dir) / filename
+        
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump(records, f, ensure_ascii=False, indent=4)
+            
+        print(f"  - Status {status_code}: Saved {len(records)} records to {filepath}")
+
+def analysis_files(root_dir, output_dir):
     ts_files = list(root_dir.rglob('*.ts'))
     total_files = len(ts_files)
-    
-    results_list, analyzed_paths = load_results(results_file)
+    results_path = Path(output_dir) / "res.json"
+
+    results_list, analyzed_paths = load_results(str(results_path.resolve()))
     print(f"Loaded {len(analyzed_paths)} historical analysis records.")
 
     for i, ts_file in enumerate(ts_files):
@@ -138,12 +167,15 @@ def analysis_files(root_dir, results_file):
         else:
             analyzed_paths.add(ts_file)
 
-    save_results(results_list, results_file) 
+    save_results(results_list, output_dir)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Recursively analyze TS files using the abc tool.")
     parser.add_argument("-i", "--input_dir", type=str, default="../autotests/third_party_typescript/tests",
                         help=f"Root directory to scan for TS files (default: '../autotests/third_party_typescript/tests')")
+    
+    parser.add_argument("-o", "--output_dir", type=str, default="status_outputs",
+                        help=f"Directory to save status-specific JSON files (default: 'status_outputs')")
     
     parser.add_argument("-d", "--record_file", type=str, default="res.json",
                         help=f"JSON file path for analyzed file records (default: res.json)")
@@ -153,7 +185,11 @@ if __name__ == "__main__":
         print(f"Error: '{args.input_dir}' is not a valid directory.")
         sys.exit(1)
 
-    analysis_files(root_dir, args.record_file)
+    if not os.path.exists(args.output_dir):
+        os.makedirs(args.output_dir)
+        print(f"\nCreated output directory: {args.output_dir}")
+
+    analysis_files(root_dir, args.output_dir)
 
     #test_file = "../autotests/third_party_typescript/tests/cases/conformance/emitter/es2015/asyncGenerators/emitter.asyncGenerators.classMethods.es2015.ts"
     #analysis_onefile(test_file)
