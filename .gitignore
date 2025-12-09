@@ -8,6 +8,14 @@ repos/*
 logs/*
 out/*
 
+autotests/*.ts
+autotests/*.ast
+autotests/*.abc
+autotests/*.json
+
+
+
+
 .vscode
 *.abc
 *.log
