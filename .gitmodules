@@ -1,0 +1,3 @@
+[submodule "autotests/third_party_typescript"]
+	path = autotests/third_party_typescript
+	url = https://gitcode.com/openharmony/third_party_typescript.git
