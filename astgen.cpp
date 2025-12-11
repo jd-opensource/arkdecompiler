@@ -97,6 +97,12 @@ bool AstGen::RunImpl()
             }
         }
 
+
+        auto last_inst = bb->GetLastInst();
+        uint32_t offset = 0;
+        if(last_inst->GetOpcode() == Opcode::IfImm || last_inst->GetOpcode() == Opcode::If){
+            offset = 1;
+        }
         // check if add redundant block
         if(this->whilebody2redundant.find(bb) != this->whilebody2redundant.end()){
             this->AddInstAst2BlockStatemntByBlock(bb, this->whilebody2redundant[bb], 1);
