@@ -98,9 +98,8 @@ bool AstGen::RunImpl()
         }
 
 
-        auto last_inst = bb->GetLastInst();
         uint32_t offset = 0;
-        if(last_inst->GetOpcode() == Opcode::IfImm || last_inst->GetOpcode() == Opcode::If){
+        if(bb->IsIfBlock()){
             offset = 1;
         }
         // check if add redundant block
