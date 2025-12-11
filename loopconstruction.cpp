@@ -22,6 +22,9 @@ void JudgeLoopType(BasicBlock* header, std::map<Loop *, uint32_t>& loop2type,
     std::map<BasicBlock*, Loop *> &backedge2dowhileloop){
 
     std::cout << "[+] judge loop type >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+    if(header->GetLoop()->IsIrreducible()){
+        HandleError("IrreducibleLoop");
+    }
 
     auto &back_edges = header->GetLoop()->GetBackEdges();
     int count = 0;

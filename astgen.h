@@ -384,9 +384,30 @@ public:
         block_statements->AddStatementAtPos(statements.size() - offset, statement);
     }
 
+    bool father_visited(BasicBlock *block){
+        if(block->IsStartBlock()) {
+            return true;
+        }
+        
+        for(uint32_t index = 0; index < block->GetPredsBlocks().size(); index ++){
+            auto father = block->GetPredecessor(index);
+
+            if(std::find(visited.begin(), visited.end(), father) != visited.end()){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     es2panda::ir::BlockStatement* GetBlockStatementById(BasicBlock *block){
         auto block_id = block->GetId();
         std::cout << "[*] GetBlockStatementById bbid: " << block_id << ", ";
+
+
+        if(!father_visited(block)){
+            HandleError("#GetBlockStatementById : cann't find father except for root" );
+        }
 
         // case1: found blockstatment
         if (this->id2block.find(block_id) != this->id2block.end()) {

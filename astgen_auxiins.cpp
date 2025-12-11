@@ -30,8 +30,6 @@ void AstGen::VisitPhi(GraphVisitor* v, Inst* inst_base) {
                 auto new_block_statement = AllocNode<es2panda::ir::BlockStatement>(enc, nullptr, std::move(statements));
                 new_block_statement->AddStatementAtPos(statements.size(), assignstatement);
             }
-
-
         }
     }
 
