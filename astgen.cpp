@@ -35,7 +35,7 @@ BasicBlock* AstGen::FindNearestVisitedPred(const std::vector<BasicBlock*>& visit
 bool AstGen::RunImpl()
 {
     
-    for (auto *bb : GetGraph()->GetBlocksLinearOrder()) {
+    for (auto *bb : GetGraph()->GetBlocksRPO()) {
         
         if(bb->IsLoopValid() && bb->IsLoopHeader() ){
             JudgeLoopType(bb, this->loop2type, this->loop2exit, this->backedge2dowhileloop);
@@ -68,19 +68,21 @@ bool AstGen::RunImpl()
         
         this->visited.push_back(bb);        
         ///////////////////////////////////////////////////////////////////////////////////////////////////
-        [[maybe_unused]]auto id = bb->GetId();
-        if(!bb->IsEmpty()){
-            [[maybe_unused]] auto fist_inst = bb->GetFirstInst();
-            //if(fist_inst->GetOpcode() !=  Opcode::SpillFill ){
-            //if(id == 32 || id == 47 || id == 48 || id == 49 || id == 50 || id == 51 || id == 52 ){
-            //if(id == 32  || id == 52  || id == 51 || id == 50 || id == 49 ){
-            //if(id != 47  && id != 48 ){
-            if(1){
-                this->GetBlockStatementById(bb);
-            }else{
-                std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA: " << bb->GetId() << std::endl << std::endl << std::endl;
-            }
-        }
+        this->GetBlockStatementById(bb);
+        
+        // [[maybe_unused]]auto id = bb->GetId();
+        // if(!bb->IsEmpty()){
+        //     [[maybe_unused]] auto fist_inst = bb->GetFirstInst();
+        //     //if(fist_inst->GetOpcode() !=  Opcode::SpillFill ){
+        //     //if(id == 32 || id == 47 || id == 48 || id == 49 || id == 50 || id == 51 || id == 52 ){
+        //     //if(id == 32  || id == 52  || id == 51 || id == 50 || id == 49 ){
+        //     //if(id != 47  && id != 48 ){
+        //     if(1){
+        //         this->GetBlockStatementById(bb);
+        //     }else{
+        //         std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA: " << bb->GetId() << std::endl << std::endl << std::endl;
+        //     }
+        // }
         
         for (const auto &inst : bb->AllInsts()) {
             VisitInstruction(inst);
