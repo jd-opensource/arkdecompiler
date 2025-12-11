@@ -21,18 +21,16 @@ void AstGen::VisitPhi(GraphVisitor* v, Inst* inst_base) {
         if(std::find(enc->visited.begin(), enc->visited.end(), bb) != enc->visited.end()){
             enc->AddInstAst2BlockStatemntByBlock(bb, assignstatement);
         }else{
-            
-            es2panda::ir::BlockStatement* new_block_statement;
             if(enc->phiref2pendingredundant.find(bb) != enc->phiref2pendingredundant.end()){
-                new_block_statement = enc->phiref2pendingredundant[bb];
+                auto found_block_statement = enc->phiref2pendingredundant[bb];
+                const auto &statements = found_block_statement->Statements();
+                found_block_statement->AddStatementAtPos(statements.size(), assignstatement);
             }else{
                 ArenaVector<panda::es2panda::ir::Statement *> statements(enc->parser_program_->Allocator()->Adapter());
-                new_block_statement = AllocNode<es2panda::ir::BlockStatement>(enc, nullptr, std::move(statements));
-                enc->phiref2pendingredundant[bb] = new_block_statement;
+                auto new_block_statement = AllocNode<es2panda::ir::BlockStatement>(enc, nullptr, std::move(statements));
+                new_block_statement->AddStatementAtPos(statements.size(), assignstatement);
             }
 
-            const auto &statements = new_block_statement->Statements();
-            new_block_statement->AddStatementAtPos(statements.size(), assignstatement);
 
         }
     }

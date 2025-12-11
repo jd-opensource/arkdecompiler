@@ -69,7 +69,7 @@ bool AstGen::RunImpl()
         this->visited.push_back(bb);        
         ///////////////////////////////////////////////////////////////////////////////////////////////////
         for (const auto &inst : bb->AllInsts()) {
-            this->GetBlockStatementById(bb);
+            //this->GetBlockStatementById(bb);
             VisitInstruction(inst);
             if (!GetStatus()) {
                 return false;
@@ -99,12 +99,12 @@ bool AstGen::RunImpl()
 
         // check if add redundant block
         if(this->whilebody2redundant.find(bb) != this->whilebody2redundant.end()){
-            this->AddInstAst2BlockStatemntByBlock(bb, this->whilebody2redundant[bb]);
+            this->AddInstAst2BlockStatemntByBlock(bb, this->whilebody2redundant[bb], 1);
             this->whilebody2redundant.erase(bb);
         }
-
+    
         if(this->phiref2pendingredundant.find(bb) != this->phiref2pendingredundant.end()){
-            this->AddInstAst2BlockStatemntByBlock(bb, this->phiref2pendingredundant[bb]);
+            this->AddInstAst2BlockStatemntByBlock(bb, this->phiref2pendingredundant[bb], 1);
             this->phiref2pendingredundant.erase(bb);
         }
         
