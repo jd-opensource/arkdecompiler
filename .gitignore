@@ -12,7 +12,7 @@ autotests/*.ts
 autotests/*.ast
 autotests/*.abc
 autotests/*.json
-
+autotests/status_outputs
 
 
 
