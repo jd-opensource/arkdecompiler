@@ -1462,11 +1462,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto father = *enc->GetExpressionByRegIndex(inst, 0);
             
             if(father != enc->constant_hole){
-                if(father->Type() == es2panda::ir::AstNodeType::IDENTIFIER){
-                    auto fathername = father->AsIdentifier()->Name().Mutf8();
-                    std::cout << "father is " << fathername << std::endl;
-                }else{
-                    HandleError("#defineclasswithbuffer: not handle this father class");
+                auto fathername = enc->GetNameFromExpression(father);
+                if(fathername){
+                    std::cout << "father is " << *fathername << std::endl;
                 }
             }else{
                 father = nullptr;
