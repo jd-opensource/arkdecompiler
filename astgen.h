@@ -400,6 +400,30 @@ public:
         return false;
     }
 
+    std::optional<std::string> GetNameFromExpression(es2panda::ir::Expression* rawexpression){
+        if(rawexpression->IsIdentifier()){
+            auto objname = rawexpression->AsIdentifier()->Name().Mutf8();
+            return objname;
+        }else if(rawexpression->IsMemberExpression()){
+            auto rawobj = rawexpression->AsMemberExpression()->Object();
+            auto rawprop = rawexpression->AsMemberExpression()->Property();
+
+            auto objname = GetNameFromExpression(rawobj);
+            auto propname = GetNameFromExpression(rawprop);
+
+            if(objname && propname){
+                return *objname + "." + *propname;
+            }else{
+                return nullptr;
+                HandleError("#GetNameFromExpression: not support this case 1"); 
+            }    
+        }else{
+            std::cout << "###: " << std::to_string(static_cast<int>(rawexpression->Type())) << std::endl;
+            HandleError("#GetNameFromExpression: not support this case 3"); 
+        }
+        return nullptr;
+    }
+
     es2panda::ir::BlockStatement* GetBlockStatementById(BasicBlock *block){
         auto block_id = block->GetId();
         std::cout << "[*] GetBlockStatementById bbid: " << block_id << ", ";
