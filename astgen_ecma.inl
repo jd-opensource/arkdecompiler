@@ -1240,15 +1240,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
                 lexicalenvstack->Set(tier, index, new std::string(closure_name));
             }else{
-                std::string idname;
-                if(raw_expression->IsIdentifier()){
-                    idname = raw_expression->AsIdentifier()->Name().Mutf8();
-                    closure_name = idname;
-                    
+                auto idname = enc->GetNameFromExpression(raw_expression);
+                if(idname){
+                    closure_name = *idname;
                 }else{
                     HandleError("#STLEXVAR: not deal this case for find expression string name");
                 }
-                lexicalenvstack->Set(tier, index, new std::string(idname));
+                lexicalenvstack->Set(tier, index, new std::string(*idname));
             }
 
 
@@ -1988,17 +1986,15 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             std::set<std::string> props;
             for (uint32_t i = 1; i <= argsum+1; ++i) {
-                std::string idname;
                 auto rawattr = *enc->GetExpressionByRegIndex(inst, i);
-                if(rawattr->IsIdentifier()){
-                    idname = rawattr->AsIdentifier()->Name().Mutf8();
-                }else if(rawattr->IsStringLiteral()){
-                    idname = rawattr->AsStringLiteral()->Str().Mutf8();
+                auto idname = enc->GetNameFromExpression(rawattr);
+
+                if(idname){
+                    props.insert(*idname);
                 }else{
                     std::cout << "error type: " << std::to_string( static_cast<int>(rawattr->Type()) ) << std::endl;
                     HandleError("#CREATEOBJECTWITHEXCLUDEDKEYS @3");
                 }
-                props.insert(idname);
             }
 
             for(uint32_t i = 0; i < objprops.size(); i++){
@@ -2007,17 +2003,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     auto rawprop = rawattrkey->AsProperty();
                     auto rawkey = rawprop->Key();
 
-                    std::string idname;
-                    if(rawkey->IsIdentifier()){
-                        idname = rawkey->AsIdentifier()->Name().Mutf8();
-                    }else if(rawkey->IsStringLiteral() ){
-                        idname = rawkey->AsStringLiteral()->Str().Mutf8();
-                    }else{
+                    auto idname = enc->GetNameFromExpression(rawkey);
+                    if(!idname){
                         std::cout << "error type: " << std::to_string( static_cast<int>(rawkey->Type()) ) << std::endl;
                         HandleError("#CREATEOBJECTWITHEXCLUDEDKEYS @4");
                     }
 
-                    if(props.find(idname) == props.end()){
+                    if(props.find(*idname) == props.end()){
                         properties.push_back(  rawattrkey );
                     }
                 }else{
@@ -2099,10 +2091,10 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             uint32_t constructor_offset;
             if(rawmember->IsMemberExpression()){
                 auto rawobj = rawmember->AsMemberExpression()->Object();
-                if(rawobj->IsIdentifier()){
-                    auto objname = rawobj->AsIdentifier()->Name().Mutf8();
-                    if(enc->methodname2offset_->find(objname) != enc->methodname2offset_->end()){
-                        constructor_offset = (*enc->methodname2offset_)[objname];
+                auto objname = enc->GetNameFromExpression(rawobj);
+                if(objname){
+                    if(enc->methodname2offset_->find(*objname) != enc->methodname2offset_->end()){
+                        constructor_offset = (*enc->methodname2offset_)[*objname];
                     }else{
                         HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case1"); 
                     }
@@ -2116,9 +2108,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
 
             es2panda::ir::Expression *rawcallee1 = *enc->GetExpressionByRegIndex(inst, 2);
-            if(rawcallee1->IsIdentifier()){
-                auto callee = rawcallee1->AsIdentifier()->Name().Mutf8();
-                auto tmp = RemoveArgumentsOfFunc(callee);
+            auto rawcalleename1 = enc->GetNameFromExpression(rawcallee1);
+            if(rawcalleename1){
+                auto tmp = RemoveArgumentsOfFunc(*rawcalleename1);
                 if(enc->methodname2offset_->find(tmp) != enc->methodname2offset_->end()){
                     auto methodoffset = (*enc->methodname2offset_)[tmp];
                     (*enc->class2memberfuns_)[constructor_offset].insert(methodoffset);
@@ -2130,19 +2122,18 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
 
             es2panda::ir::Expression *rawcallee2 = *enc->GetExpressionByRegIndex(inst, 3);
-            if(rawcallee2->IsIdentifier()){
-                auto callee = rawcallee2->AsIdentifier()->Name().Mutf8();
-                auto tmp = RemoveArgumentsOfFunc(callee);
+            auto rawcalleename2 = enc->GetNameFromExpression(rawcallee2);
+            if(rawcalleename2){
+                auto tmp = RemoveArgumentsOfFunc(*rawcalleename2);
                 if(enc->methodname2offset_->find(tmp) != enc->methodname2offset_->end()){
                     auto methodoffset = (*enc->methodname2offset_)[tmp];
                     (*enc->class2memberfuns_)[constructor_offset].insert(methodoffset);
                     enc->memberfuncs_->insert(methodoffset);
-                }
+                }   
             }else{
                 std::cout << "###: " << std::to_string(static_cast<int>(rawcallee2->Type())) << std::endl;
                 HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case6");
             }
-
             break;
         }
 
