@@ -377,14 +377,14 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
         std::vector<std::pair<uint32_t, uint32_t>> depedges;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        std::set<uint32_t> irbuildfailfuns; // skip ir build functions
+        std::set<uint32_t> skipfailfuns; // skip ir build functions
 
-        cda.EnumerateMethods([prog, &disasm, ir_interface, is_dynamic, &result, &depedges, &class2memberfuns, &method2lexicalmap, &memberfuncs, &raw2newname, &methodname2offset, &irbuildfailfuns](panda_file::MethodDataAccessor &mda){
+        cda.EnumerateMethods([prog, &disasm, ir_interface, is_dynamic, &result, &depedges, &class2memberfuns, &method2lexicalmap, &memberfuncs, &raw2newname, &methodname2offset, &skipfailfuns](panda_file::MethodDataAccessor &mda){
             if (!mda.IsExternal()) {
                 int32_t res = ScanFunDep(prog, disasm, ir_interface, &depedges, &class2memberfuns, &method2lexicalmap, &memberfuncs, &raw2newname, &methodname2offset, mda, is_dynamic) && result;
                 
-                if(res == -3){
-                    irbuildfailfuns.insert(mda.GetMethodId().GetOffset());
+                if(res == -3 || res == -4){
+                    skipfailfuns.insert(mda.GetMethodId().GetOffset());
                     return;
                 }
 
@@ -410,7 +410,7 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
             panda_file::MethodDataAccessor mda(*pfile, panda_file::File::EntityId(methodoffset));
             
             uint32_t cur_method = mda.GetMethodId().GetOffset();
-            if(irbuildfailfuns.find(cur_method) != irbuildfailfuns.end()){
+            if(skipfailfuns.find(cur_method) != skipfailfuns.end()){
                 continue;
             }
 
@@ -422,11 +422,11 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
         }
 
         
-        cda.EnumerateMethods([prog, parser_program, ir_interface, is_dynamic, &result, &method2lexicalenvstack, &method2sendablelexicalenvstack, &patchvarspace, &index2importnamespaces, &localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &memberfuncs, &class2father, &method2lexicalmap, &globallexical_waitlist, &globalsendablelexical_waitlist, &raw2newname, &methodname2offset, sorted_methodoffsets, &irbuildfailfuns](panda_file::MethodDataAccessor &mda){           
+        cda.EnumerateMethods([prog, parser_program, ir_interface, is_dynamic, &result, &method2lexicalenvstack, &method2sendablelexicalenvstack, &patchvarspace, &index2importnamespaces, &localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &memberfuncs, &class2father, &method2lexicalmap, &globallexical_waitlist, &globalsendablelexical_waitlist, &raw2newname, &methodname2offset, sorted_methodoffsets, &skipfailfuns](panda_file::MethodDataAccessor &mda){           
             if (!mda.IsExternal() && std::find(sorted_methodoffsets.begin(), sorted_methodoffsets.end(), mda.GetMethodId().GetOffset()) == sorted_methodoffsets.end() ){
                             uint32_t cur_method = mda.GetMethodId().GetOffset();
 
-                if(irbuildfailfuns.find(cur_method) != irbuildfailfuns.end()){
+                if(skipfailfuns.find(cur_method) != skipfailfuns.end()){
                     return;
                 }
                 
