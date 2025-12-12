@@ -404,6 +404,9 @@ public:
         if(rawexpression->IsIdentifier()){
             auto objname = rawexpression->AsIdentifier()->Name().Mutf8();
             return objname;
+        }else if(rawexpression->IsStringLiteral()){
+            auto idname = rawexpression->AsStringLiteral()->Str().Mutf8();
+            return idname;
         }else if(rawexpression->IsMemberExpression()){
             auto rawobj = rawexpression->AsMemberExpression()->Object();
             auto rawprop = rawexpression->AsMemberExpression()->Property();
