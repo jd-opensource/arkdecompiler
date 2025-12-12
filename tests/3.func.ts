@@ -37,3 +37,11 @@
 //     console.log(arguments[0]); 
 //     console.log(arguments[1]);
 // }
+
+
+// 40. SUPERCALLARROWRANGE
+// function exampleFunction(a, b) {
+//     console.log(arguments.length); 
+//     console.log(arguments[0]); 
+//     console.log(arguments[1]);
+// }

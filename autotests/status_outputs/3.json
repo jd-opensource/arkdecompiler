@@ -1,17 +1,5 @@
 [
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/arkTSTest/testcase/arkts-no-multiple-static-blocks/arkts-no-multiple-static-blocks-4-ok/arkts-no-multiple-static-blocks-4-ok.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/arkTSTest/testcase/arkts-no-multiple-static-blocks/arkts-no-multiple-static-blocks-2-ok/arkts-no-multiple-static-blocks-2-ok.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/arkTSTest/testcase/arkts-no-multiple-static-blocks/arkts-no-multiple-static-blocks-3-ok/arkts-no-multiple-static-blocks-3-ok.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/system_api_test/system_api_test.ts",
         "status": 3
     },
@@ -156,6 +144,10 @@
         "status": 3
     },
     {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixInferFromUsageAlwaysInfer.ts",
+        "status": 3
+    },
+    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codefixClassImplementInterface_omit.ts",
         "status": 3
     },
@@ -185,10 +177,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixChangeJSDocSyntax5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/refactorExtractType44.ts",
         "status": 3
     },
     {
@@ -261,10 +249,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codefixEnableJsxFlag_missingCompilerOptionsInJsconfig.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/signatureHelpWithTriggers01.ts",
         "status": 3
     },
     {
@@ -364,10 +348,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/overloadOnConstCallSignature.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixAddMissingConstInForOfLoop2.ts",
         "status": 3
     },
@@ -417,6 +397,10 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/unusedVariableInClass4.ts",
+        "status": 3
+    },
+    {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixCorrectReturnValue14.ts",
         "status": 3
     },
     {
@@ -532,6 +516,10 @@
         "status": 3
     },
     {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/extract-const2.ts",
+        "status": 3
+    },
+    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/refactorAddOrRemoveBracesToArrowFunction3.ts",
         "status": 3
     },
@@ -573,10 +561,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/completionsStringsWithTriggerCharacter.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixInferFromUsageRestParam3JS.ts",
         "status": 3
     },
     {
@@ -964,6 +948,10 @@
         "status": 3
     },
     {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/exportEqualTypes.ts",
+        "status": 3
+    },
+    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/refactorConvertToGetAccessAndSetAccess_js_5.ts",
         "status": 3
     },
@@ -1125,6 +1113,10 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/signatureHelpOnOverloadsDifferentArity.ts",
+        "status": 3
+    },
+    {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/noSuggestionDiagnosticsOnParseError.ts",
         "status": 3
     },
     {
@@ -1364,6 +1356,10 @@
         "status": 3
     },
     {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/unusedTypeParametersWithTrivia2.ts",
+        "status": 3
+    },
+    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/javaScriptPrototype3.ts",
         "status": 3
     },
@@ -1380,11 +1376,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixClassPropertyInitialization.ts",
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/unusedParameterInConstructor1AddUnderscore.ts",
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/signatureHelpFilteredTriggers02.ts",
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixClassPropertyInitialization.ts",
         "status": 3
     },
     {
@@ -1792,10 +1788,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/documentHighlights_40082.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixAddMissingConstInForLoopWithObjectDestructuring2.ts",
         "status": 3
     },
@@ -1885,10 +1877,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/refactorConvertStringOrTemplateLiteral_ToTemplateComment.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixAddMissingNew2.ts",
         "status": 3
     },
     {
@@ -2172,6 +2160,10 @@
         "status": 3
     },
     {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixRequireInTs2.ts",
+        "status": 3
+    },
+    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/quickInfoForShorthandProperty.ts",
         "status": 3
     },
@@ -2424,6 +2416,10 @@
         "status": 3
     },
     {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/inlayHintsShouldWork43.ts",
+        "status": 3
+    },
+    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/tsxQuickInfo4.ts",
         "status": 3
     },
@@ -2560,6 +2556,10 @@
         "status": 3
     },
     {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/refactorConvertStringOrTemplateLiteral_ToTemplateParenthFromOpening.ts",
+        "status": 3
+    },
+    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/contextuallyTypedFunctionExpressionGeneric1.ts",
         "status": 3
     },
@@ -2597,6 +2597,10 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/importNameCodeFix_add_all_missing_imports.ts",
+        "status": 3
+    },
+    {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/augmentedTypesClass3Fourslash.ts",
         "status": 3
     },
     {
@@ -2644,10 +2648,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/unusedVariableWithTrivia1.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixAddMissingEnumMember2.ts",
         "status": 3
     },
@@ -2684,19 +2684,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/completionListObjectMembers.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixCorrectQualifiedNameToIndexedAccessType_all.ts",
         "status": 3
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/completionListStaticProtectedMembers4.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixAddMissingNew3.ts",
         "status": 3
     },
     {
@@ -2788,10 +2780,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/extract-method2.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/navigationItemsSubStringMatch2.ts",
         "status": 3
     },
@@ -2853,6 +2841,10 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/extract-const_jsxFragment2.ts",
+        "status": 3
+    },
+    {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/typeOperatorNodeBuilding.ts",
         "status": 3
     },
     {
@@ -3408,11 +3400,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixSpelling_all.ts",
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixUnusedIdentifier_typeParameter5.ts",
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixAddMissingNew4.ts",
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixSpelling_all.ts",
         "status": 3
     },
     {
@@ -3456,15 +3448,15 @@
         "status": 3
     },
     {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixSpellingAddSpaces4.ts",
+        "status": 3
+    },
+    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/unusedTypeParametersInLambda1.ts",
         "status": 3
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/inlayHintsShouldWork5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixAddMissingEnumMember4.ts",
         "status": 3
     },
     {
@@ -3549,6 +3541,10 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/extract-method_jsxElement3.ts",
+        "status": 3
+    },
+    {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/quickfixImplementInterfaceUnreachableTypeUsesRelativeImport.ts",
         "status": 3
     },
     {
@@ -3829,10 +3825,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/completionForStringLiteralNonrelativeImport11.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/suggestionNoDuplicates.ts",
         "status": 3
     },
     {
@@ -4284,11 +4276,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/signatureHelpInRecursiveType.ts",
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/convertLiteralTypeToMappedType3.ts",
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixInferFromUsageExistingJSDoc.ts",
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/signatureHelpInRecursiveType.ts",
         "status": 3
     },
     {
@@ -4328,6 +4320,10 @@
         "status": 3
     },
     {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixImportNonExportedMember_all7.ts",
+        "status": 3
+    },
+    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/refactorExtractType2.ts",
         "status": 3
     },
@@ -4341,6 +4337,10 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/refactorExtractType48.ts",
+        "status": 3
+    },
+    {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/annotateWithTypeFromJSDoc7.ts",
         "status": 3
     },
     {
@@ -4676,10 +4676,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/documentHighlightMultilineTemplateStrings.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixClassExtendAbstractProperty.ts",
         "status": 3
     },
@@ -4725,10 +4721,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/completionsDotInArrayLiteralInObjectLiteral.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/importTypeCompletions4.ts",
         "status": 3
     },
     {
@@ -5728,10 +5720,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/documentHighlights_33722.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/quickinfoForUnionProperty.ts",
         "status": 3
     },
@@ -5865,6 +5853,10 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixSpellingPropertyAccess.ts",
+        "status": 3
+    },
+    {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/codeFixUnusedIdentifier_parameter2.ts",
         "status": 3
     },
     {
@@ -6008,10 +6000,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/inlayHintsShouldWork66.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/inlayHintsCrash1.ts",
         "status": 3
     },
@@ -6133,6 +6121,10 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/signatureHelpTrailingRestTuple.ts",
+        "status": 3
+    },
+    {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/fourslash/annotateWithTypeFromJSDoc8.ts",
         "status": 3
     },
     {
@@ -6336,22 +6328,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es2017/useObjectValuesAndEntries1.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es2017/useObjectValuesAndEntries2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es2017/useObjectValuesAndEntries3.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es2017/useObjectValuesAndEntries4.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/decorators/class/decoratedClassExportsCommonJS1.ts",
         "status": 3
     },
@@ -6364,19 +6340,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/decorators/class/constructor/parameter/decoratorOnClassConstructorParameter5.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es2020/es2020IntlAPIs.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/expressions/optionalChaining/callChain/superMethodCall.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/expressions/optionalChaining/callChain/callChain.3.ts",
         "status": 3
     },
     {
@@ -6412,14 +6376,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/expressions/propertyAccess/propertyAccessWidening.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/expressions/nullishCoalescingOperator/nullishCoalescingOperator12.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/expressions/contextualTyping/superCallParameterContextualTyping3.ts",
         "status": 3
     },
@@ -6441,10 +6397,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/expressions/typeAssertions/constAssertions.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/expressions/assignmentOperator/assignmentTypeNarrowing.ts",
         "status": 3
     },
     {
@@ -6532,14 +6484,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/expressions/functions/contextuallyTypedIifeStrict.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/expressions/functions/contextuallyTypedIife.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/expressions/binaryOperators/additionOperator/additionOperatorWithConstrainedTypeParameter.ts",
         "status": 3
     },
@@ -6604,14 +6548,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/instanceAndStaticMembers/typeOfThisInStaticMembers13.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/instanceAndStaticMembers/typeOfThisInStaticMembers12.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/instanceAndStaticMembers/typeOfThisInStaticMembers10.ts",
         "status": 3
     },
@@ -6672,10 +6608,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/accessibility/privateProtectedMembersAreNotAccessibleDestructuring.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/constructorFunctionTypes/classWithStaticMembers.ts",
         "status": 3
     },
@@ -6732,15 +6664,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameStaticFieldAccess.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNamesConstructorChain-2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameSetterExprReturnValue.ts",
         "status": 3
     },
     {
@@ -6748,15 +6672,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameNestedClassMethodShadowing.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameMethodCallExpression.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameStaticEmitHelpers.ts",
         "status": 3
     },
     {
@@ -6769,10 +6685,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameStaticMethodCallExpression.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameSetterNoGetter.ts",
         "status": 3
     },
     {
@@ -6796,22 +6708,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameAccessors.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNamesAndkeyof.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameStaticFieldClassExpression.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameES5Ban.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNamesUseBeforeDef.ts",
         "status": 3
     },
@@ -6825,10 +6721,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameFieldInitializer.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameEmitHelpers.ts",
         "status": 3
     },
     {
@@ -6864,23 +6756,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateWriteOnlyAccessorRead.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameMethod.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameWhenNotUseDefineForClassFieldsInEsNext.ts",
         "status": 3
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameAndObjectRestSpread.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNamesIncompatibleModifiersJs.ts",
         "status": 3
     },
     {
@@ -6900,23 +6780,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameNestedClassAccessorsShadowing.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameAndStaticInitializer.ts",
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameMethodAsync.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameFieldUnaryMutation.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameMethodInStaticFieldInit.ts",
         "status": 3
     },
     {
@@ -6944,10 +6812,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameReadonly.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameDeclarationMerging.ts",
         "status": 3
     },
@@ -6960,19 +6824,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameStaticMethodInStaticFieldInit.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameMethodAssignment.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNamesInNestedClasses-1.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNamesAndMethods.ts",
         "status": 3
     },
     {
@@ -6992,19 +6844,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameStaticFieldAssignment.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameStaticMethod.ts",
         "status": 3
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameNestedClassNameConflict.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateNameStaticFieldUnaryMutation.ts",
         "status": 3
     },
     {
@@ -7056,30 +6900,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/classStaticBlock/classStaticBlock13.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/classStaticBlock/classStaticBlock3.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/classStaticBlock/classStaticBlock9.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/classStaticBlock/classStaticBlockUseBeforeDef3.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/classStaticBlock/classStaticBlock27.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/classStaticBlock/classStaticBlock4.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/classStaticBlock/classStaticBlock15.ts",
         "status": 3
     },
@@ -7089,14 +6909,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/classStaticBlock/classStaticBlock17.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/classStaticBlock/classStaticBlock24.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/classStaticBlock/classStaticBlock12.ts",
         "status": 3
     },
     {
@@ -7113,10 +6925,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/constructorDeclarations/classConstructorAccessibility5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/constructorDeclarations/classConstructorAccessibility2.ts",
         "status": 3
     },
     {
@@ -7176,10 +6984,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/propertyMemberDeclarations/autoAccessor2.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/classes/propertyMemberDeclarations/autoAccessor3.ts",
         "status": 3
     },
@@ -7212,14 +7016,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/await_unaryExpression_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/await_incorrectThisType.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/asyncMethodWithSuper_es2017.ts",
         "status": 3
     },
@@ -7236,127 +7032,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/await_unaryExpression_es2017_1.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/awaitClassExpression_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/await_unaryExpression_es2017_2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/awaitInheritedPromise_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/asyncUseStrict_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/asyncArrowFunction/asyncArrowFunction1_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/asyncArrowFunction/asyncUnParenthesizedArrowFunction_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/asyncArrowFunction/asyncArrowFunctionCapturesThis_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/asyncArrowFunction/asyncArrowFunctionCapturesArguments_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/asyncArrowFunction/asyncArrowFunction_allowJs.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/asyncArrowFunction/arrowFunctionWithParameterNameAsync_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/functionDeclarations/asyncFunctionDeclaration1_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/functionDeclarations/asyncFunctionDeclaration14_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/awaitCallExpression/awaitCallExpression7_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/awaitCallExpression/awaitCallExpression8_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/awaitCallExpression/awaitCallExpression4_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/awaitCallExpression/awaitCallExpression6_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/awaitCallExpression/awaitCallExpression3_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/awaitCallExpression/awaitCallExpression1_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/awaitCallExpression/awaitCallExpression5_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/awaitCallExpression/awaitCallExpression2_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/awaitBinaryExpression/awaitBinaryExpression3_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/awaitBinaryExpression/awaitBinaryExpression5_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/awaitBinaryExpression/awaitBinaryExpression4_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/awaitBinaryExpression/awaitBinaryExpression1_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es2017/awaitBinaryExpression/awaitBinaryExpression2_es2017.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/awaitUnion_es5.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/asyncAwaitIsolatedModules_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/asyncAliasReturnType_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/asyncUseStrict_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/asyncMultiFile_es5.ts",
         "status": 3
     },
     {
@@ -7364,115 +7040,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/asyncAwaitNestedClasses_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/asyncQualifiedReturnType_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/awaitClassExpression_es5.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/asyncMethodWithSuper_es5.ts",
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/asyncArrowFunction/asyncArrowFunctionCapturesArguments_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/asyncArrowFunction/asyncUnParenthesizedArrowFunction_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/asyncArrowFunction/arrowFunctionWithParameterNameAsync_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/asyncArrowFunction/asyncArrowFunctionCapturesThis_es5.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/asyncArrowFunction/asyncArrowFunction11_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/asyncArrowFunction/asyncArrowFunction1_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/functionDeclarations/asyncFunctionDeclaration15_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/functionDeclarations/asyncFunctionDeclaration1_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/functionDeclarations/asyncFunctionDeclaration14_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/functionDeclarations/asyncFunctionDeclarationCapturesArguments_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/awaitCallExpression/awaitCallExpression8_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/awaitCallExpression/awaitCallExpression5_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/awaitCallExpression/awaitCallExpression2_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/awaitCallExpression/awaitCallExpression6_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/awaitCallExpression/awaitCallExpression1_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/awaitCallExpression/awaitCallExpression7_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/awaitCallExpression/awaitCallExpression4_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/awaitCallExpression/awaitCallExpression3_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/awaitBinaryExpression/awaitBinaryExpression4_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/awaitBinaryExpression/awaitBinaryExpression5_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/awaitBinaryExpression/awaitBinaryExpression2_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/awaitBinaryExpression/awaitBinaryExpression1_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es5/awaitBinaryExpression/awaitBinaryExpression3_es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/await_unaryExpression_es6.ts",
         "status": 3
     },
     {
@@ -7484,23 +7056,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/asyncAliasReturnType_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/awaitClassExpression_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/asyncQualifiedReturnType_es6.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/asyncMethodWithSuper_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/awaitUnion_es6.ts",
         "status": 3
     },
     {
@@ -7508,103 +7064,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/await_unaryExpression_es6_2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/asyncMultiFile_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/await_unaryExpression_es6_1.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/asyncUseStrict_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/asyncArrowFunction/arrowFunctionWithParameterNameAsync_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/asyncArrowFunction/asyncUnParenthesizedArrowFunction_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/asyncArrowFunction/asyncArrowFunctionCapturesThis_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/asyncArrowFunction/asyncArrowFunction1_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/asyncArrowFunction/asyncArrowFunctionCapturesArguments_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/functionDeclarations/asyncFunctionDeclaration14_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/functionDeclarations/asyncFunctionDeclaration15_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/functionDeclarations/asyncFunctionDeclaration1_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/awaitCallExpression/awaitCallExpression7_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/awaitCallExpression/awaitCallExpression3_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/awaitCallExpression/awaitCallExpression2_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/awaitCallExpression/awaitCallExpression6_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/awaitCallExpression/awaitCallExpression4_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/awaitCallExpression/awaitCallExpression8_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/awaitCallExpression/awaitCallExpression5_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/awaitCallExpression/awaitCallExpression1_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/awaitBinaryExpression/awaitBinaryExpression4_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/awaitBinaryExpression/awaitBinaryExpression2_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/awaitBinaryExpression/awaitBinaryExpression3_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/awaitBinaryExpression/awaitBinaryExpression1_es6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/async/es6/awaitBinaryExpression/awaitBinaryExpression5_es6.ts",
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/salsa/typeFromPropertyAssignment29.ts",
         "status": 3
     },
     {
@@ -7629,6 +7089,10 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/salsa/typeFromPropertyAssignment25.ts",
+        "status": 3
+    },
+    {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/salsa/typeFromPropertyAssignment9_1.ts",
         "status": 3
     },
     {
@@ -7672,6 +7136,10 @@
         "status": 3
     },
     {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/salsa/typeFromPropertyAssignment9.ts",
+        "status": 3
+    },
+    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/salsa/moduleExportAssignment7.ts",
         "status": 3
     },
@@ -7708,10 +7176,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es2022/es2022SharedMemory.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/interfaces/interfaceDeclarations/interfaceExtendsObjectIntersectionErrors.ts",
         "status": 3
     },
@@ -7724,7 +7188,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/jsdoc/errorOnFunctionReturnType.ts",
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/jsdoc/checkJsdocTypeTag5.ts",
+        "status": 3
+    },
+    {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/jsdoc/jsdocFunctionType.ts",
         "status": 3
     },
     {
@@ -7753,6 +7221,10 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/jsdoc/checkJsdocTypeTagOnObjectProperty1.ts",
+        "status": 3
+    },
+    {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/jsdoc/jsdocTemplateConstructorFunction2.ts",
         "status": 3
     },
     {
@@ -7788,14 +7260,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/jsdoc/declarations/jsDeclarationsNestedParams.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/jsdoc/declarations/jsDeclarationsPrivateFields01.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/jsdoc/declarations/jsDeclarationsFunctionClassesCjsExportAssignment.ts",
         "status": 3
     },
@@ -7816,31 +7280,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionNestedCJS.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionAsyncES5CJS.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionNestedES20152.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionInSystem4.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionInCJS2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionNestedES2015.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionInCJS5.ts",
         "status": 3
     },
     {
@@ -7848,15 +7288,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionNestedAMD.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpression3ES2020.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpression4ES2020.ts",
         "status": 3
     },
     {
@@ -7864,15 +7296,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionNestedUMD2.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionInUMD3.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionNestedSystem.ts",
         "status": 3
     },
     {
@@ -7892,23 +7316,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionInAMD4.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionAsyncES5AMD.ts",
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionInUMD5.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionAsyncES6AMD.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionNestedES2020.ts",
         "status": 3
     },
     {
@@ -7917,18 +7329,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionAsyncES3CJS.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionNestedAMD2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionNestedSystem2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionNestedCJS2.ts",
         "status": 3
     },
     {
@@ -7948,19 +7348,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionNoModuleKindSpecified.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionNestedUMD.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionInCJS4.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionNestedES20202.ts",
         "status": 3
     },
     {
@@ -7968,79 +7356,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/dynamicImport/importCallExpressionInUMD4.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of30.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of7.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of10.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of9.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of8.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of33.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES3For-ofTypeCheck1.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES3For-ofTypeCheck2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of16.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of21.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-ofTypeCheck1.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of26.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of27.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of15.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of31.ts",
         "status": 3
     },
     {
@@ -8048,39 +7364,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of23.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of1.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of35.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of3.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of14.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of11.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of13.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of34.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-ofTypeCheck2.ts",
         "status": 3
     },
     {
@@ -8096,27 +7380,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of22.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of37.ts",
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of4.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-ofStatements/ES5For-of17.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/breakStatements/forInBreakStatements.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-await-ofStatements/forAwaitPerIterationBindingDownlevel.ts",
         "status": 3
     },
     {
@@ -8144,10 +7412,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-inStatements/for-inStatementsAsyncIdentifier.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/statements/for-inStatements/for-inStatementsDestructuring3.ts",
         "status": 3
     },
@@ -8168,35 +7432,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/for-ofStatements/for-of7.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/for-ofStatements/for-of11.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/for-ofStatements/for-of1.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/for-ofStatements/for-of9.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/for-ofStatements/for-of6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/for-ofStatements/for-of10.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/for-ofStatements/for-of45.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/for-ofStatements/for-of46.ts",
         "status": 3
     },
     {
@@ -8204,19 +7440,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/for-ofStatements/for-of14.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/for-ofStatements/for-of44.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/for-ofStatements/for-of4.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/for-ofStatements/for-of40.ts",
         "status": 3
     },
     {
@@ -8228,31 +7452,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/for-ofStatements/for-of41.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/for-ofStatements/for-of13.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/for-ofStatements/for-of38.ts",
         "status": 3
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/for-ofStatements/for-of49.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/for-ofStatements/for-of55.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/for-ofStatements/for-of8.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/for-ofStatements/for-of12.ts",
         "status": 3
     },
     {
@@ -8341,10 +7545,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/classDeclaration/emitClassDeclarationWithPropertyAccessInHeritageClause1.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/classDeclaration/emitClassDeclarationWithThisKeywordInES6.ts",
         "status": 3
     },
     {
@@ -8456,10 +7656,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/destructuring/destructuringArrayBindingPatternAndAssignment4.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/destructuring/restElementWithAssignmentPattern1.ts",
         "status": 3
     },
@@ -8480,14 +7676,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/destructuring/iterableArrayPattern20.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/destructuring/arrayAssignmentPatternWithAny.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/destructuring/iterableArrayPattern4.ts",
         "status": 3
     },
@@ -8497,10 +7685,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/destructuring/iterableArrayPattern5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/destructuring/iterableArrayPattern19.ts",
         "status": 3
     },
     {
@@ -8565,10 +7749,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/destructuring/iterableArrayPattern29.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es6/destructuring/emptyAssignmentPatterns01_ES5.ts",
         "status": 3
     },
     {
@@ -8816,6 +7996,10 @@
         "status": 3
     },
     {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/typeParameters/typeArgumentLists/wrappedAndRecursiveConstraints4.ts",
+        "status": 3
+    },
+    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/typeParameters/typeArgumentLists/wrappedAndRecursiveConstraints3.ts",
         "status": 3
     },
@@ -8829,14 +8013,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/stringLiteral/stringLiteralTypesAndTuples01.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/typeRelationships/bestCommonType/functionWithMultipleReturnStatements.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/typeRelationships/bestCommonType/functionWithMultipleReturnStatements2.ts",
         "status": 3
     },
     {
@@ -8968,14 +8144,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/typeRelationships/typeInference/unionTypeInference.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/typeRelationships/typeInference/unionAndIntersectionInference3.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/typeRelationships/typeInference/genericContextualTypes1.ts",
         "status": 3
     },
@@ -9001,6 +8169,10 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/thisType/looseThisTypeInFunctions.ts",
+        "status": 3
+    },
+    {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/thisType/declarationFiles.ts",
         "status": 3
     },
     {
@@ -9064,27 +8236,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/import/importTypeGenericTypes.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/import/importTypeInJSDoc.ts",
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/import/importTypeLocalMissing.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/import/importTypeLocal.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/conditional/conditionalTypes1.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/conditional/variance.ts",
         "status": 3
     },
     {
@@ -9117,6 +8273,10 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/spread/objectSpread.ts",
+        "status": 3
+    },
+    {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/spread/spreadOverwritesPropertyStrict.ts",
         "status": 3
     },
     {
@@ -9216,6 +8376,10 @@
         "status": 3
     },
     {
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/mapped/mappedTypeErrors.ts",
+        "status": 3
+    },
+    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/mapped/mappedTypes4.ts",
         "status": 3
     },
@@ -9233,18 +8397,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/specifyingTypes/typeQueries/typeQueryOnClass.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/forAwait/types.forAwait.es2018.2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/forAwait/types.forAwait.es2018.3.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/forAwait/types.forAwait.es2018.1.ts",
         "status": 3
     },
     {
@@ -9304,14 +8456,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/never/neverTypeErrors2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/types/never/neverTypeErrors1.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/es7/exponentiationOperator/emitCompoundExponentiationAssignmentWithIndexingOnLHS3.ts",
         "status": 3
     },
@@ -9324,19 +8468,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/controlFlow/controlFlowBindingPatternOrder.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/controlFlow/controlFlowIIFE.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/controlFlow/typeGuardsTypeParameters.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/controlFlow/controlFlowDestructuringDeclaration.ts",
         "status": 3
     },
     {
@@ -9349,14 +8481,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/controlFlow/dependentDestructuredVariables.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/controlFlow/controlFlowForInStatement.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/controlFlow/controlFlowAssignmentPatternOrder.ts",
         "status": 3
     },
     {
@@ -9388,10 +8512,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/externalModules/topLevelAwaitNonModule.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/externalModules/exportAssignmentConstrainedGenericType.ts",
         "status": 3
     },
@@ -9413,10 +8533,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/pedantic/noUncheckedIndexedAccessDestructuring.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript5/parserUnicode1.ts",
         "status": 3
     },
     {
@@ -9480,19 +8596,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript5/RealWorld/parserindenter.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/IncompleteMemberVariables/parserErrorRecovery_IncompleteMemberVariable1.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript5/Statements/parserES5ForOfStatement13.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript5/Statements/parserForInStatement5.ts",
         "status": 3
     },
     {
@@ -9504,19 +8608,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript5/Statements/parserES5ForOfStatement19.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript5/Statements/parserForStatement2.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript5/Statements/parserES5ForOfStatement15.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript5/Statements/parserES5ForOfStatement16.ts",
         "status": 3
     },
     {
@@ -9524,31 +8616,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript5/Statements/parserES5ForOfStatement8.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript5/Statements/parserES5ForOfStatement5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript5/Statements/parserForInStatement1.d.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript5/Statements/parserES5ForOfStatement11.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript5/Statements/parserES5ForOfStatement1.d.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript5/Statements/ContinueStatements/parser_continueInIterationStatement4.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript5/Statements/BreakStatements/parser_breakInIterationOrSwitchStatement4.ts",
         "status": 3
     },
     {
@@ -9564,10 +8632,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript6/Iterators/parserForOfStatement16.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript6/Iterators/parserForOfStatement11.ts",
         "status": 3
     },
@@ -9576,35 +8640,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript6/Iterators/parserForOfStatement8.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript6/Iterators/parserForOfStatement14.ts",
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript6/Iterators/parserForOfStatement5.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript6/Iterators/parserForOfStatement13.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript6/Iterators/parserForOfStatement19.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript6/Iterators/parserForOfStatement24.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript6/Iterators/parserForOfStatement23.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/parser/ecmascript6/Iterators/parserForOfStatement1.d.ts",
         "status": 3
     },
     {
@@ -9656,23 +8696,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/conformance/internalModules/DeclarationMerging/ClassAndModuleThatMergeWithModuleMemberThatUsesClassTypeParameter.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/sourceMapValidationDestructuringVariableStatementArrayBindingPatternDefaultValues2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/letDeclarations-es5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/asyncFunctionsAndStrictNullChecks.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/capturedLetConstInLoop10.ts",
         "status": 3
     },
     {
@@ -9692,23 +8716,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/asyncFunctionNoReturnType.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/declarationMaps.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/argumentsAsPropertyName2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/parenthesizedAsyncArrowFunction.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/classStaticPropertyTypeGuard.ts",
         "status": 3
     },
     {
@@ -9717,10 +8725,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/declFileEmitDeclarationOnly.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/classExpressionWithStaticProperties1.ts",
         "status": 3
     },
     {
@@ -9760,10 +8764,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/inOperatorWithGeneric.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/capturedLetConstInLoop1_ES6.ts",
         "status": 3
     },
@@ -9784,19 +8784,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/unusedPrivateStaticMembers.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/tryStatementInternalComments.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/collisionSuperAndLocalVarInProperty.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/staticMemberAccessOffDerivedType1.ts",
         "status": 3
     },
     {
@@ -9805,10 +8793,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/staticVisibility.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/es5-asyncFunctionSwitchStatements.ts",
         "status": 3
     },
     {
@@ -9828,23 +8812,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/inferSecondaryParameter.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/extBaseClass2.ts",
         "status": 3
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/inheritanceStaticAccessorOverridingMethod.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/unusedDestructuringParameters.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/classExpressionWithStaticPropertiesES61.ts",
         "status": 3
     },
     {
@@ -9864,7 +8836,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/unusedLocalsStartingWithUnderscore.ts",
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/maxConstraints.ts",
         "status": 3
     },
     {
@@ -9884,10 +8856,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/asyncArrowInClassES5.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/capturedLetConstInLoop11.ts",
         "status": 3
     },
@@ -9900,23 +8868,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/continueInIterationStatement4.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/staticGetter1.ts",
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/sourceMapValidationDestructuringVariableStatementArrayBindingPattern7.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/thisInStatics.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/downlevelLetConst13.ts",
         "status": 3
     },
     {
@@ -9928,31 +8884,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/dynamicImportEvaluateSpecifier.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/classExpressionWithStaticProperties2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/unwitnessedTypeParameterVariance.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/omittedExpressionForOfLoop.ts",
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/sourceMap-FileWithComments.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/classIndexer5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/controlFlowForCompoundAssignmentToThisMember.ts",
         "status": 3
     },
     {
@@ -9968,19 +8904,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/controlFlowDestructuringVariablesInTryCatch.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/classDeclaredBeforeClassFactory.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/controlFlowFinallyNoCatchAssignments.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/unreachableFlowAfterFinally.ts",
         "status": 3
     },
     {
@@ -10005,10 +8929,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/modularizeLibrary_NoErrorDuplicateLibOptions2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/capturedLetConstInLoop12.ts",
         "status": 3
     },
     {
@@ -10044,10 +8964,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/typePredicateFreshLiteralWidening.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/privacyClassExtendsClauseDeclFile.ts",
         "status": 3
     },
@@ -10068,19 +8984,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/argumentsAsPropertyName.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/exportEqualsProperty2.ts",
         "status": 3
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/readonlyMembers.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/classInConvertedLoopES5.ts",
         "status": 3
     },
     {
@@ -10096,19 +9004,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/staticInterfaceAssignmentCompat.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/declFileClassExtendsNull.ts",
         "status": 3
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/declarationMapsOutFile2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/forInStatement7.ts",
         "status": 3
     },
     {
@@ -10144,14 +9044,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/es5-asyncFunctionBinaryExpressions.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/parameterNamesInTypeParameterList.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/underscoreTest1.ts",
         "status": 3
     },
@@ -10161,10 +9053,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/esNextWeakRefs_IterableWeakMap.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/staticMemberWithStringAndNumberNames.ts",
         "status": 3
     },
     {
@@ -10180,15 +9068,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/invalidStaticField.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/blockScopedBindingsInDownlevelGenerator.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/inferenceLimit.ts",
         "status": 3
     },
     {
@@ -10213,10 +9093,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/sourceMapValidationDestructuringParametertArrayBindingPatternDefaultValues2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/declarationEmitDestructuringPrivacyError.ts",
         "status": 3
     },
     {
@@ -10276,15 +9152,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/blockScopedBindingsReassignedInLoop6.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/superCallInStaticMethod.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/es5-asyncFunction.ts",
         "status": 3
     },
     {
@@ -10296,19 +9164,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/collisionSuperAndLocalFunctionInProperty.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/letInNonStrictMode.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/declarationEmitDestructuring3.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/asiInES6Classes.ts",
         "status": 3
     },
     {
@@ -10336,10 +9192,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/forAwaitForUnion.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/augmentedTypesEnum2.ts",
         "status": 3
     },
@@ -10353,14 +9205,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/exportEqualsClassRedeclarationError.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/destructuringControlFlowNoCrash.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/sourceMapValidationForIn.ts",
         "status": 3
     },
     {
@@ -10388,15 +9232,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/argumentsObjectIterator02_ES6.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/destructuringAssignmentWithDefault.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/sourceMapValidationDestructuringVariableStatementArrayBindingPattern4.ts",
         "status": 3
     },
     {
@@ -10420,23 +9256,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/autolift4.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/jsFileCompilationAwaitModifier.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/classDeclarationMergedInModuleWithContinuation.ts",
         "status": 3
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/argumentsPropertyNameInJsMode1.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/capturedLetConstInLoop10_ES6.ts",
         "status": 3
     },
     {
@@ -10452,10 +9276,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/classExpressionWithStaticPropertiesES62.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/functionOverloads3.ts",
         "status": 3
     },
@@ -10465,14 +9285,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/checkForObjectTooStrict.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/intersectionWithConflictingPrivates.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/downlevelLetConst14.ts",
         "status": 3
     },
     {
@@ -10488,10 +9300,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/neverAsDiscriminantType.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/unusedVariablesWithUnderscoreInBindingElement.ts",
         "status": 3
     },
@@ -10504,27 +9312,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/transformArrowInBlockScopedLoopVarInitializer.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/forInStatement1.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/sourceMapValidationDestructuringVariableStatementArrayBindingPattern6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/destructuringAssignment_private.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/es6ImportEqualsDeclaration.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/forInStatement2.ts",
         "status": 3
     },
     {
@@ -10544,19 +9332,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/es5-asyncFunctionLongObjectLiteral.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/arrayDestructuringInSwitch1.ts",
         "status": 3
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/augmentExportEquals2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/recursiveFunctionTypes1.ts",
         "status": 3
     },
     {
@@ -10584,19 +9364,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/es5-asyncFunctionForOfStatements.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/commentsOnObjectLiteral2.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/parameterReferenceInInitializer1.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/forInStatement3.ts",
         "status": 3
     },
     {
@@ -10609,10 +9377,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/argumentsObjectIterator03_ES6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/genericInterfaceImplementation.ts",
         "status": 3
     },
     {
@@ -10652,23 +9416,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/arityErrorRelatedSpanBindingPattern.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/asyncFunctionReturnType.2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/enumAssignmentCompat4.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/initializedDestructuringAssignmentTypes.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/noImplicitAnyDestructuringParameterDeclaration.ts",
         "status": 3
     },
     {
@@ -10677,10 +9425,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/collisionThisExpressionAndNameResolution.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/staticInheritance.ts",
         "status": 3
     },
     {
@@ -10713,10 +9457,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/noCollisionThisExpressionAndLocalVarInMethod.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/es5-asyncFunctionTryStatements.ts",
         "status": 3
     },
     {
@@ -10764,15 +9504,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/classDeclarationCheckUsedBeforeDefinitionInItself.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/parsingDeepParenthensizedExpression.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/awaitUnionPromise.ts",
         "status": 3
     },
     {
@@ -10844,10 +9576,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/forStatementInnerComments.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/thisInLambda.ts",
         "status": 3
     },
@@ -10860,19 +9588,15 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/forwardRefInClassProperties.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/privacyCheckExportAssignmentOnExportedGenericInterface1.ts",
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/es5-asyncFunctionPropertyAccess.ts",
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/mixinPrivateAndProtected.ts",
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/mixinPrivateAndProtected.ts",
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/unknownSymbolOffContextualType1.ts",
         "status": 3
     },
     {
@@ -10881,10 +9605,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/classDeclarationShouldBeOutOfScopeInComputedNames.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/classExpressionInClassStaticDeclarations.ts",
         "status": 3
     },
     {
@@ -10908,14 +9628,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/contextualReturnTypeOfIIFE.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/promiseAllOnAny01.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/yieldExpressionInnerCommentEmit.ts",
         "status": 3
     },
@@ -10928,15 +9640,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/es5-asyncFunctionConditionals.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/yieldExpressionInFlowLoop.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/reactReduxLikeDeferredInferenceAllowsAssignment.ts",
         "status": 3
     },
     {
@@ -10988,19 +9692,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/selfReferencingSpreadInLoop.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/ambientExternalModuleInAnotherExternalModule.ts",
         "status": 3
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/iteratorsAndStrictNullChecks.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/argumentsObjectIterator02_ES5.ts",
         "status": 3
     },
     {
@@ -11025,14 +9721,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/reverseMappedPartiallyInferableTypes.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/computedPropertiesInDestructuring1.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/noImplicitReturnsWithProtectedBlocks1.ts",
         "status": 3
     },
     {
@@ -11064,10 +9752,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/es2017basicAsync.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/capturedLetConstInLoop5.ts",
         "status": 3
     },
@@ -11096,19 +9780,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/castOfAwait.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/inferFromGenericFunctionReturnTypes3.ts",
         "status": 3
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/intersectionTypeInference1.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/doNotElaborateAssignabilityToTypeParameters.ts",
         "status": 3
     },
     {
@@ -11144,10 +9820,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/classTypeParametersInStatics.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/optionalParameterInDestructuringWithInitializer.ts",
         "status": 3
     },
@@ -11156,15 +9828,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/es5-asyncFunctionReturnStatements.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/privateFieldAssignabilityFromUnknown.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/es5-asyncFunctionObjectLiterals.ts",
         "status": 3
     },
     {
@@ -11177,10 +9841,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/bindingPatternCannotBeOnlyInferenceSource.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/es5-asyncFunctionIfStatements.ts",
         "status": 3
     },
     {
@@ -11208,19 +9868,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/es5-asyncFunctionElementAccess.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/breakInIterationOrSwitchStatement4.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/exportEqualsUmd.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/forLoopEndingMultilineComments.ts",
         "status": 3
     },
     {
@@ -11256,10 +9904,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/promiseType.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/vueLikeDataAndPropsInference.ts",
         "status": 3
     },
@@ -11268,23 +9912,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/downlevelLetConst12.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/contextualPropertyOfGenericMappedType.ts",
         "status": 3
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/promiseVoidErrorCallback.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/functionOverloads45.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/forInStatement5.ts",
         "status": 3
     },
     {
@@ -11336,10 +9968,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/recursiveFunctionTypes.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/awaitedTypeStrictNull.ts",
         "status": 3
     },
@@ -11372,27 +10000,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/noImplicitReturnsInAsync1.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/forIn2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/forInStatement4.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/customAsyncIterator.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/qualifiedName_entity-name-resolution-does-not-affect-class-heritage.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/transformNestedGeneratorsWithTry.ts",
         "status": 3
     },
     {
@@ -11404,10 +10012,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/sourceMapValidationTryCatchFinally.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/staticOffOfInstance2.ts",
         "status": 3
     },
@@ -11416,19 +10020,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/arrowFunctionParsingGenericInObject.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/sourceMapValidationDestructuringVariableStatementArrayBindingPattern.ts",
         "status": 3
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/constEnumMergingWithValues2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/computedPropertiesInDestructuring1_ES6.ts",
         "status": 3
     },
     {
@@ -11444,19 +10040,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/asyncFunctionWithForStatementNoInitializer.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/operationsAvailableOnPromisedType.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/controlFlowForCatchAndFinally.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/asyncFunctionReturnType.ts",
         "status": 3
     },
     {
@@ -11465,10 +10049,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/constructorWithParameterPropertiesAndPrivateFields.es2015.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/implicitAnyInCatch.ts",
         "status": 3
     },
     {
@@ -11493,10 +10073,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/nestedBlockScopedBindings5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/decoratorMetadataPromise.ts",
         "status": 3
     },
     {
@@ -11532,10 +10108,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/unusedVariablesinForLoop4.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/argumentsObjectIterator03_ES5.ts",
         "status": 3
     },
@@ -11560,7 +10132,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/varianceProblingAndZeroOrderIndexSignatureRelationsAlign.ts",
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/declarationEmitNonExportedBindingPattern.ts",
         "status": 3
     },
     {
@@ -11573,14 +10145,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/constructorWithCapturedSuper.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/generatorTransformFinalLabel.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/promiseEmptyTupleNoException.ts",
         "status": 3
     },
     {
@@ -11600,10 +10164,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/asyncFunctionReturnExpressionErrorSpans.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/declFileObjectLiteralWithAccessors.ts",
         "status": 3
     },
@@ -11616,27 +10176,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/exportDefaultAsyncFunction.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/controlFlowDestructuringLoop.ts",
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/noImplicitReturnsInAsync2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/es5-asyncFunctionHoisting.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/declarationEmitDestructuring5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/staticMethodReferencingTypeArgument1.ts",
         "status": 3
     },
     {
@@ -11649,10 +10193,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/constEnumMergingWithValues5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/noUnusedLocals_selfReference.ts",
         "status": 3
     },
     {
@@ -11688,23 +10228,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/reachabilityChecks7.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/declFileGenericType.ts",
         "status": 3
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/assignmentRestElementWithErrorSourceType.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/promiseTypeStrictNull.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/emitCapturingThisInTupleDestructuring1.ts",
         "status": 3
     },
     {
@@ -11720,15 +10248,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/literalFreshnessPropagationOnNarrowing.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/es5-asyncFunctionDoStatements.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/controlFlowPropertyDeclarations.ts",
         "status": 3
     },
     {
@@ -11752,15 +10272,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/promiseDefinitionTest.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/unionTypeWithIndexAndMethodSignature.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/awaitExpressionInnerCommentEmit.ts",
         "status": 3
     },
     {
@@ -11784,19 +10296,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/declarationEmitDestructuringArrayPattern3.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/exportAssignmentWithoutIdentifier1.ts",
         "status": 3
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/functionParameterArityMismatch.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/declarationEmitPrivateAsync.ts",
         "status": 3
     },
     {
@@ -11820,10 +10324,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/modularizeLibrary_TargetES6UsingES6Lib.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/assignmentCompatBug3.ts",
         "status": 3
     },
@@ -11833,10 +10333,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/es5-asyncFunctionNewExpressions.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/noAsConstNameLookup.ts",
         "status": 3
     },
     {
@@ -11868,10 +10364,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/unresolvableSelfReferencingAwaitedUnion.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/inheritanceStaticAccessorOverridingAccessor.ts",
         "status": 3
     },
@@ -11880,15 +10372,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/scopeCheckInsideStaticMethod1.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/privacyAccessorDeclFile.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/asyncIIFE.ts",
         "status": 3
     },
     {
@@ -11908,10 +10392,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/declarationEmitDestructuring4.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/classExtendsClauseClassMergedWithModuleNotReferingConstructor.ts",
         "status": 3
     },
@@ -11924,10 +10404,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/letDeclarations.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/missingImportAfterModuleImport.ts",
         "status": 3
     },
@@ -11936,23 +10412,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/functionOverloads43.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/noImplicitReturnsWithProtectedBlocks2.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/accessorWithInitializer.ts",
         "status": 3
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/destructuringUnspreadableIntoRest.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/circularInferredTypeOfVariable.ts",
         "status": 3
     },
     {
@@ -11965,18 +10429,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/externalModuleExportingGenericClass.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/flowInFinally1.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/classExpressionWithResolutionOfNamespaceOfSameName01.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/unusedPrivateMembers.ts",
         "status": 3
     },
     {
@@ -12005,10 +10457,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/scopeCheckClassProperty.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/instanceAndStaticDeclarations1.ts",
         "status": 3
     },
     {
@@ -12048,10 +10496,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/arrayDestructuringInSwitch2.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/aliasUsageInArray.ts",
         "status": 3
     },
@@ -12072,18 +10516,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/evolvingArrayResolvedAssert.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/asyncFunctionContextuallyTypedReturns.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/inOperator.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/discriminantPropertyCheck.ts",
         "status": 3
     },
@@ -12096,15 +10528,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/systemModule13.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/capturedLetConstInLoop7_ES6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/inferenceErasedSignatures.ts",
         "status": 3
     },
     {
@@ -12113,10 +10537,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/vueLikeDataAndPropsInference2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/forInStatement6.ts",
         "status": 3
     },
     {
@@ -12129,10 +10549,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/sourceMapValidationDestructuringForArrayBindingPatternDefaultValues.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/lateBoundMethodNameAssigmentJS.ts",
         "status": 3
     },
     {
@@ -12156,10 +10572,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/downlevelLetConst15.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/this_inside-object-literal-getters-and-setters.ts",
         "status": 3
     },
@@ -12169,10 +10581,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/reachabilityChecks5.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/modularizeLibrary_ErrorFromUsingES6FeaturesWithOnlyES5Lib.ts",
         "status": 3
     },
     {
@@ -12188,19 +10596,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/contextualExpressionTypecheckingDoesntBlowStack.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/sourceMapValidationDestructuringVariableStatementArrayBindingPattern2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/truthinessPromiseCoercion.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/destructuringAssignmentWithExportedName.ts",
         "status": 3
     },
     {
@@ -12209,10 +10605,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/genericIsNeverEmptyObject.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/functionOverloads44.ts",
         "status": 3
     },
     {
@@ -12228,10 +10620,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/varianceProblingAndZeroOrderIndexSignatureRelationsAlign2.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/mixinIntersectionIsValidbaseType.ts",
         "status": 3
     },
@@ -12241,10 +10629,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/augmentExportEquals1.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/cases/compiler/capturedParametersInInitializers1.ts",
         "status": 3
     },
     {
@@ -12260,27 +10644,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/4.4/static_blocks_in_classe/static_blocks_in_classes2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/4.4/defaulting_to_the_unknown_type_in_catch_variables/defaulting_to_the_unknown_type_in_catch_variables_2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/4.4/defaulting_to_the_unknown_type_in_catch_variables/defaulting_to_the_unknown_type_in_catch_variables_1.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/2.3/async_iteration/async_iterators/async_iterators_2.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/2.3/async_iteration/async_iterators/async_iterators_1.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/2.3/async_iteration/async_generators/async_generators.ts",
         "status": 3
     },
     {
@@ -12368,7 +10732,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/2.4/1_dynamic_import_expressions/1_dynamic_import_expressions.ts",
+        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/spec/expressions/function_calls/type_argument_inference/type_argument_inference_1.ts",
         "status": 3
     },
     {
@@ -12436,47 +10800,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/spec/classes/class_declarations/class_declarations_2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/spec/classes/class_declarations/class_body/class_body.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/spec/classes/class_declarations/class_heritage_specification/class_heritage_specification_2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/spec/classes/class_declarations/class_heritage_specification/class_heritage_specification_1.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/spec/classes/class_declarations/class_heritage_specification/class_heritage_specification_4.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/spec/classes/property_member_declarations/property_member_declarations_3.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/spec/classes/property_member_declarations/property_member_declarations_1.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/spec/classes/property_member_declarations/member_accessor_declarations/member_accessor_declarations.ts",
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/spec/classes/property_member_declarations/member_variable_declarations/member_variable_declarations_1.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/spec/ambients/ambient_declarations/Ambient_Class_Declarations/Ambient_Class_Declarations.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/spec/grammar/classes/classes.ts",
         "status": 3
     },
     {
@@ -12536,10 +10864,6 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/spec/statements/for_in_statements/for_in_statements.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/spec/statements/variable_statements/2_destructuring_variable_declarations/destructuring_variable_declarations_3.ts",
         "status": 3
     },
@@ -12589,10 +10913,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/spec/types/named_types/named_types_1.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/spec/basic_concepts/scopes/scopes_5.ts",
         "status": 3
     },
     {
@@ -12656,19 +10976,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/spec/functions/asynchronous_functions/asynchronous_functions_1.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/spec/functions/asynchronous_functions/asynchronous_functions_3.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/spec/functions/asynchronous_functions/asynchronous_functions_2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/spec/functions/asynchronous_functions/asynchronous_functions_4.ts",
         "status": 3
     },
     {
@@ -12716,19 +11024,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/2.1/downlevel_async_functions/downlevel_async_functions_1.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/2.1/object_spread_and_rest/object_spread_and_rest_3.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/4.3/ecmascript_private_class_elements/ecmascript_private_calss_elements.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/4.3/always-truthy_promise_checks/always-truthy_promise_checks.ts",
         "status": 3
     },
     {
@@ -12756,15 +11052,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/2.0/never_type/never_type.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/2.0/specifying_the_type_of_this_for_functions/specifying_the_type_of_this_for_functions_2.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/2.0/private_and_protected_constructor/private_and_protected_constructor.ts",
         "status": 3
     },
     {
@@ -12780,15 +11068,7 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/4.5/the_awaited_type_and_promise_improvements/the_awaited_type_and_promise_improvements_1.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/4.5/private_field_presence_checks/private_field_presence_checks_1.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/4.0/unknow_on_catch_clause_bindings/unknow_on_catch_clause_bindings_1.ts",
         "status": 3
     },
     {
@@ -12801,14 +11081,6 @@
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/4.0/labeled_tuple_elements/labeled_tuple_elements_3.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/3.7/optional_chaining/optional_chaining_4.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/ts_extra_tests/test_ts_cases/3.6/improved_UX_Around_Promises/improved_UX_Around_Promises.ts",
         "status": 3
     },
     {
@@ -12828,23 +11100,11 @@
         "status": 3
     },
     {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/baselines/reference/convertToAsyncFunction/convertToAsyncFunction_ArrowFunction.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/baselines/reference/convertToAsyncFunction/convertToAsyncFunction_ArrowFunctionNoAnnotation.ts",
-        "status": 3
-    },
-    {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/baselines/reference/extractFunction/extractFunction12.ts",
         "status": 3
     },
     {
         "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/baselines/reference/extractFunction/extractFunction6.ts",
-        "status": 3
-    },
-    {
-        "file": "/home/harmonyos/arkdecompiler/autotests/third_party_typescript/tests/baselines/reference/extractFunction/extractFunction4.ts",
         "status": 3
     },
     {
