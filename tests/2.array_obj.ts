@@ -68,3 +68,27 @@
 // 38. CREATEREGEXPWITHLITERAL
 // var x = 0x1; 
 // var y = new RegExp("hello", x);
+
+
+// 36. NEWOBJAPPLY_
+// const countryInfo = ['USA', 'The Star-Spangled Banner', 'John Stafford Smith'];
+// const usa = new Country(...countryInfo);
+
+// 38. CREATEREGEXPWITHLITERAL
+// var x = 0x1; 
+// var y = new RegExp("hello", x);
+
+// 39. CREATEOBJECTWITHEXCLUDEDKEYS
+// function foo()
+// {
+//     let {a, b, c, ...d} = {a:1, b:2, c:3, f:4, e:5}
+// }
+
+// const sourceObject = { a: 1, b: 2, c: 3, f: 4, e: 5 };
+
+// let { a: alpha, b: beta, c: gamma, ...rest } = sourceObject;
+
+
+// console.log(alpha); 
+// console.log(beta); 
+// console.log(gamma);
