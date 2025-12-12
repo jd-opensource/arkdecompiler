@@ -431,12 +431,12 @@ public:
         ///////////////////////////////////////////////////////////////////////////////////////////
 
         // case3: found unique predecessor with unique successor
-        if(block->GetPredsBlocks().size() == 1 && block_id != 0 && block->GetPredecessor(0)->GetSuccsBlocks().size() == 1){
+        if(block->GetPredsBlocks().size() == 1 && !block->IsStartBlock() && block->GetPredecessor(0)->GetSuccsBlocks().size() == 1){
             std::cout << "@@ case 3" << std::endl;
             BasicBlock* ancestor_block = block->GetPredecessor(0);
 
             if(this->id2block.find(ancestor_block->GetId()) != this->id2block.end()){
-                this->id2block[block_id] =  this->id2block[ancestor_block->GetId()];;
+                this->id2block[block_id] =  this->id2block[ancestor_block->GetId()];
             }else{
                 this->Logid2BlockKeys();
                 HandleError("#GetBlockStatementById: find ancestor error: ", block_id);
@@ -446,8 +446,17 @@ public:
             return this->id2block[block_id];
         }
         
-        // case4:create new statements
-        std::cout << "@@ case 4" << std::endl;
+        // case4: found multi predecessor with onlyif
+        if(block->GetPredsBlocks().size() == 2 && block_id != 0 && ( block->GetPredecessor(0)->IsIfBlock() || block->GetPredecessor(1)->IsIfBlock() )){
+            if(block->GetPredecessor(0)->IsIfBlock()){
+                this->id2block[block_id] =  this->id2block[block->GetPredecessor(0)->GetId()];
+            }else{
+                this->id2block[block_id] =  this->id2block[block->GetPredecessor(1)->GetId()];
+            }
+        }
+
+        // case5:create new statements
+        std::cout << "@@ case 5" << std::endl;
         ArenaVector<panda::es2panda::ir::Statement *> statements(this->parser_program_->Allocator()->Adapter());
         auto new_block_statement = AllocNode<es2panda::ir::BlockStatement>(this, nullptr, std::move(statements));
 

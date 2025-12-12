@@ -98,7 +98,7 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
     }
 
     
-    if(inst->GetBasicBlock()->GetPredsBlocks().size() == 2){
+    if(inst->GetBasicBlock()->GetPredsBlocks().size() > 2){
         HandleError("analysis try-catch error for more than one predecessor");
     }
     
