@@ -43,6 +43,10 @@
 // const arr1 = [1, 2, 3];
 // const arr2 = [...arr1, 4, 5]; 
 
+// # 25. stownbyindex
+// var r1;
+// var r2;
+// var r3 = [1, r1, ...r2];
 
 // 36. NEWOBJAPPLY_
 // const countryInfo = ['USA', 'The Star-Spangled Banner', 'John Stafford Smith'];
