@@ -295,6 +295,7 @@ uint32_t onlyOneBranch(BasicBlock* father, AstGen * enc){
     }
 
     BasicBlock* other_father = nullptr;
+    BasicBlock* start_block = father->GetGraph()->GetStartBlock();
     if(analysis_block->GetPredecessor(0) == father){
         other_father = analysis_block->GetPredecessor(1);
     }else{
@@ -304,23 +305,25 @@ uint32_t onlyOneBranch(BasicBlock* father, AstGen * enc){
     std::cout << "false_branch: " << std::to_string(false_branch->GetId()) << std::endl;
     std::cout << "other_fater: " << std::to_string(other_father->GetId()) << std::endl;
 
-    while(other_father != father && other_father->GetId() !=0 ){
+    std::cout << "111111111111111111111111111111111111111111111111111111111" << std::endl;
+    while(other_father != father && other_father != start_block){
         other_father = other_father->GetPredecessor(0);
     }
-
-
+    
+    std::cout << "222222222222222222222222222222222222222222222222222222222" << std::endl;
     if(other_father == father ){
         if(analysis_block == true_branch){
             return 2;
         }else{
             return 1;
         }
-    }else if(other_father->GetId() ==0 ){
+    }else if(other_father == start_block){
         return 0;
     }else{
         //std::cout << "end other_father: " << std::to_string(other_father->GetId()) << std::endl;
         HandleError("onlyOneBranch# found method is bad");
     }
+    
     return 0;
 }
 
