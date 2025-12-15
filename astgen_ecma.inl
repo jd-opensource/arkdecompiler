@@ -763,8 +763,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-
-
        case compiler::RuntimeInterface::IntrinsicId::APPLY_IMM8_V8_V8:
        {
             auto fun = *enc->GetExpressionByAcc(inst);
@@ -810,7 +808,11 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto index_literal = index_expression->AsNumberLiteral();
             uint32_t index = index_literal->Number();
 
-            if(index < raw_arrayexpression->Elements().size()){
+            for (auto *it : raw_arrayexpression->Elements()) {
+                elements.push_back(it);
+            }
+
+            if(index <= raw_arrayexpression->Elements().size()){
                 elements.insert(elements.begin() + index, spreadelement);
             }else{
                 std::cout << "element size: " << raw_arrayexpression->Elements().size() << " , index: " << index << std::endl;
@@ -1073,6 +1075,50 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         case compiler::RuntimeInterface::IntrinsicId::STOWNBYINDEX_IMM16_V8_IMM16: // tobetested
         case compiler::RuntimeInterface::IntrinsicId::WIDE_STOWNBYINDEX_PREF_V8_IMM32: // tobetested
        {
+            // uint32_t index;
+            // if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::WIDE_STOWNBYINDEX_PREF_V8_IMM32){
+            //     index = static_cast<uint32_t>(inst->GetImms()[0]);
+            // }else{
+            //     index = static_cast<uint32_t>(inst->GetImms()[1]);
+            // }
+            // auto raw_obj = *enc->GetExpressionByRegIndex(inst, 0);
+            // if(!raw_obj->IsArrayExpression()){
+            //     std::cout << "###: " << std::to_string(static_cast<int>(raw_obj->Type())) << std::endl;
+            //     HandleError("#STARRAYSPREAD: cann't deal expression except ArrayExpression");
+            // }
+            // auto raw_arrayexpression = raw_obj->AsArrayExpression();
+            // ArenaVector<es2panda::ir::Expression *> elements(enc->parser_program_->Allocator()->Adapter());
+
+            // uint32_t count = 0;
+            // bool inserted = false;
+            // for (auto *it :raw_arrayexpression->Elements()) {
+            //     std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+            //     std::cout << "count: " << count << " , index: " << index << std::endl;
+            //     if(count++ == index){
+            //         inserted = true;
+            //         elements.push_back(*enc->GetExpressionByAcc(inst));
+            //     }
+            //     elements.push_back(it);
+            // }
+
+            // if(!inserted && index == raw_arrayexpression->Elements().size()){
+            //     std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
+            //     elements.push_back(*enc->GetExpressionByAcc(inst));
+            // }else{
+            //     HandleError("#STARRAYSPREAD: insert over array end");
+            // }
+
+
+            // [[maybe_unused]]auto arrayexpression = AllocNode<es2panda::ir::ArrayExpression>(enc, 
+            //                                                                 es2panda::ir::AstNodeType::ARRAY_EXPRESSION,
+            //                                                                 std::move(elements),
+            //                                                                 false
+            //                                                                 );
+
+            // enc->SetExpressionByRegister(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), arrayexpression);
+
+/////////////
+
             uint32_t imm;
             if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::WIDE_STOWNBYINDEX_PREF_V8_IMM32){
                 imm = static_cast<uint32_t>(inst->GetImms()[0]);
