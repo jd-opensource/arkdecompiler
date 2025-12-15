@@ -362,7 +362,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 }else if(literal.IsDoubleValue()){
                     tmp = AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<double>(literal.value_));
                 }else if(literal.IsStringValue()){
-                    es2panda::util::StringView literal_strview(std::get<std::string>(literal.value_));
+                    es2panda::util::StringView literal_strview(* new std::string(std::get<std::string>(literal.value_)));
                     tmp = AllocNode<es2panda::ir::StringLiteral>(enc, literal_strview);
                 }else{
                     HandleError("unsupport literal type error");
