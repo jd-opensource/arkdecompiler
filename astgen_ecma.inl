@@ -797,28 +797,33 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        {
             auto element = *enc->GetExpressionByAcc(inst);
             es2panda::ir::Expression* spreadelement = AllocNode<es2panda::ir::SpreadElement>(enc, es2panda::ir::AstNodeType::SPREAD_ELEMENT, element);
-
             auto raw_obj = *enc->GetExpressionByRegIndex(inst, 0);
-            auto raw_arrayexpression = raw_obj->AsArrayExpression();
 
+            if(!raw_obj->IsArrayExpression()){
+                std::cout << "###: " << std::to_string(static_cast<int>(raw_obj->Type())) << std::endl;
+                HandleError("#STARRAYSPREAD: cann't deal expression except ArrayExpression");
+            }
+
+            auto raw_arrayexpression = raw_obj->AsArrayExpression();
             ArenaVector<es2panda::ir::Expression *> elements(enc->parser_program_->Allocator()->Adapter());
             auto index_expression = *enc->GetExpressionByRegIndex(inst, 1);
             auto index_literal = index_expression->AsNumberLiteral();
-            
             uint32_t index = index_literal->Number();
 
-            for (auto *it : raw_arrayexpression->Elements()) {
-                elements.push_back(it);
+            if(index < raw_arrayexpression->Elements().size()){
+                elements.insert(elements.begin() + index, spreadelement);
+            }else{
+                std::cout << "element size: " << raw_arrayexpression->Elements().size() << " , index: " << index << std::endl;
+                HandleError("#STARRAYSPREAD inset element over size");
             }
 
-            elements.insert(elements.begin() + index, spreadelement);
             auto arrayexpression = AllocNode<es2panda::ir::ArrayExpression>(enc, 
                                                                             es2panda::ir::AstNodeType::ARRAY_EXPRESSION,
                                                                             std::move(elements),
                                                                             false
                                                                             );
-            enc->SetExpressionByRegister(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), arrayexpression);
 
+            enc->SetExpressionByRegister(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), arrayexpression);
             uint32_t size = elements.size();
             enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->GetLiteralByNum(size));
             break;
@@ -1108,6 +1113,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
 
+            enc->SetExpressionByRegister(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), expression1);
             break;
         }
 
