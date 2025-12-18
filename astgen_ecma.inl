@@ -1944,6 +1944,23 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                     std::move(new_properties),
                                                                                     false);
                 enc->SetExpressionByRegister(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), objectexpression);
+            }else if(raw_obj->IsIdentifier()){
+                auto attr_expression = enc->GetIdentifierByName(str);
+                auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
+                                                            raw_obj,
+                                                            attr_expression, 
+                                                            es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                            true, 
+                                                            false);
+                auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                    objattrexpression,
+                                                                                    *enc->GetExpressionByAcc(inst),
+                                                                                    es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                                );
+
+                auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
+                enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+
             }else{
                 std::cout << "###: " << std::to_string(static_cast<int>(raw_obj->Type())) << std::endl;
                 HandleError("#STARRAYSPREAD: cann't deal expression except ObjectExpression");
