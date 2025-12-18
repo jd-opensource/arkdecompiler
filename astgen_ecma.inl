@@ -808,15 +808,24 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto index_literal = index_expression->AsNumberLiteral();
             uint32_t index = index_literal->Number();
 
+            uint32_t count = 0;
+            bool inserted = false;
             for (auto *it : raw_arrayexpression->Elements()) {
+                if(count == index){
+                    elements.push_back(spreadelement);
+                    inserted = true;
+                }
                 elements.push_back(it);
+                count++;
             }
 
-            if(index <= raw_arrayexpression->Elements().size()){
-                elements.insert(elements.begin() + index, spreadelement);
-            }else{
-                std::cout << "element size: " << raw_arrayexpression->Elements().size() << " , index: " << index << std::endl;
-                HandleError("#STARRAYSPREAD inset element over size");
+            if(!inserted){
+                if(index == (raw_arrayexpression->Elements().size() ) ){
+                    elements.push_back(spreadelement);
+                }else{
+                    std::cout << "element size: " << raw_arrayexpression->Elements().size() << " , index: " << index << std::endl;
+                    HandleError("#STARRAYSPREAD inset element error");
+                }
             }
 
             auto arrayexpression = AllocNode<es2panda::ir::ArrayExpression>(enc, 
@@ -1054,6 +1063,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }else if(raw_obj->IsArrayExpression()){
                 auto raw_arrayexpression = raw_obj->AsArrayExpression();
                 ArenaVector<es2panda::ir::Expression *> new_elements(enc->parser_program_->Allocator()->Adapter());
+                
                 for (auto *it : raw_arrayexpression->Elements()) {
                     new_elements.push_back(it);
                 }
