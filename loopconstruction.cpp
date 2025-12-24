@@ -56,6 +56,22 @@ void JudgeLoopType(BasicBlock* header, std::map<Loop *, uint32_t>& loop2type,
     //LogLoopBBs(header);
 }
 
+bool LoopContainBlock(Loop* loop, BasicBlock *bb){
+    if(std::find(loop->GetBlocks().begin(), loop->GetBlocks().end(), bb) != loop->GetBlocks().end()){
+        return true;
+    }
+
+    for(auto inner_loop : loop->GetInnerLoops()){
+        if(LoopContainBlock(inner_loop, bb)){
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+
 void LogBackEdgeId(ArenaVector<BasicBlock *> backedges){
     std::cout << "backedgeid: ";
     for (auto it = backedges.begin(); it != backedges.end(); ++it) {
