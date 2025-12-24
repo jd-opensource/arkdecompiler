@@ -381,7 +381,12 @@ public:
     void AddInstAst2BlockStatemntByBlock(BasicBlock* block, es2panda::ir::Statement *statement, uint32_t offset = 0){
         es2panda::ir::BlockStatement* block_statements = this->GetBlockStatementById(block);
         const auto &statements = block_statements->Statements();
-        block_statements->AddStatementAtPos(statements.size() - offset, statement);
+        if(statements.size() > offset) {
+            block_statements->AddStatementAtPos(statements.size() - offset, statement);
+        }else{
+            block_statements->AddStatementAtPos(statements.size() , statement);
+        }
+        
     }
 
     bool father_visited(BasicBlock *block){

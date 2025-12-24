@@ -15,5 +15,7 @@ void LogBackEdgeId(ArenaVector<BasicBlock *> backedges);
 
 BasicBlock* SearchPreHeader(BasicBlock* header);
 
+bool LoopContainBlock(Loop* loop, BasicBlock *bb);
+
 }
 #endif

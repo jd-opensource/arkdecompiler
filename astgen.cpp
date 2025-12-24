@@ -36,7 +36,18 @@ bool AstGen::RunImpl()
 {
     
     for (auto *bb : GetGraph()->GetBlocksRPO()) {
-        
+        std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ visit bbid: " << bb->GetId() << std::endl;
+        //if(bb->IsLoopValid() && !bb->GetLoop()->IsRoot() ){
+        if(bb->IsLoopValid()  ){
+            auto loop = bb->GetLoop();
+            auto backedges = loop->GetBackEdges();
+            auto innerloop = loop->GetInnerLoops();
+            auto blocks = loop->GetBlocks();
+            std::cout << "Loop Size: " << backedges.size()  << " , innerloop: " << innerloop.size()  << " , block: " << blocks.size() << std::endl;
+
+        }
+
+
         if(bb->IsLoopValid() && bb->IsLoopHeader() ){
             JudgeLoopType(bb, this->loop2type, this->loop2exit, this->backedge2dowhileloop);
             /////////////////////////////////////////////////////////////////
@@ -46,7 +57,7 @@ bool AstGen::RunImpl()
             this->whileheader2redundant[bb] = new_block_statement;
         }
 
-        std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ visit bbid: " << bb->GetId() << std::endl;
+        
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////
         auto nearestpre = this->FindNearestVisitedPred(this->visited, bb);
@@ -402,7 +413,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             false_statements =   enc->GetBlockStatementById(inst->GetBasicBlock()->GetFalseSuccessor());
         }
         
-       /*
+        /*
             // 0: if-and-else
             // 1: only if
             // 2: only else
@@ -449,7 +460,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             LogBackEdgeId(back_edges);
 
             es2panda::ir::WhileStatement* whilestatement;
-            if( std::find(loop->GetBlocks().begin(), loop->GetBlocks().end(), block->GetFalseSuccessor()) != loop->GetBlocks().end() ){
+            if( LoopContainBlock(loop, block->GetFalseSuccessor()) ){
                 std::cout << "while case 1" << std::endl;
                 if(enc->whileheader2redundant[block]->Statements().size() != 0){
                     // add redundant statement in while-header
@@ -519,6 +530,8 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
 
         //true_statements->SetParent(block);
         //false_statements->SetParent(block);
+    }else{
+        HandleError("#VisitIfImm: unhandle case");
     }
     std::cout << "[-] VisitIfImm  >>>>>>>>>>>>>>>>>" << std::endl;
 }
