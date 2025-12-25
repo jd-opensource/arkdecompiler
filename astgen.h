@@ -379,14 +379,20 @@ public:
     }
 
     void AddInstAst2BlockStatemntByBlock(BasicBlock* block, es2panda::ir::Statement *statement, uint32_t offset = 0){
+        if(this->inserted.find(statement ) == this->inserted.end() ){
+            this->inserted.insert(statement);
+        }else{
+            return;
+        }
+
         es2panda::ir::BlockStatement* block_statements = this->GetBlockStatementById(block);
+
         const auto &statements = block_statements->Statements();
         if(statements.size() > offset) {
             block_statements->AddStatementAtPos(statements.size() - offset, statement);
         }else{
             block_statements->AddStatementAtPos(statements.size() , statement);
-        }
-        
+        }        
     }
 
     bool father_visited(BasicBlock *block){
@@ -548,6 +554,8 @@ public:
     uint32_t closure_count;
 
     uint32_t privatevar_count;
+
+    std::set<es2panda::ir::Statement*> inserted;
 
     std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack_;
     std::map<uint32_t, LexicalEnvStack*>* method2sendablelexicalenvstack_;
