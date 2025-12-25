@@ -494,7 +494,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             }
 
             if(true_statements != nullptr){
-                enc->inserted.insert(true_statements);
+                enc->inserted_statements.insert(true_statements);
             }
             
             enc->AddInstAst2BlockStatemntByInst(inst, whilestatement);
@@ -525,11 +525,11 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             }
 
             if(true_statements != nullptr){
-                 enc->inserted.insert(true_statements);
+                 enc->inserted_statements.insert(true_statements);
             }
 
             if(false_statements != nullptr){
-                enc->inserted.insert(false_statements);
+                enc->inserted_statements.insert(false_statements);
             }
            
             enc->AddInstAst2BlockStatemntByInst(inst, ifStatement);
