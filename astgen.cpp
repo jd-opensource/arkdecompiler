@@ -478,15 +478,12 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                         true_statements
                         );
 
-                enc->inserted.insert(true_statements);
+                
             }else{
                 std::cout << "while case 2" << std::endl;
                 if(enc->whileheader2redundant[block]->Statements().size() != 0){
                     // add redundant statement in while-header
                     enc->whilebody2redundant[block->GetTrueSuccessor()] = enc->whileheader2redundant[block];
-
-                    // adjust to RunImpl in the end of basickblock
-                    //enc->AddInstAst2BlockStatemntByBlock(block->GetTrueSuccessor(), enc->whileheader2redundant[block] );
                 }
                 test_expression = enc->InverseTestExpression(enc, inst_base, ret, src_expression,false);
                 whilestatement = AllocNode<es2panda::ir::WhileStatement>(enc,
@@ -496,10 +493,14 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                         );
             }
 
+            if(true_statements != nullptr){
+                enc->inserted.insert(true_statements);
+            }
+            
             enc->AddInstAst2BlockStatemntByInst(inst, whilestatement);
             enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), enc->GetBlockStatementById(block));
             enc->AddInstAst2BlockStatemntByInst(inst, false_statements);
-
+            
             std::cout << "[-] while ===" << std::endl;
         }else{
             std::cout << "[+] if ===" << std::endl;
@@ -523,6 +524,14 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                 ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, test_expression, true_statements, false_statements);
             }
 
+            if(true_statements != nullptr){
+                 enc->inserted.insert(true_statements);
+            }
+
+            if(false_statements != nullptr){
+                enc->inserted.insert(false_statements);
+            }
+           
             enc->AddInstAst2BlockStatemntByInst(inst, ifStatement);
 
             std::cout << "[-] if ===" << std::endl;
