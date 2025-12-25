@@ -394,8 +394,8 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
 
         auto ret = onlyOneBranch(inst->GetBasicBlock(), enc);
 
-        es2panda::ir::BlockStatement* true_statements = nullptr;
-        es2panda::ir::BlockStatement* false_statements = nullptr;
+        es2panda::ir::Statement* true_statements = nullptr;
+        es2panda::ir::Statement* false_statements = nullptr;
         
         if(ret == 0){
             std::cout << "#VisitIfImm ret case: " << ret << std::endl;
@@ -477,6 +477,8 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                         test_expression, 
                         true_statements
                         );
+
+                enc->inserted.insert(true_statements);
             }else{
                 std::cout << "while case 2" << std::endl;
                 if(enc->whileheader2redundant[block]->Statements().size() != 0){
@@ -496,7 +498,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
 
             enc->AddInstAst2BlockStatemntByInst(inst, whilestatement);
             enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), enc->GetBlockStatementById(block));
-            enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), false_statements);
+            enc->AddInstAst2BlockStatemntByInst(inst, false_statements);
 
             std::cout << "[-] while ===" << std::endl;
         }else{
