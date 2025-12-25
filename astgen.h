@@ -379,8 +379,8 @@ public:
     }
 
     void AddInstAst2BlockStatemntByBlock(BasicBlock* block, es2panda::ir::Statement *statement, uint32_t offset = 0){
-        if(this->inserted.find(statement ) == this->inserted.end() ){
-            this->inserted.insert(statement);
+        if(this->inserted_statements.find(statement ) == this->inserted_statements.end() ){
+            this->inserted_statements.insert(statement);
         }else{
             return;
         }
@@ -555,7 +555,7 @@ public:
 
     uint32_t privatevar_count;
 
-    std::set<es2panda::ir::Statement*> inserted;
+    std::set<es2panda::ir::Statement*> inserted_statements;
 
     std::map<uint32_t, LexicalEnvStack*>* method2lexicalenvstack_;
     std::map<uint32_t, LexicalEnvStack*>* method2sendablelexicalenvstack_;
