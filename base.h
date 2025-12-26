@@ -88,6 +88,14 @@ void HandleError(Args... args) {
     HandleInnerError(oss.str());
 }
 
+template <typename Container, typename T>
+bool contains(const Container& container, const T& value) {
+    if constexpr (std::is_same_v<Container, std::set<T>> || std::is_same_v<Container, std::unordered_set<T>>) {
+        return container.find(value) != container.end();
+    } else {
+        return std::find(container.begin(), container.end(), value) != container.end();
+    }
+}
 
 std::string RemoveArgumentsOfFunc(const std::string& input);
 std::optional<std::vector<std::string>> GetLiteralArrayByOffset(panda::pandasm::Program* program, uint32_t offset);
