@@ -33,7 +33,7 @@ void JudgeLoopType(BasicBlock* header, std::map<Loop *, uint32_t>& loop2type,
         auto succs_size = back_edge->GetSuccsBlocks().size();
         if(succs_size > 1 && back_edge->IsIfBlock()){
             loop2type[header->GetLoop()] = 1;  // do-whle
-            std::cout << "do - while" << std::endl;
+            std::cout << "#JudgeLoopType : do - while" << std::endl;
             backedge2dowhileloop[back_edge] = header->GetLoop();
 
             if(back_edge->GetTrueSuccessor()->GetLoop() == header->GetLoop()){
@@ -43,6 +43,7 @@ void JudgeLoopType(BasicBlock* header, std::map<Loop *, uint32_t>& loop2type,
             }
         }else{
             loop2type[header->GetLoop()] = 0;  // while
+            std::cout << "#JudgeLoopType : while" << std::endl;
             if(header->GetTrueSuccessor()->GetLoop() == header->GetLoop()){
                 loop2exit[header->GetLoop()] = header->GetFalseSuccessor();
             }else{
