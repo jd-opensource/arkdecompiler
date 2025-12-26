@@ -182,6 +182,76 @@ public:
         funcNode->AddFlag(es2panda::ir::ScriptFunctionFlags::ASYNC);  
     }
 
+    es2panda::ir::BlockStatement* CopyAndCreateNewBlockStatement(es2panda::ir::Statement* rawblockstatement){
+        ArenaVector<panda::es2panda::ir::Statement *> statements(this->parser_program_->Allocator()->Adapter());
+        auto new_block_statement = AllocNode<es2panda::ir::BlockStatement>(this, nullptr, std::move(statements));
+
+        for(auto rawstatement : rawblockstatement->AsBlockStatement()->Statements()){
+            const auto &statements = new_block_statement->Statements();
+            new_block_statement->AddStatementAtPos(statements.size() , rawstatement);
+        }
+
+        return new_block_statement;
+    }
+
+    void LocateAndReplaceAST(const std::vector<BasicBlock*>& visited, compiler::BasicBlock* block, panda::es2panda::ir::Statement *oldstatement, panda::es2panda::ir::Statement *newstatement){
+        if (visited.empty()){
+            HandleError("#LocateAndReplaceAST: locate block failed1");
+        }
+
+        ArenaVector<BasicBlock*> preds = block->GetPredsBlocks();
+        if(preds.empty()){
+            HandleError("#LocateAndReplaceAST: locate block failed2");
+        }
+
+        std::cout << "#LocateAndReplaceAST search >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+        for (BasicBlock* pre : preds) {
+            if (pre == nullptr || pre == block || !contains(visited, pre)) {
+                continue;
+            }
+
+            ArenaVector<panda::es2panda::ir::Statement *> statements(this->parser_program_->Allocator()->Adapter());
+            auto new_block_statement = AllocNode<es2panda::ir::BlockStatement>(this, nullptr, std::move(statements));
+
+            for(auto pre_singlestatement : this->GetBlockStatementById(pre)->AsBlockStatement()->Statements()){
+                // locate branch ins: while/dowhile/if/try
+                if(pre_singlestatement->IsWhileStatement() && pre_singlestatement->AsWhileStatement()->Body() == oldstatement){
+                    this->id2block[block->GetId()] = new_block_statement;
+                    this->AddInstAst2BlockStatemntByBlock(block, newstatement);
+                    pre_singlestatement->AsWhileStatement()->body_ = new_block_statement;
+                }else if(pre_singlestatement->IsIfStatement() ){
+
+                }else if(pre_singlestatement->IsDoWhileStatement()){
+
+                }else if(pre_singlestatement->IsTryStatement()){
+
+                }
+
+            }    
+            
+        }
+
+
+        // for (BasicBlock* block : preds) {
+        //     if (block != nullptr && ) {
+        //         block->PrintInfo();
+        //     }
+        // }
+
+        // std::unordered_set<BasicBlock*> pred_set(preds.begin(), preds.end());
+        // for (auto it = visited.rbegin(); it != visited.rend(); ++it) {
+        //     if (pred_set.find(*it) != pred_set.end()) {
+        //         return *it;  
+        //     }
+        // }
+
+        // auto fatherstatement = this->GetBlockStatementById(nearestpre);
+
+
+
+    }
+
+
     std::string RemovePrefixOfFunc(const std::string& input) {
         if(this->raw2newname_->find(input) != this->raw2newname_->end()){
             return (*this->raw2newname_)[input];

@@ -439,23 +439,27 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             
             test_expression =  enc->InverseTestExpression(enc, inst_base, ret, src_expression, false);
 
+            auto dowhilebody = enc->CopyAndCreateNewBlockStatement(true_statements);
             if(block->GetTrueSuccessor() == loop->GetHeader()){
                 std::cout << "do while case 1" << std::endl;
                 dowhilestatement = AllocNode<es2panda::ir::DoWhileStatement>(enc,
                     nullptr,
-                    true_statements,
+                    dowhilebody,
                     test_expression
                 );
             }else{
                 std::cout << "do while case 2" << std::endl;
                 dowhilestatement = AllocNode<es2panda::ir::DoWhileStatement>(enc,
                         nullptr,
-                        true_statements,
+                        dowhilebody,
                         test_expression
                         );
             }
-            enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), dowhilestatement);
-            enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), false_statements);
+
+            true_statements->AsBlockStatement()->statements_.clear();
+            enc->AddInstAst2BlockStatemntByBlock(block, dowhilestatement);
+            enc->AddInstAst2BlockStatemntByBlock(block, false_statements);
+
             std::cout << "[-] do-while =====" << std::endl;
         }else if(block->IsLoopValid() && block->IsLoopHeader() && enc->loop2type[block->GetLoop()] == 0 ){
             std::cout << "[+] while ===" << std::endl;
