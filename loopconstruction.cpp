@@ -17,6 +17,23 @@ void LogLoopBBs(BasicBlock* header){
     std::cout << "[-] loop list >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " << std::endl;
 }
 
+bool AnotherBackEdgeAnalysed(BasicBlock* block, std::vector<BasicBlock *>& visited){
+    Loop* loop = block->GetLoop();
+    if(!loop){
+        return false;
+    }
+
+    if(loop->GetBackEdges()[0] == block && contains(visited, loop->GetBackEdges()[1])){
+        return true;
+    } 
+    
+    if(loop->GetBackEdges()[1] == block  && contains(visited, loop->GetBackEdges()[0])){
+        return true;
+    }
+    
+    return false;
+}
+
 void JudgeLoopType(BasicBlock* header, std::map<Loop *, uint32_t>& loop2type, 
     std::map<Loop *, BasicBlock*> &loop2exit, 
     std::map<BasicBlock*, Loop *> &backedge2dowhileloop){
