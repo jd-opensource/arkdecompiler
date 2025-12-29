@@ -244,6 +244,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 );
                 auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
                 enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+
+                std::cout << "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"  << " #STGLOBALVAR: " << inst->GetBasicBlock()->GetId() << std::endl;;
             }
             break;
            

@@ -439,6 +439,8 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             
             test_expression =  enc->InverseTestExpression(enc, inst_base, ret, src_expression, false);
 
+            std::cout << "true_statements size: " << true_statements->AsBlockStatement()->Statements().size() << std::endl;
+            //HandleError("hault");
             auto dowhilebody = enc->CopyAndCreateNewBlockStatement(true_statements);
             if(block->GetTrueSuccessor() == loop->GetHeader()){
                 std::cout << "do while case 1" << std::endl;
@@ -455,15 +457,18 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                         test_expression
                         );
             }
+            //true_statements->AsBlockStatement()->statements_.clear();  // DO-WHILE header
+            //auto curblockstatement = enc->GetBlockStatementById(block);
+            
 
-            true_statements->AsBlockStatement()->statements_.clear();
-            auto curblockstatement =  enc->GetBlockStatementById(block);
-            enc->LocateAndRmoveStatement(enc->visited, dowhilebody, curblockstatement);
-                        
-            enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), curblockstatement);
+            //enc->LocateAndRmoveStatement(enc->visited, dowhilebody, curblockstatement); // true-statement included in while-exit(empty)
 
-            enc->AddInstAst2BlockStatemntByBlock(block, dowhilestatement);
-            enc->AddInstAst2BlockStatemntByBlock(block, false_statements);
+            enc->LocateAndRmoveStatement(enc->visited, enc->GetBlockStatementById(loop->GetPreHeader()), true_statements);       
+            enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), dowhilestatement);
+            enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), false_statements);
+
+            //enc->AddInstAst2BlockStatemntByBlock(block, dowhilestatement);
+            //enc->AddInstAst2BlockStatemntByBlock(block, false_statements);
 
             std::cout << "[-] do-while =====" << std::endl;
         }else if(block->IsLoopValid() && block->IsLoopHeader() && enc->loop2type[block->GetLoop()] == 0 ){
