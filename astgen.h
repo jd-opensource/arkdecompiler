@@ -186,10 +186,12 @@ public:
         ArenaVector<panda::es2panda::ir::Statement *> statements(this->parser_program_->Allocator()->Adapter());
         auto new_block_statement = AllocNode<es2panda::ir::BlockStatement>(this, nullptr, std::move(statements));
 
+        int insertpos = statements.size();
         for(auto rawstatement : rawblockstatement->AsBlockStatement()->Statements()){
-            const auto &statements = new_block_statement->Statements();
-            new_block_statement->AddStatementAtPos(statements.size() , rawstatement);
+            new_block_statement->AddStatementAtPos(insertpos , rawstatement);
+            insertpos++;
         }
+        std::cout <<  "#CopyAndCreateNewBlockStatement: " << new_block_statement->Statements().size() << std::endl;;
 
         return new_block_statement;
     }
