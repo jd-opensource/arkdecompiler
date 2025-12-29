@@ -459,14 +459,20 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             }
             true_statements->AsBlockStatement()->statements_.clear(); 
 
-            if( loop->GetBackEdges().size() == 2 && AnotherBackEdgeAnalysed(block, enc->visited) ){
+
+            if(loop->GetBackEdges().size() == 1){
+                enc->AddInstAst2BlockStatemntByBlock(block, dowhilestatement);
+                enc->AddInstAst2BlockStatemntByBlock(block, false_statements); 
+                enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), enc->GetBlockStatementById(block));     
+            }else{
+                //if( loop->GetBackEdges().size() == 2 && AnotherBackEdgeAnalysed(block, enc->visited) ){
                 enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), dowhilestatement);
                 enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), false_statements);
                
-            }else{
-                enc->AddInstAst2BlockStatemntByBlock(block, dowhilestatement);
-                enc->AddInstAst2BlockStatemntByBlock(block, false_statements); 
-                enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), enc->GetBlockStatementById(block));          
+                // std::cout << loop->GetBackEdges().size() << std::endl;
+                // auto back_edges = loop->GetBackEdges();
+                // LogBackEdgeId(back_edges);
+                // HandleError("#VisitIfImm: not handle this case in dowhile");
             }
 
             std::cout << "[-] do-while =====" << std::endl;
