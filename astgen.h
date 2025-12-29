@@ -194,6 +194,24 @@ public:
         return new_block_statement;
     }
 
+    void LocateAndRmoveStatement(const std::vector<BasicBlock*>& visited, panda::es2panda::ir::Statement *blockstatement, panda::es2panda::ir::Statement *statement){
+        std::cout << "#LocateAndRmoveStatement search:  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+        auto& statements = blockstatement->AsBlockStatement()->statements_;
+        std::cout << "@@@@@@ pre blocksize: " <<  statements.size() << std::endl;
+    
+        auto it = statements.begin();
+        while (it != statements.end()) {
+            if (*it == statement) {
+                it = statements.erase(it);
+                this->inserted_statements.erase(statement);;
+            } else {
+                ++it;
+            }
+        }
+        
+    }
+
+
     void LocateAndReplaceAST(const std::vector<BasicBlock*>& visited, compiler::BasicBlock* block, panda::es2panda::ir::Statement *oldstatement, panda::es2panda::ir::Statement *newstatement){
         if (visited.empty()){
             HandleError("#LocateAndReplaceAST: locate block failed1");

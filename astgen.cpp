@@ -455,14 +455,13 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                         test_expression
                         );
             }
-            
-            auto curblockstatement =  enc->GetBlockStatementById(block);
-            if(!contains(enc->inserted_statements, curblockstatement)){
-                enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), curblockstatement);
-                enc->inserted_statements.insert(curblockstatement);
-            }
 
             true_statements->AsBlockStatement()->statements_.clear();
+            auto curblockstatement =  enc->GetBlockStatementById(block);
+            enc->LocateAndRmoveStatement(enc->visited, dowhilebody, curblockstatement);
+                        
+            enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), curblockstatement);
+
             enc->AddInstAst2BlockStatemntByBlock(block, dowhilestatement);
             enc->AddInstAst2BlockStatemntByBlock(block, false_statements);
 
@@ -510,7 +509,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             if(true_statements != nullptr){
                 enc->inserted_statements.insert(true_statements);
             }
-            
+
             enc->AddInstAst2BlockStatemntByInst(inst, whilestatement);
             enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), enc->GetBlockStatementById(block));
             enc->AddInstAst2BlockStatemntByInst(inst, false_statements);
