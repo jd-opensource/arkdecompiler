@@ -17,5 +17,6 @@ BasicBlock* SearchPreHeader(BasicBlock* header);
 
 bool LoopContainBlock(Loop* loop, BasicBlock *bb);
 
+bool AnotherBackEdgeAnalysed(BasicBlock* block, std::vector<BasicBlock *>& visited);
 }
 #endif

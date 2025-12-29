@@ -457,18 +457,17 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                         test_expression
                         );
             }
-            //true_statements->AsBlockStatement()->statements_.clear();  // DO-WHILE header
-            //auto curblockstatement = enc->GetBlockStatementById(block);
-            
+            true_statements->AsBlockStatement()->statements_.clear(); 
 
-            //enc->LocateAndRmoveStatement(enc->visited, dowhilebody, curblockstatement); // true-statement included in while-exit(empty)
-
-            enc->LocateAndRmoveStatement(enc->visited, enc->GetBlockStatementById(loop->GetPreHeader()), true_statements);       
-            enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), dowhilestatement);
-            enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), false_statements);
-
-            //enc->AddInstAst2BlockStatemntByBlock(block, dowhilestatement);
-            //enc->AddInstAst2BlockStatemntByBlock(block, false_statements);
+            if( loop->GetBackEdges().size() == 2 && AnotherBackEdgeAnalysed(block, enc->visited) ){
+                enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), dowhilestatement);
+                enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), false_statements);
+               
+            }else{
+                enc->AddInstAst2BlockStatemntByBlock(block, dowhilestatement);
+                enc->AddInstAst2BlockStatemntByBlock(block, false_statements); 
+                enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), enc->GetBlockStatementById(block));          
+            }
 
             std::cout << "[-] do-while =====" << std::endl;
         }else if(block->IsLoopValid() && block->IsLoopHeader() && enc->loop2type[block->GetLoop()] == 0 ){
