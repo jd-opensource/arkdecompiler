@@ -23,14 +23,17 @@ bool AnotherBackEdgeAnalysed(BasicBlock* block, std::vector<BasicBlock *>& visit
         return false;
     }
 
-    if(loop->GetBackEdges()[0] == block && contains(visited, loop->GetBackEdges()[1])){
-        return true;
-    } 
-    
-    if(loop->GetBackEdges()[1] == block  && contains(visited, loop->GetBackEdges()[0])){
-        return true;
+    for(auto backedge : loop->GetBackEdges()){
+        if(block != backedge && contains(visited, backedge)){
+            return true;
+        }
     }
     
+    // for(auto backedge : loop->GetBackEdges()){
+    //     if(contains(visited, backedge)){
+    //         return true;
+    //     }
+    // }
     return false;
 }
 
