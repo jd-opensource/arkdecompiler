@@ -460,8 +460,8 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             true_statements->AsBlockStatement()->statements_.clear(); 
 
             if( loop->GetBackEdges().size() >= 2 && AnotherBackEdgeAnalysed(block, enc->visited) ){
-                enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), dowhilestatement);
-                enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), false_statements);
+                enc->AddInstAst2BlockStatemntByBlock(inst->GetBasicBlock()->GetTrueSuccessor(), dowhilestatement);
+                enc->AddInstAst2BlockStatemntByBlock(inst->GetBasicBlock()->GetTrueSuccessor(), false_statements);
             }else{
                 enc->AddInstAst2BlockStatemntByBlock(block, dowhilestatement);
                 enc->AddInstAst2BlockStatemntByBlock(block, false_statements); 
