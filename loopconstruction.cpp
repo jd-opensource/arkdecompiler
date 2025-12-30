@@ -38,13 +38,34 @@ bool AnotherBackEdgeAnalysed(BasicBlock* block, std::vector<BasicBlock *>& visit
 }
 
 bool AnotherSuccOfEdgeIsExit(BasicBlock* header, BasicBlock* backedge){
+    if(backedge->GetSuccsBlocks().size() <= 1){
+        return false;
+    }
+    if(!backedge->IsIfBlock()){
+        return false;
+    }
+
     auto loop = header->GetLoop();
     for(auto edge : backedge->GetSuccsBlocks()){
-        if(edge != header && !LoopContainBlock(loop, edge)){
-            return true;
+        if(edge == backedge){
+            continue;
+        }
+        
+        if(edge->GetLoop() != loop  &&  edge->GetLoop()->IsInside(loop) ){
+            /* this case      
+                var m = 0;
+                var n = 0;
+                while(m < 5){
+                    m++;
+                    while(n < 6){
+                        n++;
+                    }
+                } 
+            */
+            return false;
         }
     }
-    return false;
+    return true;
 }
 
 void JudgeLoopType(BasicBlock* header, std::map<Loop *, uint32_t>& loop2type, 
@@ -60,10 +81,7 @@ void JudgeLoopType(BasicBlock* header, std::map<Loop *, uint32_t>& loop2type,
     int count = 0;
     for (auto back_edge : back_edges) {
         std::cout << "[*] " << count++ << " : " << back_edge->GetId() <<  std::endl;
-        auto succs_size = back_edge->GetSuccsBlocks().size();
-
-    
-        if(succs_size > 1 && back_edge->IsIfBlock() &&  AnotherSuccOfEdgeIsExit(header, back_edge) ){
+        if(AnotherSuccOfEdgeIsExit(header, back_edge) ){
             loop2type[header->GetLoop()] = 1;  // do-whle
             std::cout << "#JudgeLoopType : dowhile" << std::endl;
             backedge2dowhileloop[back_edge] = header->GetLoop();
