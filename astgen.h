@@ -468,25 +468,40 @@ public:
         }
     }
 
+    panda::es2panda::ir::Expression *GetExpressionByLiteral(panda::pandasm::LiteralArray::Literal literal){
+        /*
+            std::variant<bool, uint8_t, uint16_t, uint32_t, uint64_t, float, double, std::string> value_;
+
+        */
+        panda::es2panda::ir::Expression *tmp = nullptr;
+        if(literal.IsBoolValue()){
+            tmp = AllocNode<panda::es2panda::ir::BooleanLiteral>(this, std::get<bool>(literal.value_));
+        }else if(literal.IsByteValue()){
+            tmp = AllocNode<panda::es2panda::ir::NumberLiteral>(this, std::get<uint8_t>(literal.value_));
+        }else if(literal.IsShortValue() || literal.tag_ == panda::panda_file::LiteralTag::METHODAFFILIATE){
+            tmp = AllocNode<panda::es2panda::ir::NumberLiteral>(this, std::get<uint16_t>(literal.value_));
+        }else if(literal.IsIntegerValue()){
+            tmp = AllocNode<panda::es2panda::ir::NumberLiteral>(this, std::get<uint32_t>(literal.value_));
+        }else if(literal.IsLongValue()){
+            tmp = AllocNode<panda::es2panda::ir::NumberLiteral>(this, std::get<uint64_t>(literal.value_));
+        }else if(literal.IsFloatValue()){
+            tmp = AllocNode<panda::es2panda::ir::NumberLiteral>(this, std::get<float>(literal.value_));
+        }else if(literal.IsDoubleValue()){
+            tmp = AllocNode<panda::es2panda::ir::NumberLiteral>(this, std::get<double>(literal.value_));
+        }else if(literal.IsStringValue() || literal.tag_ == panda::panda_file::LiteralTag::LITERALARRAY ){
+            panda::es2panda::util::StringView literal_strview(* new std::string(std::get<std::string>(literal.value_)));
+            tmp = AllocNode<panda::es2panda::ir::StringLiteral>(this, literal_strview);
+        }else{
+            // METHODAFFILIATE = 0x0a  
+            // ASYNCMETHOD = 0x18
+            // LITERALARRAY = 0x19
+            std::cout << "value tag: " << static_cast<int>(literal.tag_) << std::endl;
+            HandleError("unsupport literal type error");
+        }
+        return tmp;
+    }
+
     void AddInstAst2BlockStatemntByBlock(BasicBlock* block, es2panda::ir::Statement *statement, uint32_t offset = 0){
-        // if(block->GetId() == 15 || block->GetId() == 71 || block->GetId() == 36 || block->GetId() == 73 ||  block->GetId() == 63 ||  block->GetId() == 55 
-        //  ||  block->GetId() == 20 ||  block->GetId() == 68 ||  block->GetId() == 75||  block->GetId() ==62 ||  block->GetId() == 70 
-        //  ||  block->GetId() == 9 ||  block->GetId() ==11 ||  block->GetId() ==12 ||  block->GetId() ==10 ||  block->GetId() ==34 ||  block->GetId() ==4
-        // ||  block->GetId() == 8 ||  block->GetId() ==6  ||  block->GetId() == 5  ||  block->GetId() ==7  ||  block->GetId() ==52 ||  block->GetId() ==51
-        // ||  block->GetId() ==3 ||  block->GetId() ==2
-        // ||  block->GetId() == 42 ||  block->GetId() ==65 ||  block->GetId() ==22 ||  block->GetId() ==48 ||  block->GetId() ==72 ||  block->GetId() ==23
-        // ||  block->GetId() ==25 ||  block->GetId() ==39 ||  block->GetId() ==17 ||  block->GetId() ==38 ||  block->GetId() ==19||  block->GetId() ==21
-        // ||  block->GetId() ==57 ||  block->GetId() ==26 ||  block->GetId() ==24 ||  block->GetId() ==40 ||  block->GetId() ==74 ||  block->GetId() ==27
-        // ||  block->GetId() ==16 ||  block->GetId() ==37 ||  block->GetId() ==66 ||  block->GetId() ==30 ||  block->GetId() ==43 ||  block->GetId() ==59
-        // ||  block->GetId() ==31 ||  block->GetId() ==29 ||  block->GetId() ==44 ||  block->GetId() ==76 ||  block->GetId() ==32
-        // ||  block->GetId() ==77 ||  block->GetId() ==61 ||  block->GetId() ==69 ||  block->GetId() ==46 ||  block->GetId() ==49 ||  block->GetId() ==32
-        // ||  block->GetId() ==67 ||  block->GetId() ==0 
-        
-
-        //  ){
-        //     return;
-        // }
-
         if(this->inserted_statements.find(statement ) == this->inserted_statements.end() ){
             this->inserted_statements.insert(statement);
         }else{

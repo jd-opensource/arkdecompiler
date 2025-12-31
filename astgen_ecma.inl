@@ -245,7 +245,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
                 enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
 
-                std::cout << "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"  << " #STGLOBALVAR: " << inst->GetBasicBlock()->GetId() << std::endl;;
             }
             break;
            
@@ -293,36 +292,11 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 HandleError("get literalarray error");
             }
 
-            /*
-                std::variant<bool, uint8_t, uint16_t, uint32_t, uint64_t, float, double, std::string> value_;
-
-            */
             for (const auto& literal : literalarray->literals_) {
-                if(literal.IsBoolValue()){
-                    elements.push_back(AllocNode<es2panda::ir::BooleanLiteral>(enc, *new bool(std::get<bool>(literal.value_))));
-                }else if(literal.IsByteValue()){
-                    elements.push_back(AllocNode<es2panda::ir::NumberLiteral>(enc, *new uint8_t(std::get<uint8_t>(literal.value_))));
-                }else if(literal.IsShortValue()){
-                    elements.push_back(AllocNode<es2panda::ir::NumberLiteral>(enc, *new uint16_t(std::get<uint16_t>(literal.value_))));
-                }else if(literal.IsIntegerValue()){
-                    elements.push_back(AllocNode<es2panda::ir::NumberLiteral>(enc, *new uint32_t(std::get<uint32_t>(literal.value_))));
-                }else if(literal.IsLongValue()){
-                    elements.push_back(AllocNode<es2panda::ir::NumberLiteral>(enc, *new uint64_t(std::get<uint64_t>(literal.value_))));
-                }else if(literal.IsFloatValue()){
-                    elements.push_back(AllocNode<es2panda::ir::NumberLiteral>(enc, *new float(std::get<float>(literal.value_))));
-                }else if(literal.IsDoubleValue()){
-                    elements.push_back(AllocNode<es2panda::ir::NumberLiteral>(enc, *new double(std::get<double>(literal.value_))));
-                }else if(literal.IsStringValue()){
-                    es2panda::util::StringView literal_strview(*new std::string( std::get<std::string>(literal.value_)));
-
-                    elements.push_back(AllocNode<es2panda::ir::StringLiteral>(enc, literal_strview));
-                }else{
-                    HandleError("unsupport literal type error");
+                es2panda::ir::Expression *retvalue = enc->GetExpressionByLiteral(literal);
+                if(retvalue != nullptr){
+                    elements.push_back(retvalue);
                 }
-
-                // std::visit([](const auto& value) {
-                //     std::cout << "The value is: " << value << std::endl;
-                // }, literal.value_);
             }
 
             auto arrayexpression = AllocNode<es2panda::ir::ArrayExpression>(enc, 
@@ -348,45 +322,19 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             es2panda::ir::Expression* key;
             es2panda::ir::Expression* value;
             for (const auto& literal : literalarray->literals_) {
-                es2panda::ir::Expression *tmp;
-                if(literal.IsBoolValue()){
-                    tmp = AllocNode<es2panda::ir::BooleanLiteral>(enc, std::get<bool>(literal.value_));
-                }else if(literal.IsByteValue()){
-                    tmp = AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<uint8_t>(literal.value_));
-                }else if(literal.IsShortValue() || literal.tag_ == panda_file::LiteralTag::METHODAFFILIATE){
-                    tmp = AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<uint16_t>(literal.value_));
-                }else if(literal.IsIntegerValue()){
-                    tmp = AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<uint32_t>(literal.value_));
-                }else if(literal.IsLongValue()){
-                    tmp = AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<uint64_t>(literal.value_));
-                }else if(literal.IsFloatValue()){
-                    tmp = AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<float>(literal.value_));
-                }else if(literal.IsDoubleValue()){
-                    tmp = AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<double>(literal.value_));
-                }else if(literal.IsStringValue() || literal.tag_ == panda_file::LiteralTag::LITERALARRAY ){
-                    es2panda::util::StringView literal_strview(* new std::string(std::get<std::string>(literal.value_)));
-                    tmp = AllocNode<es2panda::ir::StringLiteral>(enc, literal_strview);
-                }else{
-                    // METHODAFFILIATE = 0x0a  
-                    // ASYNCMETHOD = 0x18
-                    // LITERALARRAY = 0x19
-                    std::cout << "value tag: " << static_cast<int>(literal.tag_) << std::endl;
-                    HandleError("unsupport literal type error");
+                es2panda::ir::Expression *retvalue = enc->GetExpressionByLiteral(literal);
+                if(retvalue == nullptr){
+                    continue;
                 }
 
                 if(count++ % 2==0){
-                    key = tmp;    
+                    key = retvalue;    
                 }else{
-                    value = tmp;
+                    value = retvalue;
                     properties.push_back(  AllocNode<es2panda::ir::Property>(enc, key, value) );
 
                 }
-
-                // std::visit([](const auto& value) {
-                //     std::cout << "The value is: " << value << std::endl;
-                // }, literal.value_);
             }
-
 
             auto objectexpression = AllocNode<es2panda::ir::ObjectExpression>(enc, 
                                                                                 es2panda::ir::AstNodeType::OBJECT_EXPRESSION,

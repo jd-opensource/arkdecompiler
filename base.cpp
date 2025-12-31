@@ -99,3 +99,4 @@ uint32_t ParseHexFromKey(const std::string& key) {
 
     return hexNumber;
 }
+
