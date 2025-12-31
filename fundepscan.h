@@ -49,7 +49,7 @@ public:
             if(this->class2memberfuns_->find(constructor_offset) == this->class2memberfuns_->end()){
                 continue;
             }
-
+            
             auto member_funcs = (*this->class2memberfuns_)[constructor_offset];
             this->memberfuncs_->insert(constructor_offset);
 
@@ -59,12 +59,17 @@ public:
             }
 
             if(function_initializer && last_member){
+                this->depedges_->push_back(std::make_pair(this->methodoffset_, last_member));
+
                 this->depedges_->push_back(std::make_pair(last_member, function_initializer));
             }
 
             for (const auto& memeber_offset : member_funcs) {
                 this->memberfuncs_->insert(memeber_offset);
                 last_member = memeber_offset;
+
+                this->depedges_->push_back(std::make_pair(this->methodoffset_, memeber_offset));
+
                 if(function_initializer && function_initializer != memeber_offset){
                     this->depedges_->push_back(std::make_pair(function_initializer, memeber_offset));
                 }
