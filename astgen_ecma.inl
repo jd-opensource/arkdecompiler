@@ -371,13 +371,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     // ASYNCMETHOD = 0x18
                     // LITERALARRAY = 0x19
                     std::cout << "value tag: " << static_cast<int>(literal.tag_) << std::endl;
-                    if(literal.tag_ == panda_file::LiteralTag::METHODAFFILIATE){
-                        std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << std::endl;
-                        auto xx = std::get<uint16_t>(literal.value_);
-                        std::cout << "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" << std::endl;
-                        std::cout << "haha: " << xx << std::endl;
-                        std::cout << "sb" << std::endl;
-                    }
                     HandleError("unsupport literal type error");
                 }
 
