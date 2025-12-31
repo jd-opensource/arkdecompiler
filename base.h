@@ -102,4 +102,5 @@ std::optional<std::vector<std::string>> GetLiteralArrayByOffset(panda::pandasm::
 std::optional<std::string> FindKeyByValue(const std::map<std::string, uint32_t>& myMap, const uint32_t& value);
 
 uint32_t ParseHexFromKey(const std::string& key);
+
 #endif
