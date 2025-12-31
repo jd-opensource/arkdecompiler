@@ -353,7 +353,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     tmp = AllocNode<es2panda::ir::BooleanLiteral>(enc, std::get<bool>(literal.value_));
                 }else if(literal.IsByteValue()){
                     tmp = AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<uint8_t>(literal.value_));
-                }else if(literal.IsShortValue()){
+                }else if(literal.IsShortValue() || literal.tag_ == panda_file::LiteralTag::METHODAFFILIATE){
                     tmp = AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<uint16_t>(literal.value_));
                 }else if(literal.IsIntegerValue()){
                     tmp = AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<uint32_t>(literal.value_));
@@ -363,10 +363,21 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     tmp = AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<float>(literal.value_));
                 }else if(literal.IsDoubleValue()){
                     tmp = AllocNode<es2panda::ir::NumberLiteral>(enc, std::get<double>(literal.value_));
-                }else if(literal.IsStringValue()){
+                }else if(literal.IsStringValue() || literal.tag_ == panda_file::LiteralTag::LITERALARRAY ){
                     es2panda::util::StringView literal_strview(* new std::string(std::get<std::string>(literal.value_)));
                     tmp = AllocNode<es2panda::ir::StringLiteral>(enc, literal_strview);
                 }else{
+                    // METHODAFFILIATE = 0x0a  
+                    // ASYNCMETHOD = 0x18
+                    // LITERALARRAY = 0x19
+                    std::cout << "value tag: " << static_cast<int>(literal.tag_) << std::endl;
+                    if(literal.tag_ == panda_file::LiteralTag::METHODAFFILIATE){
+                        std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << std::endl;
+                        auto xx = std::get<uint16_t>(literal.value_);
+                        std::cout << "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" << std::endl;
+                        std::cout << "haha: " << xx << std::endl;
+                        std::cout << "sb" << std::endl;
+                    }
                     HandleError("unsupport literal type error");
                 }
 

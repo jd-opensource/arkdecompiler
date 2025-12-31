@@ -457,6 +457,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                         test_expression
                         );
             }
+            
             true_statements->AsBlockStatement()->statements_.clear(); 
             enc->AddInstAst2BlockStatemntByBlock(inst->GetBasicBlock()->GetTrueSuccessor(), dowhilestatement);
             enc->AddInstAst2BlockStatemntByBlock(inst->GetBasicBlock()->GetTrueSuccessor(), false_statements);
