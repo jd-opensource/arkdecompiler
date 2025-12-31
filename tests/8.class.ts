@@ -268,3 +268,13 @@
 // class A5 {
 //     [a5]() {}
 // }
+
+// corner case 1
+// export class C {
+//     m(): this is D {
+//         return this instanceof D;
+//     }
+// }
+
+// class D extends C {
+// }
