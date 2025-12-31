@@ -1030,7 +1030,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 enc->SetExpressionByRegister(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), arrayexpression);
             }else{
                 std::cout << "###: " << std::to_string(static_cast<int>(raw_obj->Type())) << std::endl;
-                HandleError("#STARRAYSPREAD: cann't deal expression except ObjectExpression");
+                HandleError("#STARRAYSPREAD1: cann't deal expression except ObjectExpression");
             }
 
 
@@ -1917,7 +1917,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             }else{
                 std::cout << "###: " << std::to_string(static_cast<int>(raw_obj->Type())) << std::endl;
-                HandleError("#STARRAYSPREAD: cann't deal expression except ObjectExpression");
+                HandleError("#STARRAYSPREAD2: cann't deal expression except ObjectExpression");
 
             }
             break;

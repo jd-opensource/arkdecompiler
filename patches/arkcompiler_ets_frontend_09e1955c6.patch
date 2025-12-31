@@ -1,0 +1,36 @@
+diff --git a/es2panda/ir/statements/blockStatement.h b/es2panda/ir/statements/blockStatement.h
+index 8b4a9c21e..151cc088d 100644
+--- a/es2panda/ir/statements/blockStatement.h
++++ b/es2panda/ir/statements/blockStatement.h
+@@ -58,7 +58,6 @@ public:
+     checker::Type *Check(checker::Checker *checker) const override;
+     void UpdateSelf(const NodeUpdater &cb, binder::Binder *binder) override;
+ 
+-protected:
+     binder::Scope *scope_;
+     ArenaVector<Statement *> statements_;
+ };
+diff --git a/es2panda/ir/statements/doWhileStatement.h b/es2panda/ir/statements/doWhileStatement.h
+index 73f64a78d..6b07e4fae 100644
+--- a/es2panda/ir/statements/doWhileStatement.h
++++ b/es2panda/ir/statements/doWhileStatement.h
+@@ -68,7 +68,6 @@ public:
+     checker::Type *Check(checker::Checker *checker) const override;
+     void UpdateSelf(const NodeUpdater &cb, binder::Binder *binder) override;
+ 
+-protected:
+     Statement *body_;
+     Expression *test_;
+ };
+diff --git a/es2panda/ir/statements/whileStatement.h b/es2panda/ir/statements/whileStatement.h
+index e77f97a63..53d6bcbf0 100644
+--- a/es2panda/ir/statements/whileStatement.h
++++ b/es2panda/ir/statements/whileStatement.h
+@@ -68,7 +68,6 @@ public:
+     checker::Type *Check(checker::Checker *checker) const override;
+     void UpdateSelf(const NodeUpdater &cb, binder::Binder *binder) override;
+ 
+-protected:
+     Expression *test_;
+     Statement *body_;
+ };
