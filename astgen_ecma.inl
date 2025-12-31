@@ -2706,8 +2706,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         }
        
         default:
-            std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
             enc->success_ = false;
-            LOG(ERROR,COMPILER) << "Unsupported ecma opcode";
+            HandleError("Unsupported ecma opcode");
     }
 }
