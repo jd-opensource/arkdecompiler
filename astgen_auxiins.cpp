@@ -98,9 +98,9 @@ void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
     }
 
     
-    if(inst->GetBasicBlock()->GetPredsBlocks().size() > 2){
-        HandleError("analysis try-catch error for more than one predecessor");
-    }
+    // if(inst->GetBasicBlock()->GetPredsBlocks().size() > 2){
+    //     HandleError("analysis try-catch error for more than one predecessor");
+    // }
     
     // create null finally case
     ArenaVector<panda::es2panda::ir::Statement *> finally_statements(enc->parser_program_->Allocator()->Adapter());
