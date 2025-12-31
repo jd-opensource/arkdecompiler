@@ -24,10 +24,8 @@ git clone https://github.com/jd-opensource/arkdecompiler.git
 ```
 
 
-## Apply patch in harmonyos/arkcompiler/runtime_core
-```bash
-git apply --check *.patch
-```
+## Apply patches to arkcompiler and  third_party
+Apply patches to harmonyos/arkcompiler/runtime_core, harmonyos/arkcompiler/ets_frontend, and harmonyos/third_party/protobuf according to the patches.
 
 
 ## Build & Run
