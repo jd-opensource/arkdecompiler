@@ -23,8 +23,15 @@ bool AnotherBackEdgeAnalysed(BasicBlock* block, std::vector<BasicBlock *>& visit
         return false;
     }
 
+    if(loop->GetBackEdges().size() < 2 ){
+        return false;
+    }
+
     for(auto backedge : loop->GetBackEdges()){
         if(block != backedge && contains(visited, backedge)){
+            std::cout << "curblock: " << block->GetId() << std::endl;
+            std::cout << "another backedge: " << backedge->GetId() << std::endl;
+            //HandleError("hault");
             return true;
         }
     }

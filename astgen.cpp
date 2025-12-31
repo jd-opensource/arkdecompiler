@@ -115,19 +115,19 @@ bool AstGen::RunImpl()
             offset = 1;
         }
         // check if add redundant block
-        if(this->whilebody2redundant.find(bb) != this->whilebody2redundant.end()){
-            this->inserted_statements.erase(this->whilebody2redundant[bb]);
+        // if(this->whilebody2redundant.find(bb) != this->whilebody2redundant.end()){
+        //     this->inserted_statements.erase(this->whilebody2redundant[bb]);
 
-            this->AddInstAst2BlockStatemntByBlock(bb, this->whilebody2redundant[bb], 1);
-            this->whilebody2redundant.erase(bb);
-        }
+        //     this->AddInstAst2BlockStatemntByBlock(bb, this->whilebody2redundant[bb], 1);
+        //     this->whilebody2redundant.erase(bb);
+        // }
     
-        if(this->phiref2pendingredundant.find(bb) != this->phiref2pendingredundant.end()){
-            this->inserted_statements.erase(this->phiref2pendingredundant[bb]);
+        // if(this->phiref2pendingredundant.find(bb) != this->phiref2pendingredundant.end()){
+        //     this->inserted_statements.erase(this->phiref2pendingredundant[bb]);
 
-            this->AddInstAst2BlockStatemntByBlock(bb, this->phiref2pendingredundant[bb], 1);
-            this->phiref2pendingredundant.erase(bb);
-        }
+        //     this->AddInstAst2BlockStatemntByBlock(bb, this->phiref2pendingredundant[bb], 1);
+        //     this->phiref2pendingredundant.erase(bb);
+        // }
         
     }
 
@@ -458,25 +458,21 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                         );
             }
             true_statements->AsBlockStatement()->statements_.clear(); 
+            enc->AddInstAst2BlockStatemntByBlock(inst->GetBasicBlock()->GetTrueSuccessor(), dowhilestatement);
+            enc->AddInstAst2BlockStatemntByBlock(inst->GetBasicBlock()->GetTrueSuccessor(), false_statements);
+            enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), enc->GetBlockStatementById(block)); 
 
-            if( loop->GetBackEdges().size() >= 2 && AnotherBackEdgeAnalysed(block, enc->visited) ){
-                enc->AddInstAst2BlockStatemntByBlock(inst->GetBasicBlock()->GetTrueSuccessor(), dowhilestatement);
-                enc->AddInstAst2BlockStatemntByBlock(inst->GetBasicBlock()->GetTrueSuccessor(), false_statements);
-            }else{
-                enc->AddInstAst2BlockStatemntByBlock(block, dowhilestatement);
-                enc->AddInstAst2BlockStatemntByBlock(block, false_statements); 
-                enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), enc->GetBlockStatementById(block));           
-            }
-            // if(loop->GetBackEdges().size() == 1){
+            // if(AnotherBackEdgeAnalysed(block, enc->visited) || block->GetId() ==13 ){
+            //     enc->AddInstAst2BlockStatemntByBlock(inst->GetBasicBlock()->GetTrueSuccessor(), dowhilestatement);
+            //     enc->AddInstAst2BlockStatemntByBlock(inst->GetBasicBlock()->GetTrueSuccessor(), false_statements);
+            // }else{
+            //     //if(block->GetId() !=13 ){
+            //     //    enc->AddInstAst2BlockStatemntByBlock(block, dowhilestatement);
+            //     //}
             //     enc->AddInstAst2BlockStatemntByBlock(block, dowhilestatement);
             //     enc->AddInstAst2BlockStatemntByBlock(block, false_statements); 
-            //     enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), enc->GetBlockStatementById(block));     
-            // }else{
-            //     enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), dowhilestatement);
-            //     enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), false_statements);
-            //     HandleError("#VisitIfImm: not handle this case in dowhile");
+            //     enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), enc->GetBlockStatementById(block));           
             // }
-
             std::cout << "[-] do-while =====" << std::endl;
         }else if(block->IsLoopValid() && block->IsLoopHeader() && enc->loop2type[block->GetLoop()] == 0 ){
             std::cout << "[+] while ===" << std::endl;
