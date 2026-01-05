@@ -95,4 +95,13 @@
 
 // console.log(alpha); 
 // console.log(beta); 
-// console.log(gamma);
+// console.log(gamma); 
+
+
+// corner case 1
+// declare function dec<T>(target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T>;
+
+// class C {
+//     @dec ["1"]() { }
+//     @dec ["b"]() { }
+// }
