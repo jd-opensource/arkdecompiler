@@ -1028,66 +1028,87 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 false
                                                                                 );
                 enc->SetExpressionByRegister(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), arrayexpression);
+            }else if(raw_obj->IsMemberExpression()){
+                auto obj_reg_identifier = *enc->GetExpressionByRegIndex(inst, 0);
+                auto index_reg_identifier = *enc->GetExpressionByRegIndex(inst, 1);
+                auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
+                                                                                    obj_reg_identifier,
+                                                                                    index_reg_identifier, 
+                                                                                    es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                                                    true, 
+                                                                                    false
+                                                                                );
+                auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                    objattrexpression,
+                                                                                    *enc->GetExpressionByAcc(inst),
+                                                                                    es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                                );
+
+                auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
+                enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+
             }else{
-                std::cout << "###: " << std::to_string(static_cast<int>(raw_obj->Type())) << std::endl;
-                HandleError("#STARRAYSPREAD1: cann't deal expression except ObjectExpression");
+                panda::es2panda::ir::Identifier* obj_reg_identifier = enc->GetIdentifierByReg(inst->GetSrcReg(0));
+                auto expression1 = *enc->GetExpressionByRegIndex(inst, 0);
+
+                enc->SetExpressionByRegister(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), obj_reg_identifier);
+                ArenaVector<es2panda::ir::VariableDeclarator *> declarators1(enc->parser_program_->Allocator()->Adapter());
+                auto *declarator1 = AllocNode<es2panda::ir::VariableDeclarator>(enc,
+                                                                                obj_reg_identifier, 
+                                                                                expression1);
+                declarators1.push_back(declarator1);
+                auto variadeclaration1 = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
+                                                                                    es2panda::ir::VariableDeclaration::VariableDeclarationKind::VAR,
+                                                                                    std::move(declarators1),
+                                                                                    true
+                                                                                    );
+                enc->AddInstAst2BlockStatemntByInst(inst, variadeclaration1);
+                
+                
+                ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                panda::es2panda::ir::Identifier* index_reg_identifier = enc->GetIdentifierByReg(inst->GetSrcReg(1));
+                auto expression2 = *enc->GetExpressionByRegIndex(inst, 1);
+
+                enc->SetExpressionByRegister(inst->GetInput(1).GetInst(), inst->GetSrcReg(0), index_reg_identifier);
+
+                ArenaVector<es2panda::ir::VariableDeclarator *> declarators2(enc->parser_program_->Allocator()->Adapter());
+                auto *declarator2 = AllocNode<es2panda::ir::VariableDeclarator>(enc,
+                                                                                index_reg_identifier, 
+                                                                                expression2
+                                                                            );
+                declarators2.push_back(declarator2);
+                auto variadeclaration2 = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
+                                                                                    es2panda::ir::VariableDeclaration::VariableDeclarationKind::VAR,
+                                                                                    std::move(declarators2),
+                                                                                    true
+                                                                                    );
+                enc->AddInstAst2BlockStatemntByInst(inst, variadeclaration2);
+
+                ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
+                                                                                    obj_reg_identifier,
+                                                                                    index_reg_identifier, 
+                                                                                    es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                                                    true, 
+                                                                                    false
+                                                                                );
+
+                auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                    objattrexpression,
+                                                                                    *enc->GetExpressionByAcc(inst),
+                                                                                    es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                                );
+
+                auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
+                enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+
+
             }
-
-
-
-            // panda::es2panda::ir::Identifier* obj_reg_identifier = enc->GetIdentifierByReg(inst->GetSrcReg(0));
-            // auto expression1 = *enc->GetExpressionByRegIndex(inst, 0);
-
-            // enc->SetExpressionByRegister(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), obj_reg_identifier);
-            // ArenaVector<es2panda::ir::VariableDeclarator *> declarators1(enc->parser_program_->Allocator()->Adapter());
-            // auto *declarator1 = AllocNode<es2panda::ir::VariableDeclarator>(enc,
-            //                                                                 obj_reg_identifier, 
-            //                                                                 expression1);
-            // declarators1.push_back(declarator1);
-            // auto variadeclaration1 = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
-            //                                                                       es2panda::ir::VariableDeclaration::VariableDeclarationKind::VAR,
-            //                                                                       std::move(declarators1),
-            //                                                                       true
-            //                                                                     );
-            // enc->AddInstAst2BlockStatemntByInst(inst, variadeclaration1);
             
-            
-            // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            // panda::es2panda::ir::Identifier* index_reg_identifier = enc->GetIdentifierByReg(inst->GetSrcReg(1));
-            // auto expression2 = *enc->GetExpressionByRegIndex(inst, 1);
-
-            // enc->SetExpressionByRegister(inst->GetInput(1).GetInst(), inst->GetSrcReg(0), index_reg_identifier);
-
-            // ArenaVector<es2panda::ir::VariableDeclarator *> declarators2(enc->parser_program_->Allocator()->Adapter());
-            // auto *declarator2 = AllocNode<es2panda::ir::VariableDeclarator>(enc,
-            //                                                                 index_reg_identifier, 
-            //                                                                 expression2
-            //                                                             );
-            // declarators2.push_back(declarator2);
-            // auto variadeclaration2 = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
-            //                                                                       es2panda::ir::VariableDeclaration::VariableDeclarationKind::VAR,
-            //                                                                       std::move(declarators2),
-            //                                                                       true
-            //                                                                     );
-            // enc->AddInstAst2BlockStatemntByInst(inst, variadeclaration2);
-
-            // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            // auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
-            //                                                                     obj_reg_identifier,
-            //                                                                     index_reg_identifier, 
-            //                                                                     es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
-            //                                                                     true, 
-            //                                                                     false
-            //                                                                 );
-
-            // auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-            //                                                                       objattrexpression,
-            //                                                                       *enc->GetExpressionByAcc(inst),
-            //                                                                        es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-            //                                                                 );
-
-            // auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
-            // enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+            // else{
+            //     std::cout << "###: " << std::to_string(static_cast<int>(raw_obj->Type())) << std::endl;
+            //     HandleError("#STARRAYSPREAD1: cann't deal expression except ObjectExpression");
+            // }
 
             break;
         }
