@@ -1270,13 +1270,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 lexicalenvstack = enc->bb2sendablelexicalenvstack_[inst->GetBasicBlock()];
             }
             
-            std::cout << "size: " << lexicalenvstack->Size() << std::endl; 
-            std::cout << "env size: " << lexicalenvstack->GetLexicalEnv(0).Size() << std::endl;
+            std::cout << "[+] lexical stack size: " << lexicalenvstack->Size() << " , captity_: " << lexicalenvstack->GetLexicalEnv(0).capacity_  << " , top lexical size: " << lexicalenvstack->GetLexicalEnv(0).Size()   << std::endl;
 
             auto raw_expression  = *enc->GetExpressionByAcc(inst);
             std::string closure_name;
             
             if(enc->not_add_assgin_for_stlexvar.find(raw_expression) == enc->not_add_assgin_for_stlexvar.end()){
+                std::cout << "+++ @ not_add_assgin_for_stlexvar" << std::endl;
                 closure_name =  "closure_" + std::to_string(enc->methodoffset_) + "_" + std::to_string(enc->closure_count);
                 enc->closure_count++;
 
@@ -1284,11 +1284,12 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                       enc->GetIdentifierByName(closure_name),
                                                                                       raw_expression,
                                                                                       es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-                                                                            ); 
+                                                                            );
                 auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
                 enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
                 lexicalenvstack->Set(tier, index, new std::string(closure_name));
             }else{
+                std::cout << "--- @ not_add_assgin_for_stlexvar" << std::endl;
                 auto idname = enc->GetNameFromExpression(raw_expression);
                 if(idname){
                     closure_name = *idname;
@@ -1299,8 +1300,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
 
 
-            std::cout << "size: " << lexicalenvstack->Size() << std::endl;
-            std::cout << "env size: " << lexicalenvstack->GetLexicalEnv(0).Size() << std::endl;
+            std::cout << "[+] lexical stack size: " << lexicalenvstack->Size() << " , captity_: " << lexicalenvstack->GetLexicalEnv(0).capacity_  << " , top lexical size: " << lexicalenvstack->GetLexicalEnv(0).Size()   << std::endl;
 
             ////////////////////////////////////////////////////////////////////////////////
             /// support forward reference stack
