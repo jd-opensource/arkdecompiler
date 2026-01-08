@@ -446,6 +446,10 @@ public:
         std::cout << std::endl;
     }
 
+    void LogCurLexicalIndexes(Inst* inst){
+        this->bb2lexicalenvstack_[inst->GetBasicBlock()]->GetLexicalEnv(0).LogIndexes();
+    }
+
     void LogSpecialBlockId(){
         std::cout << "specialblockid: ";
         for (auto it = this->specialblockid.begin(); it != this->specialblockid.end(); ++it) {
