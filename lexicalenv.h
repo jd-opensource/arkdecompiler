@@ -31,7 +31,7 @@ public:
     size_t Size() const;
 
     void AddIndexes(size_t index);
-    
+    void LogIndexes();
     bool IsValidIndex(size_t index) const;
 
 private:
@@ -40,7 +40,7 @@ private:
 
 
 class LexicalEnvStack {
-private:
+public:
     std::vector<LexicalEnv> stack_;
 
 public:

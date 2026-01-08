@@ -12,6 +12,14 @@ void LexicalEnv::AddIndexes(size_t index){
     indexes_.insert(index);
 }
 
+void LexicalEnv::LogIndexes() {
+    std::cout << "[*] index >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+    for (const auto& value : indexes_) {
+        std::cout << value << " ";
+    }
+    std::cout << std::endl;
+}
+
 
 bool LexicalEnv::IsFull() const {
     for (size_t i = 0; i < capacity_; ++i) {
@@ -53,17 +61,22 @@ std::string* LexicalEnv::Get(size_t index) const {
 
 void LexicalEnv::Set(size_t index, std::string* expr) {
     CheckIndex(index);
+    if(expr == nullptr){
+        HandleError("expr is nullptr");
+    }
     expressions_[index] = expr;
     AddIndexes(index); /// support callruntime.createprivateproperty
 }
 
 size_t LexicalEnv::Size() const {
+    size_t cout = 0;
     for (size_t i = 0; i < capacity_; ++i) {
         if(expressions_[i] != nullptr){
             full_size_ = i;
+            cout++;
         }
     }
-    return full_size_;
+    return cout;
 }
 
 bool LexicalEnv::IsValidIndex(size_t index) const {
@@ -223,8 +236,14 @@ void MergeMethod2LexicalMap(Inst* inst, std::map<panda::compiler::BasicBlock*, L
 
     auto lexicalenvstack = bb2lexicalenvstack[inst->GetBasicBlock()];
     for (const auto& [tier, source_indexes] : source_lexicalmap->second) {
+        // std::cout << "source_indexes: ";
+        // for(const auto&v : source_indexes){
+        //     std::cout << " , " << v;
+        // }
+        std::cout << std::endl;
         lexicalenvstack->SetIndexes(tier, source_indexes);
     }
+    
 
 }
 
@@ -260,7 +279,26 @@ uint32_t SearchStartposForCreatePrivateproperty(Inst *inst, std::map<panda::comp
     std::vector<size_t> sorted(vec.begin(), vec.end());
     std::sort(sorted.begin(), sorted.end());
 
+    std::cout << "lexicalenvstack size: " << lexicalenvstack->Size() << std::endl;
+    std::cout << "sorted size: " << sorted.size() << std::endl;
+    
+    for(const auto & i: vec){
+        std::cout << "X - #: " << i << std::endl;
+    }
+
+    std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+
+    ////////////////////////////////////////////////////////////
+    if(lexicalenvstack->Size() > 2){
+        auto aa = lexicalenvstack->stack_[lexicalenvstack->Size() - 2];
+        for(const auto & i: aa.indexes_){
+            std::cout << "Y - #: " << i << std::endl;
+        }
+    }
+    ////////////////////////////////////////////////////////////
+
     for (size_t i = 0; i < sorted.size(); ++i) {
+        std::cout << "i: " << i << " , sorted[i]: " <<  sorted[i] << std::endl;
         if (i != sorted[i]) {
             return i;
         }
