@@ -78,7 +78,7 @@
 // donald.swim();
 
 
-// # 28. LDPRIVATEPROPERTY_IMM8_IMM16_IMM16
+// # 28. LDPRIVATEPROPERTY createprivateproperty  defineprivateproperty 
 // class XXX {
 //     #yyy: number = 8;
 //     #zzz: number = 9;
