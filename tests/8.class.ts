@@ -269,7 +269,7 @@
 //     [a5]() {}
 // }
 
-// corner case 1
+// #1. corner case
 // export class C {
 //     m(): this is D {
 //         return this instanceof D;
@@ -278,3 +278,12 @@
 
 // class D extends C {
 // }
+
+// #2. corner case
+// declare var decorator: any;
+// class C1 {
+//     #x
+//     @decorator(  (x: C1) => x.#x  )
+//     y() {}
+// }
+
