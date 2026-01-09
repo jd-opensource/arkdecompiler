@@ -447,6 +447,9 @@ public:
     }
 
     void LogCurLexicalIndexes(Inst* inst){
+        if(this->bb2lexicalenvstack_[inst->GetBasicBlock()]->Empty()){
+            return;
+        }
         this->bb2lexicalenvstack_[inst->GetBasicBlock()]->GetLexicalEnv(0).LogIndexes();
     }
 
