@@ -42,7 +42,7 @@ public:
     }
 
     void UpdateMemberDepConstructor(){
-        // method define class > instance_initializer > member functions
+        // method define class > static_initializer > instance_initializer > member functions
   
         uint32_t last_member = 0;
         for(const auto& constructor_offset : this->inserted_construct_order_){

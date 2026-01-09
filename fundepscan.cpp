@@ -47,6 +47,10 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
                     }
                     
                 }
+
+                if(method_name.find("static_initializer") != std::string::npos){
+                    (*enc->class2memberfuns_)[enc->current_constructor_offset].insert(methodoffset);
+                }
             }
             break;
         }
