@@ -287,3 +287,63 @@
 //     y() {}
 // }
 
+// #3. corner case
+// class A {
+//     a?: A
+//     #b?: A;
+//     getA(): A {
+//         return new A();
+//     }
+//     constructor() {
+//         this?.#b;           // Error
+//         this?.a.#b;         // Error
+//         this?.getA().#b;    // Error
+//     }
+// }
+
+// #4. corner case
+// class C {
+//     static #x = 123;
+  
+//     static {
+//       console.log(C.#x)
+//     }
+  
+//     foo () {
+//       return C.#x;
+//     }
+// }
+
+// #5. corner case
+// class A {
+//     m() { }
+// }
+// class B extends A {
+//     get m() { return () => 1 }
+// }
+
+// #6. corner case 
+// declare function foo<T, U>(x: T, fun: () => Iterable<(x: T) => U>, fun2: (y: U) => T): T;
+
+// foo("", function* () {
+//     yield* {
+//         *[Symbol.iterator]() {
+//             yield x => x.length
+//         }
+//     }
+// }, p => undefined); // T is fixed, should be string
+
+
+// #7. corner case 
+// class A {
+//     a?: A
+//     #b?: A;
+//     getA(): A {
+//         return new A();
+//     }
+//     constructor() {
+//         this?.#b;           // Error
+//         this?.a.#b;         // Error
+//         this?.getA().#b;    // Error
+//     }
+// }
