@@ -139,6 +139,7 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
     LOG(INFO, BYTECODE_OPTIMIZER) << "Optimizing function: " << func_name;
 
     if(IsInstanceMethod(func_name) && !contains(*memberfuncs, mda.GetMethodId().GetOffset())){
+        
         return true;
     }
     

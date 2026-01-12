@@ -30,8 +30,6 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
         case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM8_ID16_IMM8:
         case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM16_ID16_IMM8:{
             auto methodoffset = static_cast<uint32_t>(inst->GetImms()[1]);
-            enc->depedges_->push_back(std::make_pair(enc->methodoffset_, methodoffset));
-
             auto method_name = enc->ir_interface_->GetMethodIdByOffset(methodoffset);
             if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM8_ID16_IMM8 ||
                 inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM16_ID16_IMM8){
@@ -45,12 +43,25 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
                     }else{
                         HandleError("#DEFINEMETHOD: find current_constructor_offset error");
                     }
+
+                    enc->current_instance_initializer = methodoffset;
                     
                 }
 
                 if(method_name.find("static_initializer") != std::string::npos){
                     (*enc->class2memberfuns_)[enc->current_constructor_offset].insert(methodoffset);
+                    if(enc->current_constructor_offset){
+                        std::cout << "set construct2staticinitializer: " << enc->current_constructor_offset << " : " << methodoffset << std::endl;
+                        enc->construct2staticinitializer_[enc->current_constructor_offset] = methodoffset;
+                    }else{
+                        HandleError("#DEFINEMETHOD: find current_constructor_offset error");
+                    }
+
+                    enc->current_static_initializer = methodoffset;
+                
                 }
+            }else{
+                enc->depedges_->push_back(std::make_pair(enc->methodoffset_, methodoffset));
             }
             break;
         }
@@ -65,9 +76,6 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
             enc->inserted_construct_order_.push_back(enc->current_constructor_offset);
 
              (*enc->class2memberfuns_)[constructor_offset].insert(constructor_offset);
-
-            // case: not include instance_initializer
-            // enc->depedges_->push_back(std::make_pair(enc->methodoffset_, constructor_offset));
 
             auto literalarray_offset = static_cast<uint32_t>(inst->GetImms()[2]);
             auto member_functions = GetLiteralArrayByOffset(enc->program_, literalarray_offset);
@@ -91,9 +99,6 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
                 for(const auto& member_function : *member_functions){
                     auto memeber_offset = (*enc->methodname2offset_)[member_function];
                     (*enc->class2memberfuns_)[enc->current_constructor_offset].insert(memeber_offset);
-
-                    // case: not include instance_initializer
-                    //enc->depedges_->push_back(std::make_pair(enc->methodoffset_, memeber_offset));
                 }
             }else{
                 HandleError("#function dep scan: CALLRUNTIME_CREATEPRIVATEPROPERTY");
