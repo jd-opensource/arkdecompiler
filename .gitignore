@@ -13,7 +13,7 @@ autotests/*.ast
 autotests/*.abc
 autotests/*.json
 autotests/status_outputs/*
-
+autotests/history/*
 
 
 .vscode

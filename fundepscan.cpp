@@ -25,44 +25,37 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
     auto inst = inst_base->CastToIntrinsic();
     auto enc = static_cast<FunDepScan *>(visitor);
     switch(inst->GetIntrinsicId()){
+        case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM8_ID16_IMM8:
+        case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM16_ID16_IMM8:
+        {
+            auto methodoffset = static_cast<uint32_t>(inst->GetImms()[1]);
+            enc->depedges_->push_back(std::make_pair(enc->methodoffset_, methodoffset));
+            break;
+        }
+
         case compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM8_ID16_IMM8:
         case compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM16_ID16_IMM8:
-        case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM8_ID16_IMM8:
-        case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM16_ID16_IMM8:{
+        {
             auto methodoffset = static_cast<uint32_t>(inst->GetImms()[1]);
             auto method_name = enc->ir_interface_->GetMethodIdByOffset(methodoffset);
-            if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM8_ID16_IMM8 ||
-                inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM16_ID16_IMM8){
-
+            
+            if(!enc->current_constructor_offset){
+                enc->depedges_->push_back(std::make_pair(enc->methodoffset_, methodoffset));
+            }else{
+                (*enc->class2memberfuns_)[enc->current_constructor_offset].insert(methodoffset);
                 if(method_name.find("instance_initializer") != std::string::npos){
-                    (*enc->class2memberfuns_)[enc->current_constructor_offset].insert(methodoffset);
-
-                    if(enc->current_constructor_offset){
-                        std::cout << "set construct2initializer: " << enc->current_constructor_offset << " : " << methodoffset << std::endl;
-                        enc->construct2initializer_[enc->current_constructor_offset] = methodoffset;
-                    }else{
-                        HandleError("#DEFINEMETHOD: find current_constructor_offset error");
-                    }
-
+                    std::cout << "set construct2initializer: " << enc->current_constructor_offset << " : " << methodoffset << std::endl;
+                    enc->construct2initializer_[enc->current_constructor_offset] = methodoffset;
                     enc->current_instance_initializer = methodoffset;
                     
-                }
-
-                if(method_name.find("static_initializer") != std::string::npos){
-                    (*enc->class2memberfuns_)[enc->current_constructor_offset].insert(methodoffset);
-                    if(enc->current_constructor_offset){
-                        std::cout << "set construct2staticinitializer: " << enc->current_constructor_offset << " : " << methodoffset << std::endl;
-                        enc->construct2staticinitializer_[enc->current_constructor_offset] = methodoffset;
-                    }else{
-                        HandleError("#DEFINEMETHOD: find current_constructor_offset error");
-                    }
-
+                }else if(method_name.find("static_initializer") != std::string::npos){
+                    std::cout << "set construct2staticinitializer: " << enc->current_constructor_offset << " : " << methodoffset << std::endl;
+                    enc->construct2staticinitializer_[enc->current_constructor_offset] = methodoffset;
                     enc->current_static_initializer = methodoffset;
                 
                 }
-            }else{
-                enc->depedges_->push_back(std::make_pair(enc->methodoffset_, methodoffset));
             }
+            
             break;
         }
 

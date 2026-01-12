@@ -21,23 +21,28 @@ bool ConstructClasses(std::map<uint32_t, std::set<uint32_t>> &class2memberfuns, 
         std::map<uint32_t, panda::es2panda::ir::Expression*> &class2father, std::map<uint32_t, panda::es2panda::ir::ScriptFunction *> &method2scriptfunast,
         std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *> &ctor2classdeclast, std::map<std::string, std::string>& raw2newname
         ){
-
+    std::cout << "111111111111111111111111111111111111111111111111111111" << std::endl;
     for(const auto & pair : class2memberfuns){
+        std::cout << "22222222222222222222222222222222222222222222" << std::endl;
         auto constructor_offset = pair.first;
 
         std::cout << constructor_offset << std::endl;
-
+        std::cout << "33333333333333333333333333333333333333333" << std::endl;
         auto member_funcs = pair.second;
+        std::cout << "constructor_offset: " << constructor_offset << std::endl;
+        std::cout << "444444444444444444444444444444444444444444" << std::endl;
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        auto constructor_offset_name = RemoveArgumentsOfFunc(ir_interface->GetMethodIdByOffset(constructor_offset));
+        auto xx = ir_interface->GetMethodIdByOffset(constructor_offset);
+        std::cout << "55555555555555555555555555555555555555555" << std::endl;
+        auto constructor_offset_name = RemoveArgumentsOfFunc(xx);
         std::string newname_constructor_offset_name;
-
+        
         if(raw2newname.find(constructor_offset_name) != raw2newname.end()){
             newname_constructor_offset_name =  raw2newname[constructor_offset_name];
         }else{
             HandleError("#ConstructClasses: find constructor_offset_name newname error");
         }
-       
+        std::cout << "555555555555555555555555555555555555555555" << std::endl;
         panda::es2panda::util::StringView name_view1 = panda::es2panda::util::StringView(*(new std::string(RemoveArgumentsOfFunc(newname_constructor_offset_name))));
 
         auto identNode = AllocNode<panda::es2panda::ir::Identifier>(parser_program, name_view1);
