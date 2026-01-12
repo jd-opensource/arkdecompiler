@@ -1,5 +1,22 @@
 #include "classconstruction.h"
 
+
+std::string ExtractPrefix(const std::string& input){
+    size_t firstPos = input.find('#'); 
+    if (firstPos != std::string::npos) {
+        size_t secondPos = input.find('#', firstPos + 1); 
+        if (secondPos != std::string::npos) {
+            return input.substr(firstPos + 1, secondPos - firstPos - 1);
+        }
+    }
+    return ""; 
+}
+
+bool IsInstanceMethod(std::string func_name){
+    auto prefix = ExtractPrefix(func_name);
+    return prefix.find('~') != std::string::npos && prefix.find('>') != std::string::npos;
+}
+
 bool ConstructClasses(std::map<uint32_t, std::set<uint32_t>> &class2memberfuns, panda::es2panda::parser::Program *parser_program,  BytecodeOptIrInterface *ir_interface,
         std::map<uint32_t, panda::es2panda::ir::Expression*> &class2father, std::map<uint32_t, panda::es2panda::ir::ScriptFunction *> &method2scriptfunast,
         std::map<uint32_t, panda::es2panda::ir::ClassDeclaration *> &ctor2classdeclast, std::map<std::string, std::string>& raw2newname

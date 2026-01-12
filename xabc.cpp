@@ -138,8 +138,11 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
 
     LOG(INFO, BYTECODE_OPTIMIZER) << "Optimizing function: " << func_name;
 
-    auto method_ptr = reinterpret_cast<compiler::RuntimeInterface::MethodPtr>(mda.GetMethodId().GetOffset());
+    if(IsInstanceMethod(func_name) && !contains(*memberfuncs, mda.GetMethodId().GetOffset())){
+        return true;
+    }
     
+    auto method_ptr = reinterpret_cast<compiler::RuntimeInterface::MethodPtr>(mda.GetMethodId().GetOffset());
     panda::BytecodeOptimizerRuntimeAdapter adapter(mda.GetPandaFile());
     auto graph = allocator.New<compiler::Graph>(&allocator, &local_allocator, Arch::NONE, method_ptr, &adapter, false,
                                                 nullptr, is_dynamic, true);
