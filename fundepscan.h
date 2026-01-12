@@ -44,7 +44,7 @@ public:
     void UpdateMemberDepConstructor(){
         // method define class > static_initializer > instance_initializer > member functions
   
-        uint32_t last_member = 0;
+        uint32_t last_class_member = 0; // multiple class analysis sequence
         for(const auto& constructor_offset : this->inserted_construct_order_){
             if(this->class2memberfuns_->find(constructor_offset) == this->class2memberfuns_->end()){
                 continue;
@@ -54,25 +54,54 @@ public:
             this->memberfuncs_->insert(constructor_offset);
 
             uint32_t function_initializer = 0;
+            uint32_t static_function_initializer = 0;
+            uint32_t predecessor_of_memeber = 0;
+
             if(this->construct2initializer_.find(constructor_offset) != this->construct2initializer_.end()){
                 function_initializer = this->construct2initializer_[constructor_offset];
             }
 
-            if(function_initializer && last_member){
-                this->depedges_->push_back(std::make_pair(this->methodoffset_, last_member));
+            if(this->construct2staticinitializer_.find(constructor_offset) != this->construct2staticinitializer_.end()){
+                static_function_initializer = this->construct2staticinitializer_[constructor_offset];
+            }
 
-                this->depedges_->push_back(std::make_pair(last_member, function_initializer));
+            uint32_t predecessor_of_initializer;
+            if(last_class_member){
+                predecessor_of_initializer = last_class_member;
+            }else{
+                predecessor_of_initializer = this->methodoffset_;
+            }
+
+            if(static_function_initializer && function_initializer){
+                this->depedges_->push_back(std::make_pair(predecessor_of_initializer, static_function_initializer));
+                this->depedges_->push_back(std::make_pair(static_function_initializer, function_initializer));
+                predecessor_of_memeber = function_initializer;
+            }else if(static_function_initializer && !function_initializer){
+                this->depedges_->push_back(std::make_pair(predecessor_of_initializer, static_function_initializer));
+                predecessor_of_memeber = static_function_initializer;
+            }else if(!static_function_initializer && function_initializer){
+                this->depedges_->push_back(std::make_pair(predecessor_of_initializer, function_initializer));
+                predecessor_of_memeber = function_initializer;
+            }else{
+                predecessor_of_memeber = predecessor_of_initializer;
             }
 
             for (const auto& memeber_offset : member_funcs) {
                 this->memberfuncs_->insert(memeber_offset);
-                last_member = memeber_offset;
-
-                this->depedges_->push_back(std::make_pair(this->methodoffset_, memeber_offset));
-
-                if(function_initializer && function_initializer != memeber_offset){
-                    this->depedges_->push_back(std::make_pair(function_initializer, memeber_offset));
+                last_class_member = memeber_offset;
+                if(memeber_offset == predecessor_of_memeber){
+                    continue;
                 }
+
+                if(static_function_initializer && memeber_offset == static_function_initializer ){
+                    continue;
+                }
+
+                if(function_initializer && memeber_offset == function_initializer ){
+                    continue;
+                }
+
+                this->depedges_->push_back(std::make_pair(predecessor_of_memeber, memeber_offset));
             }
         }
     }
@@ -99,12 +128,14 @@ public:
     std::map<std::string, uint32_t> *methodname2offset_;
 
     std::map<uint32_t, uint32_t> construct2initializer_;
+    std::map<uint32_t, uint32_t> construct2staticinitializer_;
 
     std::vector<uint32_t> inserted_construct_order_;
 
     uint32_t current_constructor_offset;
     uint32_t current_function_initializer;
-
+    uint32_t current_instance_initializer;
+    uint32_t current_static_initializer;
 };
 
 }
