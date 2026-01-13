@@ -348,9 +348,23 @@
 //     }
 // }
 
-// #7. corner case
+// #8. corner case
 // class SomeDerivedClass{
 //     static get a() {
 //         console.log("hello");
+//     }
+// }
+
+// #9. corner case
+// class SomeDerivedClass{
+//     set a(n) {
+        
+//     }
+
+//     static fn() {
+        
+//     }
+
+//     static get a() {
 //     }
 // }
