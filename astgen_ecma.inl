@@ -2283,11 +2283,11 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     new_properties.push_back(it);
                 }
                 
-                if(*rawcalleename1 != "undefined"){
+                if(rawcalleename1 && *rawcalleename1 != "undefined"){
                     auto newexpression = enc->GetIdentifierByName(RemoveArgumentsOfFunc(*rawcalleename1));
                     new_properties.push_back(  AllocNode<es2panda::ir::Property>(enc, attrexpression, newexpression));
                 }
-                if(*rawcalleename2 != "undefined"){
+                if(rawcalleename2 && *rawcalleename2 != "undefined"){
                     auto newexpression = enc->GetIdentifierByName(RemoveArgumentsOfFunc(*rawcalleename2));
                     new_properties.push_back(  AllocNode<es2panda::ir::Property>(enc, attrexpression, newexpression ));
                 }
@@ -2319,29 +2319,23 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case2"); 
                 }
                 ////////////////////////////////////////////////////////////////////////////////////////////
-                if(rawcalleename1 != "undefined"){
+                if(rawcalleename1 && *rawcalleename1 != "undefined"){
                     auto tmp = RemoveArgumentsOfFunc(*rawcalleename1);
-                    if(enc->methodname2offset_->find(tmp) != enc->methodname2offset_->end()){
+                    if(enc->methodname2offset_->find(tmp) != enc->methodname2offset_->end()  ){
                         auto methodoffset = (*enc->methodname2offset_)[tmp];
                         (*enc->class2memberfuns_)[constructor_offset].insert(methodoffset);
                         enc->memberfuncs_->insert(methodoffset);
                     }
-                }else{
-                    std::cout << "###: " << std::to_string(static_cast<int>(rawcallee1->Type())) << std::endl;
-                    HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case5");
                 }
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                if(rawcalleename2 != "undefined"){
+                if(rawcalleename2 && *rawcalleename2 != "undefined"){
                     auto tmp = RemoveArgumentsOfFunc(*rawcalleename2);
                     if(enc->methodname2offset_->find(tmp) != enc->methodname2offset_->end()){
                         auto methodoffset = (*enc->methodname2offset_)[tmp];
                         (*enc->class2memberfuns_)[constructor_offset].insert(methodoffset);
                         enc->memberfuncs_->insert(methodoffset);
                     }   
-                }else{
-                    std::cout << "###: " << std::to_string(static_cast<int>(rawcallee2->Type())) << std::endl;
-                    HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case6");
-                }        
+                }      
             }
             
             break;
