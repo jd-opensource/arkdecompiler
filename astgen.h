@@ -561,6 +561,9 @@ public:
                 return nullptr;
                 HandleError("#GetNameFromExpression: not support this case 1"); 
             }    
+        }else if(rawexpression->IsNumberLiteral()){
+            auto idname = rawexpression->AsNumberLiteral()->Str().Mutf8();
+            return idname;
         }else{
             std::cout << "###: " << std::to_string(static_cast<int>(rawexpression->Type())) << std::endl;
             HandleError("#GetNameFromExpression: not support this case 3"); 
