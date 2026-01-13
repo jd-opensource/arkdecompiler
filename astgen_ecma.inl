@@ -2228,24 +2228,25 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        {
             es2panda::ir::Expression *rawmember = *enc->GetExpressionByRegIndex(inst, 0);
             uint32_t constructor_offset;
+
+            std::optional<std::string> objname;
             if(rawmember->IsMemberExpression()){
                 auto rawobj = rawmember->AsMemberExpression()->Object();
-                auto objname = enc->GetNameFromExpression(rawobj);
-                if(objname){
-                    if(enc->methodname2offset_->find(*objname) != enc->methodname2offset_->end()){
-                        constructor_offset = (*enc->methodname2offset_)[*objname];
-                    }else{
-                        HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case1"); 
-                    }
+                objname = enc->GetNameFromExpression(rawobj);
+            }else{
+                objname = enc->GetNameFromExpression(rawmember);
+            }
+            
+            if(objname){
+                if(enc->methodname2offset_->find(*objname) != enc->methodname2offset_->end()){
+                    constructor_offset = (*enc->methodname2offset_)[*objname];
                 }else{
-                    std::cout << "###: " << std::to_string(static_cast<int>(rawobj->Type())) << std::endl;
-                    HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case2"); 
+                    HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case1"); 
                 }
             }else{
-                std::cout << "###: " << std::to_string(static_cast<int>(rawmember->Type())) << std::endl;
-                HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case3");       
+                HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case2"); 
             }
-
+            
             es2panda::ir::Expression *rawcallee1 = *enc->GetExpressionByRegIndex(inst, 2);
             auto rawcalleename1 = enc->GetNameFromExpression(rawcallee1);
             if(rawcalleename1){
