@@ -347,3 +347,10 @@
 //         this?.getA().#b;    // Error
 //     }
 // }
+
+// #7. corner case
+// class SomeDerivedClass{
+//     static get a() {
+//         console.log("hello");
+//     }
+// }
