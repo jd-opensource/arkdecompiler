@@ -368,3 +368,6 @@
 //     static get a() {
 //     }
 // }
+
+// #10. corner case
+// var sameName1a = { set a(n) { console.log('a')} };
