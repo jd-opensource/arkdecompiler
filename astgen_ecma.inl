@@ -2262,54 +2262,88 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::DEFINEGETTERSETTERBYVALUE_V8_V8_V8_V8:
        {
             es2panda::ir::Expression *rawmember = *enc->GetExpressionByRegIndex(inst, 0);
-            uint32_t constructor_offset;
-
-            std::optional<std::string> objname;
-            if(rawmember->IsMemberExpression()){
-                auto rawobj = rawmember->AsMemberExpression()->Object();
-                objname = enc->GetNameFromExpression(rawobj);
-            }else{
-                objname = enc->GetNameFromExpression(rawmember);
-            }
-            
-            if(objname){
-                if(enc->methodname2offset_->find(*objname) != enc->methodname2offset_->end()){
-                    constructor_offset = (*enc->methodname2offset_)[*objname];
-                }else{
-                    std::cout << "objname: " << *objname << std::endl;
-                    HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case1"); 
-                }
-            }else{
-                HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case2"); 
-            }
-            
             es2panda::ir::Expression *rawcallee1 = *enc->GetExpressionByRegIndex(inst, 2);
             auto rawcalleename1 = enc->GetNameFromExpression(rawcallee1);
-            if(rawcalleename1){
-                auto tmp = RemoveArgumentsOfFunc(*rawcalleename1);
-                if(enc->methodname2offset_->find(tmp) != enc->methodname2offset_->end()){
-                    auto methodoffset = (*enc->methodname2offset_)[tmp];
-                    (*enc->class2memberfuns_)[constructor_offset].insert(methodoffset);
-                    enc->memberfuncs_->insert(methodoffset);
-                }
-            }else{
-                std::cout << "###: " << std::to_string(static_cast<int>(rawcallee1->Type())) << std::endl;
-                HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case5");
-            }
-
+            
             es2panda::ir::Expression *rawcallee2 = *enc->GetExpressionByRegIndex(inst, 3);
             auto rawcalleename2 = enc->GetNameFromExpression(rawcallee2);
-            if(rawcalleename2){
-                auto tmp = RemoveArgumentsOfFunc(*rawcalleename2);
-                if(enc->methodname2offset_->find(tmp) != enc->methodname2offset_->end()){
-                    auto methodoffset = (*enc->methodname2offset_)[tmp];
-                    (*enc->class2memberfuns_)[constructor_offset].insert(methodoffset);
-                    enc->memberfuncs_->insert(methodoffset);
-                }   
+
+            if(rawmember->IsObjectExpression()){
+                auto objexpression =  rawmember->AsObjectExpression();
+                auto attrexpression = *enc->GetExpressionByRegIndex(inst, 1);
+                auto attrname = enc->GetNameFromExpression(attrexpression);
+                ArenaVector<es2panda::ir::Expression *> new_properties(enc->parser_program_->Allocator()->Adapter());
+                for (auto *it : objexpression->Properties()) {
+                    if(it->IsProperty()){
+                        auto curpropname = enc->GetNameFromExpression(it->AsProperty()->Key());
+                        if(curpropname && attrname && *attrname == *curpropname){
+                            continue;
+                        }
+                    }
+                    new_properties.push_back(it);
+                }
+                
+                if(*rawcalleename1 != "undefined"){
+                    auto newexpression = enc->GetIdentifierByName(RemoveArgumentsOfFunc(*rawcalleename1));
+                    new_properties.push_back(  AllocNode<es2panda::ir::Property>(enc, attrexpression, newexpression));
+                }
+                if(*rawcalleename2 != "undefined"){
+                    auto newexpression = enc->GetIdentifierByName(RemoveArgumentsOfFunc(*rawcalleename2));
+                    new_properties.push_back(  AllocNode<es2panda::ir::Property>(enc, attrexpression, newexpression ));
+                }
+
+                auto objectexpression = AllocNode<es2panda::ir::ObjectExpression>(enc, 
+                                                                                    es2panda::ir::AstNodeType::OBJECT_EXPRESSION,
+                                                                                    std::move(new_properties),
+                                                                                    false
+                                                                                );
+                enc->SetExpressionByRegister(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), objectexpression);
             }else{
-                std::cout << "###: " << std::to_string(static_cast<int>(rawcallee2->Type())) << std::endl;
-                HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case6");
+                uint32_t constructor_offset;
+                std::optional<std::string> objname;
+                if(rawmember->IsMemberExpression()){
+                    auto rawobj = rawmember->AsMemberExpression()->Object();
+                    objname = enc->GetNameFromExpression(rawobj);
+                }else{
+                    objname = enc->GetNameFromExpression(rawmember);
+                }
+                ////////////////////////////////////////////////////////////////////////////////////////////
+                if(objname){
+                    if(enc->methodname2offset_->find(*objname) != enc->methodname2offset_->end()){
+                        constructor_offset = (*enc->methodname2offset_)[*objname];
+                    }else{
+                        std::cout << "objname: " << *objname << std::endl;
+                        HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case1"); 
+                    }
+                }else{
+                    HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case2"); 
+                }
+                ////////////////////////////////////////////////////////////////////////////////////////////
+                if(rawcalleename1 != "undefined"){
+                    auto tmp = RemoveArgumentsOfFunc(*rawcalleename1);
+                    if(enc->methodname2offset_->find(tmp) != enc->methodname2offset_->end()){
+                        auto methodoffset = (*enc->methodname2offset_)[tmp];
+                        (*enc->class2memberfuns_)[constructor_offset].insert(methodoffset);
+                        enc->memberfuncs_->insert(methodoffset);
+                    }
+                }else{
+                    std::cout << "###: " << std::to_string(static_cast<int>(rawcallee1->Type())) << std::endl;
+                    HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case5");
+                }
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                if(rawcalleename2 != "undefined"){
+                    auto tmp = RemoveArgumentsOfFunc(*rawcalleename2);
+                    if(enc->methodname2offset_->find(tmp) != enc->methodname2offset_->end()){
+                        auto methodoffset = (*enc->methodname2offset_)[tmp];
+                        (*enc->class2memberfuns_)[constructor_offset].insert(methodoffset);
+                        enc->memberfuncs_->insert(methodoffset);
+                    }   
+                }else{
+                    std::cout << "###: " << std::to_string(static_cast<int>(rawcallee2->Type())) << std::endl;
+                    HandleError("#DEFINEGETTERSETTERBYVALUE: not support this case6");
+                }        
             }
+            
             break;
         }
 
