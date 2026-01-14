@@ -773,13 +773,18 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 count++;
             }
 
-            if(!inserted){
-                if(index == (raw_arrayexpression->Elements().size() ) ){
-                    elements.push_back(spreadelement);
-                }else{
-                    std::cout << "element size: " << raw_arrayexpression->Elements().size() << " , index: " << index << std::endl;
-                    HandleError("#STARRAYSPREAD inset element error");
+            if(!inserted && index == raw_arrayexpression->Elements().size()){
+                elements.push_back(spreadelement);
+            }else if(!inserted && index > raw_arrayexpression->Elements().size() ){
+                while(count < index){
+                    auto omittedexpression = AllocNode<es2panda::ir::OmittedExpression>(enc);
+                    elements.push_back(omittedexpression);
+                    count++;
                 }
+                elements.push_back(spreadelement);
+            }else{
+                std::cout << "element size: " << raw_arrayexpression->Elements().size() << " , index: " << index << std::endl;
+                HandleError("#STARRAYSPREAD inset element error");
             }
 
             auto arrayexpression = AllocNode<es2panda::ir::ArrayExpression>(enc, 
