@@ -1,0 +1,1 @@
+../autotests/third_party_typescript/tests/cases/conformance/expressions/thisKeyword/thisInInvalidContextsExternalModule.ts

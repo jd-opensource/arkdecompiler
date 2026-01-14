@@ -12,6 +12,16 @@ from pathlib import Path
 env_vars = copy.deepcopy(os.environ)
 env_vars['LD_LIBRARY_PATH'] = '../out/arkcompiler/runtime_core:../out/thirdparty/zlib'
 
+def load_skip_list(skip_file_path):
+    if not skip_file_path or not os.path.exists(skip_file_path):
+        return set()
+    try:
+        with open(skip_file_path, 'r', encoding='utf-8') as f:
+            return {line.strip() for line in f if line.strip()}
+    except Exception as e:
+        print(f"Warning: Could not read skip file {skip_file_path}: {e}")
+        return set()
+
 def execute_cmd(cmd):
     status_detail = ""
     return_code = None
@@ -173,7 +183,7 @@ def save_results(results_list, output_dir):
             
         print(f"  - Status {status_code}: Saved {len(records)} records to {filepath}")
 
-def analysis_files(root_dir, output_dir):
+def analysis_files(root_dir, output_dir, skip_list):
     ts_files = list(root_dir.rglob('*.ts'))
     total_files = len(ts_files)
     results_path = Path(output_dir) / "res.json"
@@ -182,14 +192,20 @@ def analysis_files(root_dir, output_dir):
     print(f"Loaded {len(analyzed_paths)} historical analysis records.")
 
     for i, ts_file in enumerate(ts_files):
-        if ts_file not in analyzed_paths:
-            print(f"\n[{i+1}/{total_files}] ", end="")
-            print(f"analysis: {ts_file}")
-            res = analysis_onefile(str(ts_file.resolve()))
-            print(res)
-            results_list.append(res)
-        else:
-            analyzed_paths.add(ts_file)
+        file_str = str(ts_file)
+        if file_str in analyzed_paths:
+            continue
+
+        if file_str in skip_list:
+            print(f"Skipping (listed in skip file): {file_str}")
+            continue
+
+        print(f"\n[{i+1}/{len(ts_files)}] Analyzing: {file_str}")
+        res = analysis_onefile(file_str)
+        results_list.append(res)
+
+        if (i + 1) % 1000 == 0:
+            save_results(results_list, output_dir)
 
     save_results(results_list, output_dir)
 
@@ -201,8 +217,12 @@ if __name__ == "__main__":
     parser.add_argument("-o", "--output_dir", type=str, default="status_outputs",
                         help=f"Directory to save status-specific JSON files (default: 'status_outputs')")
     
+    parser.add_argument("-s", "--skip-file", type=str, default="blacklist.txt",
+                        help="Path to a file containing a list of files to skip (one per line)")
+
     parser.add_argument("-d", "--record_file", type=str, default="res.json",
                         help=f"JSON file path for analyzed file records (default: res.json)")
+
     args = parser.parse_args()
     root_dir = Path(args.input_dir)
     if not root_dir.is_dir():
@@ -213,7 +233,8 @@ if __name__ == "__main__":
         os.makedirs(args.output_dir)
         print(f"\nCreated output directory: {args.output_dir}")
 
-    analysis_files(root_dir, args.output_dir)
+    skip_list = load_skip_list(args.skip_file)
+    analysis_files(root_dir, args.output_dir, skip_list)
 
     #test_file = "../autotests/third_party_typescript/tests/cases/conformance/emitter/es2015/asyncGenerators/emitter.asyncGenerators.classMethods.es2015.ts"
     #analysis_onefile(test_file)
