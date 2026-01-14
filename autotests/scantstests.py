@@ -86,34 +86,58 @@ def load_results(results_path):
     return [], set()
 
 def analysis_onefile(analysis_file):
-    #cpcmd = f"cp {analysis_file} demo.ts"
-    #compilecmd = "../../out/x64.release/arkcompiler/ets_frontend/es2abc --module --dump-assembly demo.ts --output demo.abc"
-    #decompilecmd = "LD_LIBRARY_PATH=../out/arkcompiler/runtime_core:../out/thirdparty/zlib ../out/arkcompiler/common/xabc"
+    # Status Codes Explanation:
+    # ret=1: File copy failed. Precondition error, subsequent flow not started.
+    # ret=2: Compilation failed. Both attempts (with/without --module) failed to generate a valid .abc file.
+    # ret=3: Decompilation failed. At least one compilation succeeded (produced .abc), but all generated .abc files failed the decompilation check.
+    # ret=0: Success. Found a mode (module or script) that passed the full link from compilation to decompilation.
 
-    cpcmd = ["cp", analysis_file, "demo.ts"]
-    compilecmd = ["../../out/x64.release/arkcompiler/ets_frontend/es2abc", "--module", "--dump-assembly", "demo.ts", "--output", "demo.abc"]
-    decompilecmd = ["../out/arkcompiler/common/xabc"]
+    # --- Summary of All Cases ---
+    # | First Compile Result (--module) | First Decompile Result | Second Compile Result (No Args) | Second Decompile Result | ret | Status Explanation            |
+    # |---------------------------------|------------------------|---------------------------------|-------------------------|-----|-------------------------------|
+    # | Fail                            | N/A                    | Fail                            | N/A                     | 2   | Both Compiles Failed          |
+    # | Fail                            | N/A                    | Success                         | Fail                    | 3   | Compile OK, Decompile Fail    |
+    # | Fail                            | N/A                    | Success                         | Success                 | 0   | Script Mode Success           |
+    # | Success                         | Fail                   | Fail                            | N/A                     | 3   | Compile OK, Decompile Fail    |
+    # | Success                         | Fail                   | Success                         | Fail                    | 3   | Compile OK, Decompile Fail    |
+    # | Success                         | Fail                   | Success                         | Success                 | 0   | Script Mode Success           |
+    # | Success                         | Success                | N/A                             | N/A                     | 0   | Module Mode Success (Early Exit)|
+    # | N/A                             | N/A                    | N/A                             | N/A                     | 1   | Copy Failed (Precondition Error)|
 
-    res = {}
+    es2abc_path = "../../out/x64.release/arkcompiler/ets_frontend/es2abc"
+    decompile_exe = "../out/arkcompiler/common/xabc"
+    res = {"file": analysis_file}
 
-    res["file"] = analysis_file
-    
-    cp_res = execute_cmd(cpcmd)
-    if cp_res["return_code"] != 0:
+    if execute_cmd(["cp", analysis_file, "demo.ts"])["return_code"] != 0:
         res["status"] = 1
         return res
-    
-    compile_res = execute_cmd(compilecmd)
-    if compile_res["return_code"] != 0:
-        res["status"] = 2
-        return res
-    
-    decompile_res = execute_cmd(decompilecmd)
-    if decompile_res["return_code"] != 0:
+
+    plans = [
+        [es2abc_path, "--module", "--dump-assembly", "demo.ts", "--output", "demo.abc"],
+        [es2abc_path, "--dump-assembly", "demo.ts", "--output", "demo.abc"]
+    ]
+
+    has_any_compile_success = False
+
+    for cmd in plans:
+        if os.path.exists("demo.abc"):
+            os.remove("demo.abc")
+
+        compile_res = execute_cmd(cmd)
+        if compile_res["return_code"] == 0:
+            has_any_compile_success = True
+
+            decompile_res = execute_cmd([decompile_exe])
+            if decompile_res["return_code"] == 0:
+                res["status"] = 0
+                return res
+        else:
+            continue
+
+    if has_any_compile_success:
         res["status"] = 3
-        return res
-    
-    res["status"] = 0
+    else:
+        res["status"] = 2
 
     return res
 
