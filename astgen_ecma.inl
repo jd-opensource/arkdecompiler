@@ -772,19 +772,20 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 elements.push_back(it);
                 count++;
             }
-
-            if(!inserted && index == raw_arrayexpression->Elements().size()){
-                elements.push_back(spreadelement);
-            }else if(!inserted && index > raw_arrayexpression->Elements().size() ){
-                while(count < index){
-                    auto omittedexpression = AllocNode<es2panda::ir::OmittedExpression>(enc);
-                    elements.push_back(omittedexpression);
-                    count++;
+            if(!inserted) {
+                if(index == raw_arrayexpression->Elements().size()){
+                    elements.push_back(spreadelement);
+                }else if(index > raw_arrayexpression->Elements().size() ){
+                    while(count < index){
+                        auto omittedexpression = AllocNode<es2panda::ir::OmittedExpression>(enc);
+                        elements.push_back(omittedexpression);
+                        count++;
+                    }
+                    elements.push_back(spreadelement);
+                }else{
+                    std::cout << "element size: " << raw_arrayexpression->Elements().size() << " , index: " << index << std::endl;
+                    HandleError("#STARRAYSPREAD inset element error");
                 }
-                elements.push_back(spreadelement);
-            }else{
-                std::cout << "element size: " << raw_arrayexpression->Elements().size() << " , index: " << index << std::endl;
-                HandleError("#STARRAYSPREAD inset element error");
             }
 
             auto arrayexpression = AllocNode<es2panda::ir::ArrayExpression>(enc, 
@@ -1146,21 +1147,22 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 elements.push_back(it);
             }
 
-            if(!inserted && index == raw_arrayexpression->Elements().size()){
-                elements.push_back(*enc->GetExpressionByAcc(inst));
-            }else if(!inserted && index > raw_arrayexpression->Elements().size() ){
-                while(count < index){
-                    auto omittedexpression = AllocNode<es2panda::ir::OmittedExpression>(enc);
-                    elements.push_back(omittedexpression);
-                    count++;
+            if(!inserted) {
+                if(index == raw_arrayexpression->Elements().size()){
+                    elements.push_back(*enc->GetExpressionByAcc(inst));
+                }else if(index > raw_arrayexpression->Elements().size() ){
+                    while(count < index){
+                        auto omittedexpression = AllocNode<es2panda::ir::OmittedExpression>(enc);
+                        elements.push_back(omittedexpression);
+                        count++;
+                    }
+                    elements.push_back(*enc->GetExpressionByAcc(inst));
+                }else{
+                    std::cout << "element size: " << raw_arrayexpression->Elements().size() << " , index: " << index << std::endl;
+                    HandleError("#STARRAYSPREAD inset element error");
                 }
-                elements.push_back(*enc->GetExpressionByAcc(inst));
-            }else{
-                std::cout << "cout: " << count << " , index:  " << index << std::endl;
-                HandleError("#STARRAYSPREAD: insert over array end");
             }
-
-
+            
             auto arrayexpression = AllocNode<es2panda::ir::ArrayExpression>(enc, 
                                                                             es2panda::ir::AstNodeType::ARRAY_EXPRESSION,
                                                                             std::move(elements),
