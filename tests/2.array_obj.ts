@@ -108,3 +108,7 @@
 
 // corner case 2
 // var a0 = [,, 2, 3, 4];
+
+// corner case 3
+// var a0 = [,, 2, 3, 4]
+// var a2 = [, , , ...a0, "hello"];
