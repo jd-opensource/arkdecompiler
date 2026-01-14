@@ -564,6 +564,17 @@ public:
         }else if(rawexpression->IsNumberLiteral()){
             auto idname = rawexpression->AsNumberLiteral()->Str().Mutf8();
             return idname;
+        }else if(rawexpression->IsCallExpression()){
+            auto callee = rawexpression->AsCallExpression()->Callee();
+            if(callee->IsFunctionExpression()){
+                auto id = callee->AsFunctionExpression()->Function()->Id();
+                return GetNameFromExpression(id);
+            }else if(callee->IsIdentifier()){
+                return GetNameFromExpression(callee);
+            }else{
+                std::cout << "###: " << std::to_string(static_cast<int>(callee->Type())) << std::endl;
+                HandleError("#GetNameFromExpression: not support this case 4"); 
+            }
         }else{
             std::cout << "###: " << std::to_string(static_cast<int>(rawexpression->Type())) << std::endl;
             HandleError("#GetNameFromExpression: not support this case 3"); 
