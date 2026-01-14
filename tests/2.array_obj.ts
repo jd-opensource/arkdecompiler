@@ -112,3 +112,8 @@
 // corner case 3
 // var a0 = [,, 2, 3, 4]
 // var a2 = [, , , ...a0, "hello"];
+
+// corner case 4
+// const membersOfI = [];
+// const membersOfI2 = [];
+// const membersOfIAndI2 = [...membersOfI, ...membersOfI2];
