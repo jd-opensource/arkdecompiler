@@ -311,6 +311,11 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
             break;
         }
 
+        case AstNodeType::OMITTED_EXPRESSION:{
+            this->WriteSpace();
+            break;
+        }
+
         default:
             HandleError("#EmitExpression : unsupport expression");;
 

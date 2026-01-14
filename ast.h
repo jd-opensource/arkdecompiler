@@ -48,6 +48,7 @@
 #include "../ets_frontend/es2panda/ir/expressions/awaitExpression.h"
 #include "../ets_frontend/es2panda/ir/expressions/yieldExpression.h"
 
+#include "../ets_frontend/es2panda/ir/expressions/omittedExpression.h"
 
 #include "../ets_frontend/es2panda/ir/module/exportDefaultDeclaration.h"
 #include "../ets_frontend/es2panda/ir/module/exportNamedDeclaration.h"
