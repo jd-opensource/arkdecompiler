@@ -1143,12 +1143,20 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             if(!inserted && index == raw_arrayexpression->Elements().size()){
                 elements.push_back(*enc->GetExpressionByAcc(inst));
+            }else if(!inserted && index > raw_arrayexpression->Elements().size() ){
+                while(count < index){
+                    auto omittedexpression = AllocNode<es2panda::ir::OmittedExpression>(enc);
+                    elements.push_back(omittedexpression);
+                    count++;
+                }
+                elements.push_back(*enc->GetExpressionByAcc(inst));
             }else{
+                std::cout << "cout: " << count << " , index:  " << index << std::endl;
                 HandleError("#STARRAYSPREAD: insert over array end");
             }
 
 
-            [[maybe_unused]]auto arrayexpression = AllocNode<es2panda::ir::ArrayExpression>(enc, 
+            auto arrayexpression = AllocNode<es2panda::ir::ArrayExpression>(enc, 
                                                                             es2panda::ir::AstNodeType::ARRAY_EXPRESSION,
                                                                             std::move(elements),
                                                                             false
