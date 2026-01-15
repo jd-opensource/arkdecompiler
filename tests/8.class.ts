@@ -371,3 +371,8 @@
 
 // #10. corner case
 // var sameName1a = { set a(n) { console.log('a')} };
+
+// #11. private function
+// class C {
+//     #something = () => 1234;
+// }

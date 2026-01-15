@@ -1,1 +1,2 @@
 ../autotests/third_party_typescript/tests/cases/conformance/expressions/thisKeyword/thisInInvalidContextsExternalModule.ts
+../autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateStaticNameShadowing.ts
