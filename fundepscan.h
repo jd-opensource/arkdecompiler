@@ -41,6 +41,15 @@ public:
         return GetGraph()->GetBlocksRPO();
     }
 
+    std::optional<uint32_t> FindKeyWithFunction(uint32_t functionId) const {
+        for (const auto& [key, funcSet] : *class2memberfuns_) {
+            if (funcSet.find(functionId) != funcSet.end()) {
+                return key;
+            }
+        }
+        return {};
+    }
+
     void UpdateMemberDepConstructor(){
         // method define class > static_initializer > instance_initializer > member functions
   

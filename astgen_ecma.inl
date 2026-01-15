@@ -1263,8 +1263,12 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             CopyLexicalenvStack(method_offset, inst, enc->method2lexicalenvstack_, enc->bb2lexicalenvstack_, enc->globallexical_waitlist_);
             CopyLexicalenvStack(method_offset, inst, enc->method2sendablelexicalenvstack_, enc->bb2sendablelexicalenvstack_, enc->globalsendablelexical_waitlist_);
 
-            //std::string newname = enc->RemovePrefixOfFunc(method_name);
-            auto new_expression = enc->GetIdentifierByName(method_name);
+            std::string newname;
+            if(contains(*enc->memberfuncs_, method_offset)){
+                newname = enc->RemovePrefixOfFunc(RemoveArgumentsOfFunc(method_name));
+            }
+
+            auto new_expression = enc->GetIdentifierByName(newname);
             
             // support callruntime.createprivateproperty
             if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM8_ID16_IMM8 ||
