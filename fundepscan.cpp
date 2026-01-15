@@ -28,8 +28,17 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
         case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM8_ID16_IMM8:
         case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM16_ID16_IMM8:
         {
-            auto methodoffset = static_cast<uint32_t>(inst->GetImms()[1]);
+            uint32_t methodoffset = static_cast<uint32_t>(inst->GetImms()[1]);
             enc->depedges_->push_back(std::make_pair(enc->methodoffset_, methodoffset));
+
+            if(contains(*enc->memberfuncs_, enc->methodoffset_)){
+                auto construct_offset = enc->FindKeyWithFunction(enc->methodoffset_);
+                if(construct_offset){
+                    (*enc->class2memberfuns_)[*construct_offset].insert(methodoffset);
+                    enc->depedges_->push_back(std::make_pair(enc->methodoffset_, methodoffset));
+                    enc->memberfuncs_->insert(methodoffset);
+                }
+            }
             break;
         }
 

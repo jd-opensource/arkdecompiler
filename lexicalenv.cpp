@@ -159,7 +159,9 @@ void LexicalEnvStack::Set(size_t A, size_t B, std::string* expr) {
 }
 
 void LexicalEnvStack::SetIndexes(size_t A, std::set<size_t> indexes) {
-    CheckStackIndex(A);
+    if (stack_.empty() || A >= stack_.size()) {
+        return;
+    }
     
     size_t actualIndex = stack_.size() - 1 - A;
     stack_[actualIndex].indexes_.insert(indexes.begin(), indexes.end());
@@ -225,7 +227,6 @@ void DealWithGlobalLexicalWaitlist(uint32_t tier, uint32_t index, std::string cl
 void MergeMethod2LexicalMap(Inst* inst, std::map<panda::compiler::BasicBlock*, LexicalEnvStack*> bb2lexicalenvstack,
                   uint32_t source_methodoffset, uint32_t target_methodoffset, std::map<uint32_t, std::map<uint32_t,  std::set<size_t>>>* method2lexicalmap) {
     // merge instance_initializer lexical to current 
-
     auto& tmpmethod2lexicalmap = *(method2lexicalmap);
 
     auto source_lexicalmap = tmpmethod2lexicalmap.find(source_methodoffset);
@@ -233,18 +234,17 @@ void MergeMethod2LexicalMap(Inst* inst, std::map<panda::compiler::BasicBlock*, L
         HandleError("#MergeMethod2LexicalMap: source key not found");
         return;
     }
-
     auto lexicalenvstack = bb2lexicalenvstack[inst->GetBasicBlock()];
+    std::cout << "lexicalenvstack size: " << lexicalenvstack->Size() << std::endl;
     for (const auto& [tier, source_indexes] : source_lexicalmap->second) {
         // std::cout << "source_indexes: ";
         // for(const auto&v : source_indexes){
         //     std::cout << " , " << v;
         // }
-        std::cout << std::endl;
+        // std::cout << std::endl;
+        std::cout << "tier: " << tier << std::endl;
         lexicalenvstack->SetIndexes(tier, source_indexes);
     }
-    
-
 }
 
 void PrintInnerMethod2LexicalMap(std::map<uint32_t, std::map<uint32_t,  std::set<size_t>>>* method2lexicalmap, uint32_t methodoffset){
