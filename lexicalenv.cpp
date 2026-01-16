@@ -231,7 +231,6 @@ void MergeMethod2LexicalMap(Inst* inst, std::map<panda::compiler::BasicBlock*, L
 
     auto source_lexicalmap = tmpmethod2lexicalmap.find(source_methodoffset);
     if (source_lexicalmap == tmpmethod2lexicalmap.end()) {
-        HandleError("#MergeMethod2LexicalMap: source key not found");
         return;
     }
     auto lexicalenvstack = bb2lexicalenvstack[inst->GetBasicBlock()];

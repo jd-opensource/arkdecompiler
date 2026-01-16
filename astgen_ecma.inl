@@ -1274,10 +1274,9 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM8_ID16_IMM8 ||
                 inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM16_ID16_IMM8){
 
-                if(method_name.find("instance_initializer") != std::string::npos){
-                    MergeMethod2LexicalMap(inst, enc->bb2lexicalenvstack_, method_offset, enc->methodoffset_, enc->method2lexicalmap_);
-                    
-                }
+                // if(method_name.find("instance_initializer") != std::string::npos || method_name.find("static_initializer") != std::string::npos  ){
+                //   MergeMethod2LexicalMap(inst, enc->bb2lexicalenvstack_, method_offset, enc->methodoffset_, enc->method2lexicalmap_);
+                //}
             }
             
             enc->not_add_assgin_for_stlexvar.insert(new_expression);
@@ -1552,6 +1551,8 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             enc->current_constructor_offset = constructor_offset;
             auto constructor_offset_name = enc->ir_interface_->GetMethodIdByOffset(constructor_offset);
 
+            MergeMethod2LexicalMap(inst, enc->bb2lexicalenvstack_, constructor_offset, enc->methodoffset_, enc->method2lexicalmap_);
+
             CopyLexicalenvStack(constructor_offset, inst, enc->method2lexicalenvstack_, enc->bb2lexicalenvstack_, enc->globallexical_waitlist_);
             CopyLexicalenvStack(constructor_offset, inst, enc->method2sendablelexicalenvstack_, enc->bb2sendablelexicalenvstack_, enc->globalsendablelexical_waitlist_);
 
@@ -1662,7 +1663,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
                     // std::cout << "@@@: " << member_function << std::endl;
                     // std::cout << *memfun_str << std::endl;
-                    
+
                     lexicalenv.Set(startpos, memfun_str);
                     DealWithGlobalLexicalWaitlist(0, startpos++, *memfun_str, enc->globallexical_waitlist_);
 

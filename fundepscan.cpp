@@ -32,9 +32,8 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
             enc->depedges_->push_back(std::make_pair(enc->methodoffset_, methodoffset));
 
             if(contains(*enc->memberfuncs_, enc->methodoffset_)){
-                auto construct_offset = enc->FindKeyWithFunction(enc->methodoffset_);
-                if(construct_offset){
-                    (*enc->class2memberfuns_)[*construct_offset].insert(methodoffset);
+                if(enc->current_constructor_offset){
+                    (*enc->class2memberfuns_)[enc->current_constructor_offset].insert(methodoffset);
                     enc->depedges_->push_back(std::make_pair(enc->methodoffset_, methodoffset));
                     enc->memberfuncs_->insert(methodoffset);
                 }
@@ -111,8 +110,9 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
         case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_DEFINEPRIVATEPROPERTY_PREF_IMM8_IMM16_IMM16_V8:{
             auto tier = static_cast<uint32_t>(inst->GetImms()[1]);
             auto index = static_cast<uint32_t>(inst->GetImms()[2]);
-            (*enc->method2lexicalmap_)[enc->methodoffset_][tier].insert(index);
-            
+
+            //(*enc->method2lexicalmap_)[enc->methodoffset_][tier].insert(index);
+            (*enc->method2lexicalmap_)[enc->current_constructor_offset][tier].insert(index);
             break;
         }
 
