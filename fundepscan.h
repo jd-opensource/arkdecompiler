@@ -26,6 +26,11 @@ public:
     {
         this->current_function_initializer = 0;
         this->current_constructor_offset = 0;
+
+        auto construct_offset = this->FindKeyWithFunction(methodoffset);
+        if(construct_offset){
+            this->current_constructor_offset = *construct_offset;
+        }
     }
 
     ~FunDepScan() override = default;
