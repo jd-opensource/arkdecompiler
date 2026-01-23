@@ -205,7 +205,9 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
                         break;
                     }
                     default: {
-                        std::cout << "unsupport AstNodeType >>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+                        this->EmitExpression(it);
+                        if(count++ < properties_size)
+                            this->WriteComma();
                         break;
                     }
                 }
