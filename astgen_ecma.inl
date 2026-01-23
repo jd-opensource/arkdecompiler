@@ -2156,76 +2156,41 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::WIDE_CREATEOBJECTWITHEXCLUDEDKEYS_PREF_IMM16_V8_V8:
        {
             uint32_t argsum = static_cast<uint32_t>(inst->GetImms()[0]);
-            es2panda::ir::Expression* rawobj;
-            rawobj = *enc->GetExpressionByRegIndex(inst, 0);
-
-            es2panda::ir::ObjectExpression* obj = nullptr;
-            es2panda::ir::Expression* tmpobj = nullptr;
-
-            if(rawobj->IsIdentifier()){
-                tmpobj = enc->globalname2expression_[rawobj->AsIdentifier()];
-                if(tmpobj->IsObjectExpression()){
-                    obj = tmpobj->AsObjectExpression();
-                }else{
-                    HandleError("#CREATEOBJECTWITHEXCLUDEDKEYS @1");
-                }
-            }else if(rawobj->IsObjectExpression()){
-                obj = rawobj->AsObjectExpression();
-            }else{
-                HandleError("#CREATEOBJECTWITHEXCLUDEDKEYS @2");
-            }
-            
-            auto objprops = obj->Properties();
+            auto rawobj = *enc->GetExpressionByRegIndex(inst, 0);
             ArenaVector<es2panda::ir::Expression *> properties(enc->parser_program_->Allocator()->Adapter());
 
-            std::set<std::string> props;
             for (uint32_t i = 1; i <= argsum+1; ++i) {
                 auto rawattr = *enc->GetExpressionByRegIndex(inst, i);
-                auto idname = enc->GetNameFromExpression(rawattr);
+                // properties.push_back(  AllocNode<es2panda::ir::Property>(enc, rawattr, rawattr) );
+                properties.push_back(rawattr);
 
-                if(idname){
-                    props.insert(*idname);
-                }else{
-                    std::cout << "error type: " << std::to_string( static_cast<int>(rawattr->Type()) ) << std::endl;
-                    HandleError("#CREATEOBJECTWITHEXCLUDEDKEYS @3");
-                }
+
             }
 
-            for(uint32_t i = 0; i < objprops.size(); i++){
-                auto rawattrkey = objprops[i];
-                if(rawattrkey->IsProperty()){
-                    auto rawprop = rawattrkey->AsProperty();
-                    auto rawkey = rawprop->Key();
+            auto closure_name =  "closure_" + std::to_string(enc->methodoffset_) + "_" + std::to_string(enc->closure_count);
+            enc->closure_count++;
 
-                    auto idname = enc->GetNameFromExpression(rawkey);
-                    if(!idname){
-                        std::cout << "error type: " << std::to_string( static_cast<int>(rawkey->Type()) ) << std::endl;
-                        HandleError("#CREATEOBJECTWITHEXCLUDEDKEYS @4");
-                    }
+            auto rest = enc->GetIdentifierByName(closure_name);
+             enc->HandleNewCreatedExpression(inst, rest);
 
-                    if(props.find(*idname) == props.end()){
-                        properties.push_back(  rawattrkey );
-                    }
-                }else{
-                    HandleError("#CREATEOBJECTWITHEXCLUDEDKEYS @5");
-                }                
-            }
-
+            properties.push_back(  AllocNode<es2panda::ir::SpreadElement>(enc, es2panda::ir::AstNodeType::SPREAD_ELEMENT, rest));
             auto objectexpression = AllocNode<es2panda::ir::ObjectExpression>(enc, 
-                                                                            es2panda::ir::AstNodeType::OBJECT_EXPRESSION,
-                                                                            std::move(properties),
-                                                                            false
+                                                                                es2panda::ir::AstNodeType::OBJECT_EXPRESSION,
+                                                                                std::move(properties),
+                                                                                false
                                                                             );
-            enc->HandleNewCreatedExpression(inst, objectexpression);
 
-            // just for testing
-            // auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-            //                                                                     enc->GetIdentifierByName("tt"),
-            //                                                                     objectexpression,
-            //                                                                     es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-            //                                                                 );
-            // auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
-            // enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+            ArenaVector<es2panda::ir::VariableDeclarator *> declarators(enc->parser_program_->Allocator()->Adapter());
+            auto *declarator = AllocNode<es2panda::ir::VariableDeclarator>(enc,
+                                                                                objectexpression, 
+                                                                                rawobj);
+            declarators.push_back(declarator);
+            auto variadeclaration = AllocNode<es2panda::ir::VariableDeclaration>(enc, 
+                                                                                es2panda::ir::VariableDeclaration::VariableDeclarationKind::CONST,
+                                                                                std::move(declarators),
+                                                                                true
+                                                                            );
+            enc->AddInstAst2BlockStatemntByInst(inst, variadeclaration);
             break;
         }
 
