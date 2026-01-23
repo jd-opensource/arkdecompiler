@@ -117,3 +117,8 @@
 // const membersOfI = [];
 // const membersOfI2 = [];
 // const membersOfIAndI2 = [...membersOfI, ...membersOfI2];
+
+// corner case 5
+// let x;
+// [x = 0xaa] = [91];
+// [x = 0xaa] = [99];
