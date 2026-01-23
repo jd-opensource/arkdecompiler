@@ -114,20 +114,20 @@ bool AstGen::RunImpl()
         if(bb->IsIfBlock()){
             offset = 1;
         }
-        // check if add redundant block
-        // if(this->whilebody2redundant.find(bb) != this->whilebody2redundant.end()){
-        //     this->inserted_statements.erase(this->whilebody2redundant[bb]);
+        //check if add redundant block
+        if(this->whilebody2redundant.find(bb) != this->whilebody2redundant.end()){
+            this->inserted_statements.erase(this->whilebody2redundant[bb]);
 
-        //     this->AddInstAst2BlockStatemntByBlock(bb, this->whilebody2redundant[bb], 1);
-        //     this->whilebody2redundant.erase(bb);
-        // }
+            this->AddInstAst2BlockStatemntByBlock(bb, this->whilebody2redundant[bb], 1);
+            this->whilebody2redundant.erase(bb);
+        }
     
-        // if(this->phiref2pendingredundant.find(bb) != this->phiref2pendingredundant.end()){
-        //     this->inserted_statements.erase(this->phiref2pendingredundant[bb]);
+        if(this->phiref2pendingredundant.find(bb) != this->phiref2pendingredundant.end()){
+            this->inserted_statements.erase(this->phiref2pendingredundant[bb]);
 
-        //     this->AddInstAst2BlockStatemntByBlock(bb, this->phiref2pendingredundant[bb], 1);
-        //     this->phiref2pendingredundant.erase(bb);
-        // }
+            this->AddInstAst2BlockStatemntByBlock(bb, this->phiref2pendingredundant[bb], 1);
+            this->phiref2pendingredundant.erase(bb);
+        }
         
     }
 
@@ -542,7 +542,6 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                     std::cout << "if case 3" << std::endl;
                     test_expression = enc->InverseTestExpression(enc, inst_base, ret, src_expression, false);
                 }
-                
                 ifStatement = AllocNode<es2panda::ir::IfStatement>(enc, test_expression, true_statements, false_statements);
             }
 
@@ -553,9 +552,10 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             if(false_statements != nullptr){
                 enc->inserted_statements.insert(false_statements);
             }
-           
-            enc->AddInstAst2BlockStatemntByInst(inst, ifStatement);
 
+            if(true_statements != nullptr){
+                enc->AddInstAst2BlockStatemntByInst(inst, ifStatement);
+            }
             std::cout << "[-] if ===" << std::endl;
 
         }

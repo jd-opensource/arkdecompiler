@@ -229,41 +229,6 @@
 // const example = new Example(10);
 
 
-// 41. stownbyvaluewithnameset topropertykey
-// class A5 {
-//     [a5]() {}
-// }
-
-// 42. definegettersetterbyvalue
-// class Example {
-//     constructor(value) {
-//       this._value = value;
-//     }
-  
-//     // Getter
-//     get value() {
-//       console.log('Getting value');
-//       return this._value;
-//     }
-  
-//     // Setter
-//     set value(newValue) {
-//       console.log('Setting value');
-//       this._value = newValue;
-//     }
-// }
-  
-// const example = new Example(10);
-
-// 37. COPYRESTARGS SUPERCALLSPREAD
-// class A {}
-// class B extends A {
-//     constructor(...args) {
-//        super(1, ...args)
-//     }
-// }
-
-
 // 41. getunmappedargs  stownbyvaluewithnameset topropertykey
 // class A5 {
 //     [a5]() {}
