@@ -122,3 +122,11 @@
 // let x;
 // [x = 0xaa] = [91];
 // [x = 0xaa] = [99];
+
+// corner case 6
+// class C {
+//     method(other: C) {
+//         const { id, secret, ...rest } = other;
+//         console.log(rest);
+//     }
+// }
