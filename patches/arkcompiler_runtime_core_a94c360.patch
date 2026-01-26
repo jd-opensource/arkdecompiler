@@ -1,64 +1,64 @@
 diff --git a/BUILD.gn b/BUILD.gn
-index 8099f59ea..dfffd707e 100755
+index dfffd707e..8099f59ea 100755
 --- a/BUILD.gn
 +++ b/BUILD.gn
-@@ -120,7 +120,6 @@ if (!ark_standalone_build) {
+@@ -120,6 +120,7 @@ if (!ark_standalone_build) {
  # Common config for ark source
  config("ark_config") {
    visibility = [
--    "*",
++    "*",
      "./*",
      "//arkcompiler/ets_frontend/*",
    ]
-@@ -365,14 +364,6 @@ group("ark_host_mac_defectscanaux_unittest") {
+@@ -364,6 +365,14 @@ group("ark_host_mac_defectscanaux_unittest") {
    }
  }
  
--group("xabc") {
--  testonly = true
--  deps = [
--    "//arkdecompiler:xabc",
--  ]
--}
--
--
++group("xabc") {
++  testonly = true
++  deps = [
++    "//arkdecompiler:xabc",
++  ]
++}
++
++
  group("runtime_core_host_unittest") {
    testonly = true
    deps = [
 diff --git a/compiler/optimizer/ir/inst.h b/compiler/optimizer/ir/inst.h
-index 62627b14e..197195776 100644
+index 197195776..62627b14e 100644
 --- a/compiler/optimizer/ir/inst.h
 +++ b/compiler/optimizer/ir/inst.h
-@@ -1929,8 +1929,6 @@ public:
+@@ -1929,6 +1929,8 @@ public:
      }
  };
  
--
--
++
++
  /**
   * CastAnyTypeValueInst instruction
   */
 diff --git a/disassembler/disassembler.h b/disassembler/disassembler.h
-index 3cd125540..e96089bdb 100644
+index e96089bdb..3cd125540 100644
 --- a/disassembler/disassembler.h
 +++ b/disassembler/disassembler.h
 @@ -87,7 +87,7 @@ public:
      std::vector<size_t> GetColumnNumber();
      std::vector<size_t> GetLineNumber();
  
--public:
-+private:
+-private:
++public:
      void GetLiteralArrays();
      void FillLiteralArrayTable(panda_file::File::EntityId &id, size_t index);
      void FillLiteralData(pandasm::LiteralArray *lit_array, const panda_file::LiteralDataAccessor::LiteralValue &value,
-@@ -233,9 +233,8 @@ public:
+@@ -233,8 +233,9 @@ private:
      bool quiet_;
      bool skip_strings_;
      std::unordered_set<uint32_t> module_literals_;
--    public:
++    public:
      std::unordered_set<uint32_t> module_request_phase_literals_;
--//#include "disasm_plugins.inc"
-+#include "disasm_plugins.inc"
+-#include "disasm_plugins.inc"
++//#include "disasm_plugins.inc"
  };
  }  // namespace panda::disasm
  
