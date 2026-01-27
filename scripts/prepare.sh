@@ -2,11 +2,11 @@
 # Tested on Ununtu22.04
 # https://gitcode.com/openharmony/docs/blob/master/zh-cn/device-dev/subsystems/subsys-arkcompiler-guide.md
 
-intall_deps(){
+install_deps(){
     sudo apt-get update && sudo apt-get install python ruby python3-pip git-lfs gcc-multilib g++-multilib zlib1g-dev libc++1 curl nodejs
 }
 
-intall_repo(){
+install_repo(){
     mkdir ~/bin/
     curl https://gitee.com/oschina/repo/raw/fork_flow/repo-py3 > ~/bin/repo
     chmod a+x ~/bin/repo
@@ -40,8 +40,8 @@ switch_to_OpenHarmony_v6_0_0_1_Release(){
 }
 
 create_rootdir
-intall_deps
-intall_repo
+install_deps
+install_repo
 download_source
 switch_to_OpenHarmony_v6_0_0_1_Release
 
