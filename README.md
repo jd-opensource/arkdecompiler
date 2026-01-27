@@ -13,14 +13,12 @@ Ubuntu 18.04
 In the future we will adapt to other development platforms such as (windows, macOS) and add a GUI.
 ## Prepare enviroment
 ```bash
-mkdir harmonyos
-cd harmonyos
 run scripts/prepare.sh
 ```
 
 ## Clone arkdecompiler in harmonyos
 ```bash
-git clone https://github.com/jd-opensource/arkdecompiler.git
+cd harmonyos && git clone https://github.com/jd-opensource/arkdecompiler.git
 ```
 
 
