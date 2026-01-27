@@ -49,7 +49,6 @@
 /////////////////////////////////////////////////////////////
 #include "assembler/annotation.h"
 #include "assembler/assembly-function.h"
-#include "assembler/assembly-ins.h"
 #include "assembly-parser.h"
 #include "assembler/assembly-parser.h"
 
