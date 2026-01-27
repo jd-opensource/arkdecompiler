@@ -3,7 +3,8 @@ We developed the HarmonyOS NEXT decompilation tool named arkdecompiler, which ta
 
 
 
-- 2025.Q3: [2025 Black Hat, USA](https://www.blackhat.com/us-25/arsenal/schedule/index.html#decompiler-for-harmonyos-next-45569)
+- [2025 Black Hat, USA](https://www.blackhat.com/us-25/arsenal/schedule/index.html#decompiler-for-harmonyos-next-45569)
+- [2026 Black Hat, ASIA](https://blackhat.com/asia-26/arsenal/schedule/index.html)
 - 2026.Q1: Support all instructions and program structures
 
 # Installation
