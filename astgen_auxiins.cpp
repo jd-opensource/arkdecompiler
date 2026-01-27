@@ -1,6 +1,5 @@
 void AstGen::VisitPhi(GraphVisitor* v, Inst* inst_base) {
     std::cout << "[+] VisitPhi  >>>>>>>>>>>>>>>>>" << std::endl;
-    pandasm::Ins ins;
     auto enc = static_cast<AstGen*>(v);
     auto inst = inst_base->CastToPhi();
     ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
@@ -52,7 +51,6 @@ void AstGen::VisitParameter(GraphVisitor* v, Inst* inst_base) {
 
 void AstGen::VisitTry(GraphVisitor* v, Inst* inst_base) {
     std::cout << "[+] VisitTry  >>>>>>>>>>>>>>>>>" << std::endl;
-    pandasm::Ins ins;
     auto enc = static_cast<AstGen*>(v);
     auto inst = inst_base->CastToTry();
 

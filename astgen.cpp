@@ -573,7 +573,6 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
 void AstGen::VisitLoadString(GraphVisitor *v, Inst *inst_base)
 {
     std::cout << "[+] VisitLoadString  >>>>>>>>>>>>>>>>>" << std::endl;
-    pandasm::Ins ins;
     auto enc = static_cast<AstGen *>(v);
     auto inst = inst_base->CastToLoadString();
 
@@ -591,7 +590,6 @@ void AstGen::VisitLoadString(GraphVisitor *v, Inst *inst_base)
 void AstGen::VisitReturn(GraphVisitor *v, Inst *inst_base)
 {
     std::cout << "[+] VisitReturn  >>>>>>>>>>>>>>>>>" << std::endl;
-    pandasm::Ins ins;
     auto enc = static_cast<AstGen *>(v);
     auto inst = inst_base->CastToReturn();
     switch (inst->GetType()) {
