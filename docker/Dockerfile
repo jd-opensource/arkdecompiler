@@ -44,7 +44,7 @@ RUN if [ ! -d arkdecompiler ]; then \
 # 打 patch 添加xabc进入构建目标,修改BUILD.gn
 RUN cp ./arkdecompiler/patches/arkcompiler_runtime_core_a94c360.patch ./arkcompiler/runtime_core/ \
     && cp ./arkdecompiler/patches/third_party_protobuf_0e4c27.patch ./third_party/protobuf/ \
-    && cp ./arkdecompiler/pathes/arkcompiler_ets_frontend_09e1955c6.patch ./arkcompiler/ets_frontend/ \
+    && cp ./arkdecompiler/patches/arkcompiler_ets_frontend_09e1955c6.patch ./arkcompiler/ets_frontend/ \
     && cd /root/harmonyos/arkcompiler/runtime_core \
     && git apply arkcompiler_runtime_core_a94c360.patch \
     && cd /root/harmonyos/third_party/protobuf \
