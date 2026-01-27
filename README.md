@@ -8,7 +8,7 @@ We developed the HarmonyOS NEXT decompilation tool named arkdecompiler, which ta
 
 # Installation
 ## Tested platform
-Ubuntu 18.04
+Ubuntu 22.04
 
 In the future we will adapt to other development platforms such as (windows, macOS) and add a GUI.
 ## Prepare enviroment
