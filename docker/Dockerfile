@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
 RUN ln -s /usr/bin/python3 /usr/bin/python
 # 配置 git 信息
 RUN git config --global user.email "you@example.com" \
-    && git config --global user.name "Your"
+    && git config --global user.name "Your Name"
 
 # 安装 repo 工具
 RUN mkdir -p /root/bin \

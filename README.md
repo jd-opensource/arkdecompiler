@@ -12,18 +12,18 @@ We developed the HarmonyOS NEXT decompilation tool named arkdecompiler, which ta
 Ubuntu 22.04
 
 In the future we will adapt to other development platforms such as (windows, macOS) and add a GUI.
-## Prepare enviroment
+## Prepare environment
 ```bash
 run scripts/prepare.sh
 ```
 
-## Clone arkdecompiler in harmonyos
+## Clone arkdecompiler in HarmonyOS
 ```bash
 cd harmonyos && git clone https://github.com/jd-opensource/arkdecompiler.git
 ```
 
 
-## Apply patches to arkcompiler and  third_party
+## Apply patches to arkcompiler and third_party
 Apply patches to `harmonyos/arkcompiler/runtime_core`, `harmonyos/arkcompiler/ets_frontend`, and `harmonyos/third_party/protobuf` according to the `patches`.
 
 
