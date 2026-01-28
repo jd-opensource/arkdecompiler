@@ -27,21 +27,19 @@ cd harmonyos && git clone https://github.com/jd-opensource/arkdecompiler.git
 Apply patches to `harmonyos/arkcompiler/runtime_core`, `harmonyos/arkcompiler/ets_frontend`, and `harmonyos/third_party/protobuf` according to the `patches`.
 
 
-## Build & Run
+## Usage
+### Build the decompilation main program `xabc`
 ```bash
 ./build.sh
-
 ```
 
-## Usage
-## Prepare demo.ts
-refer `tests` directory
+### Prepare the source code file(`demo.ts`)
+create demo.ts(refer `tests` directory)
 
-### Run
+### Compilation && Decompilation
 ./run.sh
 
-### detailed description
-- binary executable is **xabc**,
+#### detailed description
 - default input file is：**demo.abc**
 - default output file is：**arkdemo.ts**
 
