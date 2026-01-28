@@ -12,10 +12,10 @@ Ubuntu 22.04
 In the future we will adapt to other development platforms such as (windows, macOS) and add a GUI.
 ## Prepare environment
 ```bash
-run scripts/prepare.sh
+./prepare.sh(It will create the root directory `harmonyos`)
 ```
 
-## Clone arkdecompiler in HarmonyOS
+## Clone arkdecompiler in `harmonyos`
 ```bash
 cd harmonyos && git clone https://github.com/jd-opensource/arkdecompiler.git
 ```
