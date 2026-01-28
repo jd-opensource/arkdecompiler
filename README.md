@@ -33,15 +33,15 @@ Apply patches to `harmonyos/arkcompiler/runtime_core`, `harmonyos/arkcompiler/et
 ./build.sh
 ```
 
-### Prepare the source code file(`demo.ts`)
-create demo.ts(refer `tests` directory)
+### Prepare the source code file
+Create `demo.ts`(refer `tests` directory)
 
 ### Compilation && Decompilation
 ./run.sh
 
 #### detailed description
-- default input file is：**demo.abc**
-- default output file is：**arkdemo.ts**
+- The compilation result is：**demo.abc**(created by `genlogs.sh`)
+- The decompilation result is：**arkdemo.ts**
 
 
 ## Demo
