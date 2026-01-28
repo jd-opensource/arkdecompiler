@@ -44,10 +44,13 @@ RUN if [ ! -d arkdecompiler ]; then \
 # 打 patch 添加xabc进入构建目标,修改BUILD.gn
 RUN cp ./arkdecompiler/patches/arkcompiler_runtime_core_a94c360.patch ./arkcompiler/runtime_core/ \
     && cp ./arkdecompiler/patches/third_party_protobuf_0e4c27.patch ./third_party/protobuf/ \
+    && cp ./arkdecompiler/patches/arkcompiler_ets_frontend_09e1955c6.patch ./arkcompiler/ets_frontend/ \
     && cd /root/harmonyos/arkcompiler/runtime_core \
     && git apply arkcompiler_runtime_core_a94c360.patch \
     && cd /root/harmonyos/third_party/protobuf \
-    && git apply third_party_protobuf_0e4c27.patch
+    && git apply third_party_protobuf_0e4c27.patch \
+    && cd /root/harmonyos/arkcompiler/ets_frontend \
+    && git apply arkcompiler_ets_frontend_09e1955c6.patch
 
 # 修改 run_command.py默认使用python3
 RUN sed -i '1s|.*|#!/usr/bin/env python3|' /root/harmonyos/third_party/openssl/run_command.py
