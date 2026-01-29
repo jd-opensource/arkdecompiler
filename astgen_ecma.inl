@@ -1597,6 +1597,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     if(startpos == -1){
                         startpos = SearchStartposForCreatePrivateproperty(inst, enc->bb2lexicalenvstack_, enc->method2lexicalmap_, enc->methodoffset_);
                     }
+                    std::cout << "startpos: " << startpos << std::endl;
                     auto lexicalenvstack = enc->bb2lexicalenvstack_[inst->GetBasicBlock()];
                     auto &lexicalenv = lexicalenvstack->Top();
                     
@@ -1673,22 +1674,23 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto tier = static_cast<uint32_t>(inst->GetImms()[1]);
             auto index = static_cast<uint32_t>(inst->GetImms()[2]);
             auto lexicalenvstack = enc->bb2lexicalenvstack_[inst->GetBasicBlock()];
-            if(lexicalenvstack->GetLexicalEnv(tier)[index] == nullptr){
-                HandleError("#LDLEXVAR: lexicalenv is null");
+            if(lexicalenvstack->GetLexicalEnv(tier)[index] != nullptr){
+                auto attr_name = lexicalenvstack->Get(tier, index);
+                auto attr_expression = enc->GetIdentifierByName(attr_name);
+
+                auto obj_expression = *enc->GetExpressionByAcc(inst);
+
+                auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
+                                                                                    obj_expression,
+                                                                                    attr_expression,
+                                                                                    es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                                                    false, 
+                                                                                    false);
+                enc->HandleNewCreatedExpression(inst, objattrexpression);
+            }else{
+                std::cout << "tier: " << tier << " , index: " << index << std::endl;
             }
 
-            auto attr_name = lexicalenvstack->Get(tier, index);
-            auto attr_expression = enc->GetIdentifierByName(attr_name);
-
-            auto obj_expression = *enc->GetExpressionByAcc(inst);
-
-            auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
-                                                                                obj_expression,
-                                                                                attr_expression,
-                                                                                es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
-                                                                                false, 
-                                                                                false);
-            enc->HandleNewCreatedExpression(inst, objattrexpression);
             break;
         }
 
@@ -1984,7 +1986,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                             raw_obj,
                                                             attr_expression, 
                                                             es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
-                                                            true, 
+                                                            false, 
                                                             false);
                 auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
                                                                                     objattrexpression,
