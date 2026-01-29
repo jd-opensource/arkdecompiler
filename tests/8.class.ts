@@ -341,3 +341,11 @@
 // class C {
 //     #something = () => 1234;
 // }
+
+// #11. corner case
+// class C {
+//    static s = new C().#method();
+//    #method() { return 42; }
+// }
+
+// console.log(C.s);
