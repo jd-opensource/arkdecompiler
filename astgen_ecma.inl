@@ -1587,51 +1587,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             break;
         }
 
-    //    case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_CREATEPRIVATEPROPERTY_PREF_IMM16_ID16:
-    //    {
-    //         auto startpos = SearchStartposForCreatePrivateproperty(inst, enc->bb2lexicalenvstack_, enc->method2lexicalmap_, enc->methodoffset_);
-    //         auto literalarray_offset = static_cast<uint32_t>(inst->GetImms()[1]);
-    //         auto member_functions = GetLiteralArrayByOffset(enc->program_, literalarray_offset);
-    //         if(member_functions){
-               
-    //             for(const auto &member_function: *member_functions){
-    //                 auto lexicalenvstack = enc->bb2lexicalenvstack_[inst->GetBasicBlock()];
-    //                 auto &lexicalenv = lexicalenvstack->Top();
-                    
-    //                 // std::cout << "[+] size: " << lexicalenvstack->Size() << std::endl;
-    //                 // std::cout << "[+] env size: " << lexicalenvstack->GetLexicalEnv(0).Size() << std::endl;
-    //                 // std::cout << "[+] capacity_: " << lexicalenv.capacity_ << std::endl;
-
-    //                 uint32_t member_offset = 0;
-    //                 if (enc->methodname2offset_->find(member_function) != enc->methodname2offset_->end()) {
-    //                     member_offset = (*enc->methodname2offset_)[member_function];
-    //                 }else{
-    //                     std::cout << "##name: " << member_function << std::endl;
-    //                     HandleError("#DEFINEMETHOD: find constructor_offset error");
-    //                 }
-
-
-    //                 auto newname = enc->RemovePrefixOfFunc(member_function);
-    //                 auto memfun_str = new std::string(newname);
-
-    //                 // std::cout << "@@@: " << member_function << std::endl;
-    //                 // std::cout << *memfun_str << std::endl;
-    //                 lexicalenv.Set(startpos, memfun_str);
-    //                 DealWithGlobalLexicalWaitlist(0, startpos++, *memfun_str, enc->globallexical_waitlist_);
-
-    //                 CopyLexicalenvStack(member_offset, inst, enc->method2lexicalenvstack_, enc->bb2lexicalenvstack_, enc->globallexical_waitlist_);
-
-    //                 // std::cout << "-----------------------------------------------------------------------------" << std::endl;
-    //                 // std::cout << "[-] size: " << lexicalenvstack->Size() << std::endl;
-    //                 // std::cout << "[-] env size: " << lexicalenvstack->GetLexicalEnv(0).Size() << std::endl;
-    //                 // std::cout << "[-] capacity_: " << lexicalenv.capacity_ << std::endl;
-    //             }
-    //         }
-
-    //         PrintInnerMethod2LexicalMap(enc->method2lexicalmap_, enc->methodoffset_);
-    //         break;
-    //     }
-
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_CREATEPRIVATEPROPERTY_PREF_IMM16_ID16:
        {
             auto literalarray_offset = static_cast<uint32_t>(inst->GetImms()[1]);
