@@ -1269,16 +1269,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
 
             auto new_expression = enc->GetIdentifierByName(newname);
-            
-            // support callruntime.createprivateproperty
-            if(inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM8_ID16_IMM8 ||
-                inst->GetIntrinsicId() == compiler::RuntimeInterface::IntrinsicId::DEFINEMETHOD_IMM16_ID16_IMM8){
-
-                // if(method_name.find("instance_initializer") != std::string::npos || method_name.find("static_initializer") != std::string::npos  ){
-                //   MergeMethod2LexicalMap(inst, enc->bb2lexicalenvstack_, method_offset, enc->methodoffset_, enc->method2lexicalmap_);
-                //}
-            }
-            
+                        
             enc->not_add_assgin_for_stlexvar.insert(new_expression);
             enc->SetExpressionByRegister(inst, inst->GetDstReg(), new_expression);
 
