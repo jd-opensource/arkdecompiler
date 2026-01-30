@@ -1265,12 +1265,12 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
             std::string newname;
 
-            if(contains(*enc->memberfuncs_, method_offset)){
+            //if(contains(*enc->memberfuncs_, method_offset)){
                 newname = enc->RemovePrefixOfFunc(RemoveArgumentsOfFunc(method_name));
-            }else{
-                newname = method_name;
-            }
-            
+            //}else{
+            //    newname = method_name;
+            //}
+
             auto new_expression = enc->GetIdentifierByName(newname);        
             enc->not_add_assgin_for_stlexvar.insert(new_expression);
             enc->SetExpressionByRegister(inst, inst->GetDstReg(), new_expression);
