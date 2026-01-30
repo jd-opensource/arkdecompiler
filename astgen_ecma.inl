@@ -1411,22 +1411,21 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::WIDE_STMODULEVAR_PREF_IMM16:
        {
             auto moudlevar_offset = static_cast<uint32_t>(inst->GetImms()[0]);
-            if(moudlevar_offset > enc->localnamespaces_.size()){
-                HandleError("#STMODULEVAR moudlevar_offset not in localnamespaces_");
+            if(moudlevar_offset < enc->localnamespaces_.size()){
+                auto moudlevar_rawname = enc->localnamespaces_[moudlevar_offset];
+                auto source_expression = enc->GetExpressionByAcc(inst); 
+                if(source_expression){
+                    panda::es2panda::ir::Identifier* moudlevar = enc->GetIdentifierByName(moudlevar_rawname);
+                    auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                        moudlevar,
+                                                                                        *source_expression,
+                                                                                        es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                                    );
+                    auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
+                    enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+                }
             }
 
-            auto moudlevar_rawname = enc->localnamespaces_[moudlevar_offset];
-            auto source_expression = enc->GetExpressionByAcc(inst); 
-            if(source_expression){
-                panda::es2panda::ir::Identifier* moudlevar = enc->GetIdentifierByName(moudlevar_rawname);
-                auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
-                                                                                    moudlevar,
-                                                                                    *source_expression,
-                                                                                    es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
-                                                                                );
-                auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
-                enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
-            }
             break;
         }
 
