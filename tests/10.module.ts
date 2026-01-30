@@ -97,3 +97,10 @@
 //         return dis.a != null && dis.b != null && dis.c != null;
 //     }
 // }
+
+// #1 corner case
+// namespace M {
+//    var x;
+// }
+
+// export = M;
