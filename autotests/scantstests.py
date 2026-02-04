@@ -8,6 +8,7 @@ import signal
 import copy
 import ipdb
 from pathlib import Path
+from itertools import chain
 
 env_vars = copy.deepcopy(os.environ)
 env_vars['LD_LIBRARY_PATH'] = '../out/arkcompiler/runtime_core:../out/thirdparty/zlib'
@@ -184,6 +185,7 @@ def save_results(results_list, output_dir):
         print(f"  - Status {status_code}: Saved {len(records)} records to {filepath}")
 
 def analysis_files(root_dir, output_dir, skip_list):
+    #ts_files = list(chain(root_dir.rglob('*.js'), root_dir.rglob('*.ts')))
     ts_files = list(root_dir.rglob('*.ts'))
     total_files = len(ts_files)
     results_path = Path(output_dir) / "res.json"

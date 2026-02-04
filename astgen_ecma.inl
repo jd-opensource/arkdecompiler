@@ -327,6 +327,22 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     continue;
                 }
 
+                if(literal.tag_ == panda_file::LiteralTag::METHODAFFILIATE){
+                    // methodname2offset_
+                    auto raw_func_name = enc->GetNameFromExpression(key);
+                    if(raw_func_name){
+                        std::cout << "###: " << *raw_func_name << std::endl;
+                        for (const auto& pair : *enc->methodname2offset_) {
+                            if(pair.first.find(*raw_func_name) != std::string::npos){
+                                uint32_t target_offset = pair.second;
+                                CopyLexicalenvStack(target_offset, inst, enc->method2lexicalenvstack_, enc->bb2lexicalenvstack_, enc->globallexical_waitlist_);
+                                CopyLexicalenvStack(target_offset, inst, enc->method2sendablelexicalenvstack_, enc->bb2sendablelexicalenvstack_, enc->globalsendablelexical_waitlist_);
+                            }
+                        }
+                    }
+                    continue;
+                }
+
                 if(count++ % 2==0){
                     key = retvalue;    
                 }else{
