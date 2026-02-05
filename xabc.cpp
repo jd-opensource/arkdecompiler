@@ -271,6 +271,7 @@ int32_t ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
     if ((graph == nullptr) || !graph->RunPass<panda::compiler::IrBuilder>()) {
         //LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": IR builder failed!";
         std::cout << "Optimizing " << func_name << ": IR builder failed!" << std::endl;
+        HandleError("ir build failed!!!");
         return 3;
     }
 
@@ -288,9 +289,8 @@ int32_t ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
     
     if (!graph->RunPass<FunDepScan>(ir_interface, prog, std::ref(disasm), mda.GetMethodId().GetOffset(), depedges, class2memberfuns, method2lexicalmap, memberfuncs, raw2newname, methodname2offset)) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": FuncDep scanning failed!";
-
         std::cout << "FuncDep Scanning " << func_name << ": failed!" << std::endl;
-
+        
         return 6;
     }
 
@@ -382,7 +382,8 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         std::set<uint32_t> skipfailfuns; // skip ir build functions
-        cda.EnumerateMethods([prog, &disasm, ir_interface, is_dynamic, &depedges, &class2memberfuns, &method2lexicalmap, &memberfuncs, &raw2newname, &methodname2offset, &skipfailfuns](panda_file::MethodDataAccessor &mda){
+        bool has_error = false;
+        cda.EnumerateMethods([prog, &has_error, &disasm, ir_interface, is_dynamic, &depedges, &class2memberfuns, &method2lexicalmap, &memberfuncs, &raw2newname, &methodname2offset, &skipfailfuns](panda_file::MethodDataAccessor &mda){
             if (!mda.IsExternal()) {
                 
                 int32_t res = ScanFunDep(prog, disasm, ir_interface, &depedges, &class2memberfuns, &method2lexicalmap, &memberfuncs, &raw2newname, &methodname2offset, mda, is_dynamic);
@@ -392,11 +393,15 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
                 }
 
                 if(res != 0){
-                    HandleError("#DecompilePandaFile: fun dep scan failed!");
+                    has_error = true;
                 }
+
             }
         });
         
+        if(has_error){
+            return false;
+        }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         auto sorted_methodoffsets = TopologicalSort(depedges);
 

@@ -3,6 +3,9 @@
 namespace panda::bytecodeopt {
 
 bool FunDepScan::RunImpl(){
+    if(GetGraph()->GetVectorBlocks().size() != 0 && GetGraph()->GetAliveBlocksCount() < GetGraph()->GetVectorBlocks().size()){
+        return false;
+    }
     for (auto *bb : GetGraph()->GetBlocksLinearOrder()) {
         for (const auto &inst : bb->AllInsts()) {
             VisitInstruction(inst);
@@ -24,10 +27,13 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
     ASSERT(inst_base->IsIntrinsic());
     auto inst = inst_base->CastToIntrinsic();
     auto enc = static_cast<FunDepScan *>(visitor);
+    
     switch(inst->GetIntrinsicId()){
+        
         case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM8_ID16_IMM8:
         case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM16_ID16_IMM8:
         {
+            
             uint32_t methodoffset = static_cast<uint32_t>(inst->GetImms()[1]);
             enc->depedges_->push_back(std::make_pair(enc->methodoffset_, methodoffset));
 
