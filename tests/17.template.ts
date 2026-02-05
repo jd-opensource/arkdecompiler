@@ -20,3 +20,26 @@
 // class DerivedFromAbstract2 extends Mixin2(AbstractBase) {
 //     abstractBaseMethod() {}
 // }
+
+// case 2
+// interface IData {
+//   bar: boolean
+// }
+
+// declare function test<TDependencies>(
+//   getter: (deps: TDependencies, data: IData) => any,
+//   deps: TDependencies,
+// ): any 
+
+// const DEPS = {
+//   foo: 1
+// }
+
+// test(
+//   (deps, data) => {
+//       return {
+//          fn1(a) { return deps.foo + a },
+//       }
+//   },
+//   DEPS
+// );
