@@ -271,7 +271,6 @@ int32_t ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
     if ((graph == nullptr) || !graph->RunPass<panda::compiler::IrBuilder>()) {
         //LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": IR builder failed!";
         std::cout << "Optimizing " << func_name << ": IR builder failed!" << std::endl;
-        HandleError("ir build failed!!!");
         return 3;
     }
 
