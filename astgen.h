@@ -578,6 +578,8 @@ public:
                 std::cout << "###: " << std::to_string(static_cast<int>(callee->Type())) << std::endl;
                 HandleError("#GetNameFromExpression: not support this case 4"); 
             }
+        }else if(rawexpression->IsNullLiteral() ){
+            return "null";
         }else{
             std::cout << "###: " << std::to_string(static_cast<int>(rawexpression->Type())) << std::endl;
             HandleError("#GetNameFromExpression: not support this case 3"); 
