@@ -359,10 +359,11 @@ public:
 
     void HandleNewCreatedExpression(Inst* inst, es2panda::ir::Expression* expression){
         if(inst->HasUsers()){
+            
             this->SetExpressionByRegister(inst, inst->GetDstReg(), expression);
 
             auto curtargetid = inst->GetId();
-            if(this->untravedid.find(curtargetid) != this->untravedid.end()){
+            if(expression->IsCallExpression() || this->undefinedregids.find(curtargetid) != this->undefinedregids.end()){
                 // dealwith untraved_reference
                 auto dst_reg_identifier = this->GetIdentifierByReg(curtargetid);
                 auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(this, 
@@ -372,6 +373,8 @@ public:
                                                                                 );
                 auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(this, assignexpression);
                 this->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+
+                this->SetExpressionByRegister(inst, inst->GetDstReg(), dst_reg_identifier);
             }
         }else{
             if(expression->IsCallExpression()){
@@ -399,7 +402,7 @@ public:
         auto untraveled_var =  this->GetIdentifierByReg(id); 
         this->SetExpressionById(id, untraveled_var);
 
-        this->untravedid.insert(id);
+        this->undefinedregids.insert(id);
 
         return untraveled_var;
         //HandleError("can't find expression in reg2expression: " + std::to_string(id));
@@ -771,7 +774,7 @@ public:
     std::map<compiler::BasicBlock*, LexicalEnvStack*> bb2sendablelexicalenvstack_;
 
     std::map<uint32_t, panda::es2panda::ir::Expression*> id2expression;
-    std::set<uint32_t> untravedid;
+    std::set<uint32_t> undefinedregids;
 
     std::vector<BasicBlock *> visited;
     
