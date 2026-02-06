@@ -349,3 +349,7 @@
 // }
 
 // console.log(C.s);
+
+// #12. corner case
+// class ExtendsNull extends null {
+// }
