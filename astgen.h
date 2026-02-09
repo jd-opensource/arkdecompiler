@@ -617,7 +617,7 @@ public:
                 return GetNameFromExpression(callee);
             }else{
                 std::cout << "###: " << std::to_string(static_cast<int>(callee->Type())) << std::endl;
-                HandleError("#GetNameFromExpression: not support this case 4"); 
+                HandleError("#GetNameFromExpression: not support this case 2"); 
             }
         }else if(rawexpression->IsNullLiteral() ){
             return "null";
@@ -632,9 +632,22 @@ public:
         }else if(rawexpression->IsNewExpression()){
             auto callee = rawexpression->AsNewExpression()->Callee();
             return GetNameFromExpression(const_cast<es2panda::ir::Expression*>(callee));
+        }else if(rawexpression->IsBinaryExpression()){
+            auto binexpression = rawexpression->AsBinaryExpression();
+            auto tokentype = es2panda::lexer::TokenToString(binexpression->OperatorType());
+
+            auto left = GetNameFromExpression(binexpression->Left());
+            auto right = GetNameFromExpression(binexpression->Right());
+
+            if(left && right){
+                return *left + " " + tokentype + " " +  *right;
+            }else{
+                return nullptr;
+                HandleError("#GetNameFromExpression: not support this case 3"); 
+            }
         }else{
             std::cout << "###: " << std::to_string(static_cast<int>(rawexpression->Type())) << std::endl;
-            HandleError("#GetNameFromExpression: not support this case 3"); 
+            HandleError("#GetNameFromExpression: not support this case 4"); 
         }
         return nullptr;
     }
