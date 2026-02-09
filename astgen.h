@@ -629,6 +629,9 @@ public:
             return rawexpression->AsBigIntLiteral()->Str().Mutf8();
         }else if(rawexpression->IsNumberLiteral()){
             return rawexpression->AsNumberLiteral()->Str().Mutf8();
+        }else if(rawexpression->IsNewExpression()){
+            auto callee = rawexpression->AsNewExpression()->Callee();
+            return GetNameFromExpression(const_cast<es2panda::ir::Expression*>(callee));
         }else{
             std::cout << "###: " << std::to_string(static_cast<int>(rawexpression->Type())) << std::endl;
             HandleError("#GetNameFromExpression: not support this case 3"); 
