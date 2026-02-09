@@ -621,6 +621,14 @@ public:
             }
         }else if(rawexpression->IsNullLiteral() ){
             return "null";
+        }else if(rawexpression->IsBooleanLiteral()){
+            return rawexpression->AsBooleanLiteral()->Value() == true ? "true" : "false";;
+        }else if(rawexpression->IsStringLiteral()){
+            return rawexpression->AsStringLiteral()->Str().Mutf8();
+        }else if(rawexpression->IsBigIntLiteral()){
+            return rawexpression->AsBigIntLiteral()->Str().Mutf8();
+        }else if(rawexpression->IsNumberLiteral()){
+            return rawexpression->AsNumberLiteral()->Str().Mutf8();
         }else{
             std::cout << "###: " << std::to_string(static_cast<int>(rawexpression->Type())) << std::endl;
             HandleError("#GetNameFromExpression: not support this case 3"); 

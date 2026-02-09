@@ -353,3 +353,12 @@
 // #12. corner case
 // class ExtendsNull extends null {
 // }
+
+// #13. corner case
+// class C1 extends undefined { }
+// class C2 extends true { }
+// class C3 extends false { }
+// class C4 extends 42 { }
+// class C5 extends "hello" { }
+// class C6 extends x { }
+// class C7 extends foo { }

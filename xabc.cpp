@@ -518,16 +518,19 @@ bool DecompileBytecode(const std::string &pandafile_name, panda::disasm::Disasse
 
 
 int main(int argc, char* argv[]) {
+    
     if (argc > 1) {
         inputFileName = argv[1]; 
     }
     if (argc > 2) {
         outputFileName = argv[2]; 
     }
+    
     panda::disasm::Disassembler disasm {};
-    disasm.Disassemble(inputFileName, false, false);
+    disasm.Disassemble(inputFileName, true, false);
     disasm.CollectInfo();
     
     DecompileBytecode(inputFileName, disasm, true, false);
+    
     return 0;
 }

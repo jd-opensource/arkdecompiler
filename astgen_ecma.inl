@@ -1575,12 +1575,10 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto father = *enc->GetExpressionByRegIndex(inst, 0);
             
             if(father != enc->constant_hole){
-                std::cout << "1111111111111111111111111111111111111111111111111111" << std::endl;
                 auto fathername = enc->GetNameFromExpression(father);
                 if(fathername){
                     std::cout << "father is " << *fathername << std::endl;
                 }
-                std::cout << "222222222222222222222222222222222222222222222222222" << std::endl;
             }else{
                 father = nullptr;
                 std::cout << "father is object" << std::endl;

@@ -1,2 +1,8 @@
 ../autotests/third_party_typescript/tests/cases/conformance/expressions/thisKeyword/thisInInvalidContextsExternalModule.ts
 ../autotests/third_party_typescript/tests/cases/conformance/classes/members/privateNames/privateStaticNameShadowing.ts
+../autotests/third_party_typescript/tests/cases/conformance/emitter/es5/asyncGenerators/emitter.asyncGenerators.objectLiteralMethods.es5.ts
+../autotests/third_party_typescript/tests/cases/conformance/emitter/es2018/asyncGenerators/emitter.asyncGenerators.objectLiteralMethods.es2018.ts
+../autotests/third_party_typescript/tests/cases/conformance/emitter/es2015/asyncGenerators/emitter.asyncGenerators.objectLiteralMethods.es2015.ts
+../autotests/third_party_typescript/tests/cases/conformance/types/uniqueSymbol/uniqueSymbolsDeclarations.ts
+../autotests/third_party_typescript/tests/cases/conformance/types/uniqueSymbol/uniqueSymbols.ts
+../autotests/third_party_typescript/tests/cases/conformance/controlFlow/dependentDestructuredVariables.ts
