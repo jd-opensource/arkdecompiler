@@ -357,13 +357,54 @@ public:
         return this->GetIdentifierByName(*raw_name);
     }
 
+    // uint32_t DetectDepthOfAST(es2panda::ir::Expression* expression){
+    //     uint32_t astdepth = 0;
+    //     expression->Iterate([&astdepth](const es2panda::ir::AstNode *astNode) -> void {
+    //         std::cout << "astdepth: " << astdepth++ << std::endl;
+    //     });
+
+    //     return astdepth;
+    // }
+
+
+    uint32_t DetectComplexOfAST(es2panda::ir::Expression* expression){
+        if (expression == nullptr) return 0;
+
+        uint32_t astcomplex = 0;
+        
+        std::function<void(const es2panda::ir::AstNode*)> analyzeNode = 
+            [&](const es2panda::ir::AstNode* node) {
+            if (node == nullptr) return;
+
+            std::cout << "astcomplex: " << astcomplex++ << std::endl;
+            switch (node->Type()) {
+                case es2panda::ir::AstNodeType::BINARY_EXPRESSION: {
+                    auto binaryExpr = node->AsBinaryExpression();
+                    analyzeNode(binaryExpr->Left());
+                    analyzeNode(binaryExpr->Right());
+                    return;
+                }
+                default:
+                    return;
+            }
+            return;
+        };
+
+
+        analyzeNode(expression);
+
+        return astcomplex;
+    }
+
     void HandleNewCreatedExpression(Inst* inst, es2panda::ir::Expression* expression){
         if(inst->HasUsers()){
             
             this->SetExpressionByRegister(inst, inst->GetDstReg(), expression);
 
             auto curtargetid = inst->GetId();
-            if(expression->IsCallExpression() || this->undefinedregids.find(curtargetid) != this->undefinedregids.end()){
+            auto astcomplex = this->DetectComplexOfAST(expression);
+                        
+            if(astcomplex>5 || expression->IsCallExpression() || this->undefinedregids.find(curtargetid) != this->undefinedregids.end()){
                 // dealwith untraved_reference
                 auto dst_reg_identifier = this->GetIdentifierByReg(curtargetid);
                 auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(this, 
