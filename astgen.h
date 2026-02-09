@@ -304,16 +304,6 @@ public:
         
     }
 
-    std::optional<panda::pandasm::LiteralArray> FindLiteralArrayByOffset(uint32_t offset) {
-        for (const auto& [key, value] : this->program_->literalarray_table) {
-            if (ParseHexFromKey(key) == offset) {
-                return value;
-            }
-        }
-        return std::nullopt;
-    }
-
-
     panda::es2panda::ir::NumberLiteral* GetLiteralByNum(uint32_t index){
         panda::es2panda::ir::NumberLiteral* literal;
         if (this->num2literals.find(index)  != this->num2literals.end()) {

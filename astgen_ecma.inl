@@ -287,7 +287,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             ArenaVector<es2panda::ir::Expression *> elements(enc->parser_program_->Allocator()->Adapter());
             auto literalarray_offset = static_cast<uint32_t>(inst->GetImms()[1]);
 
-            auto literalarray = enc->FindLiteralArrayByOffset(literalarray_offset);
+            auto literalarray = FindLiteralArrayByOffset(enc->program_, literalarray_offset);
             if(!literalarray){
                 HandleError("get literalarray error");
             }
@@ -316,7 +316,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             ArenaVector<es2panda::ir::Expression *> properties(enc->parser_program_->Allocator()->Adapter());
             
             auto literalarray_offset = static_cast<uint32_t>(inst->GetImms()[1]); 
-            auto literalarray = enc->FindLiteralArrayByOffset(literalarray_offset);
+            auto literalarray = FindLiteralArrayByOffset(enc->program_ , literalarray_offset);
 
             int count = 0;
             es2panda::ir::Expression* key;

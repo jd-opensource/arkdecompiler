@@ -79,6 +79,15 @@ std::optional<std::string> FindKeyByValue(const std::map<std::string, uint32_t>&
     return std::nullopt;
 }
 
+std::optional<panda::pandasm::LiteralArray> FindLiteralArrayByOffset(panda::pandasm::Program *program_, uint32_t offset) {
+    for (const auto& [key, value] : program_->literalarray_table) {
+        if (ParseHexFromKey(key) == offset) {
+            return value;
+        }
+    }
+    return std::nullopt;
+}
+
 
 uint32_t ParseHexFromKey(const std::string& key) {
     std::istringstream iss(key);

@@ -3,9 +3,13 @@
 namespace panda::bytecodeopt {
 
 bool FunDepScan::RunImpl(){
+    //std::cout << "[+] @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
     if(GetGraph()->GetVectorBlocks().size() != 0 && GetGraph()->GetAliveBlocksCount() < GetGraph()->GetVectorBlocks().size()){
+        //std::cout << "GetGraph()->GetVectorBlocks().size(): " << GetGraph()->GetVectorBlocks().size() << std::endl;
+        //std::cout << "GetGraph()->GetAliveBlocksCount(): " << GetGraph()->GetAliveBlocksCount() << std::endl;
         return false;
     }
+    //std::cout << "[-] @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
     for (auto *bb : GetGraph()->GetBlocksLinearOrder()) {
         for (const auto &inst : bb->AllInsts()) {
             VisitInstruction(inst);
@@ -29,7 +33,26 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
     auto enc = static_cast<FunDepScan *>(visitor);
     
     switch(inst->GetIntrinsicId()){
-        
+        case compiler::RuntimeInterface::IntrinsicId::CREATEOBJECTWITHBUFFER_IMM8_ID16:
+        case compiler::RuntimeInterface::IntrinsicId::CREATEOBJECTWITHBUFFER_IMM16_ID16:
+        {
+            auto literalarray_offset = static_cast<uint32_t>(inst->GetImms()[1]); 
+            auto literalarray = FindLiteralArrayByOffset(enc->program_, literalarray_offset);
+
+            for (const auto& literal : literalarray->literals_) {
+                if(literal.tag_ == panda_file::LiteralTag::METHOD){
+                    auto methodname = std::string(std::get<std::string>(literal.value_));
+                    for (const auto& pair : *enc->methodname2offset_) {
+                        if(pair.first.find(methodname) != std::string::npos){
+                            uint32_t methodoffset = pair.second;
+                            enc->depedges_->push_back(std::make_pair(enc->methodoffset_, methodoffset));
+                        }
+                    }
+                }
+            }
+            break;
+        }
+
         case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM8_ID16_IMM8:
         case compiler::RuntimeInterface::IntrinsicId::DEFINEFUNC_IMM16_ID16_IMM8:
         {
