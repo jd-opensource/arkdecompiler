@@ -293,3 +293,17 @@
 // var v = {
 //     get ["" + ""]() { return 0; },
 // }
+
+// #4. hidden scanning dependencies in the CREATEOBJECTWITHBUFFER
+// {
+//     let result: { velocity: number; } = {
+//         velocity: 1
+//     };
+
+//     let point = {
+//         getS(){
+//             return result;
+//         }
+//     };
+
+// };
