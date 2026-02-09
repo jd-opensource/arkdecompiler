@@ -362,3 +362,16 @@
 // class C5 extends "hello" { }
 // class C6 extends x { }
 // class C7 extends foo { }
+
+// #14. corner case
+// class A<T> {
+//     genericVar: T
+// }
+
+// class B2<V> {
+//     anon = class extends A<V> { }
+// }
+
+// class C extends (new B2<number>().anon) {
+//     name: string;
+// }
