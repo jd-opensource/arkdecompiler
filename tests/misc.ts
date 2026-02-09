@@ -288,3 +288,8 @@
 //     b += ((c & d) | (~c & a)) + blocks[15];
 //     b = (b << 19) | (b >>> 13);
 // };
+
+// #3. obtaining the name of the binary expression
+// var v = {
+//     get ["" + ""]() { return 0; },
+// }
