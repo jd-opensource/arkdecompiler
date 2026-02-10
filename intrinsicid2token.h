@@ -148,6 +148,7 @@ panda::es2panda::lexer::TokenType UnaryPrefixIntrinsicIdToToken(panda::compiler:
         case panda::compiler::RuntimeInterface::IntrinsicId::NOT_IMM8:
             return panda::es2panda::lexer::TokenType::PUNCTUATOR_TILDE;
         case panda::compiler::RuntimeInterface::IntrinsicId::TYPEOF_IMM8:
+        case panda::compiler::RuntimeInterface::IntrinsicId::TYPEOF_IMM16:
             return panda::es2panda::lexer::TokenType::KEYW_TYPEOF;
         case panda::compiler::RuntimeInterface::IntrinsicId::DELOBJPROP_V8:
             return panda::es2panda::lexer::TokenType::KEYW_DELETE;
