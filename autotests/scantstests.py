@@ -33,7 +33,7 @@ def execute_cmd(cmd):
             check=False,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            universal_newlines=True,
+            universal_newlines=False,
             start_new_session=True,
             timeout=10,
             env=env_vars,
@@ -41,6 +41,9 @@ def execute_cmd(cmd):
         )
 
         return_code = result.returncode
+        
+        stdout_text = result.stdout.decode('utf-8', errors='backslashreplace')
+        stderr_text = result.stderr.decode('utf-8', errors='backslashreplace')
 
         if result.returncode == 0:
             print(f"✅ Success (Exit Code 0)")
