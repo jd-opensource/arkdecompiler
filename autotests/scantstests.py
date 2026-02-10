@@ -123,9 +123,13 @@ def analysis_onefile(analysis_file):
         res["status"] = 1
         return res
 
+    file_path = Path(analysis_file)
+    suffix = file_path.suffix.lower()
+    ext_flag = "js" if suffix == ".js" else "ts"
+
     plans = [
-        [es2abc_path, "--module", "--dump-assembly", "demo.ts", "--output", "demo.abc"],
-        [es2abc_path, "--dump-assembly", "demo.ts", "--output", "demo.abc"]
+        [es2abc_path, "--module", "--extension", ext_flag, "demo.ts", "--output", "demo.abc"],
+        [es2abc_path, "--extension", ext_flag, "demo.ts", "--output", "demo.abc"]
     ]
 
     has_any_compile_success = False
@@ -184,9 +188,21 @@ def save_results(results_list, output_dir):
             
         print(f"  - Status {status_code}: Saved {len(records)} records to {filepath}")
 
-def analysis_files(root_dir, output_dir, skip_list):
-    #ts_files = list(chain(root_dir.rglob('*.js'), root_dir.rglob('*.ts')))
-    ts_files = list(root_dir.rglob('*.ts'))
+def analysis_files(root_dir, output_dir, skip_list, file_type):
+    files_to_analyze = []
+    
+    if file_type == 'js':
+        patterns = ['*.js']
+    elif file_type == 'ts':
+        patterns = ['*.ts']
+    else:
+        patterns = ['*.js', '*.ts']
+
+    ts_files = []
+    for pattern in patterns:
+        ts_files.extend([f for f in root_dir.rglob(pattern) if f.is_file()])
+
+    ts_files = [f for f in root_dir.rglob('*.js') if f.is_file()]
     total_files = len(ts_files)
     results_path = Path(output_dir) / "res.json"
 
@@ -225,6 +241,9 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--record_file", type=str, default="res.json",
                         help=f"JSON file path for analyzed file records (default: res.json)")
 
+    parser.add_argument("-t", "--type", type=str, choices=['ts', 'js', 'all'], default='ts',
+                        help="FileType to analyze: ts, js, or all (default: ts)")
+
     args = parser.parse_args()
     root_dir = Path(args.input_dir)
     if not root_dir.is_dir():
@@ -236,7 +255,7 @@ if __name__ == "__main__":
         print(f"\nCreated output directory: {args.output_dir}")
 
     skip_list = load_skip_list(args.skip_file)
-    analysis_files(root_dir, args.output_dir, skip_list)
+    analysis_files(root_dir, args.output_dir, skip_list, args.type)
 
     #test_file = "../autotests/third_party_typescript/tests/cases/conformance/emitter/es2015/asyncGenerators/emitter.asyncGenerators.classMethods.es2015.ts"
     #analysis_onefile(test_file)
