@@ -59,6 +59,10 @@ def execute_cmd(cmd):
             if signal_value == signal.SIGSEGV.value:
                  print(f"❌ Severe Error: Segmentation Fault ({signal_name})!")
                  status_detail = "Segmentation Fault"
+            elif signal_value == getattr(signal, 'SIGABRT', 6):
+                 print(f"❌ Severe Error: Process Aborted ({signal_name})!")
+                 return_code = -6
+                 status_detail = "Aborted (SIGABRT)"
             else:
                  print(f"❌ Warning: terminated by signal ({signal_name})!")
                  status_detail = f"Error (Signal: {signal_name})"
@@ -148,6 +152,9 @@ def analysis_onefile(analysis_file):
             decompile_res = execute_cmd([decompile_exe])
             if decompile_res["return_code"] == 0:
                 res["status"] = 0
+                return res
+            elif decompile_res["return_code"] == -6:
+                res["status"] = 2
                 return res
         else:
             continue

@@ -1147,8 +1147,11 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }
             auto raw_obj = *enc->GetExpressionByRegIndex(inst, 0);
             if(!raw_obj->IsArrayExpression()){
+                if(raw_obj->IsMemberExpression()){
+                    HandleError("@@@@@@@");
+                }
                 std::cout << "###: " << std::to_string(static_cast<int>(raw_obj->Type())) << std::endl;
-                HandleError("#STARRAYSPREAD: cann't deal expression except ArrayExpression");
+                HandleError("#1STARRAYSPREAD: cann't deal expression except ArrayExpression");
             }
             auto raw_arrayexpression = raw_obj->AsArrayExpression();
             ArenaVector<es2panda::ir::Expression *> elements(enc->parser_program_->Allocator()->Adapter());

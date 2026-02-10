@@ -68,7 +68,8 @@ panda::es2panda::lexer::TokenType BinIntrinsicIdToToken(panda::compiler::Runtime
             
         default:
             std::cout << "S6" << std::endl;
-            UNREACHABLE();
+            HandleError("#BinIntrinsicIdToToken");
+            return panda::es2panda::lexer::TokenType::EOS;
     }
 }
 
@@ -135,7 +136,8 @@ panda::es2panda::lexer::TokenType BinInverseIntrinsicIdToToken(panda::compiler::
   
         default:
             std::cout << "S7" << std::endl;
-            UNREACHABLE();
+            HandleError("#BinInverseIntrinsicIdToToken");
+            return panda::es2panda::lexer::TokenType::EOS;
     }
 }
 
@@ -154,7 +156,8 @@ panda::es2panda::lexer::TokenType UnaryPrefixIntrinsicIdToToken(panda::compiler:
             return panda::es2panda::lexer::TokenType::KEYW_DELETE;
         default:
             std::cout << "S8: " << GetIntrinsicOpcodeName(id) << std::endl;
-            UNREACHABLE();
+            HandleError("#UnaryPrefixIntrinsicIdToToken");
+            return panda::es2panda::lexer::TokenType::EOS;
     }
 }
 
@@ -168,8 +171,8 @@ panda::es2panda::lexer::TokenType IncDecIntrinsicIdToToken(panda::compiler::Runt
             return panda::es2panda::lexer::TokenType::PUNCTUATOR_PLUS;
         default:
             std::cout << "S9" << std::endl;
-            UNREACHABLE();
-
+            HandleError("#IncDecIntrinsicIdToToken");
+            return panda::es2panda::lexer::TokenType::EOS;
     }
 }
 #endif
