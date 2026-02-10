@@ -202,7 +202,6 @@ def analysis_files(root_dir, output_dir, skip_list, file_type):
     for pattern in patterns:
         ts_files.extend([f for f in root_dir.rglob(pattern) if f.is_file()])
 
-    ts_files = [f for f in root_dir.rglob('*.js') if f.is_file()]
     total_files = len(ts_files)
     results_path = Path(output_dir) / "res.json"
 
