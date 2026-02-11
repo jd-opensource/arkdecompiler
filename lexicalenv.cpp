@@ -85,7 +85,7 @@ bool LexicalEnv::IsValidIndex(size_t index) const {
 
 void LexicalEnv::CheckIndex(size_t index) const {
     if (index >= capacity_) {
-        throw std::out_of_range("LexicalEnv index out of range");
+        HandleError("#LexicalEnv::CheckIndex: LexicalEnv index out of range");
     }
 }
 
@@ -115,7 +115,7 @@ LexicalEnv* LexicalEnvStack::Push(size_t capacity) {
 
 void LexicalEnvStack::Pop() {
     if (stack_.empty()) {
-        throw std::runtime_error("Cannot pop from empty stack");
+        HandleError("#LexicalEnvStack::Pop: Cannot pop from empty stack");
     }
     stack_.pop_back();
 }
@@ -177,7 +177,7 @@ LexicalEnv& LexicalEnvStack::GetLexicalEnv(size_t A) {
 
 LexicalEnv& LexicalEnvStack::Top() {
     if (stack_.empty()) {
-        throw std::runtime_error("Stack is empty");
+        HandleError("#LexicalEnvStack::Top: Stack is empty");
     }
     return stack_.back();
 }
@@ -191,17 +191,17 @@ void LexicalEnvStack::CheckIndex(size_t A, size_t B) const {
     
     size_t actualIndex = stack_.size() - 1 - A;
     if (!stack_[actualIndex].IsValidIndex(B)) {
-        throw std::out_of_range("LexicalEnv index B out of range");
+        HandleError("#LexicalEnvStack::CheckIndex: LexicalEnv index B out of range");
     }
 }
 
 void LexicalEnvStack::CheckStackIndex(size_t A) const {
     if (stack_.empty()) {
-        throw std::runtime_error("Stack is empty");
+        HandleError("#LexicalEnvStack::CheckStackIndex: Stack is empty");
     }
     
     if (A >= stack_.size()) {
-        throw std::out_of_range("Stack index A out of range");
+        HandleError("#LexicalEnvStack::CheckStackIndex: Stack index A out of range");
     }
 }
 
