@@ -1,5 +1,6 @@
-# Description
-We developed the HarmonyOS NEXT decompilation tool named arkdecompiler, which takes Panda Binary File as input, parses Panda Bytecode, and then translates it into Panda IR. After having IR, we can do various analyses. Based on IR, we reversely construct the native arkTS AST tree, and then we traverse the AST tree and translate it into native arkTS source code.
+# arkdecompiler
+
+arkdecompiler is the decompiler for HarmonyOS Next(纯血鸿蒙反编译器), which takes Panda Binary File as input, parses Panda Bytecode, and then translates it into Panda IR. After having IR, we can do various analyses. Based on IR, we reversely construct the native arkTS AST tree, and then we traverse the AST tree and translate it into native arkTS source code.
 
 - [2025 Black Hat, USA](https://www.blackhat.com/us-25/arsenal/schedule/index.html#decompiler-for-harmonyos-next-45569)
 - [2026 Black Hat, ASIA](https://blackhat.com/asia-26/arsenal/schedule/index.html)
