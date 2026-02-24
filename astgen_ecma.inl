@@ -1184,7 +1184,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                                                                                 );
                 
                 enc->SetExpressionByRegister(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), arrayexpression);
-            }else if(raw_obj->IsMemberExpression()){
+            }else if(raw_obj->IsMemberExpression() || raw_obj->IsIdentifier()  ){
                 auto valueexpression = *enc->GetExpressionByAcc(inst);
 
                 if(enc->methodname2offset_->find(*enc->GetNameFromExpression(valueexpression) ) == enc->methodname2offset_->end()){
