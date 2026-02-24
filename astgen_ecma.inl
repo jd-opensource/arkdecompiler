@@ -1145,50 +1145,69 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             }else{
                 index = static_cast<uint32_t>(inst->GetImms()[1]);
             }
+
             auto raw_obj = *enc->GetExpressionByRegIndex(inst, 0);
-            if(!raw_obj->IsArrayExpression()){
-                if(raw_obj->IsMemberExpression()){
-                    HandleError("@@@@@@@");
-                }
-                std::cout << "###: " << std::to_string(static_cast<int>(raw_obj->Type())) << std::endl;
-                HandleError("#1STARRAYSPREAD: cann't deal expression except ArrayExpression");
-            }
-            auto raw_arrayexpression = raw_obj->AsArrayExpression();
-            ArenaVector<es2panda::ir::Expression *> elements(enc->parser_program_->Allocator()->Adapter());
+            if(raw_obj->IsArrayExpression()){            
+                auto raw_arrayexpression = raw_obj->AsArrayExpression();
+                ArenaVector<es2panda::ir::Expression *> elements(enc->parser_program_->Allocator()->Adapter());
 
-            uint32_t count = 0;
-            bool inserted = false;
-            for (auto *it :raw_arrayexpression->Elements()) {
-                if(count++ == index){
-                    inserted = true;
-                    elements.push_back(*enc->GetExpressionByAcc(inst));
-                }
-                elements.push_back(it);
-            }
-
-            if(!inserted) {
-                if(index == raw_arrayexpression->Elements().size()){
-                    elements.push_back(*enc->GetExpressionByAcc(inst));
-                }else if(index > raw_arrayexpression->Elements().size() ){
-                    while(count < index){
-                        auto omittedexpression = AllocNode<es2panda::ir::OmittedExpression>(enc);
-                        elements.push_back(omittedexpression);
-                        count++;
+                uint32_t count = 0;
+                bool inserted = false;
+                for (auto *it :raw_arrayexpression->Elements()) {
+                    if(count++ == index){
+                        inserted = true;
+                        elements.push_back(*enc->GetExpressionByAcc(inst));
                     }
-                    elements.push_back(*enc->GetExpressionByAcc(inst));
-                }else{
-                    std::cout << "element size: " << raw_arrayexpression->Elements().size() << " , index: " << index << std::endl;
-                    HandleError("#STARRAYSPREAD inset element error");
+                    elements.push_back(it);
                 }
+
+                if(!inserted) {
+                    if(index == raw_arrayexpression->Elements().size()){
+                        elements.push_back(*enc->GetExpressionByAcc(inst));
+                    }else if(index > raw_arrayexpression->Elements().size() ){
+                        while(count < index){
+                            auto omittedexpression = AllocNode<es2panda::ir::OmittedExpression>(enc);
+                            elements.push_back(omittedexpression);
+                            count++;
+                        }
+                        elements.push_back(*enc->GetExpressionByAcc(inst));
+                    }else{
+                        std::cout << "element size: " << raw_arrayexpression->Elements().size() << " , index: " << index << std::endl;
+                        HandleError("#STOWNBYINDEX: 1 inset element error");
+                    }
+                }
+                
+                auto arrayexpression = AllocNode<es2panda::ir::ArrayExpression>(enc, 
+                                                                                es2panda::ir::AstNodeType::ARRAY_EXPRESSION,
+                                                                                std::move(elements),
+                                                                                false
+                                                                                );
+                
+                enc->SetExpressionByRegister(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), arrayexpression);
+            }else if(raw_obj->IsMemberExpression()){
+                auto valueexpression = *enc->GetExpressionByAcc(inst);
+
+                if(enc->methodname2offset_->find(*enc->GetNameFromExpression(valueexpression) ) == enc->methodname2offset_->end()){
+                    auto objattrexpression = AllocNode<es2panda::ir::MemberExpression>(enc,
+                                                                raw_obj,
+                                                                enc->GetLiteralByNum(index), 
+                                                                es2panda::ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, 
+                                                                true, 
+                                                                false);
+
+                    panda::es2panda::ir::Expression* assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
+                                                                                objattrexpression,
+                                                                                *enc->GetExpressionByAcc(inst),
+                                                                                es2panda::lexer::TokenType::PUNCTUATOR_SUBSTITUTION
+                                                                        ); 
+
+                    auto assignstatement = AllocNode<es2panda::ir::ExpressionStatement>(enc, assignexpression);
+                    enc->AddInstAst2BlockStatemntByInst(inst, assignstatement);
+                }
+            }else{
+                std::cout << "###: " << std::to_string(static_cast<int>(raw_obj->Type())) << std::endl;
+                HandleError("#STOWNBYINDEX: 2 cann't deal expression except ArrayExpression");
             }
-            
-            auto arrayexpression = AllocNode<es2panda::ir::ArrayExpression>(enc, 
-                                                                            es2panda::ir::AstNodeType::ARRAY_EXPRESSION,
-                                                                            std::move(elements),
-                                                                            false
-                                                                            );
-            
-            enc->SetExpressionByRegister(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), arrayexpression);
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             break;
@@ -1290,6 +1309,7 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             //    newname = method_name;
             //}
 
+            (*enc->methodname2offset_)[newname] = method_offset;
             auto new_expression = enc->GetIdentifierByName(newname);        
             enc->not_add_assgin_for_stlexvar.insert(new_expression);
             enc->SetExpressionByRegister(inst, inst->GetDstReg(), new_expression);
