@@ -375,3 +375,12 @@
 // class C extends (new B2<number>().anon) {
 //     name: string;
 // }
+
+
+// #15. corner case
+// class TestClass {
+//     set 2(v) { }
+//     3() { }
+//     static set 5(x) { }
+//     static 6() { }
+// }
