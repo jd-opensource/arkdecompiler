@@ -2243,11 +2243,10 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto rawcalleename2 = enc->GetNameFromExpression(rawcallee2);
             
             if(rawmember->IsObjectExpression()){
-                std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
                 auto objexpression = rawmember->AsObjectExpression();
                 auto attrexpression = *enc->GetExpressionByRegIndex(inst, 1);
                 auto attrname = enc->GetNameFromExpression(attrexpression);
-                std::cout << "11111111111111111111111111111111111111111111111111" << std::endl;
+
                 ArenaVector<es2panda::ir::Expression *> new_properties(enc->parser_program_->Allocator()->Adapter());
                 for (auto *it : objexpression->Properties()) {
                     if(it->IsProperty()){
@@ -2258,17 +2257,16 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                     }
                     new_properties.push_back(it);
                 }
-                std::cout << "2222222222222222222222222222222222222222222222222" << std::endl;
+
                 if(rawcalleename1 && *rawcalleename1 != "undefined"){
                     auto newexpression = enc->GetIdentifierByName(RemoveArgumentsOfFunc(*rawcalleename1));
                     new_properties.push_back(  AllocNode<es2panda::ir::Property>(enc, attrexpression, newexpression));
                 }
-                std::cout << "3333333333333333333333333333333333333333333333333" << std::endl;
+
                 if(rawcalleename2 && *rawcalleename2 != "undefined"){
                     auto newexpression = enc->GetIdentifierByName(RemoveArgumentsOfFunc(*rawcalleename2));
                     new_properties.push_back(  AllocNode<es2panda::ir::Property>(enc, attrexpression, newexpression ));
                 }
-                std::cout << "4444444444444444444444444444444444444444444444444" << std::endl;
                 auto objectexpression = AllocNode<es2panda::ir::ObjectExpression>(enc, 
                                                                                     es2panda::ir::AstNodeType::OBJECT_EXPRESSION,
                                                                                     std::move(new_properties),
@@ -2277,7 +2275,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 
                 enc->SetExpressionByRegister(inst->GetInput(0).GetInst(), inst->GetSrcReg(0), objectexpression);
             }else{
-                std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
                 uint32_t constructor_offset;
                 std::optional<std::string> objname;
                 if(rawmember->IsMemberExpression()){
