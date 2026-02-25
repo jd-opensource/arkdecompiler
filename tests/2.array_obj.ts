@@ -130,3 +130,8 @@
 //         console.log(rest);
 //     }
 // }
+
+// corner case 7
+// var obj = {
+//   get [['ing']]() { return 'hello'; },
+// };
