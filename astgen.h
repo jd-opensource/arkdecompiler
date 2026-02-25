@@ -635,8 +635,29 @@ public:
                 return nullptr;
                 HandleError("#GetNameFromExpression: not support this case 3"); 
             }
+        }else if(rawexpression->IsArrayExpression()){
+            std::stringstream ss_;
+            int count = 0;
+            ss_ << "[";
+            auto arrayexpression = rawexpression->AsArrayExpression();
+            int array_size = arrayexpression->Elements().size();
+            for (auto *it : arrayexpression->Elements()) {
+                if(it->IsStringLiteral()){
+                    ss_ << "\"";
+                }
+                ss_ <<*this->GetNameFromExpression(it);
+                if(it->IsStringLiteral()){
+                    ss_ << "\"";
+                }
+                if(++count < array_size ){
+                    ss_ << ", ";
+                }
+            }
+
+            ss_ << "]";
+            return ss_.str();
         }else{
-            std::cout << "###: " << std::to_string(static_cast<int>(rawexpression->Type())) << std::endl;
+            std::cout << "###1: " << std::to_string(static_cast<int>(rawexpression->Type())) << std::endl;
             HandleError("#GetNameFromExpression: not support this case 4"); 
         }
         return nullptr;
