@@ -21,13 +21,14 @@ public:
         std::map<std::string, uint32_t> *methodname2offset,
         std::vector<uint32_t> *inserted_construct_order,
         std::map<uint32_t, uint32_t>* construct2initializer,
-        std::map<uint32_t, uint32_t>* construct2staticinitializer
-        )
+        std::map<uint32_t, uint32_t>* construct2staticinitializer,
+        std::map<uint32_t, uint32_t>* construct2definedmethod
+    )
         : compiler::Optimization(graph), ir_interface_(iface), program_(program), disasm_(disasm), methodoffset_(methodoffset), 
         depedges_(depedges), class2memberfuns_(class2memberfuns), method2lexicalmap_(method2lexicalmap),
         memberfuncs_(memberfuncs), raw2newname_(raw2newname), methodname2offset_(methodname2offset),
         inserted_construct_order_(inserted_construct_order), construct2initializer_(construct2initializer),
-        construct2staticinitializer_(construct2staticinitializer)
+        construct2staticinitializer_(construct2staticinitializer), construct2definedmethod_(construct2definedmethod)
     {
         this->current_function_initializer = 0;
         this->current_constructor_offset = 0;
@@ -86,6 +87,7 @@ public:
     std::vector<uint32_t> *inserted_construct_order_;
     std::map<uint32_t, uint32_t>* construct2initializer_;
     std::map<uint32_t, uint32_t>* construct2staticinitializer_;
+    std::map<uint32_t, uint32_t>* construct2definedmethod_;
 
     uint32_t current_constructor_offset;
     uint32_t current_function_initializer;

@@ -106,6 +106,7 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
             enc->inserted_construct_order_->push_back(enc->current_constructor_offset);
 
             (*enc->class2memberfuns_)[constructor_offset].insert(constructor_offset);
+            (*enc->construct2definedmethod_)[constructor_offset] = enc->methodoffset_;
 
             auto literalarray_offset = static_cast<uint32_t>(inst->GetImms()[2]);
             auto member_functions = GetLiteralArrayByOffset(enc->program_, literalarray_offset);

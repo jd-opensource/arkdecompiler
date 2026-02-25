@@ -240,6 +240,7 @@ int32_t ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
                 std::vector<uint32_t> *inserted_construct_order,
                 std::map<uint32_t, uint32_t>* construct2initializer,
                 std::map<uint32_t, uint32_t>* construct2staticinitializer,
+                std::map<uint32_t, uint32_t>* construct2definedmethod,
                 bool is_dynamic)
 {
     
@@ -291,7 +292,7 @@ int32_t ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
     
     if (!graph->RunPass<FunDepScan>(ir_interface, prog, std::ref(disasm), mda.GetMethodId().GetOffset(), depedges, class2memberfuns, method2lexicalmap, 
         memberfuncs, raw2newname, methodname2offset, inserted_construct_order,
-        construct2initializer, construct2staticinitializer
+        construct2initializer, construct2staticinitializer, construct2definedmethod
     )) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": FuncDep scanning failed!";
         std::cout << "FuncDep Scanning " << func_name << ": failed!" << std::endl;
@@ -302,7 +303,7 @@ int32_t ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
     return 0;
 }
 
-void ConstructMethodname2offset(panda::disasm::Disassembler& disasm, std::map<std::string, uint32_t> *methodname2offset){
+void ConstructMethodname2offset(panda::disasm::Disassembler& disasm, std::map<std::string, uint32_t> *methodname2offset, std::map<uint32_t, std::string>* offset2methodname){
     for (const auto& pair : disasm.method_name_to_id_) {
         std::cout << "##########################################################" << std::endl;
         std::cout << "first: " << pair.first << std::endl;
@@ -312,8 +313,63 @@ void ConstructMethodname2offset(panda::disasm::Disassembler& disasm, std::map<st
         if (pos != std::string::npos) {
             std::string result = RemoveArgumentsOfFunc(pair.first);
             (*methodname2offset)[result] = pair.second.GetOffset();
+            (*offset2methodname)[pair.second.GetOffset()] = result;
         }
     }
+}
+
+
+std::string GetClassSignature(const std::string& full_name) {
+    size_t eq_pos = full_name.find('=');
+    if (eq_pos != std::string::npos) {
+        return full_name.substr(0, eq_pos);
+    }
+    return full_name;
+}
+
+void ReorderAnalysisSequenceOfClasses(std::vector<uint32_t> *inserted_construct_order, std::map<uint32_t, std::string> offset2methodname){
+    // 783: #~C>@0*~CC=#CC
+    // 671: #~C=#C
+    // 898: #~C>@0~@1=#classExprBoundary
+    // 671 > 783 ,  671 > 898
+
+    if (!inserted_construct_order) 
+        return;
+
+    std::stable_sort(inserted_construct_order->begin(), inserted_construct_order->end(),
+        [&](uint32_t id_a, uint32_t id_b) {
+            if (offset2methodname.find(id_a) == offset2methodname.end() || 
+                offset2methodname.find(id_b) == offset2methodname.end()) {
+                return false;
+            }
+
+            std::string path_a = GetClassSignature(offset2methodname[id_a]);
+            std::string path_b = GetClassSignature(offset2methodname[id_b]);
+
+            bool a_is_parent_of_b = false;
+            if (path_b.size() > path_a.size()) {
+                if (path_b.compare(0, path_a.size(), path_a) == 0) {
+                    a_is_parent_of_b = true; 
+                }
+            }
+
+            bool b_is_parent_of_a = false;
+            if (path_a.size() > path_b.size()) {
+                if (path_a.compare(0, path_b.size(), path_b) == 0) {
+                    b_is_parent_of_a = true;
+                }
+            }
+
+            if (a_is_parent_of_b) {
+                return true; 
+            }
+            if (b_is_parent_of_a) {
+                return false; 
+            }
+
+            return false;
+        }
+    );
 }
 
 void UpdateMemberDepConstructor(std::vector<uint32_t> *inserted_construct_order,
@@ -321,16 +377,24 @@ void UpdateMemberDepConstructor(std::vector<uint32_t> *inserted_construct_order,
                                 std::set<uint32_t>* memberfuncs,
                                 std::map<uint32_t, uint32_t>* construct2initializer,
                                 std::map<uint32_t, uint32_t>* construct2staticinitializer,
-                                std::vector<std::pair<uint32_t, uint32_t>>* depedges){
+                                std::map<uint32_t, uint32_t>* construct2definedmethod,
+                                std::vector<std::pair<uint32_t, uint32_t>>* depedges,
+                                std::map<uint32_t, std::string> offset2methodname
+                            ){
 
     // method define class > static_initializer > instance_initializer > member functions
 
+    // nested class
+    ReorderAnalysisSequenceOfClasses(inserted_construct_order, offset2methodname);
+
     uint32_t last_class_member = 0; // multiple class analysis sequence
     for(const auto& constructor_offset : *inserted_construct_order){
+        std::cout << "constructor_offset #: " << constructor_offset << std::endl; 
         if(class2memberfuns->find(constructor_offset) == class2memberfuns->end()){
             continue;
         }
-        
+    
+        auto definedmethod = (*construct2definedmethod)[constructor_offset];
         auto member_funcs = (*class2memberfuns)[constructor_offset];
         memberfuncs->insert(constructor_offset);
 
@@ -355,17 +419,20 @@ void UpdateMemberDepConstructor(std::vector<uint32_t> *inserted_construct_order,
             if(predecessor_of_initializer){
                 depedges->push_back(std::make_pair(predecessor_of_initializer, static_function_initializer));
             }
+            depedges->push_back(std::make_pair(definedmethod, static_function_initializer));
             depedges->push_back(std::make_pair(static_function_initializer, function_initializer));
             predecessor_of_memeber = function_initializer;
         }else if(static_function_initializer && !function_initializer){
             if(predecessor_of_initializer){
                 depedges->push_back(std::make_pair(predecessor_of_initializer, static_function_initializer));
             }
+            depedges->push_back(std::make_pair(definedmethod, static_function_initializer));
             predecessor_of_memeber = static_function_initializer;
         }else if(!static_function_initializer && function_initializer){
             if(predecessor_of_initializer){
                 depedges->push_back(std::make_pair(predecessor_of_initializer, function_initializer));
             }
+            depedges->push_back(std::make_pair(definedmethod, function_initializer));
             predecessor_of_memeber = function_initializer;
         }
 
@@ -383,6 +450,8 @@ void UpdateMemberDepConstructor(std::vector<uint32_t> *inserted_construct_order,
             if(function_initializer && memeber_offset == function_initializer ){
                 continue;
             }
+
+            depedges->push_back(std::make_pair(definedmethod, memeber_offset));
 
             if(predecessor_of_memeber){
                 depedges->push_back(std::make_pair(predecessor_of_memeber, memeber_offset));
@@ -435,6 +504,7 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
     std::vector<LexicalEnvStack*> globalsendablelexical_waitlist;
 
     std::map<std::string, uint32_t> methodname2offset;
+    std::map<uint32_t, std::string> offset2methodname;
 
     std::vector<uint32_t> inserted_construct_order;
 
@@ -442,9 +512,11 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
 
     std::map<uint32_t, uint32_t> construct2staticinitializer;
 
+    std::map<uint32_t, uint32_t> construct2definedmethod;
+
     ParseModuleVars(pfile, prog, disasm, parser_program, index2importnamespaces, localnamespaces);
 
-    ConstructMethodname2offset(disasm, &methodname2offset);
+    ConstructMethodname2offset(disasm, &methodname2offset, &offset2methodname);
      
     for (uint32_t id : pfile->GetClasses()) {
         panda_file::File::EntityId record_id {id};
@@ -468,10 +540,10 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
         panda_file::ClassDataAccessor cda {*pfile, record_id};
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         bool has_error = false;
-        cda.EnumerateMethods([prog, &has_error, &disasm, ir_interface, is_dynamic, &depedges, &class2memberfuns, &method2lexicalmap, &memberfuncs, &raw2newname, &methodname2offset, &skipfailfuns, &inserted_construct_order, &construct2initializer, &construct2staticinitializer](panda_file::MethodDataAccessor &mda){
+        cda.EnumerateMethods([prog, &has_error, &disasm, ir_interface, is_dynamic, &depedges, &class2memberfuns, &method2lexicalmap, &memberfuncs, &raw2newname, &methodname2offset, &skipfailfuns, &inserted_construct_order, &construct2initializer, &construct2staticinitializer, &construct2definedmethod](panda_file::MethodDataAccessor &mda){
             if (!mda.IsExternal()) {
                 
-                int32_t res = ScanFunDep(prog, disasm, ir_interface, &depedges, &class2memberfuns, &method2lexicalmap, &memberfuncs, &raw2newname, &methodname2offset, mda, &inserted_construct_order, &construct2initializer, &construct2staticinitializer, is_dynamic);
+                int32_t res = ScanFunDep(prog, disasm, ir_interface, &depedges, &class2memberfuns, &method2lexicalmap, &memberfuncs, &raw2newname, &methodname2offset, mda, &inserted_construct_order, &construct2initializer, &construct2staticinitializer, &construct2definedmethod, is_dynamic);
                 if(res == 3 || res == 4){
                     skipfailfuns.insert(mda.GetMethodId().GetOffset());
                     return;
@@ -490,7 +562,7 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
     } 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    UpdateMemberDepConstructor(&inserted_construct_order, &class2memberfuns, &memberfuncs, &construct2initializer, &construct2staticinitializer, &depedges);
+    UpdateMemberDepConstructor(&inserted_construct_order, &class2memberfuns, &memberfuncs, &construct2initializer, &construct2staticinitializer, &construct2definedmethod, &depedges, offset2methodname);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     auto sorted_methodoffsets = TopologicalSort(depedges);
 
