@@ -41,7 +41,18 @@ void LCAFinder::Initialize() {
 
 
 std::vector<uint32_t> TopologicalSort(const std::vector<std::pair<uint32_t, uint32_t>>& edges) {
+    std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;;
+
+    for (const auto& [from, to] : edges) {
+        std::cout << from << " -> " << to << std::endl;
+    }
+    std::cout << std::endl;
+
+    std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
+    
+
     if (edges.empty()) {
+        //HandleError("@@@1");
         return {};
     }
     

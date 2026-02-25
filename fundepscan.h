@@ -18,11 +18,16 @@ public:
         std::map<uint32_t, std::map<uint32_t,  std::set<size_t>>>* method2lexicalmap,
         std::set<uint32_t>* memberfuncs,
         std::map<std::string, std::string> *raw2newname,
-        std::map<std::string, uint32_t> *methodname2offset
+        std::map<std::string, uint32_t> *methodname2offset,
+        std::vector<uint32_t> *inserted_construct_order,
+        std::map<uint32_t, uint32_t>* construct2initializer,
+        std::map<uint32_t, uint32_t>* construct2staticinitializer
         )
         : compiler::Optimization(graph), ir_interface_(iface), program_(program), disasm_(disasm), methodoffset_(methodoffset), 
         depedges_(depedges), class2memberfuns_(class2memberfuns), method2lexicalmap_(method2lexicalmap),
-        memberfuncs_(memberfuncs), raw2newname_(raw2newname), methodname2offset_(methodname2offset)
+        memberfuncs_(memberfuncs), raw2newname_(raw2newname), methodname2offset_(methodname2offset),
+        inserted_construct_order_(inserted_construct_order), construct2initializer_(construct2initializer),
+        construct2staticinitializer_(construct2staticinitializer)
     {
         this->current_function_initializer = 0;
         this->current_constructor_offset = 0;
@@ -55,70 +60,7 @@ public:
         return {};
     }
 
-    void UpdateMemberDepConstructor(){
-        // method define class > static_initializer > instance_initializer > member functions
-  
-        uint32_t last_class_member = 0; // multiple class analysis sequence
-        for(const auto& constructor_offset : this->inserted_construct_order_){
-            if(this->class2memberfuns_->find(constructor_offset) == this->class2memberfuns_->end()){
-                continue;
-            }
-            
-            auto member_funcs = (*this->class2memberfuns_)[constructor_offset];
-            this->memberfuncs_->insert(constructor_offset);
 
-            uint32_t function_initializer = 0;
-            uint32_t static_function_initializer = 0;
-            uint32_t predecessor_of_memeber = 0;
-
-            if(this->construct2initializer_.find(constructor_offset) != this->construct2initializer_.end()){
-                function_initializer = this->construct2initializer_[constructor_offset];
-            }
-
-            if(this->construct2staticinitializer_.find(constructor_offset) != this->construct2staticinitializer_.end()){
-                static_function_initializer = this->construct2staticinitializer_[constructor_offset];
-            }
-
-            uint32_t predecessor_of_initializer;
-            if(last_class_member){
-                predecessor_of_initializer = last_class_member;
-            }else{
-                predecessor_of_initializer = this->methodoffset_;
-            }
-
-            if(static_function_initializer && function_initializer){
-                this->depedges_->push_back(std::make_pair(predecessor_of_initializer, static_function_initializer));
-                this->depedges_->push_back(std::make_pair(static_function_initializer, function_initializer));
-                predecessor_of_memeber = function_initializer;
-            }else if(static_function_initializer && !function_initializer){
-                this->depedges_->push_back(std::make_pair(predecessor_of_initializer, static_function_initializer));
-                predecessor_of_memeber = static_function_initializer;
-            }else if(!static_function_initializer && function_initializer){
-                this->depedges_->push_back(std::make_pair(predecessor_of_initializer, function_initializer));
-                predecessor_of_memeber = function_initializer;
-            }else{
-                predecessor_of_memeber = predecessor_of_initializer;
-            }
-
-            for (const auto& memeber_offset : member_funcs) {
-                this->memberfuncs_->insert(memeber_offset);
-                last_class_member = memeber_offset;
-                if(memeber_offset == predecessor_of_memeber){
-                    continue;
-                }
-
-                if(static_function_initializer && memeber_offset == static_function_initializer ){
-                    continue;
-                }
-
-                if(function_initializer && memeber_offset == function_initializer ){
-                    continue;
-                }
-
-                this->depedges_->push_back(std::make_pair(predecessor_of_memeber, memeber_offset));
-            }
-        }
-    }
 
     static void VisitIntrinsic(GraphVisitor *visitor, Inst *inst_base);
     static void VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_base);
@@ -141,10 +83,9 @@ public:
 
     std::map<std::string, uint32_t> *methodname2offset_;
 
-    std::map<uint32_t, uint32_t> construct2initializer_;
-    std::map<uint32_t, uint32_t> construct2staticinitializer_;
-
-    std::vector<uint32_t> inserted_construct_order_;
+    std::vector<uint32_t> *inserted_construct_order_;
+    std::map<uint32_t, uint32_t>* construct2initializer_;
+    std::map<uint32_t, uint32_t>* construct2staticinitializer_;
 
     uint32_t current_constructor_offset;
     uint32_t current_function_initializer;

@@ -228,7 +228,6 @@ void LogArkTS2File(panda::es2panda::parser::Program *parser_program, std::string
     std::cout << "[-] log arkTS  end >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
 }
 
-
 int32_t ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
                 BytecodeOptIrInterface *ir_interface,
                 std::vector<std::pair<uint32_t, uint32_t>>* depedges,
@@ -237,7 +236,11 @@ int32_t ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
                 std::set<uint32_t>* memberfuncs,
                 std::map<std::string, std::string> *raw2newname,
                 std::map<std::string, uint32_t> *methodname2offset,
-                const panda_file::MethodDataAccessor &mda, bool is_dynamic)
+                const panda_file::MethodDataAccessor &mda, 
+                std::vector<uint32_t> *inserted_construct_order,
+                std::map<uint32_t, uint32_t>* construct2initializer,
+                std::map<uint32_t, uint32_t>* construct2staticinitializer,
+                bool is_dynamic)
 {
     
     ArenaAllocator allocator {SpaceType::SPACE_TYPE_COMPILER};
@@ -286,7 +289,10 @@ int32_t ScanFunDep(pandasm::Program *prog, panda::disasm::Disassembler& disasm,
         return 5;
     }
     
-    if (!graph->RunPass<FunDepScan>(ir_interface, prog, std::ref(disasm), mda.GetMethodId().GetOffset(), depedges, class2memberfuns, method2lexicalmap, memberfuncs, raw2newname, methodname2offset)) {
+    if (!graph->RunPass<FunDepScan>(ir_interface, prog, std::ref(disasm), mda.GetMethodId().GetOffset(), depedges, class2memberfuns, method2lexicalmap, 
+        memberfuncs, raw2newname, methodname2offset, inserted_construct_order,
+        construct2initializer, construct2staticinitializer
+    )) {
         LOG(ERROR, BYTECODE_OPTIMIZER) << "Optimizing " << func_name << ": FuncDep scanning failed!";
         std::cout << "FuncDep Scanning " << func_name << ": failed!" << std::endl;
         
@@ -306,6 +312,82 @@ void ConstructMethodname2offset(panda::disasm::Disassembler& disasm, std::map<st
         if (pos != std::string::npos) {
             std::string result = RemoveArgumentsOfFunc(pair.first);
             (*methodname2offset)[result] = pair.second.GetOffset();
+        }
+    }
+}
+
+void UpdateMemberDepConstructor(std::vector<uint32_t> *inserted_construct_order,
+                                std::map<uint32_t, std::set<uint32_t>> *class2memberfuns,
+                                std::set<uint32_t>* memberfuncs,
+                                std::map<uint32_t, uint32_t>* construct2initializer,
+                                std::map<uint32_t, uint32_t>* construct2staticinitializer,
+                                std::vector<std::pair<uint32_t, uint32_t>>* depedges){
+
+    // method define class > static_initializer > instance_initializer > member functions
+
+    uint32_t last_class_member = 0; // multiple class analysis sequence
+    for(const auto& constructor_offset : *inserted_construct_order){
+        if(class2memberfuns->find(constructor_offset) == class2memberfuns->end()){
+            continue;
+        }
+        
+        auto member_funcs = (*class2memberfuns)[constructor_offset];
+        memberfuncs->insert(constructor_offset);
+
+        uint32_t function_initializer = 0;
+        uint32_t static_function_initializer = 0;
+        uint32_t predecessor_of_memeber = 0;
+
+        if(construct2initializer->find(constructor_offset) != construct2initializer->end()){
+            function_initializer = (*construct2initializer)[constructor_offset];
+        }
+
+        if(construct2staticinitializer->find(constructor_offset) != construct2staticinitializer->end()){
+            static_function_initializer = (*construct2staticinitializer)[constructor_offset];
+        }
+
+        uint32_t predecessor_of_initializer = 0;
+        if(last_class_member){
+            predecessor_of_initializer = last_class_member;
+        }
+
+        if(static_function_initializer && function_initializer){
+            if(predecessor_of_initializer){
+                depedges->push_back(std::make_pair(predecessor_of_initializer, static_function_initializer));
+            }
+            depedges->push_back(std::make_pair(static_function_initializer, function_initializer));
+            predecessor_of_memeber = function_initializer;
+        }else if(static_function_initializer && !function_initializer){
+            if(predecessor_of_initializer){
+                depedges->push_back(std::make_pair(predecessor_of_initializer, static_function_initializer));
+            }
+            predecessor_of_memeber = static_function_initializer;
+        }else if(!static_function_initializer && function_initializer){
+            if(predecessor_of_initializer){
+                depedges->push_back(std::make_pair(predecessor_of_initializer, function_initializer));
+            }
+            predecessor_of_memeber = function_initializer;
+        }
+
+        for (const auto& memeber_offset : member_funcs) {
+            memberfuncs->insert(memeber_offset);
+            last_class_member = memeber_offset;
+            if(memeber_offset == predecessor_of_memeber){
+                continue;
+            }
+
+            if(static_function_initializer && memeber_offset == static_function_initializer ){
+                continue;
+            }
+
+            if(function_initializer && memeber_offset == function_initializer ){
+                continue;
+            }
+
+            if(predecessor_of_memeber){
+                depedges->push_back(std::make_pair(predecessor_of_memeber, memeber_offset));
+            }
+            
         }
     }
 }
@@ -354,6 +436,12 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
 
     std::map<std::string, uint32_t> methodname2offset;
 
+    std::vector<uint32_t> inserted_construct_order;
+
+    std::map<uint32_t, uint32_t> construct2initializer;
+
+    std::map<uint32_t, uint32_t> construct2staticinitializer;
+
     ParseModuleVars(pfile, prog, disasm, parser_program, index2importnamespaces, localnamespaces);
 
     ConstructMethodname2offset(disasm, &methodname2offset);
@@ -368,24 +456,22 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
         std::cout << "classname: " << std::left << std::setw(40) <<   cda.GetName().data  << " , fileds: " << cda.GetFieldsNumber() << " , method: " << cda.GetMethodsNumber() << " interface: " << cda.GetIfacesNumber() << " superclass: " <<  cda.GetSuperClassId()   << std::endl;
     }
     
-    for (uint32_t id : pfile->GetClasses()) {
-        
-        panda_file::File::EntityId record_id {id};
+    std::vector<std::pair<uint32_t, uint32_t>> depedges;
+    std::set<uint32_t> skipfailfuns; // skip ir build functions
 
+    for (uint32_t id : pfile->GetClasses()) {
+        panda_file::File::EntityId record_id {id};
         if (pfile->IsExternal(record_id)) {
             continue;
         }
 
         panda_file::ClassDataAccessor cda {*pfile, record_id};
-        std::vector<std::pair<uint32_t, uint32_t>> depedges;
-
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        std::set<uint32_t> skipfailfuns; // skip ir build functions
         bool has_error = false;
-        cda.EnumerateMethods([prog, &has_error, &disasm, ir_interface, is_dynamic, &depedges, &class2memberfuns, &method2lexicalmap, &memberfuncs, &raw2newname, &methodname2offset, &skipfailfuns](panda_file::MethodDataAccessor &mda){
+        cda.EnumerateMethods([prog, &has_error, &disasm, ir_interface, is_dynamic, &depedges, &class2memberfuns, &method2lexicalmap, &memberfuncs, &raw2newname, &methodname2offset, &skipfailfuns, &inserted_construct_order, &construct2initializer, &construct2staticinitializer](panda_file::MethodDataAccessor &mda){
             if (!mda.IsExternal()) {
                 
-                int32_t res = ScanFunDep(prog, disasm, ir_interface, &depedges, &class2memberfuns, &method2lexicalmap, &memberfuncs, &raw2newname, &methodname2offset, mda, is_dynamic);
+                int32_t res = ScanFunDep(prog, disasm, ir_interface, &depedges, &class2memberfuns, &method2lexicalmap, &memberfuncs, &raw2newname, &methodname2offset, mda, &inserted_construct_order, &construct2initializer, &construct2staticinitializer, is_dynamic);
                 if(res == 3 || res == 4){
                     skipfailfuns.insert(mda.GetMethodId().GetOffset());
                     return;
@@ -401,34 +487,44 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
         if(has_error){
             return false;
         }
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        auto sorted_methodoffsets = TopologicalSort(depedges);
+    } 
 
-        std::cout << "@@@ topological order start @@@" << std::endl;
-        for(auto methodoffset : sorted_methodoffsets){
-            auto res = FindKeyByValue(methodname2offset, methodoffset);
-            std::cout << "offset: " << methodoffset << " , name: " << *res << std::endl;
-        }
-        std::cout << "@@@ topological order end @@@" << std::endl;
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    UpdateMemberDepConstructor(&inserted_construct_order, &class2memberfuns, &memberfuncs, &construct2initializer, &construct2staticinitializer, &depedges);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    auto sorted_methodoffsets = TopologicalSort(depedges);
 
-        std::map<uint32_t, std::string*> patchvarspace;
+    std::cout << "@@@ topological order start @@@" << std::endl;
+    for(auto methodoffset : sorted_methodoffsets){
+        auto res = FindKeyByValue(methodname2offset, methodoffset);
+        std::cout << "offset: " << methodoffset << " , name: " << *res << std::endl;
+    }
+    std::cout << "@@@ topological order end @@@" << std::endl;
 
-        for(const auto & methodoffset : sorted_methodoffsets ){
-            panda_file::MethodDataAccessor mda(*pfile, panda_file::File::EntityId(methodoffset));
-            
-            uint32_t cur_method = mda.GetMethodId().GetOffset();
-            if(skipfailfuns.find(cur_method) != skipfailfuns.end()){
-                continue;
-            }
+    std::map<uint32_t, std::string*> patchvarspace;
 
-            result = DecompileFunction(prog, parser_program, ir_interface, mda, is_dynamic, &method2lexicalenvstack, &method2sendablelexicalenvstack, &patchvarspace, index2importnamespaces, localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &memberfuncs, &class2father, &method2lexicalmap, &globallexical_waitlist, &globalsendablelexical_waitlist, &raw2newname, &methodname2offset);
-            
-            if(!result){
-                HandleError("#DecompilePandaFile: decomiple case 1 failed!");
-            }
-        }
-
+    for(const auto & methodoffset : sorted_methodoffsets ){
+        panda_file::MethodDataAccessor mda(*pfile, panda_file::File::EntityId(methodoffset));
         
+        uint32_t cur_method = mda.GetMethodId().GetOffset();
+        if(skipfailfuns.find(cur_method) != skipfailfuns.end()){
+            continue;
+        }
+
+        result = DecompileFunction(prog, parser_program, ir_interface, mda, is_dynamic, &method2lexicalenvstack, &method2sendablelexicalenvstack, &patchvarspace, index2importnamespaces, localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &memberfuncs, &class2father, &method2lexicalmap, &globallexical_waitlist, &globalsendablelexical_waitlist, &raw2newname, &methodname2offset);
+        
+        if(!result){
+            HandleError("#DecompilePandaFile: decomiple case 1 failed!");
+        }
+    }
+
+    for (uint32_t id : pfile->GetClasses()) {
+        panda_file::File::EntityId record_id {id};
+        if (pfile->IsExternal(record_id)) {
+            continue;
+        }
+        panda_file::ClassDataAccessor cda {*pfile, record_id};
+
         cda.EnumerateMethods([prog, parser_program, ir_interface, is_dynamic, &result, &method2lexicalenvstack, &method2sendablelexicalenvstack, &patchvarspace, &index2importnamespaces, &localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &memberfuncs, &class2father, &method2lexicalmap, &globallexical_waitlist, &globalsendablelexical_waitlist, &raw2newname, &methodname2offset, sorted_methodoffsets, &skipfailfuns](panda_file::MethodDataAccessor &mda){           
             if (!mda.IsExternal() && std::find(sorted_methodoffsets.begin(), sorted_methodoffsets.end(), mda.GetMethodId().GetOffset()) == sorted_methodoffsets.end() ){
                             uint32_t cur_method = mda.GetMethodId().GetOffset();
@@ -443,7 +539,8 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
                 }
             }
         });
-    } 
+    }
+   
 
     std::cout <<  "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
 
