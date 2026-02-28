@@ -7,7 +7,7 @@ bool FunDepScan::RunImpl(){
     if(GetGraph()->GetVectorBlocks().size() != 0 && GetGraph()->GetAliveBlocksCount() < GetGraph()->GetVectorBlocks().size()){
         std::cout << "GetGraph()->GetVectorBlocks().size(): " << GetGraph()->GetVectorBlocks().size() << std::endl;
         std::cout << "GetGraph()->GetAliveBlocksCount(): " << GetGraph()->GetAliveBlocksCount() << std::endl;
-        //return false;
+        return false;
     }
     //std::cout << "[-] @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
     for (auto *bb : GetGraph()->GetBlocksLinearOrder()) {

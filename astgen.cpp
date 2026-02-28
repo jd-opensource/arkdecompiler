@@ -405,8 +405,9 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             std::cout << "#VisitIfImm ret case: " << ret << std::endl;
             enc->specialblockid.insert(inst->GetBasicBlock()->GetTrueSuccessor()->GetId());
             enc->specialblockid.insert(inst->GetBasicBlock()->GetFalseSuccessor()->GetId());
-            true_statements =   enc->GetBlockStatementById(inst->GetBasicBlock()->GetTrueSuccessor());
+            
             false_statements =  enc->GetBlockStatementById(inst->GetBasicBlock()->GetFalseSuccessor());
+            true_statements =   enc->GetBlockStatementById(inst->GetBasicBlock()->GetTrueSuccessor());
         }else if(ret == 1){
             std::cout << "#VisitIfImm ret case: " << ret << std::endl;
             enc->specialblockid.insert(inst->GetBasicBlock()->GetTrueSuccessor()->GetId());
@@ -461,8 +462,8 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             true_statements->AsBlockStatement()->statements_.clear(); 
             enc->AddInstAst2BlockStatemntByBlock(inst->GetBasicBlock()->GetTrueSuccessor(), dowhilestatement);
             enc->AddInstAst2BlockStatemntByBlock(inst->GetBasicBlock()->GetTrueSuccessor(), false_statements);
-            enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), enc->GetBlockStatementById(block)); 
-
+            enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), enc->GetBlockStatementById(inst->GetBasicBlock()->GetTrueSuccessor())); 
+           // HandleError("hault");
             // if(AnotherBackEdgeAnalysed(block, enc->visited) || block->GetId() ==13 ){
             //     enc->AddInstAst2BlockStatemntByBlock(inst->GetBasicBlock()->GetTrueSuccessor(), dowhilestatement);
             //     enc->AddInstAst2BlockStatemntByBlock(inst->GetBasicBlock()->GetTrueSuccessor(), false_statements);
