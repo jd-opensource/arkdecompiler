@@ -4,7 +4,10 @@ arkdecompiler is the decompiler for HarmonyOS Next(纯血鸿蒙反编译器), wh
 
 - [2025 Black Hat, USA](https://www.blackhat.com/us-25/arsenal/schedule/index.html#decompiler-for-harmonyos-next-45569)
 - [2026 Black Hat, ASIA](https://blackhat.com/asia-26/arsenal/schedule/index.html)
-- 2026.Q1: Support all instructions and program structures
+
+# Schedule
+- ✅ Support all instructions
+- ⏳ Cover a sufficient number of corner cases (in the official compiler and in test262)
 
 # Installation
 ## Tested platform
