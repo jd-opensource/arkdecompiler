@@ -7,7 +7,7 @@ arkdecompiler is the decompiler for HarmonyOS Next(纯血鸿蒙反编译器), wh
 
 # Schedule
 - ✅ Support all instructions
-- ⏳ Cover a sufficient number of corner cases (in the official compiler and in test262)
+- ⏳ Cover sufficient corner cases in the official compiler and test262
 
 # Installation
 ## Tested platform
