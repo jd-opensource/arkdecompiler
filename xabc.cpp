@@ -200,7 +200,7 @@ bool DecompileFunction(pandasm::Program *prog, panda::es2panda::parser::Program 
 void LogAst(panda::es2panda::parser::Program *parser_program, std::string outputFileName){
     std::cout << "[+] log raw ast start >>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
     std::string res = parser_program->Dump();
-    //std::cout << res << std::endl;
+    std::cout << res << std::endl;
     std::cout << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
     std::ofstream outputFile(outputFileName);
     if (!outputFile.is_open()) {
@@ -637,7 +637,7 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
         //LogAst(parser_program, outputAstFileName);
     }
 
-    LogAst(parser_program, outputAstFileName);
+    //LogAst(parser_program, outputAstFileName);
     LogArkTS2File(parser_program, outputFileName);
 
     std::cout << "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE" << std::endl;

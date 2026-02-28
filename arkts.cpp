@@ -737,6 +737,7 @@ void ArkTSGen::EmitMethodDefinition(const ir::AstNode *node){
 void ArkTSGen::EmitStatement(const ir::AstNode *node)
 {
     if(node == nullptr){
+        return;
         HandleError("#EmitStatement: emitStatement for null astnode");
     }
 

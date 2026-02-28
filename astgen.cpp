@@ -488,7 +488,11 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             
             true_statements->AsBlockStatement()->statements_.clear(); 
             enc->AddInstAst2BlockStatemntByBlock(inst->GetBasicBlock()->GetTrueSuccessor(), dowhilestatement);
-            enc->AddInstAst2BlockStatemntByBlock(inst->GetBasicBlock()->GetTrueSuccessor(), false_statements);
+            
+            if(false_statements != nullptr){
+                enc->AddInstAst2BlockStatemntByBlock(inst->GetBasicBlock()->GetTrueSuccessor(), false_statements);
+            }
+            
             enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), enc->GetBlockStatementById(inst->GetBasicBlock()->GetTrueSuccessor())); 
            // HandleError("hault");
             // if(AnotherBackEdgeAnalysed(block, enc->visited) || block->GetId() ==13 ){
@@ -510,6 +514,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             LogBackEdgeId(back_edges);
 
             es2panda::ir::WhileStatement* whilestatement;
+            //if( LoopContainBlock(loop, block->GetFalseSuccessor()) && false_statements != nullptr){
             if( LoopContainBlock(loop, block->GetFalseSuccessor()) ){
                 std::cout << "while case 1" << std::endl;
                 if(enc->whileheader2redundant[block]->Statements().size() != 0){
@@ -527,7 +532,6 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                         test_expression, 
                         true_statements
                         );
-
                 
             }else{
                 std::cout << "while case 2" << std::endl;
@@ -549,7 +553,10 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
 
             enc->AddInstAst2BlockStatemntByInst(inst, whilestatement);
             enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), enc->GetBlockStatementById(block));
-            enc->AddInstAst2BlockStatemntByInst(inst, false_statements);
+            
+            if(false_statements != nullptr){
+                enc->AddInstAst2BlockStatemntByInst(inst, false_statements);
+            }
             
             std::cout << "[-] while ===" << std::endl;
         }else{
