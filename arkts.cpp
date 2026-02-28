@@ -470,6 +470,7 @@ void ArkTSGen::EmitIfStatement(const ir::AstNode *node){
     std::cout << "[+] start EmitIfStatement"  << std::endl;
     auto ifstatement = node->AsIfStatement();
     if(ifstatement->Consequent() == nullptr ||  ifstatement->Consequent()->AsBlockStatement()->Statements().size() == 0){
+        this->WriteNewLine();
         return;
     }
 

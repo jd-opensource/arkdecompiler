@@ -710,7 +710,8 @@ public:
         }
         
         // case4: found multi predecessor with onlyif
-        if(block->GetPredsBlocks().size() == 2 && block_id != 0 && ( block->GetPredecessor(0)->IsIfBlock() || block->GetPredecessor(1)->IsIfBlock() )){
+        if(block->GetPredsBlocks().size() == 2 && block_id != 0 && ( block->GetPredecessor(0)->IsIfBlock() || block->GetPredecessor(1)->IsIfBlock() )
+        ){
             if(block->GetPredecessor(0)->IsIfBlock() && this->id2block.find(block->GetPredecessor(0)->GetId()) != this->id2block.end()){
                 this->id2block[block_id] =  this->id2block[block->GetPredecessor(0)->GetId()];
             }else if(block->GetPredecessor(1)->IsIfBlock() && this->id2block.find(block->GetPredecessor(1)->GetId()) != this->id2block.end()){
