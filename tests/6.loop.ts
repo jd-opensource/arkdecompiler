@@ -272,3 +272,27 @@
 //    }
 //   n++;
 // }
+
+
+// #1 corner case
+// var chain;
+// var chain2;
+// var chain3;
+// while (chain || chain2 || chain3 ) {
+//     if (chain === getTextOfChainNode(chain)) {
+//         break;
+//     }
+// }
+
+// while (chain) {
+//     if (chain !== chain2){
+//         //console.log("hello");
+//         break;
+//     }
+// }
+
+
+// #2 corner case
+// for (var i = 1; i <= 10; i++) {
+//   console.log("hi");
+// }
