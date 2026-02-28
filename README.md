@@ -1,6 +1,6 @@
 # arkdecompiler
 
-arkdecompiler is the decompiler for HarmonyOS Next(纯血鸿蒙反编译器), which takes Panda Binary File as input, parses Panda Bytecode, and then translates it into Panda IR. After having IR, we can do various analyses. Based on IR, we reversely construct the native arkTS AST tree, and then we traverse the AST tree and translate it into native arkTS source code.
+arkdecompiler is the decompiler for HarmonyOS NEXT(纯血鸿蒙反编译器), which takes Panda Binary File as input, parses Panda Bytecode, and then translates it into Panda IR. After having IR, we can do various analyses. Based on IR, we reversely construct the native ArkTS AST tree, and then we traverse the AST tree and translate it into native ArkTS source code.
 
 - [2025 Black Hat, USA](https://www.blackhat.com/us-25/arsenal/schedule/index.html#decompiler-for-harmonyos-next-45569)
 - [2026 Black Hat, ASIA](https://blackhat.com/asia-26/arsenal/schedule/index.html)
@@ -13,7 +13,7 @@ arkdecompiler is the decompiler for HarmonyOS Next(纯血鸿蒙反编译器), wh
 ## Tested platform
 Ubuntu 22.04
 
-In the future we will adapt to other development platforms such as (windows, macOS) and add a GUI.
+In the future we will adapt to other development platforms such as (Windows, macOS) and add a GUI.
 ## Prepare environment
 ```bash
 ./prepare.sh(It will create the root directory **harmonyos**)
@@ -30,7 +30,7 @@ ark.py  arkcompiler  arkdecompiler  build  developtools  docs  foundation  kerne
 ```
 
 ## Apply patches to arkcompiler and third_party
-Apply patches to `harmonyos/arkcompiler/runtime_core`, `harmonyos/arkcompiler/ets_frontend`, and `harmonyos/third_party/protobuf` according to the `patches`.
+Apply patches to `arkcompiler/runtime_core`, `arkcompiler/ets_frontend`, and `third_party/protobuf` according to the `patches`.
 
 
 # Usage
