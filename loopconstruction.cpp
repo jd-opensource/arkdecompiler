@@ -75,6 +75,16 @@ bool AnotherSuccOfEdgeIsExit(BasicBlock* header, BasicBlock* backedge){
     return true;
 }
 
+bool IsLoopConditionBranch(BasicBlock* block){
+    Loop* curloop = block->GetLoop();
+    for(auto succ : block->GetSuccsBlocks()){
+        if(succ->GetLoop() != curloop){
+            return true;
+        }
+    }
+    return false;
+}
+
 void JudgeLoopType(BasicBlock* header, std::map<Loop *, uint32_t>& loop2type, 
     std::map<Loop *, BasicBlock*> &loop2exit, 
     std::map<BasicBlock*, Loop *> &backedge2dowhileloop){

@@ -17,6 +17,8 @@ BasicBlock* SearchPreHeader(BasicBlock* header);
 
 bool LoopContainBlock(Loop* loop, BasicBlock *bb);
 
+bool IsLoopConditionBranch(BasicBlock* block);
+
 bool AnotherBackEdgeAnalysed(BasicBlock* block, std::vector<BasicBlock *>& visited);
 }
 #endif

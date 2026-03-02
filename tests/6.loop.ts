@@ -5,12 +5,6 @@
 //     x = console.log(value); 
 // }
 
-// const array = [10, 20, 30];
-// var x;
-// for (const value of array.values()) {
-//     x = console.log(value); 
-// }
-
 // #22. for - normal
 // var x = 1;
 // for (var i = 0; i < 5; i++) {
@@ -225,10 +219,6 @@
 
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-// var m = 0;
-// do {
-//   m++;
-// }while(m < 1);
 
 // dowhile-dowhile
 // var m = 0;
@@ -272,6 +262,49 @@
 //    }
 //   n++;
 // }
+
+// dowhile-dowhile-dowhile-dowhile
+// var o = 0;
+// var p = 0;
+// var q = 0;
+// var l = 0;
+
+// do{
+//     do{
+//         do {
+//             do {
+//                 q++;
+//             }while(q < 1);
+//             p++;
+//         } while (p < 2);
+//         o++;
+//     }while (o < 3);
+//     l++;
+// }while(l < 4);
+
+
+// complex mix while-dowhile
+// var m = 0;
+// var n = 0;
+// var o = 0;
+// var p = 0
+// var q = 0;
+// while(q){
+//     do {
+//         while(m < 3){
+//             do{
+//                 do{
+//                     p++;
+//                 }while(p < 5);
+//                 o++;
+//             }while(o < 5);
+//             m++;
+//         }
+//         n++;
+//     } while (n < 4);
+//     q++;
+// }
+
 
 
 // #1 corner case
