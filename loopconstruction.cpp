@@ -75,9 +75,50 @@ bool AnotherSuccOfEdgeIsExit(BasicBlock* header, BasicBlock* backedge){
     return true;
 }
 
+bool IsLoopHasMultipleBackEdges(BasicBlock* block){
+    if(block->IsLoopValid() && block->IsLoopHeader() && block->GetLoop()->GetBackEdges().size() >= 2 ){
+        return true;
+    }
+    return false;
+}
 bool IsLoopConditionBranch(BasicBlock* block){
     Loop* curloop = block->GetLoop();
+    // if(curloop->HasBackEdge(block)){
+    //     return true;
+    // }
+
+    if(IsLoopHasMultipleBackEdges(block)){
+        // case1
+        // var m = 0;
+        // var n = 0;
+        // do {
+        // while(m < 3){
+        //     m++;
+        // }
+        // n++;
+        // } while (n < 4);
+        return true;
+    }
+
     for(auto succ : block->GetSuccsBlocks()){
+        // case2
+        // module Editor {
+        //     export class List<T> {
+        //         public next: List<T>;
+        //         public prev: List<T>;
+        //         private listFactory: ListFactory<T>;
+        //         public count(): number {
+        //             var entry: List<T>;
+        //             var i: number;
+        //             entry = this.next;
+        //             for (i = 0; !(entry.isHead); i++) {
+        //                 entry = entry.next;
+        //             }
+        //             return (i);
+        //         }
+        //     }
+        // }
+
         if(succ->GetLoop() != curloop){
             return true;
         }

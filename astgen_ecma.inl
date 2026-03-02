@@ -209,19 +209,20 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
        case compiler::RuntimeInterface::IntrinsicId::TONUMBER_IMM8:
        case compiler::RuntimeInterface::IntrinsicId::TONUMERIC_IMM8:
        {
-            panda::es2panda::ir::Expression* source_expression = *enc->GetExpressionByAcc(inst);
-            panda::es2panda::ir::Identifier* funname = enc->GetIdentifierByName("Number");
-            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
-            arguments.push_back(source_expression);
+            // panda::es2panda::ir::Expression* source_expression = *enc->GetExpressionByAcc(inst);
+            // panda::es2panda::ir::Identifier* funname = enc->GetIdentifierByName("Number");
+            // ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+            // arguments.push_back(source_expression);
 
-            auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
-                                                                            funname,
-                                                                            std::move(arguments),
-                                                                            nullptr,
-                                                                            false
-                                                                            );
+            // auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
+            //                                                                 funname,
+            //                                                                 std::move(arguments),
+            //                                                                 nullptr,
+            //                                                                 false
+            //                                                                 );
 
-            enc->HandleNewCreatedExpression(inst, callexpression);
+            // enc->HandleNewCreatedExpression(inst, callexpression);
+            enc->HandleNewCreatedExpression(inst, *enc->GetExpressionByAcc(inst));
             break;
         }
 
