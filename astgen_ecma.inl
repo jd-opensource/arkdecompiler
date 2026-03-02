@@ -964,18 +964,20 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
 
        case compiler::RuntimeInterface::IntrinsicId::CALLRUNTIME_ISTRUE_PREF_IMM8:
        {
-            panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName("runtime.istrue");
-            ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
-            arguments.push_back(*enc->GetExpressionByAcc(inst));
+            // panda::es2panda::ir::Expression* funname = enc->GetIdentifierByName("runtime.istrue");
+            // ArenaVector<es2panda::ir::Expression *> arguments(enc->parser_program_->Allocator()->Adapter());
+            // arguments.push_back(*enc->GetExpressionByAcc(inst));
 
-            auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
-                                                                funname,
-                                                                std::move(arguments),
-                                                                nullptr,
-                                                                false
-                                                                );
+            // auto callexpression = AllocNode<es2panda::ir::CallExpression>(enc, 
+            //                                                     funname,
+            //                                                     std::move(arguments),
+            //                                                     nullptr,
+            //                                                     false
+            //                                                     );
 
-            enc->HandleNewCreatedExpression(inst, callexpression);
+            // enc->HandleNewCreatedExpression(inst, callexpression);
+
+            enc->HandleNewCreatedExpression(inst, *enc->GetExpressionByAcc(inst));
             break;
         }
 
