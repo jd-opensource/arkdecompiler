@@ -400,8 +400,8 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
         es2panda::ir::Statement* true_statements = nullptr;
         es2panda::ir::Statement* false_statements = nullptr;
         
-        if(enc->backedge2dowhileloop.find(block) == enc->backedge2dowhileloop.end() && block->IsLoopValid() && !IsLoopHasMultipleBackEdges(block)) {
-            if(enc->loop2exit[block->GetLoop()] == block->GetTrueSuccessor()  ){
+        if(enc->backedge2dowhileloop.find(block) == enc->backedge2dowhileloop.end() && block->IsLoopValid() && !IsLoopHasMultipleBackEdges(block) &&
+            enc->loop2exit[block->GetLoop()] == block->GetTrueSuccessor() ) {
                 // break statement type1
                 // var chain;
                 // var chain2;
@@ -421,12 +421,12 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                 ret = 2;
                 enc->specialblockid.insert(block->GetFalseSuccessor()->GetId());
                 false_statements =   enc->GetBlockStatementById(block->GetFalseSuccessor());
-            }else if(enc->loop2exit[block->GetLoop()] == block->GetFalseSuccessor()){
+        }else if(enc->backedge2dowhileloop.find(block) == enc->backedge2dowhileloop.end() && block->IsLoopValid() && !IsLoopHasMultipleBackEdges(block) && 
+                enc->loop2exit[block->GetLoop()] == block->GetFalseSuccessor()){
                 // break statement type1
                 ret = 1;
                 enc->specialblockid.insert(block->GetTrueSuccessor()->GetId());
                 true_statements =   enc->GetBlockStatementById(block->GetTrueSuccessor());
-            }
         }else{
             if(ret == 0){
                 std::cout << "#VisitIfImm ret case: " << ret << std::endl;
@@ -472,7 +472,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             test_expression =  enc->InverseTestExpression(enc, inst_base, ret, src_expression, false);
 
             std::cout << "true_statements size: " << true_statements->AsBlockStatement()->Statements().size() << std::endl;
-            //HandleError("hault");
+
             auto dowhilebody = enc->CopyAndCreateNewBlockStatement(true_statements);
             if(block->GetTrueSuccessor() == loop->GetHeader()){
                 std::cout << "do while case 1" << std::endl;
@@ -527,13 +527,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                         nullptr,
                         test_expression, 
                         true_statements
-                        );
-
-                if(true_statements == nullptr ){
-                    HandleError("hhh111");
-                }
-                
-        
+                        );        
             }else{
                 std::cout << "while case 2" << std::endl;
                 if(!header->IsTryBegin() && enc->whileheader2redundant.find(header) != enc->whileheader2redundant.end() && enc->whileheader2redundant[header]->Statements().size() != 0){
@@ -588,6 +582,8 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
 
             if(true_statements != nullptr){
                 enc->AddInstAst2BlockStatemntByInst(inst, ifStatement);
+            }else{
+                HandleError("sb");
             }
             std::cout << "[-] if ===" << std::endl;
 
