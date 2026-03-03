@@ -28,6 +28,7 @@ void AstGen::VisitPhi(GraphVisitor* v, Inst* inst_base) {
                 ArenaVector<panda::es2panda::ir::Statement *> statements(enc->parser_program_->Allocator()->Adapter());
                 auto new_block_statement = AllocNode<es2panda::ir::BlockStatement>(enc, nullptr, std::move(statements));
                 new_block_statement->AddStatementAtPos(statements.size(), assignstatement);
+                enc->phiref2pendingredundant[bb] = new_block_statement;
             }
         }
     }
