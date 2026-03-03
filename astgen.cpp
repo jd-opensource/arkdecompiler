@@ -48,7 +48,7 @@ bool AstGen::RunImpl()
         }
 
 
-        if(bb->IsLoopValid() && bb->IsLoopHeader() ){
+        if(bb->IsLoopValid() && bb->IsLoopHeader()){ 
             JudgeLoopType(bb, this->loop2type, this->loop2exit, this->backedge2dowhileloop);
             /////////////////////////////////////////////////////////////////
             ArenaVector<panda::es2panda::ir::Statement *> statements(this->parser_program_->Allocator()->Adapter());
@@ -400,34 +400,32 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
         es2panda::ir::Statement* true_statements = nullptr;
         es2panda::ir::Statement* false_statements = nullptr;
         
-        if(enc->backedge2dowhileloop.find(block) == enc->backedge2dowhileloop.end() && block->IsLoopValid() && !IsLoopHasMultipleBackEdges(block) &&
-            enc->loop2exit[block->GetLoop()] == block->GetTrueSuccessor() ) {
-                // break statement type1
-                // var chain;
-                // var chain2;
-                // var chain3;
-                // while (chain || chain2 || chain3 ) {
-                //     if (chain === getTextOfChainNode(chain)) {
-                //         break;
-                //     }
-                // }
-
-                // while (chain) {
-                //     if (chain !== chain2){
-                //         break;
-                //     }
-                // }
-                        
-                ret = 2;
-                enc->specialblockid.insert(block->GetFalseSuccessor()->GetId());
-                false_statements =   enc->GetBlockStatementById(block->GetFalseSuccessor());
-        }else if(enc->backedge2dowhileloop.find(block) == enc->backedge2dowhileloop.end() && block->IsLoopValid() && !IsLoopHasMultipleBackEdges(block) && 
-                enc->loop2exit[block->GetLoop()] == block->GetFalseSuccessor()){
-                // break statement type1
-                ret = 1;
-                enc->specialblockid.insert(block->GetTrueSuccessor()->GetId());
-                true_statements =   enc->GetBlockStatementById(block->GetTrueSuccessor());
-        }else{
+        // if(enc->backedge2dowhileloop.find(block) == enc->backedge2dowhileloop.end() && block->IsLoopValid() && !IsLoopHasMultipleBackEdges(block) &&
+        //     enc->loop2exit[block->GetLoop()] == block->GetTrueSuccessor() ) {
+        //         // break statement type1
+        //         // var chain;
+        //         // var chain2;
+        //         // var chain3;
+        //         // while (chain || chain2 || chain3 ) {
+        //         //     if (chain === getTextOfChainNode(chain)) {
+        //         //         break;
+        //         //     }
+        //         // }
+        //         // while (chain) {
+        //         //     if (chain !== chain2){
+        //         //         break;
+        //         //     }
+        //         // }
+        //         ret = 2;
+        //         enc->specialblockid.insert(block->GetFalseSuccessor()->GetId());
+        //         false_statements =   enc->GetBlockStatementById(block->GetFalseSuccessor()); 
+        // }else if(enc->backedge2dowhileloop.find(block) == enc->backedge2dowhileloop.end() && block->IsLoopValid() && !IsLoopHasMultipleBackEdges(block) && 
+        //         enc->loop2exit[block->GetLoop()] == block->GetFalseSuccessor()){
+        //         // break statement type1
+        //         ret = 1;
+        //         enc->specialblockid.insert(block->GetTrueSuccessor()->GetId());
+        //         true_statements =   enc->GetBlockStatementById(block->GetTrueSuccessor());
+        // }else{
             if(ret == 0){
                 std::cout << "#VisitIfImm ret case: " << ret << std::endl;
                 enc->specialblockid.insert(inst->GetBasicBlock()->GetTrueSuccessor()->GetId());
@@ -444,7 +442,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
                 enc->specialblockid.insert(inst->GetBasicBlock()->GetFalseSuccessor()->GetId());
                 false_statements =   enc->GetBlockStatementById(inst->GetBasicBlock()->GetFalseSuccessor());
             }
-        }
+        //}
 
         /*
             // 0: if-and-else
@@ -500,9 +498,10 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), enc->GetBlockStatementById(inst->GetBasicBlock()->GetTrueSuccessor())); 
             std::cout << "[-] do-while =====" << std::endl;
         }else if(block->IsLoopValid() && !block->GetLoop()->IsRoot() && IsLoopConditionBranch(block)  &&  enc->loop2type[block->GetLoop()] == 0 &&
-                  (block->IsLoopHeader() || enc->loopbranchblocks_.find(block->GetLoop()->GetHeader()) == enc->loopbranchblocks_.end())
-                ){
-
+                (block->IsLoopHeader() || enc->loopbranchblocks_.find(block->GetLoop()->GetHeader()) == enc->loopbranchblocks_.end())
+               ){
+        // }else if(block->IsLoopValid()   &&  block->IsLoopHeader() && enc->loop2type[block->GetLoop()] == 0 
+        //        ){
             enc->loopbranches_.insert(inst);
             enc->loopbranchblocks_.insert(block);
 
@@ -545,6 +544,7 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
             if(true_statements != nullptr){
                 enc->inserted_statements.insert(true_statements);
             }
+
             enc->AddInstAst2BlockStatemntByInst(inst, whilestatement);
             enc->AddInstAst2BlockStatemntByBlock(loop->GetPreHeader(), enc->GetBlockStatementById(block));
             if(false_statements != nullptr){
