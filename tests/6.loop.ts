@@ -317,6 +317,10 @@
 //     }
 // }
 
+// #2 corner case
+// var chain;
+// var chain2;
+// var chain3;
 // while (chain) {
 //     if (chain !== chain2){
 //         //console.log("hello");
@@ -325,7 +329,7 @@
 // }
 
 
-// #2 corner case
+// #3 corner case
 // for (var i = 1; i <= 10; i++) {
 //   console.log("hi");
 // }
