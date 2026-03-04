@@ -502,7 +502,8 @@ public:
         BasicBlock* block = inst->GetBasicBlock();
         this->AddInstAst2BlockStatemntByBlock(block, statement);
 
-        if(block->IsLoopValid() && block->IsLoopHeader() && inst->GetOpcode()!= Opcode::If   && inst->GetOpcode()!= Opcode::IfImm ){
+        //if(block->IsLoopValid() && block->IsLoopHeader() && inst->GetOpcode()!= Opcode::If   && inst->GetOpcode()!= Opcode::IfImm ){
+        if(block->IsLoopValid() && block->IsLoopHeader() && this->loopbranches_.find(inst) == this->loopbranches_.end()){
             auto headerblockstatements = this->whileheader2redundant[block];
             const auto &statements = headerblockstatements->Statements();
             headerblockstatements->AddStatementAtPos(statements.size(), statement);
@@ -550,13 +551,12 @@ public:
         }
 
         es2panda::ir::BlockStatement* block_statements = this->GetBlockStatementById(block);
-
         const auto &statements = block_statements->Statements();
         if(statements.size() > offset) {
             block_statements->AddStatementAtPos(statements.size() - offset, statement);
         }else{
             block_statements->AddStatementAtPos(statements.size() , statement);
-        }        
+        }
     }
 
     bool father_visited(BasicBlock *block){
@@ -710,11 +710,14 @@ public:
         }
         
         // case4: found multi predecessor with onlyif
-        if(block->GetPredsBlocks().size() == 2 && block_id != 0 && ( block->GetPredecessor(0)->IsIfBlock() || block->GetPredecessor(1)->IsIfBlock() )){
-            if(block->GetPredecessor(0)->IsIfBlock()){
+        if(block->GetPredsBlocks().size() == 2 && !block->IsStartBlock() && ( block->GetPredecessor(0)->IsIfBlock() || block->GetPredecessor(1)->IsIfBlock() )
+        ){
+            if(block->GetPredecessor(0)->IsIfBlock() && this->id2block.find(block->GetPredecessor(0)->GetId()) != this->id2block.end()){
                 this->id2block[block_id] =  this->id2block[block->GetPredecessor(0)->GetId()];
-            }else{
+            }else if(block->GetPredecessor(1)->IsIfBlock() && this->id2block.find(block->GetPredecessor(1)->GetId()) != this->id2block.end()){
                 this->id2block[block_id] =  this->id2block[block->GetPredecessor(1)->GetId()];
+            }else{
+                this->id2block[block_id] =  this->GetBlockStatementById(block->GetPredecessor(0));
             }
         }
 
@@ -805,6 +808,9 @@ public:
     std::vector<LexicalEnvStack*> *globalsendablelexical_waitlist_;
 
     std::map<std::string, std::string> *raw2newname_;
+
+    std::set<Inst *> loopbranches_;
+    std::set<compiler::BasicBlock *> loopbranchblocks_;
 
     std::map<std::string, uint32_t> *methodname2offset_;
 

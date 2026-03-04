@@ -92,3 +92,19 @@
 //         d=FF(d,a,b,c,x[k+9], S12,0x8B44F7AF);
 //     }
 // }
+
+
+// #2 corner case: recursive calls and recursive references
+// function FF(a, b) {
+//   return 0;
+// };
+
+// function md5(string:string): void {
+//     var k, a;
+//     a = 0xa;
+
+//     for (k = 0; k < 5; k += 1) {
+//         a = FF(a, 0x1);
+//         a = FF(0x2, a);
+//     }
+// }

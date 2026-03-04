@@ -5,8 +5,8 @@ namespace panda::bytecodeopt {
 bool FunDepScan::RunImpl(){
     //std::cout << "[+] @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
     if(GetGraph()->GetVectorBlocks().size() != 0 && GetGraph()->GetAliveBlocksCount() < GetGraph()->GetVectorBlocks().size()){
-        //std::cout << "GetGraph()->GetVectorBlocks().size(): " << GetGraph()->GetVectorBlocks().size() << std::endl;
-        //std::cout << "GetGraph()->GetAliveBlocksCount(): " << GetGraph()->GetAliveBlocksCount() << std::endl;
+        std::cout << "GetGraph()->GetVectorBlocks().size(): " << GetGraph()->GetVectorBlocks().size() << std::endl;
+        std::cout << "GetGraph()->GetAliveBlocksCount(): " << GetGraph()->GetAliveBlocksCount() << std::endl;
         return false;
     }
     //std::cout << "[-] @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;

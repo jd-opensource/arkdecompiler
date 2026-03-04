@@ -403,3 +403,17 @@
 //         }
 //     })();
 // }
+
+
+// # 17. corner case
+// namespace ts {
+//     class TypeScriptDiagnosticsExtractor {
+//         public getStrictDiagnostics(fileName: string){
+//             const strict = getAllDiagnostics().filter(
+//                               diag => !(diag.length === 0 && diag.start === 0));
+//             const nonStrict = getAllDiagnostics();
+//         }
+//     }
+//     function getAllDiagnostics() {
+//     }
+// }
