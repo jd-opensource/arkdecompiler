@@ -43,3 +43,14 @@
 //     }
 //     f1();
 // })();
+
+// #1 corner case: In some cases, the path lexical stack is empty, but still performs a pop operation
+// for (const i of [0, 1]) {
+//     if (i === 0) {
+//         continue;
+//     }
+
+//     (() => {
+//         i;
+//     })();
+// }
