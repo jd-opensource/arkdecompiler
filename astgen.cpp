@@ -582,8 +582,6 @@ void AstGen::VisitIfImm(GraphVisitor *v, Inst *inst_base)
 
             if(true_statements != nullptr){
                 enc->AddInstAst2BlockStatemntByInst(inst, ifStatement);
-            }else{
-                HandleError("sb");
             }
             std::cout << "[-] if ===" << std::endl;
 
