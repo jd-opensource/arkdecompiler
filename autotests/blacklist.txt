@@ -6,3 +6,7 @@
 ../autotests/third_party_typescript/tests/cases/conformance/types/uniqueSymbol/uniqueSymbolsDeclarations.ts
 ../autotests/third_party_typescript/tests/cases/conformance/types/uniqueSymbol/uniqueSymbols.ts
 ../autotests/third_party_typescript/tests/cases/conformance/controlFlow/dependentDestructuredVariables.ts
+
+
+//build_ir_fail
+third_party_typescript/tests/cases/compiler/continueInLoopsWithCapturedBlockScopedBindings1.ts

@@ -305,8 +305,6 @@
 //     q++;
 // }
 
-
-
 // #1 corner case
 // var chain;
 // var chain2;

@@ -61,6 +61,7 @@ bool AstGen::RunImpl()
         ///////////////////////////////////////////////////////////////////////////////////////////////////
         auto nearestpre = this->FindNearestVisitedPred(this->visited, bb);
 
+
         if(bb != this->GetGraph()->GetStartBlock()) {
             if(nearestpre != nullptr && this->bb2lexicalenvstack_[nearestpre] != nullptr){
                 std::cout << "!!!!!!!!!!!!!!!!!!!! found pre id for bb2lexicalenvstack_: " << nearestpre->GetId() << std::endl;

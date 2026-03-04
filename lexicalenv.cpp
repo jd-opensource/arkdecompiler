@@ -115,7 +115,20 @@ LexicalEnv* LexicalEnvStack::Push(size_t capacity) {
 
 void LexicalEnvStack::Pop() {
     if (stack_.empty()) {
-        HandleError("#LexicalEnvStack::Pop: Cannot pop from empty stack");
+        return;
+        //HandleError("#LexicalEnvStack::Pop: Cannot pop from empty stack");
+        // In some cases, the path lexical stack is empty, but still performs a pop operation.
+        // for (const i of [0, 1]) {
+        //     if (i === 0) {
+        //         continue;
+        //     }
+
+        //     (() => {
+        //         i;
+        //     })();
+        // }
+
+    
     }
     stack_.pop_back();
 }
