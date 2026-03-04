@@ -135,3 +135,8 @@
 // var obj = {
 //   get [['ing']]() { return 'hello'; },
 // };
+
+// corner case 8
+// obj = {
+//     get [a = {b : 41 }.b]() { return 2; }
+// }
