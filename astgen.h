@@ -595,9 +595,6 @@ public:
                 return nullptr;
                 HandleError("#GetNameFromExpression: not support this case 1"); 
             }    
-        }else if(rawexpression->IsNumberLiteral()){
-            auto idname = rawexpression->AsNumberLiteral()->Str().Mutf8();
-            return idname;
         }else if(rawexpression->IsCallExpression()){
             auto callee = rawexpression->AsCallExpression()->Callee();
             if(callee->IsFunctionExpression()){
@@ -618,7 +615,7 @@ public:
         }else if(rawexpression->IsBigIntLiteral()){
             return rawexpression->AsBigIntLiteral()->Str().Mutf8();
         }else if(rawexpression->IsNumberLiteral()){
-            return rawexpression->AsNumberLiteral()->Str().Mutf8();
+            return std::to_string(rawexpression->AsNumberLiteral()->Number());
         }else if(rawexpression->IsNewExpression()){
             auto callee = rawexpression->AsNewExpression()->Callee();
             return GetNameFromExpression(const_cast<es2panda::ir::Expression*>(callee));
@@ -655,6 +652,38 @@ public:
             }
 
             ss_ << "]";
+            return ss_.str();
+        }else if(rawexpression->IsSpreadElement()){
+            auto spreadxpression = rawexpression->AsSpreadElement();
+            return "..." + *this->GetNameFromExpression(spreadxpression->Argument());
+        }else if(rawexpression->IsObjectExpression()){
+            std::stringstream ss_;
+            ss_ << "{";
+            auto objectexpression = rawexpression->AsObjectExpression();
+            size_t properties_size = objectexpression->Properties().size();
+            size_t count = 1;
+            for (auto *it : objectexpression->Properties()) {
+                switch (it->Type()) {
+                    case es2panda::ir::AstNodeType::PROPERTY: {
+                        auto propertyexpression = it->AsProperty();
+                        ss_ << *this->GetNameFromExpression(propertyexpression->Key());
+                        ss_ << " : ";
+                        ss_ << *this->GetNameFromExpression(propertyexpression->Value());
+                        
+                        if(count++ < properties_size)
+                            ss_ << ", ";
+                        
+                        break;
+                    }
+                    default: {
+                        ss_ << *this->GetNameFromExpression(it);
+                        if(count++ < properties_size)
+                            ss_ << ", ";
+                        break;
+                    }
+                }
+            }
+            ss_ << "}";
             return ss_.str();
         }else{
             std::cout << "###1: " << std::to_string(static_cast<int>(rawexpression->Type())) << std::endl;
