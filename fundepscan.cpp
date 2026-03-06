@@ -4,10 +4,12 @@ namespace panda::bytecodeopt {
 
 bool FunDepScan::RunImpl(){
     //std::cout << "[+] @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
-    if(GetGraph()->GetVectorBlocks().size() != 0 && GetGraph()->GetAliveBlocksCount() < GetGraph()->GetVectorBlocks().size()){
-        std::cout << "GetGraph()->GetVectorBlocks().size(): " << GetGraph()->GetVectorBlocks().size() << std::endl;
-        std::cout << "GetGraph()->GetAliveBlocksCount(): " << GetGraph()->GetAliveBlocksCount() << std::endl;
-        //return false;
+    size_t blockcount = GetGraph()->GetVectorBlocks().size();
+    size_t aliveblockcount = GetGraph()->GetAliveBlocksCount();
+    std::cout << "blockcount: " << blockcount << " , aliveblockcount: " << aliveblockcount << " , ratio: " << 1.0*aliveblockcount/blockcount << std::endl;
+
+    if(blockcount == 0 || (1.0 * aliveblockcount / blockcount) <= 0.8){ 
+        return false;
     }
     //std::cout << "[-] @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
     for (auto *bb : GetGraph()->GetBlocksLinearOrder()) {
