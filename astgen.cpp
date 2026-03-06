@@ -315,16 +315,50 @@ uint32_t onlyOneBranch(BasicBlock* father, AstGen * enc){
     }else{
         other_father = analysis_block->GetPredecessor(0);
     }
+
+    if(contains(enc->visited, other_father)){
+        // other_father is father's ancestor
+        // while (1 === 1) {
+        //     let x;
+        //     if (x == 1) {
+        //         break;
+        //     }
+        // }
+
+        // do {
+        //     let x;
+        //     if (x == 1) {
+        //         break;
+        //     }
+        // } while (1 === 1)
+
+        // let x;
+        // for (let y = 0; y < 1; ++y) {
+        //     if (x == 1) {
+        //         break;
+        //     }
+        //}
+
+        return 0;
+    }
+
+    std::cout << "analysis_block: " << std::to_string(analysis_block->GetId()) << std::endl;
     std::cout << "true branch: " << std::to_string(true_branch->GetId()) << std::endl;
     std::cout << "false_branch: " << std::to_string(false_branch->GetId()) << std::endl;
+    std::cout << "father: " << std::to_string(father->GetId()) << std::endl;
     std::cout << "other_fater: " << std::to_string(other_father->GetId()) << std::endl;
 
     std::cout << "111111111111111111111111111111111111111111111111111111111" << std::endl;
+
+    uint32_t count = 0;
     while(other_father != father && other_father != start_block){
+        std::cout << "count: " << count << std::endl;
         other_father = other_father->GetPredecessor(0);
+        std::cout << "predecessor id: " << other_father->GetId() << std::endl;
     }
     
     std::cout << "222222222222222222222222222222222222222222222222222222222" << std::endl;
+    
     if(other_father == father ){
         if(analysis_block == true_branch){
             return 2;
