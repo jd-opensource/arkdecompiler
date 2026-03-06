@@ -32,3 +32,27 @@
 //     y = 9;
 // }
 // y = 10;
+
+
+// #1 corner case
+// other_father is father's ancestor
+// while (1 === 1) {
+//     let x;
+//     if (x == 1) {
+//         break;
+//     }
+// }
+
+// do {
+//     let x;
+//     if (x == 1) {
+//         break;
+//     }
+// } while (1 === 1)
+
+// let x;
+// for (let y = 0; y < 1; ++y) {
+//     if (x == 1) {
+//         break;
+//     }
+//}
