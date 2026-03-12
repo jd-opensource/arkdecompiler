@@ -331,3 +331,61 @@
 // for (var i = 1; i <= 10; i++) {
 //   console.log("hi");
 // }
+
+// #4 corner case
+// l1_c:
+// for (const x = 0; x < 1;) {
+//     (function() { return x});
+//     (() => x);
+//     if (x == 1) {
+//         break;
+//     }
+//     if (x == 1) {
+//         break l1_c;
+//     }
+//     if (x == 2) {
+//         continue;
+//     }
+//     if (x == 2) {
+//         continue l1_c;
+//     }
+// }
+
+// l5_c:
+// for (const x = 0, y = 1; x < 1;) {
+//     (function() { return x + y});
+//     (() => x + y);
+//     if (x == 1) {
+//         break;
+//     }
+//     if (x == 1) {
+//         break l5_c;
+//     }
+//     if (x == 2) {
+//         continue;
+//     }
+//     if (x == 2) {
+//         continue l5_c;
+//     }
+// }
+
+// l6_c:
+// while (1 === 1) {
+//     const x = 1, y = 1;
+//     (function() { return x + y});
+//     (() => x + y);
+//     if (x == 1) {
+//         break;
+//     }
+//     if (x == 1) {
+//         break l6_c;
+//     }
+//     if (x == 2) {
+//         continue;
+//     }
+//     if (x == 2) {
+//         continue l6_c;
+//     }
+// }
+
+
