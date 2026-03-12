@@ -9,4 +9,6 @@
 
 
 //build_ir_fail
-third_party_typescript/tests/cases/compiler/continueInLoopsWithCapturedBlockScopedBindings1.ts
+../autotests/third_party_typescript/tests/cases/compiler/continueInLoopsWithCapturedBlockScopedBindings1.ts
+../autotests/third_party_typescript/tests/cases/compiler/unusedLocalsAndParametersDeferred.ts
+
