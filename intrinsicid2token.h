@@ -66,6 +66,10 @@ panda::es2panda::lexer::TokenType BinIntrinsicIdToToken(panda::compiler::Runtime
         case panda::compiler::RuntimeInterface::IntrinsicId::ISIN_IMM8_V8:
             return panda::es2panda::lexer::TokenType::KEYW_IN;
             
+        
+        case panda::compiler::RuntimeInterface::IntrinsicId::ISFALSE:
+            return panda::es2panda::lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK;
+
         default:
             std::cout << "S6" << std::endl;
             HandleError("#BinIntrinsicIdToToken");

@@ -169,13 +169,14 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         }
 
        case compiler::RuntimeInterface::IntrinsicId::ISTRUE:{
-            panda::es2panda::ir::Expression* source_expression = *enc->GetExpressionByAcc(inst);
-            auto binexpression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
-                                                            source_expression,
-                                                            enc->constant_true,
-                                                            BinIntrinsicIdToToken(inst->GetIntrinsicId())
-            );
-            enc->HandleNewCreatedExpression(inst, binexpression);
+            enc->HandleNewCreatedExpression(inst, *enc->GetExpressionByAcc(inst));
+            // panda::es2panda::ir::Expression* source_expression = *enc->GetExpressionByAcc(inst);
+            // auto binexpression = AllocNode<es2panda::ir::BinaryExpression>(enc, 
+            //                                                 source_expression,
+            //                                                 enc->constant_true,
+            //                                                 BinIntrinsicIdToToken(inst->GetIntrinsicId())
+            // );
+            // enc->HandleNewCreatedExpression(inst, binexpression);
             break;
         }
        case compiler::RuntimeInterface::IntrinsicId::ISFALSE:{
