@@ -236,7 +236,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto stroffset = static_cast<uint32_t>(inst->GetImms()[1]);
             auto str = enc->ir_interface_->GetStringIdByOffset(stroffset);
             auto dst_reg_identifier = enc->GetIdentifierByName(str); 
-            enc->globalname2expression_[dst_reg_identifier] = src_reg_identifier;
 
             if(enc->not_add_assgin_for_stlexvar.find(src_reg_identifier) == enc->not_add_assgin_for_stlexvar.end()){
                 auto assignexpression = AllocNode<es2panda::ir::AssignmentExpression>(enc, 
@@ -422,8 +421,6 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
             auto str = enc->ir_interface_->GetStringIdByOffset(stroffset);
 
             auto dst_identifier = enc->GetIdentifierByName(str);
-
-            enc->globalname2expression_[dst_identifier] = src_expression;
 
             if(enc->not_add_assgin_for_stlexvar.find(src_expression) != enc->not_add_assgin_for_stlexvar.end()){
                 break;
