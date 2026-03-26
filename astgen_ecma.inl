@@ -2152,15 +2152,13 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
                 auto rawattr = *enc->GetExpressionByRegIndex(inst, i);
                 // properties.push_back(  AllocNode<es2panda::ir::Property>(enc, rawattr, rawattr) );
                 properties.push_back(rawattr);
-
-
             }
 
             auto closure_name =  "closure_" + std::to_string(enc->methodoffset_) + "_" + std::to_string(enc->closure_count);
             enc->closure_count++;
 
             auto rest = enc->GetIdentifierByName(closure_name);
-             enc->HandleNewCreatedExpression(inst, rest);
+            enc->HandleNewCreatedExpression(inst, rest);
 
             properties.push_back(  AllocNode<es2panda::ir::SpreadElement>(enc, es2panda::ir::AstNodeType::SPREAD_ELEMENT, rest));
             auto objectexpression = AllocNode<es2panda::ir::ObjectExpression>(enc, 

@@ -1,8 +1,9 @@
 // #6. callargs callthis
-// var x1 = clearTimeout();
-// var x2 = parseInt("42");
-// var x3 = parseInt("1010", 2); 
-// var x4 = parseInt("10", 10, 0);
+var x1 = clearTimeout();
+var x2 = parseInt("42");
+var x3 = parseInt("1010", 2); 
+var x4 = parseInt("10", 10, 0);
+var x5 = setInterval(Math.max, 2000, "Bob", "Hi");
 // var x5 = Math.random();
 // var x6 = console.log("hello");
 

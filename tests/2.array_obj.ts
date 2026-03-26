@@ -25,9 +25,9 @@
 // const regex = new RegExp('pattern', 'flags');
 
 // 11. COPYDATAPROPERTIES
-// const obj1 = { a: 1, b: 2, c: 3 };
-// const obj2 = { b: 4, d: 5 };
-// var merged = { e: 6, ...obj1, ...obj2 };
+const obj1 = { a: 1, b: 2, c: 3 };
+const obj2 = { b: 4, d: 5 };
+var merged = { e: 6, ...obj1, ...obj2 };
 
 
 // 12. createarraywithbuffer
@@ -56,13 +56,12 @@
 // 39. CREATEOBJECTWITHEXCLUDEDKEYS
 // function foo()
 // {
-//     let {a, b, c, ...d} = {a:1, b:2, c:3, f:4, e:5}
+//     let {a, b, c, ...d} = {a:1, b:2, c:3, f:4, e:5};
 // }
 
+
 // const sourceObject = { a: 1, b: 2, c: 3, f: 4, e: 5 };
-
 // let { a: alpha, b: beta, c: gamma, ...rest } = sourceObject;
-
 
 // console.log(alpha); 
 // console.log(beta); 

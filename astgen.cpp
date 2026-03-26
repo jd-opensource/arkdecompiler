@@ -674,12 +674,12 @@ void AstGen::VisitReturn(GraphVisitor *v, Inst *inst_base)
     std::cout << "[+] VisitReturn  >>>>>>>>>>>>>>>>>" << std::endl;
     auto enc = static_cast<AstGen *>(v);
     auto inst = inst_base->CastToReturn();
-    switch (inst->GetType()) {
-        default:
-            LOG(ERROR, BYTECODE_OPTIMIZER)
-                << "Codegen for " << compiler::GetOpcodeString(inst->GetOpcode()) << " failed";
-            enc->success_ = false;
-    }
+
+    panda::es2panda::ir::Expression* return_expression = *enc->GetExpressionByAcc(inst);
+
+    auto returnstatement = AllocNode<es2panda::ir::ReturnStatement>(enc, return_expression);
+    enc->AddInstAst2BlockStatemntByInst(inst, returnstatement);
+
     std::cout << "[-] VisitReturn  >>>>>>>>>>>>>>>>>" << std::endl;
 }
 
