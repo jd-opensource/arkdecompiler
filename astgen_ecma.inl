@@ -118,7 +118,15 @@ void panda::bytecodeopt::AstGen::VisitEcma(panda::compiler::GraphVisitor *visito
         case compiler::RuntimeInterface::IntrinsicId::COPYRESTARGS_IMM8:
         case compiler::RuntimeInterface::IntrinsicId::WIDE_COPYRESTARGS_PREF_IMM16:
        {
-            enc->HandleNewCreatedExpression(inst, enc->constant_restargs);
+            auto argi = static_cast<uint32_t>(inst->GetImms()[0]);
+            auto arg = enc->getParameterName(argi + 3); 
+            enc->HandleNewCreatedExpression(inst, arg);
+
+            auto& params = (*enc->method2scriptfunast_)[enc->methodoffset_]->Params();
+            params.pop_back();
+
+            params.push_back( AllocNode<es2panda::ir::SpreadElement>(enc, es2panda::ir::AstNodeType::SPREAD_ELEMENT, arg) );
+
             break;
         }
 

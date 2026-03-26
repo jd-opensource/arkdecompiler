@@ -81,6 +81,7 @@ public:
         panda::es2panda::ir::ScriptFunctionFlags flags_ {panda::es2panda::ir::ScriptFunctionFlags::NONE};
         auto funcNode = parser_program->Allocator()->New<panda::es2panda::ir::ScriptFunction>(nullptr, std::move(arguments), nullptr, body, nullptr, flags_, true, false);
         
+        this->scriptfunc = funcNode;
         
         (*this->method2scriptfunast_)[methodoffset] = funcNode;
 
@@ -924,6 +925,8 @@ public:
 
 
     panda::es2panda::ir::Expression* suspendobj = nullptr;
+
+    panda::es2panda::ir::ScriptFunction* scriptfunc = nullptr;
 
 
     panda::es2panda::ir::BooleanLiteral* constant_true = AllocNode<panda::es2panda::ir::BooleanLiteral>(this, true);
