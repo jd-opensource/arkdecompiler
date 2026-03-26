@@ -198,7 +198,7 @@
 //     //c: number = B["b"];
 // }
 
-// 37. COPYRESTARGS SUPERCALLSPREAD
+// 37. SUPERCALLSPREAD
 // class A {}
 // class B extends A {
 //     constructor(...args) {

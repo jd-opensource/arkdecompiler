@@ -109,3 +109,8 @@ var x5 = setInterval(Math.max, 2000, "Bob", "Hi");
 //         a = FF(0x2, a);
 //     }
 // }
+
+// #3. COPYRESTARGS
+// function myFun(a, b, ...args) {
+//   console.log(args); 
+// }
