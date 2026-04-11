@@ -114,11 +114,20 @@ void FunDepScan::VisitEcma(panda::compiler::GraphVisitor *visitor, Inst *inst_ba
             auto member_functions = GetLiteralArrayByOffset(enc->program_, literalarray_offset);
             if(member_functions){
                 for(auto const& member_function : *member_functions){
-                    if (enc->methodname2offset_->find(member_function) != enc->methodname2offset_->end()) {
-                        auto memeber_offset = (*enc->methodname2offset_)[member_function];
-                        (*enc->class2memberfuns_)[constructor_offset].insert(memeber_offset);
-                    }else{
-                        HandleError("#function dep scan: DEFINECLASSWITHBUFFER");
+                    // Literal array contains short names (e.g. "#~@0>#clickBondPhone")
+                    // but methodname2offset_ has fully-qualified names.
+                    // Use substring matching (consistent with CREATEOBJECTWITHBUFFER handling).
+                    bool found = false;
+                    for (const auto& pair : *enc->methodname2offset_) {
+                        if(pair.first.find(member_function) != std::string::npos){
+                            (*enc->class2memberfuns_)[constructor_offset].insert(pair.second);
+                            found = true;
+                            break;
+                        }
+                    }
+                    if(!found){
+                        // Skip unresolved members instead of aborting.
+                        // This happens with external/inherited methods.
                     }
                 }
             }

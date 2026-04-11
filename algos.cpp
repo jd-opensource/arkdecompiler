@@ -100,8 +100,16 @@ std::vector<uint32_t> TopologicalSort(const std::vector<std::pair<uint32_t, uint
     }
     
     if (result.size() != allNodes.size()) {
-        HandleError("#TopologicalSort: search failed");
-        return {}; 
+        // Cycle detected in dependency graph (likely due to skipped methods).
+        // Add remaining nodes in arbitrary order rather than aborting.
+        std::cerr << "Warning: TopologicalSort cycle detected ("
+                  << result.size() << "/" << allNodes.size()
+                  << " nodes resolved), adding remaining nodes" << std::endl;
+        for (uint32_t node : allNodes) {
+            if (std::find(result.begin(), result.end(), node) == result.end()) {
+                result.push_back(node);
+            }
+        }
     }
     
     return result;

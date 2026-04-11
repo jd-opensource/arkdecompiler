@@ -68,8 +68,8 @@
 static int count = 0;
 
 inline void HandleInnerError(const std::string& message) {
-    std::cerr << "Error: " << message << std::endl;
-    std::exit(EXIT_FAILURE);
+    std::cerr << "Warning: " << message << std::endl;
+    throw std::runtime_error(message);
 }
 
 template<typename... Args>

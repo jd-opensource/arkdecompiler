@@ -10,6 +10,21 @@
 #include "fundepscan.h"
 #include "algos.h"
 #include "classconstruction.h"
+#include <signal.h>
+#include <setjmp.h>
+
+// Signal handler for catching SIGSEGV/SIGABRT during decompilation
+static sigjmp_buf s_jmpbuf;
+static volatile sig_atomic_t s_in_decompile = 0;
+
+static void crash_handler(int sig) {
+    if (s_in_decompile) {
+        siglongjmp(s_jmpbuf, sig);
+    }
+    // Not in decompile - default behavior
+    signal(sig, SIG_DFL);
+    raise(sig);
+}
 
 using namespace std;
 using namespace panda;
@@ -539,26 +554,23 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
 
         panda_file::ClassDataAccessor cda {*pfile, record_id};
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        bool has_error = false;
-        cda.EnumerateMethods([prog, &has_error, &disasm, ir_interface, is_dynamic, &depedges, &class2memberfuns, &method2lexicalmap, &memberfuncs, &raw2newname, &methodname2offset, &skipfailfuns, &inserted_construct_order, &construct2initializer, &construct2staticinitializer, &construct2definedmethod](panda_file::MethodDataAccessor &mda){
+        cda.EnumerateMethods([prog, &disasm, ir_interface, is_dynamic, &depedges, &class2memberfuns, &method2lexicalmap, &memberfuncs, &raw2newname, &methodname2offset, &skipfailfuns, &inserted_construct_order, &construct2initializer, &construct2staticinitializer, &construct2definedmethod](panda_file::MethodDataAccessor &mda){
             if (!mda.IsExternal()) {
                 
                 int32_t res = ScanFunDep(prog, disasm, ir_interface, &depedges, &class2memberfuns, &method2lexicalmap, &memberfuncs, &raw2newname, &methodname2offset, mda, &inserted_construct_order, &construct2initializer, &construct2staticinitializer, &construct2definedmethod, is_dynamic);
-                if(res == 3 || res == 4){
+                if(res != 0){
+                    // Gracefully skip failed methods instead of aborting.
+                    // This allows decompilation of large multi-module ABC files
+                    // where some methods may use unsupported instructions.
                     skipfailfuns.insert(mda.GetMethodId().GetOffset());
                     return;
-                }
-
-                if(res != 0){
-                    has_error = true;
                 }
 
             }
         });
         
-        if(has_error){
-            return false;
-        }
+        // Continue processing even if some methods fail scanning.
+        // Failed methods are already added to skipfailfuns.
     } 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -583,10 +595,27 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
             continue;
         }
 
-        result = DecompileFunction(prog, parser_program, ir_interface, mda, is_dynamic, &method2lexicalenvstack, &method2sendablelexicalenvstack, &patchvarspace, index2importnamespaces, localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &memberfuncs, &class2father, &method2lexicalmap, &globallexical_waitlist, &globalsendablelexical_waitlist, &raw2newname, &methodname2offset);
-        
+        // Use signal handler to catch SIGSEGV/SIGABRT in decompilation
+        signal(SIGSEGV, crash_handler);
+        signal(SIGABRT, crash_handler);
+        s_in_decompile = 1;
+        int sig = sigsetjmp(s_jmpbuf, 1);
+        if (sig == 0) {
+            try {
+                result = DecompileFunction(prog, parser_program, ir_interface, mda, is_dynamic, &method2lexicalenvstack, &method2sendablelexicalenvstack, &patchvarspace, index2importnamespaces, localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &memberfuncs, &class2father, &method2lexicalmap, &globallexical_waitlist, &globalsendablelexical_waitlist, &raw2newname, &methodname2offset);
+            } catch (const std::exception& e) {
+                std::cerr << "Warning: DecompileFunction case 1 exception for offset " << methodoffset << ": " << e.what() << std::endl;
+                result = false;
+            }
+        } else {
+            std::cerr << "Warning: DecompileFunction case 1 crashed (signal " << sig << ") for offset " << methodoffset << ", skipping" << std::endl;
+            result = false;
+        }
+        s_in_decompile = 0;
+        signal(SIGSEGV, SIG_DFL);
+        signal(SIGABRT, SIG_DFL);
         if(!result){
-            HandleError("#DecompilePandaFile: decomiple case 1 failed!");
+            result = true;
         }
     }
 
@@ -597,17 +626,34 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
         }
         panda_file::ClassDataAccessor cda {*pfile, record_id};
 
-        cda.EnumerateMethods([prog, parser_program, ir_interface, is_dynamic, &result, &method2lexicalenvstack, &method2sendablelexicalenvstack, &patchvarspace, &index2importnamespaces, &localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &memberfuncs, &class2father, &method2lexicalmap, &globallexical_waitlist, &globalsendablelexical_waitlist, &raw2newname, &methodname2offset, sorted_methodoffsets, &skipfailfuns](panda_file::MethodDataAccessor &mda){           
+        cda.EnumerateMethods([prog, parser_program, ir_interface, is_dynamic, &result, &method2lexicalenvstack, &method2sendablelexicalenvstack, &patchvarspace, &index2importnamespaces, &localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &memberfuncs, &class2father, &method2lexicalmap, &globallexical_waitlist, &globalsendablelexical_waitlist, &raw2newname, &methodname2offset, sorted_methodoffsets, &skipfailfuns](panda_file::MethodDataAccessor &mda){
             if (!mda.IsExternal() && std::find(sorted_methodoffsets.begin(), sorted_methodoffsets.end(), mda.GetMethodId().GetOffset()) == sorted_methodoffsets.end() ){
                             uint32_t cur_method = mda.GetMethodId().GetOffset();
                 if(skipfailfuns.find(cur_method) != skipfailfuns.end()){
-                    
+
                     return;
                 }
-                
-                result = DecompileFunction(prog, parser_program, ir_interface, mda, is_dynamic, &method2lexicalenvstack, &method2sendablelexicalenvstack, &patchvarspace, index2importnamespaces, localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &memberfuncs, &class2father, &method2lexicalmap, &globallexical_waitlist, &globalsendablelexical_waitlist, &raw2newname, &methodname2offset);
+
+                signal(SIGSEGV, crash_handler);
+                signal(SIGABRT, crash_handler);
+                s_in_decompile = 1;
+                int sig2 = sigsetjmp(s_jmpbuf, 1);
+                if (sig2 == 0) {
+                    try {
+                        result = DecompileFunction(prog, parser_program, ir_interface, mda, is_dynamic, &method2lexicalenvstack, &method2sendablelexicalenvstack, &patchvarspace, index2importnamespaces, localnamespaces, &class2memberfuns, &method2scriptfunast, &ctor2classdeclast, &memberfuncs, &class2father, &method2lexicalmap, &globallexical_waitlist, &globalsendablelexical_waitlist, &raw2newname, &methodname2offset);
+                    } catch (const std::exception& e) {
+                        std::cerr << "Warning: DecompileFunction case 2 exception for offset " << cur_method << ": " << e.what() << std::endl;
+                        result = false;
+                    }
+                } else {
+                    std::cerr << "Warning: DecompileFunction case 2 crashed (signal " << sig2 << ") for offset " << cur_method << ", skipping" << std::endl;
+                    result = false;
+                }
+                s_in_decompile = 0;
+                signal(SIGSEGV, SIG_DFL);
+                signal(SIGABRT, SIG_DFL);
                 if(!result){
-                    HandleError("#DecompilePandaFile: decomiple case 2 failed!");
+                    result = true;
                 }
             }
         });
@@ -616,11 +662,23 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
 
     std::cout <<  "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
 
-    ConstructClasses(class2memberfuns, parser_program, ir_interface, class2father, method2scriptfunast, ctor2classdeclast, raw2newname);
+    signal(SIGSEGV, crash_handler);
+    signal(SIGABRT, crash_handler);
+    s_in_decompile = 1;
+    int sig_cc = sigsetjmp(s_jmpbuf, 1);
+    if (sig_cc == 0) {
+        ConstructClasses(class2memberfuns, parser_program, ir_interface, class2father, method2scriptfunast, ctor2classdeclast, raw2newname);
+    } else {
+        std::cerr << "Warning: ConstructClasses crashed (signal " << sig_cc << "), continuing with partial output" << std::endl;
+    }
+    s_in_decompile = 0;
+    signal(SIGSEGV, SIG_DFL);
+    signal(SIGABRT, SIG_DFL);
 
     std::cout <<  "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD" << std::endl;
 
     for (auto it = method2scriptfunast.begin(); it != method2scriptfunast.end(); ++it) {
+        if(it->second == nullptr) continue;
         auto funcDecl = AllocNode<panda::es2panda::ir::FunctionDeclaration>(parser_program, it->second);
 
         program_ast->AddStatementAtPos(program_ast->Statements().size(), funcDecl);
@@ -631,6 +689,7 @@ bool DecompilePandaFile(pandasm::Program *prog, BytecodeOptIrInterface *ir_inter
     }
 
     for (auto it = ctor2classdeclast.begin(); it != ctor2classdeclast.end(); ++it) {
+        if(it->second == nullptr) continue;
         program_ast->AddStatementAtPos(program_ast->Statements().size(), it->second);
         
         //std::cout << it->first << " MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM" << std::endl;

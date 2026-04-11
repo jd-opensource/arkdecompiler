@@ -210,11 +210,14 @@ void LexicalEnvStack::CheckIndex(size_t A, size_t B) const {
 
 void LexicalEnvStack::CheckStackIndex(size_t A) const {
     if (stack_.empty()) {
-        HandleError("#LexicalEnvStack::CheckStackIndex: Stack is empty");
+        std::cerr << "Warning: LexicalEnvStack::CheckStackIndex: Stack is empty" << std::endl;
+        throw std::runtime_error("LexicalEnvStack empty");
     }
-    
+
     if (A >= stack_.size()) {
-        HandleError("#LexicalEnvStack::CheckStackIndex: Stack index A out of range");
+        std::cerr << "Warning: LexicalEnvStack::CheckStackIndex: Stack index "
+                  << A << " >= size " << stack_.size() << std::endl;
+        throw std::runtime_error("LexicalEnvStack index out of range");
     }
 }
 
