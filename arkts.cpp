@@ -98,7 +98,13 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
         HandleError("#EmitExpression: emitExpression for null astnode");
     }
 
-    switch(node->Type()){ 
+    if(visited_.count(node)){
+        ss_ << "/* circular ref */";
+        return;
+    }
+    visited_.insert(node);
+
+    switch(node->Type()){
         case AstNodeType::BINARY_EXPRESSION:{
             std::cout << "enter BINARY_EXPRESSION >>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl; 
             auto binexpression = node->AsBinaryExpression();
@@ -322,6 +328,8 @@ void ArkTSGen::EmitExpression(const ir::AstNode *node){
             HandleError("#EmitExpression : unsupport expression");;
 
     }
+
+    visited_.erase(node);
 }
 
 void ArkTSGen::EmitExpressionStatement(const ir::AstNode *node){
@@ -741,6 +749,12 @@ void ArkTSGen::EmitStatement(const ir::AstNode *node)
         HandleError("#EmitStatement: emitStatement for null astnode");
     }
 
+    if(visited_.count(node)){
+        ss_ << "/* circular ref */";
+        return;
+    }
+    visited_.insert(node);
+
     if(node->Type() != AstNodeType::BLOCK_STATEMENT && node->Type() != AstNodeType::VARIABLE_DECLARATOR ){
         this->WriteIndent();
     }
@@ -863,7 +877,7 @@ void ArkTSGen::EmitStatement(const ir::AstNode *node)
             HandleError("#EmitStatement : unsupport statement");
     }
 
-
+    visited_.erase(node);
 
     // Wrap(
     //     [this, node]() -> void {

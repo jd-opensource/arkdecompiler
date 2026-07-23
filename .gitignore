@@ -15,6 +15,7 @@ autotests/*.abc
 autotests/*.json
 autotests/tmp/*
 autotests/status_outputs/*
+autotests/bak_status_outputs/*
 autotests/history/*
 
 

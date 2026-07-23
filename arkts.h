@@ -230,6 +230,7 @@ private:
     int32_t indent_;
     int32_t singleindent_ = 2;
     bool dumpNodeOnly_ = true;
+    std::unordered_set<const ir::AstNode *> visited_;
 
 
 
