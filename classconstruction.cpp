@@ -35,7 +35,8 @@ bool ConstructClasses(std::map<uint32_t, std::set<uint32_t>> &class2memberfuns, 
         if(raw2newname.find(constructor_offset_name) != raw2newname.end()){
             newname_constructor_offset_name =  raw2newname[constructor_offset_name];
         }else{
-            HandleError("#ConstructClasses: find constructor_offset_name newname error");
+            std::cerr << "Warning: ConstructClasses: no newname for constructor " << constructor_offset_name << ", skipping class" << std::endl;
+            continue;
         }
         panda::es2panda::util::StringView name_view1 = panda::es2panda::util::StringView(*(new std::string(RemoveArgumentsOfFunc(newname_constructor_offset_name))));
 
@@ -54,11 +55,16 @@ bool ConstructClasses(std::map<uint32_t, std::set<uint32_t>> &class2memberfuns, 
         panda::es2panda::util::StringView name_view2 = panda::es2panda::util::StringView("constructor");
         auto keyNode = AllocNode<panda::es2panda::ir::Identifier>(parser_program, name_view2);
 
-        auto func = method2scriptfunast[constructor_offset];
-        method2scriptfunast.erase(constructor_offset);
+        panda::es2panda::ir::ScriptFunction *func = nullptr;
+        if(method2scriptfunast.find(constructor_offset) != method2scriptfunast.end()){
+            func = method2scriptfunast[constructor_offset];
+            method2scriptfunast.erase(constructor_offset);
+        }
 
         if(func == nullptr){
-            HandleError("#DecompilePandaFile: find constructor function fail!");
+            // Constructor was skipped during decompilation - skip this class
+            std::cerr << "Warning: ConstructClasses: constructor " << constructor_offset << " not decompiled, skipping class" << std::endl;
+            continue;
         }
 
         auto funcExpr = AllocNode<panda::es2panda::ir::FunctionExpression>(parser_program, func);
@@ -84,12 +90,16 @@ bool ConstructClasses(std::map<uint32_t, std::set<uint32_t>> &class2memberfuns, 
                 continue;
             }
             
-            auto func = method2scriptfunast[member_func_offset];
-            method2scriptfunast.erase(member_func_offset);
+            panda::es2panda::ir::ScriptFunction *func = nullptr;
+            if(method2scriptfunast.find(member_func_offset) != method2scriptfunast.end()){
+                func = method2scriptfunast[member_func_offset];
+                method2scriptfunast.erase(member_func_offset);
+            }
 
             if(func == nullptr){
-                std::cout << "member function offset: " << member_func_offset << std::endl;
-                HandleError("#ConstructClasses: find member function fail!");
+                // Member method was skipped during decompilation - skip it
+                std::cerr << "Warning: ConstructClasses: member " << member_func_offset << " not decompiled, skipping" << std::endl;
+                continue;
             }
 
             auto funcExpr = AllocNode<es2panda::ir::FunctionExpression>(parser_program, func);
@@ -100,7 +110,8 @@ bool ConstructClasses(std::map<uint32_t, std::set<uint32_t>> &class2memberfuns, 
             if(raw2newname.find(raw_member_name) != raw2newname.end()){
                 new_member_name =  raw2newname[raw_member_name];
             }else{
-                HandleError("#ConstructClasses: find new_member_name newname error");
+                std::cerr << "Warning: ConstructClasses: no newname for member " << raw_member_name << ", skipping" << std::endl;
+                continue;
             }
 
             panda::es2panda::util::StringView name_view3 = panda::es2panda::util::StringView(*(new std::string(new_member_name)));

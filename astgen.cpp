@@ -349,10 +349,14 @@ uint32_t onlyOneBranch(BasicBlock* father, AstGen * enc){
     std::cout << "other_fater: " << std::to_string(other_father->GetId()) << std::endl;
 
     uint32_t count = 0;
+    const uint32_t MAX_ITERATIONS = 10000;
     while(other_father != father && other_father != start_block){
-        std::cout << "count: " << count << std::endl;
+        count++;
+        if (count > MAX_ITERATIONS) {
+            std::cerr << "Warning: onlyOneBranch loop exceeded " << MAX_ITERATIONS << " iterations, breaking" << std::endl;
+            return 0;
+        }
         other_father = other_father->GetPredecessor(0);
-        std::cout << "predecessor id: " << other_father->GetId() << std::endl;
     }
 
     if(other_father == father ){
@@ -689,7 +693,18 @@ void AstGen::VisitCastValueToAnyType(GraphVisitor *visitor, Inst *inst)
     auto enc = static_cast<AstGen *>(visitor);
 
     auto cvat = inst->CastToCastValueToAnyType();
-    auto input = cvat->GetInput(0).GetInst()->CastToConstant();
+    auto input_inst = cvat->GetInput(0).GetInst();
+    // Input can be Constant (for int/double/bool/null/undefined) or LoadString (for string type)
+    compiler::ConstantInst *input = nullptr;
+    if (input_inst->GetOpcode() == compiler::Opcode::Constant) {
+        input = input_inst->CastToConstant();
+    } else if (input_inst->GetOpcode() != compiler::Opcode::LoadString) {
+        // Neither Constant nor LoadString - handle gracefully
+        std::cerr << "Warning: VisitCastValueToAnyType: unexpected input opcode "
+                  << static_cast<int>(input_inst->GetOpcode()) << std::endl;
+        enc->SetExpressionByRegister(inst, inst->GetDstReg(), enc->constant_undefined);
+        return;
+    }
 
     es2panda::ir::Expression* source = nullptr;
     switch (cvat->GetAnyType()) {
@@ -703,20 +718,23 @@ void AstGen::VisitCastValueToAnyType(GraphVisitor *visitor, Inst *inst)
         }
 
         case compiler::AnyBaseType::ECMASCRIPT_INT_TYPE: {
-            source = AllocNode<es2panda::ir::NumberLiteral>(enc, 
+            if (!input) { enc->success_ = false; break; }
+            source = AllocNode<es2panda::ir::NumberLiteral>(enc,
                                                                 input->CastToConstant()->GetIntValue()
                                             );
             break;
         }
 
         case compiler::AnyBaseType::ECMASCRIPT_DOUBLE_TYPE: {
-            source = AllocNode<es2panda::ir::NumberLiteral>(enc, 
+            if (!input) { enc->success_ = false; break; }
+            source = AllocNode<es2panda::ir::NumberLiteral>(enc,
                                                                 input->CastToConstant()->GetDoubleValue()
                                                         );
             break;
         }
 
         case compiler::AnyBaseType::ECMASCRIPT_BOOLEAN_TYPE: {
+            if (!input) { enc->success_ = false; break; }
             uint64_t val = input->GetInt64Value();
             if (val != 0) {
                 source = enc->constant_true;
